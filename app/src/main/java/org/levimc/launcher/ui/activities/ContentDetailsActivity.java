@@ -111,8 +111,10 @@ public class ContentDetailsActivity extends BaseActivity {
             summary.destroy();
             summary = null;
         }
+        if (downloadExecutor != null) {
+            downloadExecutor.shutdownNow();
+        }
         super.onDestroy();
-    }
 
     private void initWebView() {
         summary.setBackgroundColor(android.graphics.Color.TRANSPARENT);
