@@ -234,4 +234,12 @@ public class AccountsActivity extends BaseActivity {
             }
         });
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (executor != null) {
+            executor.shutdownNow();
+        }
+    }
 }
