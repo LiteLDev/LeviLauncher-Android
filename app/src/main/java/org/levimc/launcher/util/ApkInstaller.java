@@ -72,11 +72,15 @@ public class ApkInstaller {
                 lastPostedProgress = -1;
                 postProgress(0);
                 File metadataDir = LauncherStorage.getProfileMetadataDir(context, dirName);
-                if (metadataDir.exists() && !deleteDir(metadataDir))
+                if (metadataDir.exists() && !deleteDir(metadataDir)) {
+                    postError("Clean metadata directory failed");
                     return;
+                }
                 File externalDir = LauncherStorage.getVersionDir(context, dirName);
-                if (externalDir.exists() && !deleteDir(externalDir))
+                if (externalDir.exists() && !deleteDir(externalDir)) {
+                    postError("Clean version directory failed");
                     return;
+                }
                 postProgress(5);
 
                 File libTargetDir = MinecraftLauncher.getRuntimeLibDir(context, dirName);
