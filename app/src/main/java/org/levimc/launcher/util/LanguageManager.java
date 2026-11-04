@@ -62,6 +62,9 @@ public class LanguageManager {
             } else if (itemId == R.id.action_french) {
                 setAppLanguage("fr");
                 return true;
+            } else if (itemId == R.id.action_gujarati) {
+                setAppLanguage("gu");
+                return true;
             } else if (itemId == R.id.action_hindi) {
                 setAppLanguage("hi");
                 return true;

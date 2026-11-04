@@ -213,6 +213,7 @@ public class SettingsActivity extends BaseActivity {
                 getString(R.string.english),
                 getString(R.string.chinese),
                 getString(R.string.french),
+                getString(R.string.gujarati),
                 getString(R.string.hindi),
                 getString(R.string.indonesian),
                 getString(R.string.japanese),
@@ -227,14 +228,15 @@ public class SettingsActivity extends BaseActivity {
         int defaultIdx = switch (currentCode) {
             case "zh", "zh-CN" -> 1;
             case "fr" -> 2;
-            case "hi" -> 3;
-            case "idn" -> 4;
-            case "ja" -> 5;
-            case "pt" -> 6;
-            case "ru" -> 7;
-            case "es" -> 8;
-            case "tr", "tr-TR" -> 9;
-            case "vi" -> 10;
+            case "gu" -> 3;
+            case "hi" -> 4;
+            case "idn" -> 5;
+            case "ja" -> 6;
+            case "pt" -> 7;
+            case "ru" -> 8;
+            case "es" -> 9;
+            case "tr", "tr-TR" -> 10;
+            case "vi" -> 11;
             default -> 0;
         };
 
@@ -253,14 +255,15 @@ public class SettingsActivity extends BaseActivity {
                 String code = switch (position) {
                     case 1 -> "zh-CN";
                     case 2 -> "fr";
-                    case 3 -> "hi";
-                    case 4 -> "idn";
-                    case 5 -> "ja";
-                    case 6 -> "pt";
-                    case 7 -> "ru";
-                    case 8 -> "es";
-                    case 9 -> "tr";
-                    case 10 -> "vi";
+                    case 3 -> "gu";
+                    case 4 -> "hi";
+                    case 5 -> "idn";
+                    case 6 -> "ja";
+                    case 7 -> "pt";
+                    case 8 -> "ru";
+                    case 9 -> "es";
+                    case 10 -> "tr";
+                    case 11 -> "vi";
                     default -> "en";
                 };
                 if (!code.equals(languageManager.getCurrentLanguage())) {

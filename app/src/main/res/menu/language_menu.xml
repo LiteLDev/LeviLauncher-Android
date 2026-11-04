@@ -12,6 +12,9 @@
         android:id="@+id/action_french"
         android:title="@string/french"/>
     <item
+        android:id="@+id/action_gujarati"
+        android:title="@string/gujarati"/>
+    <item
         android:id="@+id/action_hindi"
         android:title="@string/hindi"/>
     <item
