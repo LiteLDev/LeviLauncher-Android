@@ -412,6 +412,9 @@ public class InstanceSettingsActivity extends BaseActivity {
             autoSaveHandler.removeCallbacks(pendingNameSave);
             pendingNameSave = null;
         }
+        if (backupManager != null) {
+            backupManager.shutdown();
+        }
         super.onDestroy();
     }
 

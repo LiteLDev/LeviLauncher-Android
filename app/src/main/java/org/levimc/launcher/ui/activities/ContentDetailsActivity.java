@@ -114,6 +114,9 @@ public class ContentDetailsActivity extends BaseActivity {
         if (downloadExecutor != null) {
             downloadExecutor.shutdownNow();
         }
+        if (contentImporter != null) {
+            contentImporter.shutdown();
+        }
         super.onDestroy();
     }
 

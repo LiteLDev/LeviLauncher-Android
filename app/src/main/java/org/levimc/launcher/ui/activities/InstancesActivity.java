@@ -815,6 +815,14 @@ public class InstancesActivity extends BaseActivity {
         applyFilters();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (backupManager != null) {
+            backupManager.shutdown();
+        }
+    }
+
     private static class GridSpacingDecoration extends RecyclerView.ItemDecoration {
         private final int spanCount;
         private final int spacing;

@@ -398,6 +398,9 @@ public class LogcatOverlay extends FrameLayout {
         if (ioExecutor.isShutdown() || ioExecutor.isTerminated()) {
             ioExecutor = Executors.newSingleThreadExecutor();
         }
+        if (filterExecutor.isShutdown() || filterExecutor.isTerminated()) {
+            filterExecutor = Executors.newSingleThreadExecutor();
+        }
         startBackgroundRenderLoop();
         startReader();
     }
@@ -408,6 +411,7 @@ public class LogcatOverlay extends FrameLayout {
         // Clear any pending lines so nothing gets appended after disable
         pendingLines.clear();
         ioExecutor.shutdownNow();
+        filterExecutor.shutdownNow();
         renderLoopStarted = false;
     }
 
@@ -499,6 +503,9 @@ public class LogcatOverlay extends FrameLayout {
     }
 
     private void scheduleFilterRefresh() {
+        if (filterExecutor.isShutdown() || filterExecutor.isTerminated()) {
+            filterExecutor = Executors.newSingleThreadExecutor();
+        }
         filterExecutor.submit(() -> {
             List<String> snapshot;
             synchronized (logBuffer) { snapshot = new ArrayList<>(logBuffer); }
