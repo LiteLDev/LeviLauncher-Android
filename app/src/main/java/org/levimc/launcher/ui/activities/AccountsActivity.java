@@ -239,7 +239,7 @@ public class AccountsActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (executor != null) {
-            executor.shutdownNow();
+            executor.shutdown();
         }
     }
 }

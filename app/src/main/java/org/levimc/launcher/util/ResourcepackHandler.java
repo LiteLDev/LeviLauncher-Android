@@ -51,12 +51,16 @@ public class ResourcepackHandler {
 
     private void launchMinecraft(Intent intent) {
         executor.execute(() -> {
-            VersionManager versionManager = VersionManager.get(activity);
-            GameVersion currentVersion = versionManager.getSelectedVersion();
+            try {
+                VersionManager versionManager = VersionManager.get(activity);
+                GameVersion currentVersion = versionManager.getSelectedVersion();
 
-            minecraftLauncher.launch(intent, currentVersion);
-            activity.runOnUiThread(() -> {
-            });
+                minecraftLauncher.launch(intent, currentVersion);
+                activity.runOnUiThread(() -> {
+                });
+            } finally {
+                executor.shutdown();
+            }
         });
     }
 }

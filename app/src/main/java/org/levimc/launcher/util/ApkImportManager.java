@@ -16,6 +16,7 @@ import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
 import org.levimc.launcher.ui.dialogs.InstallProgressDialog;
 import org.levimc.launcher.ui.views.MainViewModel;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ApkImportManager {
@@ -73,7 +74,8 @@ public class ApkImportManager {
                     @Override
                     public void onInstallClicked(String versionName) {
                         showProgress();
-                        ApkInstaller installer = new ApkInstaller(activity, Executors.newSingleThreadExecutor(), new ApkInstaller.InstallCallback() {
+                        ExecutorService installExecutor = Executors.newSingleThreadExecutor();
+                        ApkInstaller installer = new ApkInstaller(activity, installExecutor, new ApkInstaller.InstallCallback() {
                             @Override
                             public void onProgress(int progress) {
                                 activity.runOnUiThread(() -> progressDialog.setProgress(progress));
@@ -81,6 +83,7 @@ public class ApkImportManager {
 
                             @Override
                             public void onSuccess(String versionName) {
+                                installExecutor.shutdown();
                                 activity.runOnUiThread(() -> {
                                     dismissProgress();
                                     Toast.makeText(
@@ -97,6 +100,7 @@ public class ApkImportManager {
 
                             @Override
                             public void onError(String errorMsg) {
+                                installExecutor.shutdown();
                                 activity.runOnUiThread(() -> {
                                     dismissProgress();
                                     Toast.makeText(activity, errorMsg, Toast.LENGTH_LONG).show();

@@ -673,7 +673,7 @@ import okhttp3.OkHttpClient;
     protected void onDestroy() {
         super.onDestroy();
         if (accountExecutor != null) {
-            accountExecutor.shutdownNow();
+            accountExecutor.shutdown();
         }
     }
 
