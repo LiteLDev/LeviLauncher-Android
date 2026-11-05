@@ -374,12 +374,14 @@ public class ContentDetailsActivity extends BaseActivity {
                 }
 
                 runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
                     Toast.makeText(this, getString(R.string.curseforge_importing), Toast.LENGTH_SHORT).show();
                     importFile(outputFile);
                 });
 
             } catch (Exception e) {
                 runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
                     progressBar.setVisibility(View.GONE);
                     btnInstall.setEnabled(true);
                     Toast.makeText(this, getString(R.string.curseforge_download_failed) + ": " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -409,6 +411,10 @@ public class ContentDetailsActivity extends BaseActivity {
                 @Override
                 public void onSuccess(String message) {
                     runOnUiThread(() -> {
+                        if (isFinishing() || isDestroyed()) {
+                            if (file.exists()) file.delete();
+                            return;
+                        }
                         progressBar.setVisibility(View.GONE);
                         btnInstall.setEnabled(true);
                         Toast.makeText(ContentDetailsActivity.this, message, Toast.LENGTH_SHORT).show();
@@ -419,6 +425,7 @@ public class ContentDetailsActivity extends BaseActivity {
                 @Override
                 public void onError(String error) {
                     runOnUiThread(() -> {
+                        if (isFinishing() || isDestroyed()) return;
                         progressBar.setVisibility(View.GONE);
                         btnInstall.setEnabled(true);
                         Toast.makeText(ContentDetailsActivity.this, error, Toast.LENGTH_LONG).show();
