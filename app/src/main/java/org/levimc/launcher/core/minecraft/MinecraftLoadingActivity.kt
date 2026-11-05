@@ -142,7 +142,6 @@ class MinecraftLoadingActivity : BaseActivity(), MinecraftRuntimePreparer.Progre
     private fun startPreparing() {
         executor.execute {
             try {
-                LauncherBackgroundController.awaitShutdown()
                 val gameIntent = Intent(intent).apply {
                     setClass(this@MinecraftLoadingActivity, MinecraftActivity::class.java)
                 }

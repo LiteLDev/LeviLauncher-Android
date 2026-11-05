@@ -19,24 +19,17 @@ import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
 import org.levimc.launcher.ui.dialogs.LibsRepairDialog;
 import org.levimc.launcher.util.ApkUtils;
 import org.levimc.launcher.util.LauncherStorage;
-import org.levimc.launcher.util.NativeImageGuard;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 public class VersionManager {
     private static final String PREFS_NAME = "version_manager";
     private static final String KEY_SELECTED_TYPE = "selected_type";
     private static final String KEY_SELECTED_PACKAGE = "selected_package";
     private static final String KEY_SELECTED_DIR = "selected_dir";
-    private static final int BUFFER_SIZE = 131072;
     private static final int PROGRESS_MAX = 100;
     private static final int PROGRESS_EXTRACT_MAX = 92;
     private static final int PROGRESS_FINALIZING = 96;
@@ -235,6 +228,11 @@ public class VersionManager {
                             }
                         }
                     }
+                } else {
+                    ApplicationInfo installedInfo = context.getPackageManager().getApplicationInfo(version.packageName, 0);
+                    if (installedInfo.splitSourceDirs != null) {
+                        for (String split : installedInfo.splitSourceDirs) apkFiles.add(new File(split));
+                    }
                 }
 
                 long totalSize = 0;
@@ -250,36 +248,23 @@ public class VersionManager {
                 long[] progress = {0};
                 int[] lastPercent = {-1};
 
+                final long extractionTotal = totalSize;
                 for (File currentApk : apkFiles) {
-                    try (ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new FileInputStream(currentApk)))) {
-                        ZipEntry entry;
-                        byte[] buffer = new byte[BUFFER_SIZE];
-                        while ((entry = zis.getNextEntry()) != null) {
-                            if (entry.getName().startsWith("lib/") && !entry.isDirectory()) {
-                                String[] parts = entry.getName().split("/");
-                                if (parts.length >= 3) {
-                                    File outFile = new File(libDir, ApkUtils.abiToSystemLibDir(parts[1]) + "/" + parts[2]);
-                                    if (!outFile.getParentFile().exists()) outFile.getParentFile().mkdirs();
-
-                                    try (FileOutputStream fos = new FileOutputStream(outFile)) {
-                                        int len;
-                                        while ((len = zis.read(buffer)) != -1) {
-                                            fos.write(buffer, 0, len);
-                                            progress[0] += len;
-                                            int percent = (int) Math.min(PROGRESS_EXTRACT_MAX, (progress[0] * PROGRESS_EXTRACT_MAX) / totalSize);
-                                            if (percent != lastPercent[0]) {
-                                                callback.onRepairProgress(percent);
-                                                lastPercent[0] = percent;
-                                            }
-                                        }
-                                    }
-                                    if (!NativeImageGuard.processRequired(outFile)) {
-                                        throw new IOException("Failed to prepare native library: " + outFile.getName());
-                                    }
-                                }
+                    try (java.util.zip.ZipFile zip = new java.util.zip.ZipFile(currentApk)) {
+                        ApkUtils.unzipLibsToSystemAbi(libDir, zip, bytes -> {
+                            progress[0] += bytes;
+                            int percent = (int) Math.min(PROGRESS_EXTRACT_MAX,
+                                    (progress[0] * PROGRESS_EXTRACT_MAX) / extractionTotal);
+                            if (percent != lastPercent[0]) {
+                                callback.onRepairProgress(percent);
+                                lastPercent[0] = percent;
                             }
-                        }
+                        });
                     }
+                }
+                if (!isExtractFalse) {
+                    org.levimc.launcher.core.minecraft.GamePackageManager.recordImportedLibraries(
+                            context, dataDirName, getApkVersionName(apkFile), apkFiles);
                 }
 
                 callback.onRepairProgress(PROGRESS_FINALIZING);

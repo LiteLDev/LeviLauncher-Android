@@ -8,13 +8,17 @@ import android.content.pm.PackageManager;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
+import org.levimc.launcher.core.minecraft.MinecraftLauncher;
 
 public class ApkUtils {
     public interface LibExtractProgressCallback {
@@ -127,29 +131,62 @@ public class ApkUtils {
     public static void unzipLibsToSystemAbi(File libBaseDir, ZipInputStream zis, LibExtractProgressCallback callback) throws IOException {
         ZipEntry entry;
         while ((entry = zis.getNextEntry()) != null) {
-            String name = entry.getName();
-            if (name.startsWith("lib/") && !entry.isDirectory()) {
-                String[] parts = name.split("/");
-                if (parts.length < 3) continue;
-                String abi = parts[1];
-                String systemAbi = abiToSystemLibDir(abi);
-                String soName = parts[2];
-                File outFile = new File(libBaseDir, systemAbi + "/" + soName);
-                File parent = outFile.getParentFile();
-                if (!parent.exists()) parent.mkdirs();
-                try (FileOutputStream fos = new FileOutputStream(outFile)) {
-                    byte[] buffer = new byte[131072];
-                    int len;
-                    while ((len = zis.read(buffer)) != -1) {
-                        fos.write(buffer, 0, len);
-                        if (callback != null) {
-                            callback.onBytesExtracted(len);
-                        }
-                    }
-                }
-                NativeImageGuard.processIfNeeded(outFile);
-            }
+            if (isNativeLibrary(entry)) extractNativeLibrary(libBaseDir, entry, zis, callback);
             zis.closeEntry();
+        }
+    }
+
+    public static void unzipLibsToSystemAbi(File libBaseDir, ZipFile zip, LibExtractProgressCallback callback) throws IOException {
+        Enumeration<? extends ZipEntry> entries = zip.entries();
+        while (entries.hasMoreElements()) {
+            ZipEntry entry = entries.nextElement();
+            if (!isNativeLibrary(entry)) continue;
+            try (InputStream input = zip.getInputStream(entry)) {
+                extractNativeLibrary(libBaseDir, entry, input, callback);
+            }
+        }
+    }
+
+    private static boolean isNativeLibrary(ZipEntry entry) {
+        if (entry.isDirectory()) return false;
+        String[] parts = entry.getName().split("/", -1);
+        return parts.length == 3 && "lib".equals(parts[0])
+                && !parts[1].isEmpty() && !"..".equals(parts[1]) && !".".equals(parts[1])
+                && parts[2].endsWith(".so");
+    }
+
+    private static void extractNativeLibrary(File root, ZipEntry entry, InputStream input,
+                                              LibExtractProgressCallback callback) throws IOException {
+        String[] parts = entry.getName().split("/");
+        File output = new File(root, abiToSystemLibDir(parts[1]) + "/" + parts[2]);
+        File parent = output.getParentFile();
+        if (!parent.isDirectory() && !parent.mkdirs()) throw new IOException("Failed to create " + parent);
+        File staged = new File(parent, output.getName() + ".tmp");
+        if (staged.exists() && !staged.delete()) throw new IOException("Failed to replace " + staged);
+        try {
+            long copied = 0;
+            try (FileOutputStream stream = new FileOutputStream(staged)) {
+                byte[] buffer = new byte[256 * 1024];
+                int count;
+                while ((count = input.read(buffer)) != -1) {
+                    stream.write(buffer, 0, count);
+                    copied += count;
+                    if (callback != null) callback.onBytesExtracted(count);
+                }
+            }
+            if (copied == 0 || (entry.getSize() >= 0 && copied != entry.getSize())) {
+                throw new IOException("Incomplete native library: " + entry.getName());
+            }
+            if (MinecraftLauncher.getRuntimeAbi().equals(parts[1])) {
+                NativeImageGuard.publishStagedImage(staged, output);
+            } else {
+                if (!staged.setReadOnly()) throw new IOException("Failed to protect " + staged);
+                Files.move(staged.toPath(), output.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (IOException error) {
+            throw new IOException("Failed to prepare " + entry.getName() + ": " + error.getMessage(), error);
+        } finally {
+            staged.delete();
         }
     }
 }

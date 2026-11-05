@@ -32,6 +32,14 @@ public class PreloaderInput {
     public static native boolean nativeIsShowingMenu();
     public static native boolean nativeShouldForceGlobalModMenu();
     public static native void nativeConfigureSignatureRules(String rulesPath, String minecraftVersion);
+    private static native void nativePrepareRuntime();
+
+    public static void prepareRuntime() {
+        try {
+            nativePrepareRuntime();
+        } catch (UnsatisfiedLinkError ignored) {
+        }
+    }
 
     public static void configureSignatureRules(File rulesFile, String minecraftVersion) {
         try {

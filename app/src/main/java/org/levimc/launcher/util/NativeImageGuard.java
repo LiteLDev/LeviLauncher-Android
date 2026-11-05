@@ -2,9 +2,11 @@ package org.levimc.launcher.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class NativeImageGuard {
@@ -38,6 +40,37 @@ public final class NativeImageGuard {
         return process(soFile, true);
     }
 
+    public static boolean isPrepared(File file) {
+        if (file == null || !file.isFile() || file.length() == 0) return false;
+        FileState state = FileState.from(file);
+        return state.equals(CLEAN_FILES.get(file.getAbsolutePath())) || state.equals(readCleanMarker(file));
+    }
+
+    public static void publishStagedImage(File stagedFile, File output) throws IOException {
+        if (!stagedFile.isFile() || stagedFile.length() == 0) {
+            throw new IOException("Native library is empty: " + output.getName());
+        }
+        if (!NativeBridgeHelper.ensureGxCoreLoaded()) {
+            throw new IOException("Failed to load native image preparation");
+        }
+        if (!NativeBridgeHelper.rewriteImage(stagedFile.getAbsolutePath(), stagedFile.getAbsolutePath())) {
+            throw new IOException("Failed to prepare native library: " + output.getName());
+        }
+        try (RandomAccessFile file = new RandomAccessFile(stagedFile, "rw")) {
+            file.getFD().sync();
+        }
+        if (!stagedFile.setReadOnly()) {
+            throw new IOException("Failed to keep native library read-only: " + output.getName());
+        }
+        try {
+            Files.move(stagedFile.toPath(), output.toPath(),
+                    StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        } catch (AtomicMoveNotSupportedException error) {
+            Files.move(stagedFile.toPath(), output.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
+        markClean(output);
+    }
+
     private static boolean process(File soFile, boolean ignoreMarker) {
         if (soFile == null || !soFile.isFile() || soFile.length() == 0) {
             return false;
@@ -45,19 +78,22 @@ public final class NativeImageGuard {
         if (!NativeBridgeHelper.ensureGxCoreLoaded()) {
             return false;
         }
-        if (ignoreMarker) {
-            CLEAN_FILES.remove(soFile.getAbsolutePath());
-            clearCleanMarker(soFile);
-        } else if (!shouldProcess(soFile)) {
-            return true;
-        }
-
-        if (!scan(soFile)) {
-            markClean(soFile);
-            return true;
-        }
         try {
-            ensureWritable(soFile);
+            String path = soFile.getAbsolutePath();
+            if (ignoreMarker) {
+                CLEAN_FILES.remove(path);
+                clearCleanMarker(soFile);
+            } else {
+                FileState state = FileState.from(soFile);
+                if (state.equals(CLEAN_FILES.get(path)) || state.equals(readCleanMarker(soFile))) {
+                    CLEAN_FILES.put(path, state);
+                    return true;
+                }
+            }
+            if (!scan(soFile)) {
+                markClean(soFile);
+                return true;
+            }
             File tempFile = new File(soFile.getAbsolutePath() + ".img.tmp");
             if (tempFile.exists() && !tempFile.delete()) {
                 throw new IOException("Failed to delete stale temp file: " + tempFile.getAbsolutePath());
@@ -99,16 +135,6 @@ public final class NativeImageGuard {
             }
         }
         return count;
-    }
-
-    private static void ensureWritable(File file) throws IOException {
-        File parent = file.getParentFile();
-        if (parent != null && !parent.exists() && !parent.mkdirs()) {
-            throw new IOException("Failed to create parent directory: " + parent.getAbsolutePath());
-        }
-        if (file.exists() && !file.setWritable(true, true) && !file.canWrite()) {
-            throw new IOException("Failed to make file writable: " + file.getAbsolutePath());
-        }
     }
 
     private static boolean scan(File soFile) {

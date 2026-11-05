@@ -12,12 +12,12 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
 import org.levimc.launcher.core.minecraft.MinecraftLauncher;
+import org.levimc.launcher.core.minecraft.GamePackageManager;
 import org.levimc.launcher.core.versions.VersionProfileMetadataStore;
 
 import java.io.BufferedInputStream;
 import java.io.FilterInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -173,6 +173,7 @@ public class ApkInstaller {
                 extractNativeLibsWithProgress(apkFilesToExtract, libTargetDir);
 
                 String versionName = extractVersionName(apkOrApksUri, baseDir, dirName);
+                GamePackageManager.recordImportedLibraries(context, dirName, versionName, apkFilesToExtract);
                 postProgress(PROGRESS_METADATA_DONE);
                 writeProfileMetadata(metadataDir, dirName, versionName);
 
@@ -247,9 +248,8 @@ public class ApkInstaller {
 
         long[] extractedBytes = {0};
         for (File apkFile : apkFiles) {
-            try (InputStream is = new FileInputStream(apkFile);
-                 ZipInputStream zis = new ZipInputStream(new BufferedInputStream(is))) {
-                ApkUtils.unzipLibsToSystemAbi(libTargetDir, zis, bytesExtracted -> {
+            try (ZipFile zip = new ZipFile(apkFile)) {
+                ApkUtils.unzipLibsToSystemAbi(libTargetDir, zip, bytesExtracted -> {
                     extractedBytes[0] += bytesExtracted;
                     postProgressFromBytes(extractedBytes[0], totalLibBytes, PROGRESS_COPY_DONE, PROGRESS_LIBS_DONE);
                 });
