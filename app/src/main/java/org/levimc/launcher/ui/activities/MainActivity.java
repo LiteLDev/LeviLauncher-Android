@@ -102,7 +102,7 @@ import okhttp3.OkHttpClient;
     private ContentManager contentManager;
     private TextView worldsCountText;
     private TextView resourcePacksCountText;
-    private TextView behaviorPacksCountText;
+    private TextView skinPacksCountText;
 
     private com.microsoft.xbox.idp.toolkit.CircleImageView accountAvatar;
     private View accountAvatarContainer;
@@ -722,20 +722,14 @@ import okhttp3.OkHttpClient;
     private void initContentManagementSection() {
         worldsCountText = binding.contentWorldsCount;
         resourcePacksCountText = binding.contentResourcePacksCount;
-        behaviorPacksCountText = binding.contentBehaviorPacksCount;
+        skinPacksCountText = binding.contentSkinPacksCount;
 
         contentManager = ContentManager.getInstance(this);
-        contentManager.getWorldsLiveData().observe(this, worlds -> {
-            if (worldsCountText != null)
-                worldsCountText.setText(String.valueOf(worlds != null ? worlds.size() : 0));
-        });
-        contentManager.getResourcePacksLiveData().observe(this, packs -> {
-            if (resourcePacksCountText != null)
-                resourcePacksCountText.setText(String.valueOf(packs != null ? packs.size() : 0));
-        });
-        contentManager.getBehaviorPacksLiveData().observe(this, packs -> {
-            if (behaviorPacksCountText != null)
-                behaviorPacksCountText.setText(String.valueOf(packs != null ? packs.size() : 0));
+        contentManager.getCountsLiveData().observe(this, counts -> {
+            if (counts == null) return;
+            worldsCountText.setText(String.valueOf(counts.worlds));
+            resourcePacksCountText.setText(String.valueOf(counts.resourcePacks));
+            skinPacksCountText.setText(String.valueOf(counts.skinPacks));
         });
 
         binding.contentViewAll.setOnClickListener(v -> openContentManagement());
@@ -743,7 +737,7 @@ import okhttp3.OkHttpClient;
 
         binding.contentWorldsRow.setOnClickListener(v -> openContentList(ContentListActivity.TYPE_WORLDS));
         binding.contentResourcePacksRow.setOnClickListener(v -> openContentList(ContentListActivity.TYPE_RESOURCE_PACKS));
-        binding.contentBehaviorPacksRow.setOnClickListener(v -> openContentList(ContentListActivity.TYPE_BEHAVIOR_PACKS));
+        binding.contentSkinPacksRow.setOnClickListener(v -> openContentList(ContentListActivity.TYPE_SKIN_PACKS));
 
         refreshContentCounts();
     }
@@ -772,13 +766,14 @@ import okhttp3.OkHttpClient;
                 storageType
         );
 
-        contentManager.setStorageDirectories(
+        contentManager.configureStorageDirectories(
                 new java.io.File(baseDir, "minecraftWorlds"),
                 new java.io.File(baseDir, "resource_packs"),
                 new java.io.File(baseDir, "behavior_packs"),
                 new java.io.File(baseDir, "skin_packs"),
                 new java.io.File(baseDir, "Screenshots"),
                 new java.io.File(baseDir, "minecraftpe"));
+        contentManager.refreshCounts();
     }
 
     private void openContentList(int contentType) {

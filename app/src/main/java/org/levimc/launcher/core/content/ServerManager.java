@@ -10,18 +10,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ServerManager {
-    private File minecraftPeDir;
+    private volatile File minecraftPeDir;
 
     public void setMinecraftPeDirectory(File directory) {
         this.minecraftPeDir = directory;
     }
 
     public File getServerListFile() {
-        if (minecraftPeDir == null) return null;
-        return new File(minecraftPeDir, "external_servers.txt");
+        File root = minecraftPeDir;
+        if (root == null) return null;
+        return new File(root, "external_servers.txt");
     }
 
-    public List<ServerItem> getServers() {
+    public synchronized List<ServerItem> getServers() {
         List<ServerItem> items = new ArrayList<>();
         File serverFile = getServerListFile();
         if (serverFile == null || !serverFile.exists()) return items;
@@ -47,8 +48,11 @@ public class ServerManager {
         return items;
     }
 
-    public boolean deleteServer(ServerItem serverItem) {
-        File serverFile = getServerListFile();
+    public synchronized boolean deleteServer(ServerItem serverItem) {
+        return deleteServer(serverItem, getServerListFile());
+    }
+
+    synchronized boolean deleteServer(ServerItem serverItem, File serverFile) {
         if (serverFile == null || !serverFile.exists()) return false;
 
         List<String> lines = new ArrayList<>();
@@ -88,8 +92,11 @@ public class ServerManager {
         return false;
     }
 
-    public boolean addServer(ServerItem serverItem) {
-        File file = getServerListFile();
+    public synchronized boolean addServer(ServerItem serverItem) {
+        return addServer(serverItem, getServerListFile());
+    }
+
+    synchronized boolean addServer(ServerItem serverItem, File file) {
         if (file == null) return false;
 
         List<String> lines = new ArrayList<>();

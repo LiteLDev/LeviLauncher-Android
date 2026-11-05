@@ -2,420 +2,178 @@ package org.levimc.launcher.core.content;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
-
 import org.levimc.launcher.core.versions.GameVersion;
 import org.levimc.launcher.util.LauncherStorage;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
 
 public class WorldManager {
-    private static final String TAG = "WorldManager";
-    private static final int BUFFER_SIZE = 8192;
-    
     private final Context context;
-    private final ExecutorService executor;
-    private File worldsDirectory;
-    
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private volatile File worldsDirectory;
+    private volatile ConcurrentHashMap<String, CachedWorld> metadata = new ConcurrentHashMap<>();
+
+    private static final class CachedWorld {
+        final long levelModified;
+        final long levelLength;
+        final long nameModified;
+        final long nameLength;
+        final long directoryModified;
+        final WorldItem item;
+        CachedWorld(File directory, long levelModified, long levelLength,
+                    long nameModified, long nameLength, long directoryModified) {
+            this.levelModified = levelModified;
+            this.levelLength = levelLength;
+            this.nameModified = nameModified;
+            this.nameLength = nameLength;
+            this.directoryModified = directoryModified;
+            item = new WorldItem(directory.getName(), directory);
+            item.getStablePath();
+        }
+    }
+
     public interface WorldOperationCallback {
         void onSuccess(String message);
         void onError(String error);
         void onProgress(int progress);
     }
 
-    public WorldManager(Context context) {
-        this.context = context;
-        this.executor = Executors.newSingleThreadExecutor();
-    }
+    public WorldManager(Context context) { this.context = context.getApplicationContext(); }
 
     public void setCurrentVersion(GameVersion version) {
-        if (version != null && version.versionDir != null) {
-            this.worldsDirectory = new File(
-                    LauncherStorage.getProfileGameDataDir(context, version.getStorageProfileId()),
-                    "minecraftWorlds"
-            );
-            if (!worldsDirectory.exists()) {
-                worldsDirectory.mkdirs();
-            }
-        } else {
-            this.worldsDirectory = null;
-        }
+        worldsDirectory = version != null && version.versionDir != null
+                ? new File(LauncherStorage.getProfileGameDataDir(context, version.getStorageProfileId()), "minecraftWorlds") : null;
     }
 
     public void setWorldsDirectory(File directory) {
-        this.worldsDirectory = directory;
-        if (worldsDirectory != null && !worldsDirectory.exists()) {
-            worldsDirectory.mkdirs();
-        }
+        if (!java.util.Objects.equals(worldsDirectory, directory)) metadata = new ConcurrentHashMap<>();
+        worldsDirectory = directory;
     }
 
     public List<WorldItem> getWorlds() {
-        List<WorldItem> worlds = new ArrayList<>();
-        
-        if (worldsDirectory == null || !worldsDirectory.exists()) {
-            return worlds;
+        File root = worldsDirectory;
+        ConcurrentHashMap<String, CachedWorld> cache = metadata;
+        List<WorldItem> result = new ArrayList<>();
+        File[] files = root == null ? null : root.listFiles();
+        if (files == null) return result;
+        java.util.Set<String> live = new java.util.HashSet<>();
+        for (File file : files) {
+            if (!ContentFiles.visible(file) || !new File(file, "level.dat").isFile()) continue;
+            live.add(file.getAbsolutePath());
+            File level = new File(file, "level.dat");
+            File name = new File(file, "levelname.txt");
+            long lm = level.lastModified(), ll = level.length(), nm = name.lastModified(), nl = name.length(), dm = file.lastModified();
+            CachedWorld cached = cache.compute(file.getAbsolutePath(), (key, old) -> old != null
+                    && old.levelModified == lm && old.levelLength == ll && old.nameModified == nm
+                    && old.nameLength == nl && old.directoryModified == dm ? old
+                    : new CachedWorld(file, lm, ll, nm, nl, dm));
+            if (cached.item.isValid()) result.add(new WorldItem(cached.item));
         }
-
-        File[] worldDirs = worldsDirectory.listFiles(File::isDirectory);
-        if (worldDirs != null) {
-            for (File worldDir : worldDirs) {
-                WorldItem world = new WorldItem(worldDir.getName(), worldDir);
-                if (world.isValid()) {
-                    worlds.add(world);
-                }
-            }
-        }
-
-        return worlds;
+        cache.entrySet().removeIf(entry -> java.util.Objects.equals(entry.getValue().item.getFile().getParentFile(), root)
+                && !live.contains(entry.getKey()));
+        return result;
     }
 
-    public void importWorld(Uri worldUri, WorldOperationCallback callback) {
-        if (executor.isShutdown()) {
-            callback.onError("WorldManager has been shut down");
-            return;
-        }
-        executor.execute(() -> {
-            try {
-                if (worldsDirectory == null) {
-                    callback.onError("No version selected");
-                    return;
-                }
+    int countWorlds(File directory) {
+        File[] files = directory == null ? null : directory.listFiles();
+        if (files == null) return 0;
+        int count = 0;
+        for (File file : files) if (ContentFiles.visible(file) && new File(file, "level.dat").isFile()) count++;
+        return count;
+    }
 
-                InputStream inputStream = context.getContentResolver().openInputStream(worldUri);
-                if (inputStream == null) {
-                    callback.onError("Cannot open world file");
-                    return;
-                }
-
-                String tempDirName = "temp_world_" + System.currentTimeMillis();
-                File tempDir = new File(context.getCacheDir(), tempDirName);
-                tempDir.mkdirs();
-                
-                File tempZip = new File(context.getCacheDir(), tempDirName + "_zip.mcworld");
-
-                try {
-                    copyStreamToFile(inputStream, tempZip);
-                    extractZip(tempZip, tempDir, callback);
-
-                    File worldDir = findWorldDirectory(tempDir);
-                    if (worldDir == null) {
-                        callback.onError("Invalid world file - no world data found");
-                        return;
-                    }
-
-                    String worldName = generateUniqueWorldName(worldDir.getName(), worldsDirectory);
-                    File targetDir = new File(worldsDirectory, worldName);
-
-                    copyDirectory(worldDir, targetDir);
-                    
-                    callback.onSuccess("World imported successfully");
-                    
-                } finally {
-                    deleteDirectory(tempDir);
-                    tempZip.delete();
-                    inputStream.close();
-                }
-
-            } catch (Exception e) {
-                Log.e(TAG, "Failed to import world", e);
-                callback.onError("Import failed: " + e.getMessage());
-            }
+    public void importWorld(Uri uri, WorldOperationCallback callback) {
+        File directory = worldsDirectory;
+        execute(callback, () -> {
+            if (directory == null) throw new IOException("No version selected");
+            ContentArchive.importUri(context, uri, directory, null, null, null, true, callback::onProgress);
+            return "World imported successfully";
         });
     }
 
-    public void exportWorld(WorldItem world, Uri exportUri, WorldOperationCallback callback) {
-        if (executor.isShutdown()) {
-            callback.onError("WorldManager has been shut down");
-            return;
-        }
-        executor.execute(() -> {
-            try {
-                OutputStream outputStream = context.getContentResolver().openOutputStream(exportUri);
-                if (outputStream == null) {
-                    callback.onError("Cannot create export file");
-                    return;
-                }
-
-                try {
-                    createWorldZip(world.getFile(), outputStream, callback);
-                    callback.onSuccess("World exported successfully");
-                } finally {
-                    outputStream.close();
-                }
-
-            } catch (Exception e) {
-                Log.e(TAG, "Failed to export world", e);
-                callback.onError("Export failed: " + e.getMessage());
+    public void exportWorld(WorldItem world, Uri uri, WorldOperationCallback callback) {
+        execute(callback, () -> {
+            try (OutputStream output = context.getContentResolver().openOutputStream(uri)) {
+                if (output == null) throw new IOException("Cannot create export file");
+                ContentFiles.zip(world.getFile(), output);
             }
+            return "World exported successfully";
         });
     }
 
     public void deleteWorld(WorldItem world, WorldOperationCallback callback) {
-        if (executor.isShutdown()) {
-            callback.onError("WorldManager has been shut down");
-            return;
-        }
-        executor.execute(() -> {
-            try {
-                createBackup(world);
-                
-                if (deleteDirectory(world.getFile())) {
-                    callback.onSuccess("World deleted successfully");
-                } else {
-                    callback.onError("Failed to delete world");
-                }
-
-            } catch (Exception e) {
-                Log.e(TAG, "Failed to delete world", e);
-                callback.onError("Delete failed: " + e.getMessage());
-            }
+        execute(callback, () -> {
+            createBackup(world);
+            ContentFiles.deleteTree(world.getFile());
+            metadata.remove(world.getFile().getAbsolutePath());
+            return "World deleted successfully";
         });
     }
 
     public void backupWorld(WorldItem world, WorldOperationCallback callback) {
-        if (executor.isShutdown()) {
-            callback.onError("WorldManager has been shut down");
-            return;
-        }
-        executor.execute(() -> {
-            try {
-                String backupPath = createBackup(world);
-                callback.onSuccess("Backup created: " + backupPath);
-
-            } catch (Exception e) {
-                Log.e(TAG, "Failed to backup world", e);
-                callback.onError("Backup failed: " + e.getMessage());
-            }
-        });
-    }
-
-    private void extractZip(File zipFile, File targetDir, WorldOperationCallback callback) throws IOException {
-        try (java.util.zip.ZipFile zip = new java.util.zip.ZipFile(zipFile)) {
-            java.util.Enumeration<? extends ZipEntry> entries = zip.entries();
-            byte[] buffer = new byte[BUFFER_SIZE];
-            
-            while (entries.hasMoreElements()) {
-                ZipEntry entry = entries.nextElement();
-                File entryFile = new File(targetDir, entry.getName());
-
-                if (!entryFile.getCanonicalPath().startsWith(targetDir.getCanonicalPath())) {
-                    continue;
-                }
-                
-                if (entry.isDirectory()) {
-                    entryFile.mkdirs();
-                } else {
-                    entryFile.getParentFile().mkdirs();
-                    try (InputStream is = zip.getInputStream(entry);
-                         FileOutputStream fos = new FileOutputStream(entryFile)) {
-                        int len;
-                        while ((len = is.read(buffer)) > 0) {
-                            fos.write(buffer, 0, len);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private File findWorldDirectory(File searchDir) {
-        File levelDat = new File(searchDir, "level.dat");
-        if (levelDat.exists()) {
-            return searchDir;
-        }
-        
-        File[] files = searchDir.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    File levelDatInSubdir = new File(file, "level.dat");
-                    if (levelDatInSubdir.exists()) {
-                        return file;
-                    }
-                    File found = findWorldDirectory(file);
-                    if (found != null) {
-                        return found;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    private String generateUniqueWorldName(String baseName, File directory) {
-        String worldName = baseName;
-        int counter = 1;
-        
-        while (new File(directory, worldName).exists()) {
-            worldName = baseName + "_" + counter;
-            counter++;
-        }
-        
-        return worldName;
-    }
-
-    private void copyStreamToFile(InputStream input, File output) throws IOException {
-        try (FileOutputStream fos = new FileOutputStream(output)) {
-            byte[] buffer = new byte[BUFFER_SIZE];
-            int len;
-            while ((len = input.read(buffer)) > 0) {
-                fos.write(buffer, 0, len);
-            }
-        }
-    }
-
-    private void copyDirectory(File source, File target) throws IOException {
-        if (source.isDirectory()) {
-            if (!target.exists()) {
-                target.mkdirs();
-            }
-            
-            File[] files = source.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    copyDirectory(file, new File(target, file.getName()));
-                }
-            }
-        } else {
-            copyFile(source, target);
-        }
-    }
-
-    private void copyFile(File source, File target) throws IOException {
-        target.getParentFile().mkdirs();
-        try (FileInputStream fis = new FileInputStream(source);
-             FileOutputStream fos = new FileOutputStream(target)) {
-            
-            byte[] buffer = new byte[BUFFER_SIZE];
-            int len;
-            while ((len = fis.read(buffer)) > 0) {
-                fos.write(buffer, 0, len);
-            }
-        }
-    }
-
-    private void createWorldZip(File worldDir, OutputStream outputStream, WorldOperationCallback callback) throws IOException {
-        ZipOutputStream zos = new ZipOutputStream(outputStream);
-        zipDirectory(worldDir, "", zos);
-        zos.close();
-    }
-
-    private void zipDirectory(File dir, String basePath, ZipOutputStream zos) throws IOException {
-        File[] files = dir.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                String entryPath = basePath.isEmpty() ? file.getName() : basePath + "/" + file.getName();
-                if (file.isDirectory()) {
-                    zipDirectory(file, entryPath, zos);
-                } else {
-                    ZipEntry entry = new ZipEntry(entryPath);
-                    zos.putNextEntry(entry);
-                    
-                    try (FileInputStream fis = new FileInputStream(file)) {
-                        byte[] buffer = new byte[BUFFER_SIZE];
-                        int len;
-                        while ((len = fis.read(buffer)) > 0) {
-                            zos.write(buffer, 0, len);
-                        }
-                    }
-                    zos.closeEntry();
-                }
-            }
-        }
+        execute(callback, () -> "Backup created: " + createBackup(world));
     }
 
     private String createBackup(WorldItem world) throws IOException {
-        File backupDir = LauncherStorage.getWorldBackupsDir(context);
-        backupDir.mkdirs();
-        
-        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        String backupName = world.getName() + "_" + timestamp + ".mcworld";
-        File backupFile = new File(backupDir, backupName);
-        
-        try (FileOutputStream fos = new FileOutputStream(backupFile)) {
-            createWorldZip(world.getFile(), fos, null);
+        File directory = LauncherStorage.getWorldBackupsDir(context);
+        ContentFiles.ensureDirectory(directory);
+        String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss_SSS", Locale.ROOT).format(new Date());
+        String name = world.getName().replaceAll("[\\\\/:*?\"<>|]", "_");
+        File target = ResourcePackManager.uniqueTarget(directory, name + '_' + timestamp + ".mcworld");
+        File staged = File.createTempFile("world_backup_", ".tmp", directory);
+        try {
+            try (OutputStream output = new FileOutputStream(staged)) { ContentFiles.zip(world.getFile(), output); }
+            Files.move(staged.toPath(), target.toPath());
+            return target.getAbsolutePath();
+        } finally {
+            Files.deleteIfExists(staged.toPath());
         }
-        
-        return backupFile.getAbsolutePath();
     }
 
-    private boolean deleteDirectory(File dir) {
-        if (dir == null || !dir.exists()) return false;
-        
-        File[] files = dir.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    deleteDirectory(file);
-                } else {
-                    file.delete();
-                }
+    public void transferWorld(WorldItem world, File directory, WorldOperationCallback callback) {
+        execute(callback, () -> {
+            if (directory == null) throw new IOException("Target directory not available");
+            File source = world.getFile();
+            if (!source.isDirectory()) throw new IOException("Source world not found");
+            if (source.getParentFile().getCanonicalFile().equals(directory.getCanonicalFile())) {
+                throw new IOException("Content is already in this location");
             }
-        }
-        return dir.delete();
+            ContentFiles.transfer(source, ResourcePackManager.uniqueTarget(directory, source.getName()));
+            metadata.remove(source.getAbsolutePath());
+            return "World transferred successfully";
+        });
     }
 
-    public void shutdown() {
-        executor.shutdown();
-    }
+    private interface Operation { String run() throws Exception; }
 
-    public void transferWorld(WorldItem world, File targetDirectory, WorldOperationCallback callback) {
+    private void execute(WorldOperationCallback callback, Operation operation) {
         if (executor.isShutdown()) {
             callback.onError("WorldManager has been shut down");
             return;
         }
         executor.execute(() -> {
             try {
-                if (targetDirectory == null) {
-                    callback.onError("Target directory not available");
-                    return;
-                }
-
-                if (!targetDirectory.exists()) {
-                    targetDirectory.mkdirs();
-                }
-
-                File sourceDir = world.getFile();
-                if (sourceDir == null || !sourceDir.exists()) {
-                    callback.onError("Source world not found");
-                    return;
-                }
-
-                if (sourceDir.getParentFile().equals(targetDirectory)) {
-                    callback.onError("Content is already in this location");
-                    return;
-                }
-
-                String worldName = generateUniqueWorldName(sourceDir.getName(), targetDirectory);
-                File targetDir = new File(targetDirectory, worldName);
-
-                copyDirectory(sourceDir, targetDir);
-                if (!deleteDirectory(sourceDir)) {
-                    callback.onError("World copied, but the original could not be removed");
-                    return;
-                }
-
-                callback.onSuccess("World transferred successfully");
-
-            } catch (Exception e) {
-                Log.e(TAG, "Failed to transfer world", e);
-                callback.onError("Transfer failed: " + e.getMessage());
+                callback.onProgress(0);
+                String message = operation.run();
+                callback.onProgress(100);
+                callback.onSuccess(message);
+            } catch (Exception error) {
+                callback.onError(error.getMessage() == null ? "Content operation failed" : error.getMessage());
             }
         });
     }
+
+    public void shutdown() { executor.shutdown(); }
 }

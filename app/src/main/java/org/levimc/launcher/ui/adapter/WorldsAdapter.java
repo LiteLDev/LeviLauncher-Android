@@ -131,10 +131,21 @@ public class WorldsAdapter extends RecyclerView.Adapter<WorldsAdapter.WorldViewH
     @Override
     public void onBindViewHolder(@NonNull WorldViewHolder holder, int position) {
         WorldItem world = worlds.get(position);
+        holder.boundItem = world;
         boolean selected = selectedPaths.contains(pathOf(world));
 
         holder.worldName.setText(world.getWorldName());
         holder.worldDescription.setText(holder.itemView.getContext().getString(R.string.world_meta, world.getGameMode(), world.getFormattedSize()));
+        java.lang.ref.WeakReference<WorldViewHolder> sizeHolder = new java.lang.ref.WeakReference<>(holder);
+        world.loadSizeAsync(() -> {
+            WorldViewHolder bound = sizeHolder.get();
+            return bound != null && bound.boundItem == world;
+        }, () -> {
+            WorldViewHolder bound = sizeHolder.get();
+            if (bound != null && bound.boundItem == world) {
+                bound.worldDescription.setText(bound.itemView.getContext().getString(R.string.world_meta, world.getGameMode(), world.getFormattedSize()));
+            }
+        });
         holder.worldLastPlayed.setText(holder.itemView.getContext().getString(R.string.world_last_played, world.getFormattedLastModified()));
         holder.itemView.setActivated(selected);
         holder.editButton.setVisibility(selectionMode ? View.GONE : View.VISIBLE);
@@ -164,6 +175,12 @@ public class WorldsAdapter extends RecyclerView.Adapter<WorldsAdapter.WorldViewH
         PersonalizationManager pm = new PersonalizationManager(holder.itemView.getContext());
         pm.applyGlassToView(holder.itemView);
         pm.applyAccentToView(holder.itemView, holder.itemView.getContext());
+    }
+
+    @Override
+    public void onViewRecycled(@NonNull WorldViewHolder holder) {
+        holder.boundItem = null;
+        super.onViewRecycled(holder);
     }
 
     private void showOverflow(View anchor, WorldItem world) {
@@ -201,13 +218,7 @@ public class WorldsAdapter extends RecyclerView.Adapter<WorldsAdapter.WorldViewH
     }
 
     private String pathOf(WorldItem world) {
-        File file = world != null ? world.getFile() : null;
-        if (file == null) return "";
-        try {
-            return file.getCanonicalPath();
-        } catch (Exception ignored) {
-            return file.getAbsolutePath();
-        }
+        return world == null ? "" : world.getStablePath();
     }
 
     private int dp(View view, int value) {
@@ -220,6 +231,7 @@ public class WorldsAdapter extends RecyclerView.Adapter<WorldsAdapter.WorldViewH
     }
 
     static class WorldViewHolder extends RecyclerView.ViewHolder {
+        volatile WorldItem boundItem;
         final ImageView worldIcon;
         final TextView worldName;
         final TextView worldLastPlayed;

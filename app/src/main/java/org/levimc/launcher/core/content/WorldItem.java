@@ -25,6 +25,15 @@ public class WorldItem extends ContentItem {
         loadWorldInfo();
     }
 
+    WorldItem(WorldItem source) {
+        super(source.name, source.file);
+        identityPath = source.getStablePath();
+        worldName = source.worldName;
+        gameMode = source.gameMode;
+        lastPlayed = source.lastPlayed;
+        isValid = source.isValid;
+    }
+
     @Override
     public String getType() {
         return "World";
@@ -78,7 +87,7 @@ public class WorldItem extends ContentItem {
         if (levelNameFile.exists()) {
             try (FileInputStream fis = new FileInputStream(levelNameFile)) {
                 byte[] data = new byte[(int) levelNameFile.length()];
-                fis.read(data);
+                new java.io.DataInputStream(fis).readFully(data);
                 worldName = new String(data, StandardCharsets.UTF_8).trim();
                 if (!worldName.isEmpty()) {
                     this.name = worldName;
@@ -89,31 +98,15 @@ public class WorldItem extends ContentItem {
         }
 
         try {
-            BedrockNbtReader reader = new BedrockNbtReader();
-            NbtTag root = reader.readFile(levelDat);
-
-            if (root != null && root.getType() == NbtTag.TAG_COMPOUND) {
-                Map<String, NbtTag> compound = root.getCompound();
-
-                NbtTag gameModeTag = compound.get("GameType");
-                if (gameModeTag != null) {
-                    int gameModeInt = gameModeTag.getInt();
-                    gameMode = getGameModeName(gameModeInt);
-                }
-
-                if (worldName == null || worldName.isEmpty() || worldName.equals(file.getName())) {
-                    NbtTag levelNameTag = compound.get("LevelName");
-                    if (levelNameTag != null && levelNameTag.getType() == NbtTag.TAG_STRING) {
-                        String nbtName = levelNameTag.getString();
-                        if (nbtName != null && !nbtName.isEmpty()) {
-                            worldName = nbtName;
-                            this.name = worldName;
-                        }
-                    }
-                }
+            boolean needName = worldName == null || worldName.isEmpty() || worldName.equals(file.getName());
+            WorldMetadataReader.Summary summary = WorldMetadataReader.read(levelDat, needName);
+            if (summary.gameType != null) gameMode = getGameModeName(summary.gameType);
+            if (needName && summary.levelName != null && !summary.levelName.isEmpty()) {
+                worldName = summary.levelName;
+                name = worldName;
             }
-        } catch (Exception e) {
-            Log.w(TAG, "Failed to read level.dat for " + file.getName(), e);
+        } catch (IOException metadataError) {
+            loadFullWorldInfo(levelDat);
         }
 
         if (gameMode == null) {
@@ -121,6 +114,26 @@ public class WorldItem extends ContentItem {
         }
 
         lastPlayed = file.lastModified();
+    }
+
+    private void loadFullWorldInfo(File levelDat) {
+        try {
+            NbtTag root = new BedrockNbtReader().readFile(levelDat);
+            if (root == null || root.getType() != NbtTag.TAG_COMPOUND) return;
+            Map<String, NbtTag> compound = root.getCompound();
+            NbtTag mode = compound.get("GameType");
+            if (mode != null) gameMode = getGameModeName(mode.getInt());
+            if (worldName == null || worldName.isEmpty() || worldName.equals(file.getName())) {
+                NbtTag levelName = compound.get("LevelName");
+                if (levelName != null && levelName.getType() == NbtTag.TAG_STRING
+                        && levelName.getString() != null && !levelName.getString().isEmpty()) {
+                    worldName = levelName.getString();
+                    name = worldName;
+                }
+            }
+        } catch (Exception | LinkageError error) {
+            Log.w(TAG, "Failed to read level.dat for " + file.getName(), error);
+        }
     }
 
     private String getGameModeName(int gameType) {

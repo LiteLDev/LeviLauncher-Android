@@ -281,7 +281,8 @@ public class ContentManagementActivity extends BaseActivity {
                 minecraftPeDir = new File(gameDataDir, "minecraftpe");
         }
 
-        contentManager.setStorageDirectories(worldsDir, resourcePacksDir, behaviorPacksDir, skinPacksDir, screenshotsDir, minecraftPeDir);
+        contentManager.configureStorageDirectories(worldsDir, resourcePacksDir, behaviorPacksDir, skinPacksDir, screenshotsDir, minecraftPeDir);
+        contentManager.refreshCounts();
     }
 
     private void openOptionsEditor() {
