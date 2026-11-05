@@ -15,6 +15,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -35,9 +38,11 @@ final class BundledResourcePackInstaller {
 
     static int sync(List<Mod> mods, Set<String> loadedModIds, File... gameDataDirs) throws IOException {
         List<Pack> packs = discover(mods, loadedModIds);
+        for (Pack pack : packs) pack.sourceFingerprint = fingerprint(pack.source);
         IOException failure = null;
+        Set<String> visited = new HashSet<>();
         for (File gameDataDir : gameDataDirs) {
-            if (gameDataDir == null) continue;
+            if (gameDataDir == null || !visited.add(gameDataDir.getCanonicalPath())) continue;
             try {
                 syncRoot(gameDataDir, packs);
             } catch (IOException error) {
@@ -105,14 +110,19 @@ final class BundledResourcePackInstaller {
         File resourcePacksDir = new File(gameDataDir, "resource_packs");
         File behaviorPacksDir = new File(gameDataDir, "behavior_packs");
         File minecraftPeDir = new File(gameDataDir, "minecraftpe");
-        ensureDirectory(resourcePacksDir);
-        ensureDirectory(behaviorPacksDir);
-        ensureDirectory(minecraftPeDir);
-
         File stateFile = new File(minecraftPeDir, MANAGED_STATE);
         File legacyStateFile = new File(minecraftPeDir, LEGACY_STATE);
         List<ManagedPack> previous = readState(stateFile);
         if (previous.isEmpty()) previous = readState(legacyStateFile);
+        if (desired.isEmpty() && previous.isEmpty() && !stateFile.exists() && !legacyStateFile.exists()) return;
+        ensureDirectory(resourcePacksDir);
+        ensureDirectory(behaviorPacksDir);
+        ensureDirectory(minecraftPeDir);
+        Map<String, ManagedPack> previousByTarget = new LinkedHashMap<>();
+        for (ManagedPack pack : previous) {
+            previousByTarget.put(pack.type.name() + ':' + pack.targetName, pack);
+        }
+        Map<String, String> targetFingerprints = new LinkedHashMap<>();
         Set<String> desiredTargets = new HashSet<>();
         Set<String> managedResourceUuids = new HashSet<>();
         for (ManagedPack pack : previous) {
@@ -132,15 +142,24 @@ final class BundledResourcePackInstaller {
         for (Pack pack : desired) {
             File parent = packDirectory(pack.type, resourcePacksDir, behaviorPacksDir);
             File target = new File(parent, pack.targetName);
+            String key = pack.type.name() + ':' + pack.targetName;
+            ManagedPack cached = previousByTarget.get(key);
+            if (cached != null && target.isDirectory()
+                    && pack.sourceFingerprint.equals(cached.sourceFingerprint)
+                    && cached.targetFingerprint.equals(fingerprint(target))) {
+                targetFingerprints.put(key, cached.targetFingerprint);
+                continue;
+            }
             File staging = new File(parent, pack.targetName + ".levilauncher_tmp");
             deleteRecursively(staging);
             copyRecursively(pack.source, staging);
             deleteRecursively(target);
             moveReplace(staging, target);
+            targetFingerprints.put(key, fingerprint(target));
         }
 
         mergeGlobalResourcePacks(new File(minecraftPeDir, GLOBAL_RESOURCE_PACKS), managedResourceUuids, desired);
-        writeState(stateFile, desired);
+        writeState(stateFile, desired, targetFingerprints);
         if (legacyStateFile.isFile() && !legacyStateFile.delete()) {
             throw new IOException("Failed to remove legacy bundled-pack state");
         }
@@ -167,13 +186,19 @@ final class BundledResourcePackInstaller {
                 }
                 String target = object.get("target").getAsString();
                 if (!target.startsWith("levilauncher_") || !target.equals(new File(target).getName())) continue;
-                result.add(new ManagedPack(object.get("uuid").getAsString(), target, type));
+                String sourceFingerprint = object.has("source_fingerprint")
+                        ? object.get("source_fingerprint").getAsString() : "";
+                String targetFingerprint = object.has("target_fingerprint")
+                        ? object.get("target_fingerprint").getAsString() : "";
+                result.add(new ManagedPack(object.get("uuid").getAsString(), target, type,
+                        sourceFingerprint, targetFingerprint));
             }
         } catch (Exception ignored) {}
         return result;
     }
 
-    private static void writeState(File stateFile, List<Pack> desired) throws IOException {
+    private static void writeState(File stateFile, List<Pack> desired,
+                                   Map<String, String> targetFingerprints) throws IOException {
         JsonObject root = new JsonObject();
         JsonArray entries = new JsonArray();
         for (Pack pack : desired) {
@@ -183,6 +208,8 @@ final class BundledResourcePackInstaller {
             entry.addProperty("uuid", pack.uuid);
             entry.addProperty("target", pack.targetName);
             entry.add("version", pack.version.deepCopy());
+            entry.addProperty("source_fingerprint", pack.sourceFingerprint);
+            entry.addProperty("target_fingerprint", targetFingerprints.get(pack.type.name() + ':' + pack.targetName));
             entries.add(entry);
         }
         root.add("packs", entries);
@@ -221,12 +248,47 @@ final class BundledResourcePackInstaller {
     }
 
     private static void writeJsonAtomic(File target, JsonElement json) throws IOException {
+        if (target.isFile()) {
+            try (FileReader reader = new FileReader(target)) {
+                if (json.equals(JsonParser.parseReader(reader))) return;
+            } catch (Exception ignored) {}
+        }
         ensureDirectory(target.getParentFile());
         File temp = new File(target.getParentFile(), target.getName() + ".levilauncher_tmp");
         try (FileWriter writer = new FileWriter(temp, false)) {
             GSON.toJson(json, writer);
         }
         moveReplace(temp, target);
+    }
+
+    private static String fingerprint(File root) throws IOException {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            fingerprintTree(root, "", digest);
+            StringBuilder result = new StringBuilder(64);
+            for (byte value : digest.digest()) {
+                result.append(Character.forDigit((value >>> 4) & 15, 16));
+                result.append(Character.forDigit(value & 15, 16));
+            }
+            return result.toString();
+        } catch (NoSuchAlgorithmException error) {
+            throw new IOException(error);
+        }
+    }
+
+    private static void fingerprintTree(File file, String relative, MessageDigest digest) throws IOException {
+        if (file.isDirectory()) {
+            digest.update(("d:" + relative + '\n').getBytes(StandardCharsets.UTF_8));
+            File[] children = file.listFiles();
+            if (children == null) throw new IOException("Failed to list " + file);
+            java.util.Arrays.sort(children, (left, right) -> left.getName().compareTo(right.getName()));
+            for (File child : children) fingerprintTree(child, relative + '/' + child.getName(), digest);
+        } else if (file.isFile()) {
+            digest.update(("f:" + relative + '|' + file.length() + '|' + file.lastModified() + '\n')
+                    .getBytes(StandardCharsets.UTF_8));
+        } else {
+            throw new IOException("Missing bundled pack file: " + file);
+        }
     }
 
     private static void copyRecursively(File source, File target) throws IOException {
@@ -274,6 +336,7 @@ final class BundledResourcePackInstaller {
         final JsonArray version;
         final String targetName;
         final PackType type;
+        String sourceFingerprint;
 
         Pack(String modId, File source, String uuid, JsonArray version, String targetName, PackType type) {
             this.modId = modId;
@@ -289,11 +352,16 @@ final class BundledResourcePackInstaller {
         final String uuid;
         final String targetName;
         final PackType type;
+        final String sourceFingerprint;
+        final String targetFingerprint;
 
-        ManagedPack(String uuid, String targetName, PackType type) {
+        ManagedPack(String uuid, String targetName, PackType type,
+                    String sourceFingerprint, String targetFingerprint) {
             this.uuid = uuid;
             this.targetName = targetName;
             this.type = type;
+            this.sourceFingerprint = sourceFingerprint;
+            this.targetFingerprint = targetFingerprint;
         }
     }
 }

@@ -31,12 +31,39 @@ public class ResourcePackItem extends ContentItem {
     private PackType packType;
     private boolean isValid;
     private String uuid;
+    private String localizationLocale;
+    private File localizationFile;
+    private long localizationModified;
+    private long localizationLength;
+    private long localizationDirectoryModified;
+    private Map<String, String> localizationStrings;
 
     public ResourcePackItem(String name, File packFile, PackType packType) {
         super(name, packFile);
         this.packType = packType;
         this.rawPackName = name;
         loadPackInfo();
+    }
+
+    ResourcePackItem(ResourcePackItem source) {
+        super(source.name, source.file);
+        identityPath = source.getStablePath();
+        rawPackName = source.rawPackName;
+        rawDescription = source.rawDescription;
+        version = source.version;
+        packType = source.packType;
+        isValid = source.isValid;
+        uuid = source.uuid;
+        localizationLocale = source.localizationLocale;
+        localizationFile = source.localizationFile;
+        localizationModified = source.localizationModified;
+        localizationLength = source.localizationLength;
+        localizationDirectoryModified = source.localizationDirectoryModified;
+        localizationStrings = source.localizationStrings;
+    }
+
+    void prepareDisplayStrings() {
+        if (isLocalizationKey(rawPackName) || isLocalizationKey(rawDescription)) loadLangStrings();
     }
 
     @Override
@@ -118,17 +145,27 @@ public class ResourcePackItem extends ContentItem {
 
         try (FileInputStream fis = new FileInputStream(manifest)) {
             byte[] data = new byte[(int) manifest.length()];
-            fis.read(data);
+            new java.io.DataInputStream(fis).readFully(data);
             String jsonStr = new String(data, StandardCharsets.UTF_8);
-            parseManifest(jsonStr);
+            if (jsonStr.startsWith("\uFEFF")) jsonStr = jsonStr.substring(1);
+            parseManifest(ContentFiles.withoutComments(jsonStr));
         } catch (IOException e) {
             Log.e(TAG, "Failed to read manifest.json from directory", e);
             isValid = false;
         }
     }
 
-    private Map<String, String> loadLangStrings() {
-        Map<String, String> langStrings = new HashMap<>();
+    private synchronized Map<String, String> loadLangStrings() {
+        String localeKey = Locale.getDefault().toLanguageTag();
+        long directoryModified = new File(file, "texts").lastModified();
+        if (directoryModified == localizationDirectoryModified && localeKey.equals(localizationLocale) && localizationStrings != null
+                && (localizationFile == null || (localizationFile.lastModified() == localizationModified
+                    && localizationFile.length() == localizationLength))) return localizationStrings;
+        localizationLocale = localeKey;
+        localizationDirectoryModified = directoryModified;
+        localizationFile = null;
+        localizationStrings = new HashMap<>();
+        Map<String, String> langStrings = localizationStrings;
         
         File textsDir = new File(file, "texts");
         if (!textsDir.exists() || !textsDir.isDirectory()) {
@@ -211,6 +248,9 @@ public class ResourcePackItem extends ContentItem {
     }
 
     private void parseLangFile(File langFile, Map<String, String> langStrings) {
+        localizationFile = langFile;
+        localizationModified = langFile.lastModified();
+        localizationLength = langFile.length();
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(new FileInputStream(langFile), StandardCharsets.UTF_8))) {
             String line;
@@ -240,7 +280,10 @@ public class ResourcePackItem extends ContentItem {
         if (!isLocalizationKey(value)) {
             return value;
         }
-        Map<String, String> langStrings = loadLangStrings();
+        Map<String, String> langStrings = localizationStrings;
+        if (langStrings == null || !Locale.getDefault().toLanguageTag().equals(localizationLocale)) {
+            langStrings = loadLangStrings();
+        }
         if (langStrings.containsKey(value)) {
             return langStrings.get(value);
         }

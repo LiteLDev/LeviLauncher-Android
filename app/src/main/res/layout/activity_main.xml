@@ -403,9 +403,8 @@
                                 android:textSize="13sp" />
                         </LinearLayout>
 
-                        <!-- Behavior Packs Row -->
                         <LinearLayout
-                            android:id="@+id/content_behavior_packs_row"
+                            android:id="@+id/content_skin_packs_row"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
@@ -418,7 +417,7 @@
                             <ImageView
                                 android:layout_width="16dp"
                                 android:layout_height="16dp"
-                                android:src="@drawable/ic_behavior"
+                                android:src="@drawable/ic_tshirt"
                                 app:tint="@color/on_surface" />
 
                             <TextView
@@ -426,13 +425,13 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:layout_marginStart="8dp"
-                                android:text="@string/behavior_packs_category"
+                                android:text="@string/skin_packs_category"
                                 android:fontFamily="@font/misans"
                                 android:textColor="@color/on_surface"
                                 android:textSize="13sp" />
 
                             <TextView
-                                android:id="@+id/content_behavior_packs_count"
+                                android:id="@+id/content_skin_packs_count"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="0"

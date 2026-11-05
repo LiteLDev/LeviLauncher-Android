@@ -1,84 +1,83 @@
 package org.levimc.launcher.core.content;
 
 import org.json.JSONObject;
-
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class ScreenshotManager {
-    private File screenshotsDir;
+    private volatile File screenshotsDir;
+    private volatile Map<String, Metadata> metadata = new java.util.concurrent.ConcurrentHashMap<>();
 
-    public void setScreenshotsDirectory(File directory) {
-        this.screenshotsDir = directory;
+    private static final class Metadata {
+        long imageModified;
+        long jsonModified;
+        long jsonLength;
+        long captureTime;
     }
 
-    public List<ScreenshotItem> getScreenshots() {
+    public void setScreenshotsDirectory(File directory) {
+        if (!java.util.Objects.equals(screenshotsDir, directory)) metadata = new java.util.concurrent.ConcurrentHashMap<>();
+        screenshotsDir = directory;
+    }
+
+    public synchronized List<ScreenshotItem> getScreenshots() {
         List<ScreenshotItem> items = new ArrayList<>();
-        if (screenshotsDir == null || !screenshotsDir.exists() || !screenshotsDir.isDirectory()) {
-            return items;
+        File root = screenshotsDir;
+        File[] files = root == null ? null : root.listFiles();
+        if (files == null) return items;
+        for (File file : files) {
+            if (file.isDirectory()) {
+                File[] children = file.listFiles();
+                if (children != null) for (File child : children) addImage(child, file.getName(), items);
+            } else addImage(file, root.getName(), items);
         }
-
-        File[] directFiles = screenshotsDir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
-        if (directFiles != null) {
-            for (File file : directFiles) {
-                long captureTime = file.lastModified();
-                String jsonPath = file.getAbsolutePath().replaceAll("\\.(jpg|png|jpeg)$", ".json");
-                File jsonFile = new File(jsonPath);
-                if (jsonFile.exists()) {
-                    try {
-                        String content = new String(Files.readAllBytes(jsonFile.toPath()));
-                        JSONObject json = new JSONObject(content);
-                        if (json.has("CaptureTime")) {
-                            captureTime = json.getLong("CaptureTime") * 1000L;
-                        }
-                    } catch (Exception e) {
-                    }
-                }
-                items.add(new ScreenshotItem(file.getName(), file, screenshotsDir.getName(), captureTime));
-            }
-        }
-
-        File[] subdirs = screenshotsDir.listFiles(File::isDirectory);
-        if (subdirs != null) {
-            for (File subdir : subdirs) {
-                File[] files = subdir.listFiles((dir, name) -> name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg"));
-                if (files != null) {
-                    for (File file : files) {
-                        long captureTime = file.lastModified();
-                        String jsonPath = file.getAbsolutePath().replaceAll("\\.(jpg|png|jpeg)$", ".json");
-                        File jsonFile = new File(jsonPath);
-                        if (jsonFile.exists()) {
-                            try {
-                                String content = new String(Files.readAllBytes(jsonFile.toPath()));
-                                JSONObject json = new JSONObject(content);
-                                if (json.has("CaptureTime")) {
-                                    captureTime = json.getLong("CaptureTime") * 1000L;
-                                }
-                            } catch (Exception e) {
-                            }
-                        }
-
-                        items.add(new ScreenshotItem(file.getName(), file, subdir.getName(), captureTime));
-                    }
-                }
-            }
-        }
-        
-        items.sort((a, b) -> Long.compare(b.captureTime, a.captureTime));
+        items.sort((left, right) -> Long.compare(right.captureTime, left.captureTime));
         return items;
     }
 
-    public boolean deleteScreenshot(ScreenshotItem item) {
-        if (item.file.exists() && item.file.delete()) {
-            String jsonPath = item.file.getAbsolutePath().replaceAll("\\.(jpg|png|jpeg)$", ".json");
-            File jsonFile = new File(jsonPath);
-            if (jsonFile.exists()) {
-                jsonFile.delete();
+    private void addImage(File file, String directory, List<ScreenshotItem> items) {
+        String name = file.getName().toLowerCase(Locale.ROOT);
+        if (!(name.endsWith(".jpg") || name.endsWith(".png") || name.endsWith(".jpeg")) || !file.isFile()) return;
+        File json = sidecar(file);
+        long modified = file.lastModified(), jsonModified = json.lastModified(), jsonLength = json.length();
+        Metadata cached = metadata.get(file.getAbsolutePath());
+        if (cached == null || cached.imageModified != modified || cached.jsonModified != jsonModified || cached.jsonLength != jsonLength) {
+            cached = new Metadata();
+            cached.imageModified = modified;
+            cached.jsonModified = jsonModified;
+            cached.jsonLength = jsonLength;
+            cached.captureTime = modified;
+            if (json.isFile()) {
+                try {
+                    JSONObject document = new JSONObject(new String(Files.readAllBytes(json.toPath()), StandardCharsets.UTF_8));
+                    if (document.has("CaptureTime")) cached.captureTime = document.getLong("CaptureTime") * 1000L;
+                } catch (Exception ignored) {}
             }
-            return true;
+            metadata.put(file.getAbsolutePath(), cached);
         }
-        return false;
+        items.add(new ScreenshotItem(file.getName(), file, directory, cached.captureTime));
+    }
+
+    private static File sidecar(File file) {
+        String name = file.getName();
+        return new File(file.getParentFile(), name.substring(0, name.lastIndexOf('.')) + ".json");
+    }
+
+    public synchronized boolean deleteScreenshot(ScreenshotItem item) {
+        try {
+            boolean deleted = Files.deleteIfExists(item.file.toPath());
+            if (deleted) {
+                try { Files.deleteIfExists(sidecar(item.file).toPath()); } catch (java.io.IOException ignored) {}
+                metadata.remove(item.file.getAbsolutePath());
+            }
+            return deleted;
+        } catch (java.io.IOException error) {
+            return false;
+        }
     }
 }

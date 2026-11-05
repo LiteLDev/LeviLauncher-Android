@@ -48,6 +48,15 @@ public class MinecraftLauncher {
         return new File(context.getFilesDir(), "minecraft_libs/" + LauncherStorage.sanitizeProfileId(profileId));
     }
 
+    public static String getRuntimeAbi() {
+        String[] supported = android.os.Process.is64Bit()
+                ? Build.SUPPORTED_64_BIT_ABIS : Build.SUPPORTED_32_BIT_ABIS;
+        if (supported.length == 0) {
+            throw new IllegalStateException("No ABI matches the launcher process");
+        }
+        return supported[0];
+    }
+
     public static File getRuntimeLibAbiDir(Context context, String profileId, String abi) {
         return new File(getRuntimeLibDir(context, profileId), abiToSystemLibDir(abi));
     }
@@ -57,8 +66,7 @@ public class MinecraftLauncher {
         File apkFile = new File(version.versionDir, "base.apk.levi");
         fakeInfo.sourceDir = apkFile.getAbsolutePath();
         fakeInfo.publicSourceDir = fakeInfo.sourceDir;
-        String systemAbi = abiToSystemLibDir(Build.SUPPORTED_ABIS[0]);
-        File dstLibDir = getRuntimeLibAbiDir(context, getStorageProfileId(version), systemAbi);
+        File dstLibDir = getRuntimeLibAbiDir(context, getStorageProfileId(version), getRuntimeAbi());
         fakeInfo.nativeLibraryDir = dstLibDir.getAbsolutePath();
         fakeInfo.packageName = packageName;
         fakeInfo.dataDir = LauncherStorage.getProfileDataRoot(context, getStorageProfileId(version)).getAbsolutePath();
@@ -74,7 +82,9 @@ public class MinecraftLauncher {
                     }
                 }
                 if (!splitPathList.isEmpty()) {
+                    java.util.Collections.sort(splitPathList);
                     fakeInfo.splitSourceDirs = splitPathList.toArray(new String[0]);
+                    fakeInfo.splitPublicSourceDirs = fakeInfo.splitSourceDirs;
                 }
             }
         }

@@ -14,6 +14,7 @@ import org.levimc.launcher.preloader.PreloaderInput
 import org.levimc.launcher.preloader.PreloaderSignatureRulesManager
 import org.levimc.launcher.settings.FeatureSettings
 import org.levimc.launcher.util.LauncherStorage
+import org.levimc.launcher.util.LauncherBackgroundController
 import org.levimc.launcher.util.NativeBridgeHelper
 import java.io.File
 
@@ -72,7 +73,8 @@ object MinecraftRuntimePreparer {
 
         listener.onProgress(12, "Preparing game files")
         val gameManager = GamePackageManager.getInstance(context.applicationContext, version, trace, null)
-        trace.mark("GamePackageManager ready")
+        trace.milestone("Game files ready")
+        LauncherBackgroundController.awaitShutdown()
 
         listener.onProgress(26, "Preparing launch")
         prepareMinecraftIntent(context, launchIntent, gameManager, version)
@@ -112,6 +114,8 @@ object MinecraftRuntimePreparer {
 
         listener.onLog("Loading native libraries")
         loadMinecraftLibraries(gameManager, version, listener, trace)
+        PreloaderInput.prepareRuntime()
+        trace.milestone("Native runtime ready")
 
         listener.onProgress(78, "Loading enabled mods")
         listener.onLog("Loading native mods")
@@ -448,21 +452,6 @@ object MinecraftRuntimePreparer {
     }
 
     private fun isVersionAtLeast(currentVersion: String, targetVersion: String): Boolean {
-        return try {
-            val current = currentVersion.replace(Regex("[^0-9.]"), "").split(".")
-            val target = targetVersion.split(".")
-            val maxLength = maxOf(current.size, target.size)
-
-            for (i in 0 until maxLength) {
-                val currentPart = current.getOrNull(i)?.toIntOrNull() ?: 0
-                val targetPart = target.getOrNull(i)?.toIntOrNull() ?: 0
-
-                if (currentPart > targetPart) return true
-                if (currentPart < targetPart) return false
-            }
-            true
-        } catch (_: Exception) {
-            false
-        }
+        return MinecraftVersion.isAtLeast(currentVersion, targetVersion)
     }
 }
