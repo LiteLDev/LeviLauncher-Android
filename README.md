@@ -146,7 +146,7 @@ Submit PRs with a detailed description of changes, including the problem solved 
 
 ### Community Standards
 
-Follow our Code of Conduct to maintain a respectful and inclusive environment. Be constructive in feedback, respect others' work, and communicate professionally with all contributors.
+Be constructive in feedback, respect others' work, and communicate professionally with all contributors.
 
 **Before Submitting:** Run a full build cycle and test on at least one device to minimize errors. We review all contributions promptly and appreciate your efforts to enhance LeviLauncher.
 
