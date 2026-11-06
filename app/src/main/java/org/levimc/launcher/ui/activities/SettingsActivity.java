@@ -224,17 +224,17 @@ public class SettingsActivity extends BaseActivity {
                 getString(R.string.vietnamese)
         };
 
-        String currentCode = languageManager.getCurrentLanguage();
+        String currentCode = Locale.forLanguageTag(languageManager.getCurrentLanguage()).getLanguage();
         int defaultIdx = switch (currentCode) {
-            case "zh", "zh-CN" -> 1;
+            case "zh" -> 1;
             case "fr" -> 2;
             case "hi" -> 3;
-            case "idn" -> 4;
+            case "id", "in" -> 4;
             case "ja" -> 5;
             case "pt" -> 6;
             case "ru" -> 7;
             case "es" -> 8;
-            case "tr", "tr-TR" -> 9;
+            case "tr" -> 9;
             case "vi" -> 10;
             default -> 0;
         };
@@ -255,7 +255,7 @@ public class SettingsActivity extends BaseActivity {
                     case 1 -> "zh-CN";
                     case 2 -> "fr";
                     case 3 -> "hi";
-                    case 4 -> "idn";
+                    case 4 -> "id";
                     case 5 -> "ja";
                     case 6 -> "pt";
                     case 7 -> "ru";

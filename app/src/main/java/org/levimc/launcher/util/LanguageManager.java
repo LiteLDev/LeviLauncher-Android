@@ -1,6 +1,7 @@
 package org.levimc.launcher.util;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.PopupMenu;
@@ -23,12 +24,34 @@ public class LanguageManager {
     }
 
     public void applySavedLanguage() {
-        SharedPreferences prefs = activity.getSharedPreferences(PREFS_NAME, Activity.MODE_PRIVATE);
-        String tag = prefs.getString(LANGUAGE_KEY, Locale.getDefault().toLanguageTag());
+        String tag = getSavedLanguage(activity);
         AppCompatDelegate.setApplicationLocales(LocaleListCompat.forLanguageTags(tag));
     }
 
+    public static String getSavedLanguage(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        String savedTag = prefs.getString(LANGUAGE_KEY, Locale.getDefault().toLanguageTag());
+        String tag = normalizeLanguageTag(savedTag);
+        if (!tag.equals(savedTag)) {
+            prefs.edit().putString(LANGUAGE_KEY, tag).apply();
+        }
+        return tag;
+    }
+
+    private static String normalizeLanguageTag(String tag) {
+        if (tag == null || tag.isEmpty()) {
+            return Locale.getDefault().toLanguageTag();
+        }
+        int separator = tag.indexOf('-');
+        String language = separator < 0 ? tag : tag.substring(0, separator);
+        if ("idn".equalsIgnoreCase(language) || "in".equalsIgnoreCase(language)) {
+            return "id" + (separator < 0 ? "" : tag.substring(separator));
+        }
+        return tag;
+    }
+
     public void setAppLanguage(String languageCode) {
+        languageCode = normalizeLanguageTag(languageCode);
         SharedPreferences.Editor editor = activity.getSharedPreferences(PREFS_NAME, Activity.MODE_PRIVATE).edit();
         editor.putString(LANGUAGE_KEY, languageCode);
         editor.apply();
@@ -66,7 +89,7 @@ public class LanguageManager {
                 setAppLanguage("hi");
                 return true;
             } else if (itemId == R.id.action_indonesian) {
-                setAppLanguage("idn");
+                setAppLanguage("id");
                 return true;
             } else if (itemId == R.id.action_japanese) {
                 setAppLanguage("ja");
@@ -95,11 +118,9 @@ public class LanguageManager {
 
     public String getCurrentLanguage() {
         LocaleListCompat list = AppCompatDelegate.getApplicationLocales();
-        String tags = list.toLanguageTags();
-        if (tags == null || tags.isEmpty()) {
-            SharedPreferences prefs = activity.getSharedPreferences(PREFS_NAME, Activity.MODE_PRIVATE);
-            return prefs.getString(LANGUAGE_KEY, Locale.getDefault().toLanguageTag());
+        if (list.isEmpty()) {
+            return getSavedLanguage(activity);
         }
-        return tags;
+        return normalizeLanguageTag(list.get(0).toLanguageTag());
     }
 }

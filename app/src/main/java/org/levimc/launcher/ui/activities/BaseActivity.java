@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -38,6 +37,7 @@ import org.levimc.launcher.core.news.NewsRepository;
 import org.levimc.launcher.core.news.NewsState;
 import org.levimc.launcher.ui.animation.DynamicAnim;
 import org.levimc.launcher.util.AccountTextUtils;
+import org.levimc.launcher.util.LanguageManager;
 import org.levimc.launcher.util.PersonalizationManager;
 import org.levimc.launcher.util.LauncherBackgroundController;
 import org.levimc.launcher.util.ThemeManager;
@@ -69,8 +69,7 @@ public class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        SharedPreferences prefs = newBase.getSharedPreferences("settings", Context.MODE_PRIVATE);
-        String languageCode = prefs.getString("language", Locale.getDefault().toLanguageTag());
+        String languageCode = LanguageManager.getSavedLanguage(newBase);
         Locale locale = Locale.forLanguageTag(languageCode);
         Locale.setDefault(locale);
         Resources res = newBase.getResources();

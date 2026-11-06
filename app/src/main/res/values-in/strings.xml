@@ -1,0 +1,1084 @@
+<!-- NOTE: Keep this file aligned with the English default (values/strings.xml):
+     same resource keys and order, comments, sections, XML structure, and formatting
+     (including indentation, spaces, and blank lines).
+
+     Translations must remain grammatically and linguistically correct for the target
+     language. Locale-specific plural forms may differ when required by the language.
+     Do not change placeholders or resource attributes. -->
+
+<resources>
+    <!-- Common -->
+    <string name="app_name">LeviLauncher</string>
+    <string name="minecraft">Minecraft</string>
+    <string name="launch">Luncurkan</string>
+    <string name="beta_badge">Beta</string>
+    <string name="debug_badge">Debug</string>
+    <string name="cursor">Kursor</string>
+    <string name="bedrock_edition">Edisi Bedrock</string>
+    <string name="current_instance">Instans Saat Ini</string>
+
+    <!-- Mods -->
+    <string name="mods_title">Mods (%d)</string>
+    <string name="mods_section_title">Mods</string>
+    <string name="external_mods_label">Mods Eksternal</string>
+    <string name="inbuilt_mods_label">Mods Bawaan</string>
+    <string name="manage_mods">Kelola Mods</string>
+    <string name="no_mods_found">Tidak Ada Mods Yang ditemukan</string>
+    <string name="mod_load_order">Urutan pemuatan: %d</string>
+    <string name="drag_to_reorder">Seret untuk mengubah urutan</string>
+    <string name="mod_reordered">Urutan Mod diperbarui</string>
+
+    <!-- About -->
+    <string name="about_title">☕ Tentang</string>
+    <string name="copyright">©2024–2026 LeviMC. All rights reserved.</string>
+    <string name="font_license">Aplikasi ini menggunakan font Misans..</string>
+    <string name="about_footer_github">GitHub: https://github.com/LiteLDev/LeviLaunchroid</string>
+    <string name="quick_actions_title">Tindakan Cepat</string>
+    <string name="content_mgmt_section_title">Manajemen Konten</string>
+    <string name="misc_section_title">Lain-lain</string>
+    <string name="view_all">Lihat Semua →</string>
+    <string name="content_management_subtitle">Kelola Dunia, Paket Sumber Daya and Paket Perilaku</string>
+    <string name="import_apk_subtitle">Install Minecraft Dari APK Atau APKS file</string>
+    <string name="ms_add_account">Tambahkan Akun</string>
+    <string name="ms_add_account_subtitle">Masuk dengan Microsoft</string>
+
+    <!-- Dialogs -->
+    <string name="content_detected_title">Konten Terdeteksi</string>
+    <string name="content_detected_message">Apakah Anda ingin meluncurkan game sekarang?\n\nFile: %s</string>
+    <string name="launch_now">Luncurkan Sekarang</string>
+    <string name="launch_later">Luncurkan Nanti</string>
+    <string name="loading">Memuat…</string>
+
+    <string name="import_confirmation_title">Impor Mod</string>
+    <string name="import_confirmation_message">Apakah Anda yakin ingin mengimpor %d file mod yang dipilih?</string>
+    <string name="import_so_plugin_title">Impor Plugin SO</string>
+    <string name="plugin_name_label">Nama Plugin</string>
+    <string name="plugin_type_label">Jenis</string>
+    <string name="plugin_version_label">Versi</string>
+    <string name="import_button">Impor</string>
+    <string name="overwrite_file_title">File Sudah Ada</string>
+    <string name="overwrite_file_message">File %s sudah ada. Apakah Anda ingin menimpanya?</string>
+    <string name="overwrite">Timpa</string>
+    <string name="skip">Melewati</string>
+    <string name="confirm">Konfirmasi</string>
+    <string name="retry">Coba Lagi</string>
+
+    <string name="installed_packages">Paket Terinstal</string>
+    <string name="local_custom">Paket Lokal</string>
+
+    <!-- Permissions -->
+    <string name="grant_permission">Izinkan</string>
+    <string name="cancel">Batal</string>
+
+    <!-- Feedback -->
+    <string name="files_processed">Berhasil memproses %d file mod.</string>
+    <string name="user_cancelled">Impor dibatalkan oleh pengguna.</string>
+
+
+    <string name="exit">Keluar</string>
+
+    <string name="overlay_permission_message">Mohon berikan izin overlay.</string>
+    <string name="overlay_permission_denied_message">Mohon berikan izin overlay, jika tidak, jendela log tidak dapat ditampilkan.</string>
+    <string name="overlay_permission_not_granted">Izin overlay tidak diberikan</string>
+
+    <string name="import_apk">Impor APK</string>
+    <string name="install">Install</string>
+    <string name="version_name">Nama versi</string>
+    <string name="name_invalid">Nama ini tidak dapat digunakan atau sudah dipakai!</string>
+    <string name="install_done">Instalasi selesai, versi: %1$s</string>
+
+    <string name="illegal_apk_title">APK ilegal</string>
+    <string name="not_mc_apk">Bukan APK Minecraft</string>
+    <string name="not_apk_or_apks">Silakan pilih file APK atau APKS.</string>
+
+    <string name="not_found_version">Tidak ada versi yang ditemukan</string>
+
+    <string name="installing_title">Memasang…</string>
+    <string name="installing_message">Mohon tunggu, sedang menginstal Minecraft.</string>
+
+    <string name="enable_debug_log">Aktifkan Log Debug</string>
+
+    <string name="settings_title">Pengaturan</string>
+    <string name="settings_desc">Pengaturan peluncur Anda</string>
+    <string name="settings_subtitle">Konfigurasikan opsi launcher umum</string>
+    <string name="settings_tab_basic">Pengaturan Dasar</string>
+    <string name="settings_tab_personalize">Personalisasi</string>
+    <string name="settings_tab_updates">Pembaruan</string>
+    <string name="settings_tab_about">Tentang</string>
+    <string name="settings_theme_desc">Pilih tema aplikasi</string>
+
+
+    <string name="unknown_sources_permission_title">Izin Instalasi</string>
+    <string name="unknown_sources_permission_message">Untuk menginstal atau memperbarui aplikasi ini, mohon berikan izin untuk menginstal aplikasi yang tidak dikenal. Klik "Izinkan" untuk membuka pengaturan sistem, aktifkan izin untuk aplikasi ini, dan kembali untuk melanjutkan.</string>
+
+    <string name="check_update">Periksa pembaruan</string>
+    <string name="version_prefix">Versi: </string>
+    <string name="unknown_error">Kesalahan tidak diketahui</string>
+    <string name="preloader_sigs_title">Data runtime</string>
+    <string name="preloader_sigs_last_update">Pembaruan terakhir: %1$s</string>
+    <string name="preloader_sigs_never_updated">Belum pernah</string>
+    <string name="preloader_sigs_update">Perbarui data runtime</string>
+    <string name="preloader_sigs_updating">Memperbarui…</string>
+    <string name="preloader_sigs_update_success">Data runtime diperbarui</string>
+    <string name="preloader_sigs_update_failed">Gagal memperbarui data runtime: %1$s</string>
+    <string name="preloader_sigs_no_remote_url">URL pembaruan data runtime belum dikonfigurasi</string>
+
+    <string name="dialog_title_no_version">Tidak Ada Versi yang Dipilih</string>
+    <string name="dialog_message_no_version">Silakan pilih versi game sebelum memulai.</string>
+    <string name="dialog_title_version_isolation">Isolasi Versi Diperlukan</string>
+    <string name="dialog_message_version_isolation">Ini adalah versi impor. Harap aktifkan isolasi versi di pengaturan untuk menjalankan versi ini.</string>
+    <string name="dialog_positive_enable">Aktifkan</string>
+    <string name="dialog_title_launch_failed">Peluncuran Gagal</string>
+    <string name="dialog_message_launch_failed">Gagal meluncurkan Minecraft: %1$s</string>
+    <string name="dialog_title_incompatible_mods">Mod Tidak Kompatibel Dilewati</string>
+    <string name="dialog_message_incompatible_mods">Beberapa mod yang aktif tidak kompatibel dengan versi Minecraft saat ini %1$s dan dilewati:\n\n%2$s</string>
+    <string name="dialog_title_disable_version_isolation">Nonaktifkan Isolasi Versi</string>
+    <string name="dialog_message_disable_version_isolation">Anda mencoba menjalankan versi yang sudah terpasang dengan isolasi versi diaktifkan. Harap nonaktifkan isolasi versi untuk melanjutkan..</string>
+    <string name="dialog_positive_disable">Matikan</string>
+    <string name="dialog_positive_ok">OK</string>
+    <string name="delete_account_title">Hapus Akun</string>
+    <string name="delete_account_confirm">Yakin ingin menghapus akun ini?</string>
+
+
+    <string name="new_version_found">Versi baru ditemukan: %1$s</string>
+    <string name="update_question">Apakah Anda ingin mengunduh dan menginstal versi terbaru?</string>
+    <string name="download_update">Unduh Pembaruan</string>
+    <string name="ignore_this_version">Abaikan versi ini</string>
+    <string name="update_progress">Kemajuan pengunduhan: %1$d%%</string>
+    <string name="update_failed">Pengunduhan gagal: %1$s</string>
+    <string name="install_failed">Tidak dapat menginstal pembaruan: %1$s</string>
+    <string name="already_latest_version">Sudah versi terbaru (%1$s)</string>
+    <string name="version_ignored">Versi ini telah diabaikan.</string>
+    <string name="downloading_update">Mengunduh pembaruan…</string>
+
+    <string name="repair_libs_in_progress">Memperbaiki file perpustakaan game…</string>
+    <string name="repair_completed">Perbaikan Selesai</string>
+    <string name="repair_libs_success_message">File pustaka game telah berhasil diperbaiki. Anda sekarang dapat meluncurkan game.</string>
+    <string name="repair_failed">Perbaikan Gagal</string>
+    <string name="repair_libs_failed_message">Gagal memperbaiki file pustaka. Harap periksa integritas file.</string>
+    <string name="repair_error">Perbaikan Error</string>
+    <string name="repair_libs_error_message">Terjadi kesalahan selama perbaikan: %s</string>
+    <string name="missing_libs_title">File pustaka game hilang - %s</string>
+    <string name="missing_libs_message">File pustaka game yang dibutuhkan hilang. Apakah Anda ingin memperbaikinya sekarang?</string>
+    <string name="repair">Perbaiki</string>
+    <string name="repair_libs_dialog_title">Memperbaiki Perpustakaan Game</string>
+    <string name="repair_libs_dialog_subtitle">Menyiapkan pustaka native Minecraft</string>
+    <string name="repair_preparing">Persiapan…</string>
+    <string name="repair_processing">Mengekstrak pustaka…</string>
+    <string name="repair_finalizing">Menyelesaikan perbaikan…</string>
+    <!-- Theme -->
+    <string name="theme_title">Mode Tema</string>
+    <string name="theme_follow_system">Ikuti Sistem</string>
+    <string name="theme_light">Mode Siang</string>
+    <string name="theme_dark">Mode Malam</string>
+
+    <string name="error_no_browser">Tidak ada peramban yang tersedia.</string>
+    <!-- License & Security -->
+    <string name="eula_title">LeviLauncher License Agreement</string>
+    <string name="eula_message"><b>Selamat datang di LeviLauncher</b>\n\nBy using this software you agree to:\n\n• This is an <b>unofficial</b> Minecraft launcher\n• You must own a <b>licensed</b> copy of Minecraft\n• Any form of piracy or cheating is prohibited\n• Mods/resource packs are used at your own risk\n• Not affiliated with Mojang/Microsoft\n\nContinued use constitutes agreement</string>
+    <string name="eula_agree">Terima</string>
+    <string name="eula_exit">Tolak</string>
+
+    <string name="allow_unknown_sources">Harap izinkan instalasi dari sumber yang tidak dikenal sebelum melanjutkan.</string>
+    <!-- Version Management -->
+    <string name="dialog_title_delete_version">Hapus Versi</string>
+    <string name="dialog_message_delete_version">Apakah Anda yakin ingin menghapus versi kustom ini? Tindakan ini tidak dapat dibatalkan.</string>
+    <string name="dialog_positive_delete">Menghapus</string>
+    <string name="dialog_negative_cancel">Membatalkan</string>
+    <string name="toast_delete_success">Penghapusan berhasil</string>
+    <string name="toast_delete_failed">Penghapusan gagal: %1$s</string>
+    <string name="error_delete_builtin_version">Tidak dapat menghapus versi bawaan</string>
+    <string name="invalid_mod_file">Gagal</string>
+    <string name="invalid_mod_file_reason">Hanya file .so, paket mod .zip, atau paket mod .levipack yang diizinkan. File yang dipilih bukan paket impor mod native yang valid.</string>
+    <string name="invalid_zip_mod_package_title">Paket Mod ZIP Tidak Valid</string>
+    <string name="invalid_zip_mod_package_message">Paket mod ZIP harus berisi manifest.json dan file .so.</string>
+    <string name="error_versions">Versi Yang Rusak</string>
+
+    <string name="dialog_title_delete_mod">Hapus Mod</string>
+    <string name="dialog_message_delete_mod">Apakah Anda yakin ingin menghapus mod ini?</string>
+
+    <string name="version_isolation">Isolasi Versi</string>
+    <string name="launch_vertically">Luncurkan Vertikal</string>
+    <string name="launch_vertically_desc">Paksa game diluncurkan dalam mode potret</string>
+    <!-- Instance Management -->
+    <string name="instance_settings_title">Pengaturan Instans</string>
+    <string name="instance_tab_general">Umum</string>
+    <string name="instance_tab_launch_options">Opsi Peluncuran</string>
+    <string name="instance_tab_management">Manajemen</string>
+    <string name="instance_new_name">Nama Baru</string>
+    <string name="instance_rename_hint">Hanya mengganti nama folder. Versi dan jenis game tidak terpengaruh.</string>
+    <string name="instance_custom_icon">Ikon Kustom (harus persegi)</string>
+    <string name="instance_clear_icon">Bersihkan</string>
+    <string name="instance_icon_hint">Akan disimpan sebagai LargeLogo.png di folder versi. Ketuk ikon untuk mengubah.</string>
+    <string name="instance_isolation_desc">Pisahkan data game untuk instans ini. Instans lain tidak akan terpengaruh.</string>
+    <string name="instance_shortcut_title">Pintasan Layar Utama</string>
+    <string name="instance_shortcut_desc">Perubahan nama dan ikon disimpan otomatis. Ketuk Tambah Pintasan untuk membuat atau memperbarui pintasan layar utama.</string>
+    <string name="instance_shortcut_name">Nama Pintasan</string>
+    <string name="instance_shortcut_icon">Ikon Pintasan</string>
+    <string name="instance_shortcut_choose_icon">Pilih Ikon</string>
+    <string name="instance_shortcut_default_icon">Gunakan Bawaan</string>
+    <string name="instance_shortcut_add_button">Tambah Pintasan</string>
+    <string name="instance_settings_auto_save_failed">Tidak dapat menyimpan pengaturan instans ini.</string>
+    <string name="instance_shortcut_not_supported">Peluncur layar utama Anda tidak mendukung pintasan yang disematkan.</string>
+    <string name="instance_shortcut_missing">Instans Minecraft ini sudah tidak tersedia.</string>
+    <string name="instance_danger_zone">Zona Berbahaya</string>
+    <string name="instance_danger_zone_desc">Tindakan ini memengaruhi pendaftaran instans atau file lokal. Periksa kembali sebelum melanjutkan.</string>
+    <string name="instance_delete_desc">Menghapus instans ini secara permanen dari perangkat, termasuk dunia, konfigurasi, dan konten terpasang.</string>
+    <string name="instance_delete_warning">Tindakan ini tidak dapat dibatalkan.</string>
+    <string name="instance_delete_confirm_title">Hapus Instans</string>
+    <string name="instance_delete_confirm_msg">Apakah Anda yakin ingin menghapus instans ini? Semua data, termasuk dunia, akan dihapus permanen.</string>
+    <string name="instance_backup_title">Cadangkan Instans</string>
+    <string name="instance_backup_desc">Buat cadangan lengkap instans ini di Download/LeviLauncher/Backups.</string>
+    <string name="instance_backup_button">Cadangkan Instans</string>
+    <string name="instance_backup_confirm_message">Buat cadangan lengkap instans ini sekarang? Tutup Minecraft terlebih dahulu jika sedang berjalan agar file tidak berubah selama pencadangan.</string>
+    <string name="instance_backup_in_progress">Mencadangkan instans…</string>
+    <string name="instance_backup_success_title">Cadangan Dibuat</string>
+    <string name="instance_backup_success_message">Cadangan disimpan ke:\n%1$s</string>
+    <string name="instance_backup_failed_title">Pencadangan Gagal</string>
+    <string name="instance_backup_failed_message">Tidak dapat membuat cadangan:\n%1$s</string>
+    <string name="instance_import_backup_button">Impor Cadangan</string>
+    <string name="instance_batch_backup_button">Cadangkan Massal</string>
+    <string name="instance_batch_backup_title">Cadangkan Instans Massal</string>
+    <string name="instance_batch_backup_select_message">Pilih instans yang ingin dicadangkan. Jika Minecraft sedang berjalan, keluar terlebih dahulu agar data tidak berubah saat pencadangan.</string>
+    <string name="instance_batch_backup_select_all">Pilih semua instans</string>
+    <string name="instance_batch_backup_no_instances">Tidak ada instans yang tersedia untuk dicadangkan.</string>
+    <string name="instance_batch_backup_no_selection">Pilih setidaknya satu instans.</string>
+    <string name="instance_batch_backup_in_progress">Mencadangkan %1$s (%2$d/%3$d)…</string>
+    <string name="instance_batch_backup_success_title">Cadangan Dibuat</string>
+    <string name="instance_batch_backup_success_message">Membuat %1$d cadangan:\n%2$s</string>
+    <string name="instance_batch_backup_partial_title">Pencadangan Selesai Sebagian</string>
+    <string name="instance_batch_backup_partial_message">Membuat %1$d cadangan, %2$d gagal.\n\nTersimpan:\n%3$s\n\nGagal:\n%4$s</string>
+    <string name="instance_batch_backup_failed_title">Pencadangan Massal Gagal</string>
+    <string name="instance_batch_backup_failed_message">Tidak dapat membuat cadangan apa pun:\n%1$s</string>
+    <string name="instance_restore_title">Pulihkan Cadangan</string>
+    <string name="instance_restore_in_progress">Memulihkan cadangan instans…</string>
+    <string name="instance_restore_success_title">Pemulihan Selesai</string>
+    <string name="instance_restore_success_message">Dipulihkan: %1$s</string>
+    <string name="instance_restore_failed_title">Pemulihan Gagal</string>
+    <string name="instance_restore_failed_message">Tidak dapat memulihkan cadangan:\n%1$s</string>
+
+    <!-- Language Setting -->
+    <!-- Keep English at the top (default language). -->
+    <!-- Sort all other languages alphabetically by their display name. -->
+    <string name="language">Bahasa (Language)</string>
+    <string name="english">Inggris (English)</string>
+    <string name="chinese">简体中文 (Chinese)</string>
+    <string name="french">Français (French)</string>
+    <string name="hindi">हिन्दी (Hindi)</string>
+    <string name="indonesian">Bahasa Indonesia (Indonesian)</string>
+    <string name="japanese">日本語 (Japanese)</string>
+    <string name="portuguese">Português (Portuguese)</string>
+    <string name="russian">Русский (Russian)</string>
+    <string name="spanish">Español (Spanish)</string>
+    <string name="turkish">Türkçe (Turkish)</string>
+    <string name="vietnamese">Tiếng Việt (Vietnamese)</string>
+
+    <!-- Version Rename -->
+    <string name="rename_version_title">Ganti Nama Versi</string>
+    <string name="rename_version_message">Masukkan nama baru untuk versi ini:</string>
+    <string name="new_version_name">Nama versi baru</string>
+    <string name="rename">Ganti nama</string>
+    <string name="rename_success">Versi berhasil diganti namanya.</string>
+    <string name="rename_failed">Penggantian nama gagal: %1$s</string>
+    <string name="cannot_rename_installed">Tidak dapat mengganti nama versi yang terinstal</string>
+
+    <!-- Content Management -->
+    <string name="content_management">Manajemen Konten</string>
+    <string name="worlds_title">Dunia</string>
+    <string name="resource_packs_title">Paket Sumber Daya</string>
+    <string name="behavior_packs_title">Paket Perilaku</string>
+    <string name="skin_packs_title">Paket Kulit(skin)</string>
+    <string name="worlds_category">Dunia</string>
+    <string name="resource_packs_category">Paket Sumber Daya</string>
+    <string name="behavior_packs_category">Paket Perilaku</string>
+    <string name="skin_packs_category">Paket Kulit(skin)</string>
+    <string name="screenshots_category">Tangkapan Layar</string>
+    <string name="servers_category">Server</string>
+    <string name="storage_internal">Internal</string>
+    <string name="storage_external">External</string>
+    <string name="storage_version_isolation">Isolasi Versi</string>
+    <string name="select_storage_label">Pilih Penyimpanan:</string>
+    <string name="search_hint">Mencari…</string>
+    <string name="search_properties_hint">Cari properti…</string>
+    <string name="no_matching_properties">Tidak ditemukan properti yang cocok</string>
+    <string name="transfer">Transfer</string>
+    <string name="transfer_content">Transfer Konten</string>
+    <string name="transfer_to">Transfer ke:</string>
+    <string name="transfer_success">Transfer berhasil diselesaikan</string>
+    <string name="transfer_failed">Transfer gagal</string>
+    <string name="transfer_same_location">Konten sudah berada di lokasi ini</string>
+    <string name="import_content">Impor</string>
+    <string name="import_content_title">Impor Konten</string>
+    <string name="import_content_message">Pilih file .mcworld, .mcpack, atau .mcaddon untuk diimpor</string>
+    <string name="import_success">Impor berhasil diselesaikan</string>
+    <string name="import_failed">Impor gagal</string>
+    <string name="import_addon_success">Addon diimpor: %1$d paket sumber daya, %2$d paket perilaku</string>
+
+    <!-- World Management -->
+    <string name="world_size">Ukuran: %s</string>
+    <string name="world_last_played">Terakhir dimainkan: %s</string>
+    <string name="import_world">Impor Dunia</string>
+    <string name="export_world">Ekspor Dunia</string>
+    <string name="delete_world">Menghapus Dunia</string>
+    <string name="backup_world">Cadangan Dunia</string>
+    <string name="export">Ekspor</string>
+    <string name="backup">Cadangkan</string>
+    <string name="delete">Hapus</string>
+    <string name="delete_pack">Hapus</string>
+
+    <!-- Resource Pack Management -->
+    <string name="import_resource_pack">Impor Paket Sumber Daya</string>
+    <string name="import_behavior_pack">Impor Paket Perilaku</string>
+    <string name="import_skin_pack">Impor Paket Kulit(skin)</string>
+    <string name="delete_resource_pack">Hapus Paket Sumber Daya</string>
+    <string name="delete_skin_pack">Hapus Paket Kulit(skin)</string>
+    <string name="delete_behavior_pack">Hapus Paket Perilaku</string>
+
+    <!-- Content Operations -->
+    <string name="confirm_delete_world">Apakah Anda yakin ingin menghapus dunia ini? Tindakan ini tidak dapat dibatalkan.</string>
+    <string name="confirm_delete_resource_pack">Apakah Anda yakin ingin menghapus paket sumber daya ini? Tindakan ini tidak dapat dibatalkan.</string>
+    <string name="confirm_delete_behavior_pack">Apakah Anda yakin ingin menghapus paket perilaku ini? Tindakan ini tidak dapat dibatalkan.</string>
+    <string name="confirm_delete_skin_pack">Apakah Anda yakin ingin menghapus paket kulit(skin) ini? Tindakan ini tidak dapat dibatalkan.</string>
+    <string name="importing_content">Mengimpor konten…</string>
+    <string name="exporting_world">Mengekspor dunia…</string>
+    <string name="exporting_pack">Mengekspor paket…</string>
+    <string name="backing_up_world">Mencadangkan dunia…</string>
+    <string name="deleting_world">Menghapus dunia…</string>
+    <string name="deleting_pack">Menghapus paket…</string>
+    <string name="adding_server">Menambahkan server…</string>
+    <string name="deleting_screenshot">Menghapus tangkapan layar…</string>
+    <string name="deleting_server">Menghapus server…</string>
+
+    <!-- World Editor -->
+    <string name="edit_world">Edit Dunia</string>
+    <string name="edit">Edit</string>
+    <string name="save">Simpan</string>
+    <string name="reset">Reset</string>
+    <string name="saved_to_gallery">Disimpan ke galeri</string>
+    <string name="level_dat_not_found">level.dat tidak ditemukan</string>
+    <string name="no_editable_properties">Tidak ditemukan properti yang dapat diedit.</string>
+    <string name="no_data">Tidak ada data</string>
+    <string name="error_loading_world">Kesalahan saat memuat dunia</string>
+    <string name="world_saved">Dunia berhasil diselamatkan</string>
+    <string name="save_failed">Penyimpanan gagal</string>
+    <string name="unsaved_changes">Perubahan yang Belum Disimpan</string>
+    <string name="discard_changes_message">Anda memiliki perubahan yang belum disimpan. Apakah Anda ingin menghapusnya?</string>
+    <string name="discard">Membuang/Menghapus</string>
+
+    <!-- Custom Flat World -->
+    <string name="custom_flat_world">Dunia Datar Kustom</string>
+    <string name="world_name">Nama Dunia</string>
+    <string name="enter_world_name">Masukkan nama dunia</string>
+    <string name="biome">Bioma</string>
+    <string name="game_mode">Mode Permainan</string>
+    <string name="layers">Lapisan (dari bawah ke atas)</string>
+    <string name="layers_hint">Seret untuk mengubah urutan, geser ke kiri untuk menghapus</string>
+    <string name="add_layer">+ Tambahkan Lapisan</string>
+    <string name="create_world">Ciptakan Dunia</string>
+    <string name="add_at_least_one_layer">Tambahkan satu lapisan</string>
+    <string name="world_created_successfully">Dunia tercipta dengan sukses.</string>
+    <string name="failed_to_create_world">Gagal menciptakan dunia</string>
+    <string name="custom_flat_world_subtitle">Buat dunia dengan bioma dan lapisan blok pilihan Anda sendiri</string>
+    <string name="world_settings">Pengaturan Dunia</string>
+    <string name="world_settings_hint">Pilih pengaturan dasar untuk dunia baru</string>
+    <string name="layers_title">Lapisan</string>
+    <string name="add_layer_compact">Tambah Lapisan</string>
+    <string name="no_layers_title">Belum ada lapisan</string>
+    <string name="no_layers_hint">Tambahkan setidaknya satu lapisan blok untuk membuat dunia</string>
+    <string name="reorder_layer">Susun ulang lapisan</string>
+    <string name="delete_layer">Hapus lapisan</string>
+    <string name="block_id_hint">minecraft:stone</string>
+    <plurals name="flat_layers_count">
+        <item quantity="one">%1$d lapisan • bawah → atas</item>
+        <item quantity="other">%1$d lapisan • bawah → atas</item>
+    </plurals>
+
+    <!-- Play Store Validation -->
+    <string name="minecraft_playstore_required_title">Versi Play Store Diperlukan</string>
+    <string name="minecraft_playstore_required_message">Peluncur ini hanya berfungsi dengan aplikasi Minecraft resmi dari Google Play Store. Silakan instal versi Play Store untuk melanjutkan.</string>
+    <string name="buy_minecraft">Dapatkan Minecraft Di Play Store</string>
+    <string name="minecraft_not_installed_title">Minecraft Belum Terinstal</string>
+    <string name="minecraft_not_installed_message">Minecraft belum terpasang di perangkat Anda. Silakan instal dari Google Play Store untuk menggunakan peluncur ini.</string>
+    <string name="install_minecraft">Instal Minecraft</string>
+    <string name="genuine_badge_label">Lisensi tidak ter-verifikasi</string>
+    <string name="invalid_license_detected_toast">Minecraft palsu terdeteksi. Pastikan Minecraft Anda berasal dari Google Play Store.</string>
+
+    <string name="full_mods_title">Mods </string>
+    <string name="total_mods">Total Mods:</string>
+    <string name="enabled_mods">Aktif:</string>
+    <string name="add_mod">Tambahkan Mod</string>
+    <string name="external_mods">Mod Eksternal</string>
+    <string name="external_mods_subtitle">Mod komunitas untuk Minecraft %1$s</string>
+    <string name="external_mods_no_version">Pilih versi Minecraft sebelum memasang mod</string>
+    <string name="external_mods_search_hint">Cari mod, pembuat, atau versi…</string>
+    <string name="external_mods_compatible_only">Hanya yang kompatibel</string>
+    <string name="external_mods_all_versions">Semua versi Minecraft</string>
+    <string name="external_mods_sort_newest">Terbaru</string>
+    <string name="external_mods_sort_name">Nama A–Z</string>
+    <string name="external_mods_empty">Tidak ada mod yang cocok dengan filter ini</string>
+    <string name="external_mods_load_failed">Tidak dapat menyegarkan katalog. Menampilkan salinan yang tersimpan.</string>
+    <string name="external_mods_refresh">Segarkan katalog</string>
+    <string name="external_mods_refreshed">Katalog disegarkan</string>
+    <string name="external_mods_join_discord">Gabung Discord Komunitas</string>
+    <string name="external_mods_discord_open_failed">Tidak ada aplikasi yang dapat membuka undangan Discord</string>
+    <string name="external_mods_download">Mengunduh %1$s</string>
+    <string name="external_mods_choose_download">Pilih unduhan</string>
+    <string name="external_mods_download_file">Mod %1$s • %2$s</string>
+    <string name="external_mods_verification_failed">Verifikasi unduhan gagal</string>
+    <string name="external_mods_importing">Mengimpor mod…</string>
+    <string name="external_mods_installed">%1$s terpasang</string>
+    <string name="external_mods_install_failed">Tidak dapat memasang %1$s: %2$s</string>
+    <string name="external_mods_open_failed">Tidak ada browser yang dapat membuka unduhan ini</string>
+    <string name="external_mods_direct_download">Unduhan langsung</string>
+    <string name="external_mods_ad_download">Unduhan dengan iklan</string>
+    <string name="external_mods_external_link">Tautan eksternal</string>
+    <string name="external_mods_open_link">Buka Tautan</string>
+    <string name="external_mods_external_dialog_title">Unduhan Eksternal</string>
+    <string name="external_mods_ad_dialog_title">Unduhan dengan Iklan</string>
+    <string name="external_mods_external_dialog_message">%1$s menggunakan halaman unduhan di luar LeviLauncher.\n\n1. Ketuk Buka Tautan dan unduh file .levipack atau .so.\n2. Kembali ke LeviLauncher dan buka Mod.\n3. Ketuk Pindai.\n4. Ketuk Tambah di sebelah mod yang ingin Anda impor.\n\nPemindaian hanya memeriksa folder utama Unduhan. Pindahkan file ke sana jika browser menyimpannya di tempat lain.</string>
+    <string name="external_mods_ad_dialog_message">%1$s menggunakan halaman unduhan dengan iklan yang dipilih oleh pengembangnya. LeviLauncher tidak mengontrol halaman tersebut atau iklannya.\n\n1. Ketuk Buka Tautan dan unduh file .levipack atau .so.\n2. Kembali ke LeviLauncher dan buka Mod.\n3. Ketuk Pindai.\n4. Ketuk Tambah di sebelah mod yang ingin Anda impor.\n\nPemindaian hanya memeriksa folder utama Unduhan. Unduh hanya file mod; jangan memasang aplikasi yang tidak terkait atau mengizinkan notifikasi.</string>
+    <string name="external_mods_by_author">oleh %1$s</string>
+    <string name="external_mods_version">Mod %1$s</string>
+    <string name="external_mods_minecraft_versions">Minecraft %1$s</string>
+    <string name="external_mods_update">Perbarui</string>
+    <string name="external_mods_installed_button">Terpasang</string>
+    <string name="external_mods_incompatible">Tidak kompatibel</string>
+
+    <!-- Mod Detail -->
+    <string name="mod_detail_title">Detail Mod</string>
+    <string name="delete_mod">Hapus Mod</string>
+    <string name="error_loading_mod">Terjadi kesalahan saat memuat detail mod.</string>
+    <string name="mod_enabled">Mod diaktifkan</string>
+    <string name="mod_disabled">Mod dinonaktifkan</string>
+    <string name="mod_filename_format">File: %s</string>
+    <string name="mod_enable_status">Status</string>
+    <string name="mod_icon_content_description">Ikon mod</string>
+    <string name="mod_author_byline">oleh %s</string>
+    <string name="mod_version_chip">Versi %s</string>
+    <string name="mod_metadata_title">Informasi</string>
+    <string name="mod_actions_title">Tindakan</string>
+    <string name="mod_author_label">Pembuat</string>
+    <string name="mod_version_label">Versi</string>
+    <string name="mod_minecraft_versions_label">Versi Minecraft</string>
+    <string name="mod_entry_label">File Entri</string>
+    <string name="mod_id_label">ID Mod</string>
+    <string name="mod_config_files_label">File Konfigurasi</string>
+    <string name="mod_unknown_author">Pembuat tidak diketahui</string>
+    <string name="mod_unknown_version">Versi tidak diketahui</string>
+    <string name="mod_all_versions">Semua versi yang didukung</string>
+    <string name="mod_no_config_files">Tidak ada konfigurasi yang dapat diedit</string>
+    <string name="mod_config_badge">KONFIG</string>
+    <string name="mod_config_badge_with_count">KONFIG · %d</string>
+    <string name="mod_config_title_format">Konfigurasi %s</string>
+    <string name="mod_config_not_found">Tidak ada konfigurasi yang dapat diedit</string>
+    <string name="mod_config_load_failed">Gagal memuat konfigurasi: %s</string>
+    <string name="mod_config_save_failed">Gagal menyimpan konfigurasi</string>
+    <string name="mod_config_saved">Konfigurasi disimpan</string>
+    <string name="mod_config_restart_hint">File konfigurasi disimpan dan file .backup dipertahankan.</string>
+    <string name="mod_config_validation_failed">Validasi konfigurasi gagal</string>
+    <string name="mod_config_invalid_json">JSON tidak valid</string>
+    <string name="mod_config_expand">Buka</string>
+    <string name="mod_config_collapse">Tutup</string>
+    <string name="mod_config_raw_json">Edit JSON asli</string>
+    <string name="mod_config_raw_json_short">JSON</string>
+    <string name="mod_config_item_label">Item %1$s</string>
+    <string name="mod_config_object_desc">Grup pengaturan terkait</string>
+    <string name="mod_config_array_desc">Daftar nilai</string>
+    <string name="mod_config_range_prefix">Rentang</string>
+    <string name="mod_config_error_number">%1$s harus berupa angka</string>
+    <string name="mod_config_error_minimum">%1$s minimal harus %2$s</string>
+    <string name="mod_config_error_maximum">%1$s maksimal harus %2$s</string>
+    <string name="mod_config_error_boolean">%1$s harus aktif atau nonaktif</string>
+    <string name="mod_config_error_string">%1$s harus berupa teks</string>
+    <!-- Mod Configuration -->
+    <plurals name="mod_config_files_count">
+        <item quantity="one">%d konfigurasi dapat diedit</item>
+        <item quantity="other">%d konfigurasi dapat diedit</item>
+    </plurals>
+    <plurals name="mod_config_choices_count">
+        <item quantity="one">%d pilihan</item>
+        <item quantity="other">%d pilihan</item>
+    </plurals>
+    <plurals name="mod_config_items_count">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d item</item>
+    </plurals>
+
+    <!-- Game Version Select Dialog -->
+    <string name="game_version_select_title">Pilih Versi Game</string>
+    <string name="back">Kembali</string>
+
+    <!-- Splash -->
+    <string name="splash_logo_desc">Logo daun</string>
+    <string name="minecraft_loading_title">Memulai Minecraft</string>
+    <string name="minecraft_loading_subtitle">Menyiapkan library native dan mod yang aktif</string>
+    <string name="minecraft_loading_status_preparing">Menyiapkan runtime</string>
+    <string name="minecraft_loading_log_title">Log Peluncuran</string>
+    <string name="minecraft_loading_complete">Runtime siap</string>
+    <string name="minecraft_loading_entering_game">Masuk ke Minecraft</string>
+    <string name="minecraft_loading_failed">Gagal memulai</string>
+    <string name="minecraft_loading_return">Kembali ke Launcher</string>
+    <string name="launcher_restart_title">Kembali ke Launcher</string>
+    <string name="launcher_restart_subtitle">Tunggu sebentar, kamu akan kembali ke halaman utama</string>
+    <string name="launcher_restart_status">Hampir selesai…</string>
+
+    <!-- Accounts & Microsoft Login -->
+    <string name="accounts_title">Akun</string>
+    <string name="microsoft_accounts">Akun Microsoft</string>
+    <string name="manage_accounts">Kelola akun</string>
+    <string name="not_signed_in">Belum masuk</string>
+    <string name="xuid">XUID</string>
+    <string name="sign_in">Masuk</string>
+    <string name="sign_out">Keluar</string>
+    <string name="accounts_active_privilege">Sudah masuk</string>
+
+    <string name="ms_login_title">Login Microsoft</string>
+    <string name="ms_login_header_subtitle">Masuk ke Minecraft dengan aman</string>
+    <string name="ms_login_starting">Memulai proses login Microsoft…</string>
+    <string name="ms_login_exchanging">Menukarkan token…</string>
+    <string name="ms_login_auth_xbox_device">Memverifikasi perangkat Xbox…</string>
+    <string name="ms_login_fetch_minecraft_identity">Mengambil identitas akun Minecraft…</string>
+    <string name="ms_login_retrying">Koneksi terputus. Mencoba ulang dengan aman…</string>
+    <string name="ms_login_success">Masuk sebagai %1$s</string>
+    <string name="ms_login_failed">Login Microsoft gagal</string>
+    <string name="ms_login_failed_detail">Login gagal: %1$s</string>
+    <string name="ms_choose_login_method">Masuk ke Minecraft</string>
+    <string name="ms_choose_login_method_desc">Pilih alur kode perangkat berbasis browser atau lanjutkan dengan halaman Microsoft tertanam.</string>
+    <string name="ms_device_code_login">Lanjutkan dengan browser</string>
+    <string name="ms_device_code_option_title">Kode Perangkat (Disarankan)</string>
+    <string name="ms_device_code_login_desc">Buka sesi browser privat dengan kode perangkat yang sudah terisi.</string>
+    <string name="ms_webview_login">Buka masuk tertanam</string>
+    <string name="ms_webview_option_title">WebView Tertanam</string>
+    <string name="ms_webview_login_desc">Masuk tanpa meninggalkan LeviLauncher. Gunakan saat alur browser tidak tersedia.</string>
+    <string name="ms_device_code_title">Masuk dengan Kode Perangkat</string>
+    <string name="ms_device_code_instructions">Buka halaman masuk perangkat Microsoft, masukkan kode ini, lalu setujui akses. LeviLauncher akan menyelesaikannya secara otomatis.</string>
+    <string name="ms_device_code_label">Kode perangkat Microsoft</string>
+    <string name="ms_device_code_requesting">Meminta kode aman…</string>
+    <string name="ms_device_code_waiting_code">--------</string>
+    <string name="ms_device_code_waiting">Menunggu Anda menyelesaikannya di browser…</string>
+    <string name="ms_device_code_checking">Memeriksa hasil masuk Microsoft…</string>
+    <string name="ms_device_code_reconnecting">Koneksi berubah. Mencoba ulang secara otomatis…</string>
+    <string name="ms_device_code_authorized">Microsoft menyetujui proses masuk. Menyelesaikan…</string>
+    <string name="ms_device_code_browser_opened">Selesaikan proses masuk Microsoft yang baru di browser, lalu kembali ke sini.</string>
+    <string name="ms_device_code_expires">Kode kedaluwarsa dalam %1$d:%2$02d</string>
+    <string name="ms_device_code_copy">Salin Kode</string>
+    <string name="ms_device_code_copied">Kode disalin</string>
+    <string name="ms_device_code_open_browser">Buka masuk Microsoft</string>
+    <string name="ms_device_code_step_title">Selesaikan proses masuk di browser Anda</string>
+    <string name="ms_device_code_browser_note">LeviLauncher membuka browser default Anda dalam sesi privat, mengisi kode secara otomatis, dan meminta proses masuk Microsoft yang baru.</string>
+    <string name="ms_choose_other_method">Metode lain</string>
+    <string name="ms_no_browser">Tidak ada browser yang tersedia di perangkat ini.</string>
+    <string name="ms_default_browser_no_private_mode">Browser default Anda tidak mendukung masuk secara privat. Perbarui browser atau gunakan login WebView.</string>
+    <string name="ms_login_ssl_failed">Halaman masuk Microsoft yang aman tidak dapat diverifikasi.</string>
+    <string name="ms_login_state_failed">Respons masuk Microsoft tidak dapat diverifikasi. Mulai proses masuk lagi.</string>
+    <string name="ms_login_missing_code">Microsoft tidak mengembalikan kode masuk. Mulai proses masuk lagi atau gunakan login Kode Perangkat.</string>
+
+    <string name="ms_set_active">Aktifkan</string>
+    <string name="ms_delete">Hapus</string>
+    <string name="ms_active_badge">Aktif</string>
+    <string name="ms_account_subtitle_format">ID Pengguna: %1$s • Diperbarui: %2$s</string>
+    <string name="xbox_avatar">Avatar Xbox</string>
+    <string name="launcher_managed_mc_login">Masuk ke Minecraft menggunakan LeviLauncher</string>
+    <string name="dialog_title_login_required">Login diperlukan</string>
+    <string name="dialog_message_login_required">Login yang dikelola oleh launcher diaktifkan, tetapi belum ada akun yang masuk. Buka Akun untuk masuk.</string>
+    <string name="go_to_accounts">Akun</string>
+    <string name="disable_launcher_login_and_continue">Tutup</string>
+
+    <string name="ms_feature_disabled_title">Fitur Dinonaktifkan</string>
+    <string name="ms_feature_disabled_desc">Aktifkan “Masuk ke Minecraft dengan LeviLauncher” di Pengaturan untuk mengelola akun Microsoft.</string>
+    <string name="ms_activated">Diaktifkan</string>
+
+    <!-- Popup labels -->
+    <string name="label_current_account">Akun Sekarang</string>
+    <string name="label_other_accounts">Akun Lain</string>
+    <!-- Crash & Diagnostics -->
+    <string name="crash_title">Aplikasi mengalami kerusakan.</string>
+    <string name="crash_upload">Unggah laporan kerusakan</string>
+    <string name="crash_details_title">Detail kerusakan</string>
+    <string name="crash_back_to_main">Kembali ke Beranda</string>
+    <string name="crash_share_log">Bagikan Log</string>
+    <string name="crash_log_file_label">Berkas log:</string>
+    <string name="crash_log_file_missing">Berkas log tidak ditemukan atau tidak dapat dibaca.</string>
+    <string name="crash_read_failed">Gagal membaca log: %1$s</string>
+    <string name="crash_loading_details">Memuat detail kerusakan...</string>
+    <string name="crash_type_label">Jenis kerusakan:</string>
+    <string name="crash_summary_label">Ringkasan kerusakan:</string>
+    <string name="crash_stack_label">Detail dan stack kerusakan:</string>
+    <string name="crash_emergency_label">Kerusakan darurat:</string>
+    <string name="crash_no_details">Tidak ada detail kecelakaan yang tersedia..</string>
+    <string name="dialog_title_exit_app">Keluar dari Aplikasi</string>
+    <string name="dialog_message_exit_app">Apakah Anda yakin ingin keluar?</string>
+    <string name="dialog_positive_exit">Keluar</string>
+    <string name="show_logcat_overlay">Logcat overlay</string>
+
+
+
+
+
+
+    <string name="logcat_live">Logcat: <b>hidup(live)</b></string>
+    <string name="logcat_paused">Logcat: terhenti</string>
+    <!-- Logcat Overlay i18n -->
+    <string name="logcat_filter_hint">Filter kata kunci</string>
+    <string name="logcat_blacklist_hint">Daftar hitam (dipisahkan koma)</string>
+    <string name="logcat_filter_clear">Hapus filter</string>
+    <string name="logcat_filter">Filter</string>
+    <string name="logcat_autoscroll">Auto-scroll</string>
+    <string name="logcat_pause">Berhentikan(pause)</string>
+    <string name="logcat_clear">Bersihkan</string>
+    <string name="logcat_close">Tutup</string>
+    <string name="logcat_corner_bottom_left">Ubah ukuran: kiri bawah</string>
+    <string name="logcat_corner_bottom_right">Ubah ukuran: kanan bawah</string>
+
+    <!-- Inbuilt Mods -->
+    <string name="inbuilt_mods">Mod Bawaan</string>
+    <string name="inbuilt_mods_title">🔧 Mod Bawaan</string>
+    <string name="inbuilt_mods_subtitle">Mod internal/bawaan yang berjalan tanpa native libraries(.so mod)</string>
+    <string name="no_inbuilt_mods_available">Semua mod bawaan telah ditambahkan.</string>
+    <string name="inbuilt_mod_added">%s ditambahkan ke mod</string>
+    <string name="inbuilt_mod_removed">%s dihapus dari modifikasi</string>
+    <string name="add">Tambahkan</string>
+    <string name="remove">Hapuskan</string>
+    
+    <!-- Inbuilt Mods -->
+    <string name="inbuilt_mod_quick_drop">Quick Drop</string>
+    <string name="inbuilt_mod_quick_drop_desc">Jatuhkan barang dengan cepat</string>
+    <string name="inbuilt_mod_camera">Perspektif Kamera Cepat</string>
+    <string name="inbuilt_mod_camera_desc">Alihkan tampilan kamera</string>
+    <string name="inbuilt_mod_hud">Hide HUD</string>
+    <string name="inbuilt_mod_hud_desc">Sembunyikan hotbar dan UI</string>
+    <string name="inbuilt_mod_autosprint">Auto Sprint</string>
+    <string name="inbuilt_mod_autosprint_desc">Aktifkan/nonaktifkan lari cepat</string>
+    <string name="inbuilt_mod_chick_pet">Chick Pet</string>
+    <string name="inbuilt_mod_chick_pet_desc">Seekor anak ayam piksel yang lucu yang bisa berjalan, tidur, dan berlari saat disentuh!</string>
+    <string name="inbuilt_mod_zoom">Zoom</string>
+    <string name="inbuilt_mod_zoom_desc">Tahan untuk memperbesar, seperti zoom OptiFine</string>
+    <string name="zoom_level_label">Tingkat Zoom:</string>
+    <string name="zoom_keybind_label">Tombol Zoom:</string>
+    <string name="zoom_keybind_press">Tekan tombol apa saja…</string>
+    <string name="zoom_keybind_tap_to_change">Ketuk untuk mengubah</string>
+    <string name="inbuilt_mod_fps_display">Tampilan FPS</string>
+    <string name="inbuilt_mod_fps_display_desc">Menampilkan jumlah bingkai per detik saat ini</string>
+    <string name="inbuilt_mod_cps_display">Tampilan CPS</string>
+    <string name="inbuilt_mod_cps_display_desc">Menampilkan jumlah klik per detik</string>
+    <string name="inbuilt_mod_snaplook">Snaplook</string>
+    <string name="inbuilt_mod_snaplook_desc">Tahan untuk melihat ke belakang dengan cepat (orang ketiga depan)</string>
+    <string name="inbuilt_mod_virtual_cursor">Kursor Virtual</string>
+    <string name="inbuilt_mod_virtual_cursor_desc">Gunakan trackpad virtual untuk mengontrol mouse</string>
+    <string name="virtual_cursor_enabled">Kursor diaktifkan</string>
+    <string name="virtual_cursor_disabled">Kursor dinonaktifkan</string>
+    <string name="cursor_sensitivity_label">Sensitivitas Kursor:</string>
+    <string name="inbuilt_mod_gyro">Giroskop</string>
+    <string name="inbuilt_mod_gyro_desc">Gunakan giroskop perangkat untuk mengontrol rotasi kamera</string>
+    <string name="inbuilt_mod_pojav_controls">Kontrol Pojav</string>
+    <string name="inbuilt_mod_pojav_controls_desc">Ganti kontrol sentuh Minecraft dengan kontrol gaya Pojav yang sepenuhnya dapat disesuaikan</string>
+    <string name="inbuilt_mod_more_buttons">Lebih Banyak Tombol</string>
+    <string name="inbuilt_mod_more_buttons_desc">Buat tombol layar kustom dengan pemetaan satu tombol keyboard dan ikon SVG</string>
+    <string name="inbuilt_badge">BAWAAN</string>
+    <string name="autosprint_keybind_label">Tombol Auto Sprint:</string>
+    <string name="autosprint_keybind_press">Tekan tombol apa saja…</string>
+    <string name="configure">Konfigurasi</string>
+    <string name="overlay_button_size">Ukuran Tombol Overlay</string>
+    <string name="overlay_button_opacity">Opasitas Tombol Overlay</string>
+    <string name="overlay_button_size_value">Ukuran: %1$ddp</string>
+    <string name="overlay_button_opacity_value">Opasitas: %1$d%%</string>
+    <string name="overlay_button_lock">Kunci Posisi</string>
+    <string name="overlay_button_lock_desc">Mencegah penyeretan dan aktivasi tidak sengaja</string>
+    <string name="settings">Pengaturan</string>
+
+    <!-- Extract Structures -->
+    <string name="extract_structures">Ekstrak Struktur</string>
+    <string name="no_structures_found">Tidak ditemukan struktur apa pun di dunia ini.</string>
+    <string name="no_structures_found_title">Tidak ditemukan struktur apa pun</string>
+    <string name="no_structures_found_message">Tidak ada struktur yang ditemukan di dunia ini.\n\nUntuk mengekstrak struktur:\n1. Buka dunia ini di Minecraft menggunakan launcher ini\n2. Letakkan Blok Struktur dan atur ke mode Simpan\n3. Beri nama struktur Anda dan tekan Simpan\n4. Keluar dari dunia dan kembali ke sini\n5. Tekan "Ekstrak Struktur" lagi</string>
+    <string name="structures_exported">Mengekspor %1$d struktur ke %2$s</string>
+    <string name="structures_exported_zip">Struktur sebanyak %d diekspor ke ZIP.</string>
+    <string name="structure_found">Struktur Ditemukan</string>
+    <string name="structure_found_with_size">%1$s (%2$s)</string>
+    <string name="structure_exported">Diekspor: %s</string>
+    <string name="extract">Ekstrak</string>
+    <string name="structures_found_title">Struktur Ditemukan</string>
+    <string name="structures_found_count">%d struktur yang ditemukan di dunia ini</string>
+
+    <!-- Mod Menu -->
+    <string name="mod_menu">Menu Mod</string>
+    <string name="mod_menu_modules">Modul</string>
+    <string name="mod_menu_favorites">Favorit</string>
+    <string name="mod_menu_favorite">Tambahkan ke favorit</string>
+    <string name="mod_menu_unfavorite">Hapus dari favorit</string>
+    <string name="mod_menu_hud_editor">Editor HUD</string>
+    <string name="mod_menu_filter_enabled">Aktif</string>
+    <string name="mod_menu_filter_inbuilt">Bawaan</string>
+    <string name="mod_menu_filter_external">Eksternal</string>
+    <string name="mod_menu_search_hint">Cari mod…</string>
+    <string name="mod_menu_no_mods">Tidak ada mod yang ditambahkan</string>
+    <string name="mod_menu_no_favorites">Belum ada mod favorit</string>
+    <string name="mod_menu_no_matches">Tidak ada mod yang cocok</string>
+    <string name="mod_menu_group_inbuilt">Fitur Bawaan</string>
+    <string name="mod_menu_group_external_ungrouped">Mod Eksternal Tidak Dikelompokkan</string>
+    <string name="mod_menu_module_count">%1$d / %2$d</string>
+    <string name="mod_menu_general_settings">Pengaturan Umum</string>
+    <string name="mod_menu_appearance">Tampilan</string>
+    <string name="mod_menu_pause_menu_only">Hanya Menu Jeda</string>
+    <string name="mod_menu_pause_menu_only_desc">Tampilkan menu mod hanya di layar jeda</string>
+    <string name="mod_menu_default_percent" formatted="false">100%</string>
+    <string name="mod_menu_percent_value">%1$d%%</string>
+    <string name="mod_menu_settings_coming">Pengaturan segera hadir</string>
+    <string name="mod_menu_notifications">Notifikasi</string>
+    <string name="mod_menu_notifications_desc">Tampilkan notifikasi saat mengaktifkan mod</string>
+    <string name="mod_menu_opacity">Opasitas Menu Mod</string>
+    <string name="mod_menu_button_opacity">Opasitas Tombol Menu Mod</string>
+    <string name="mod_menu_compact">Menu Mod Ringkas</string>
+    <string name="mod_menu_compact_desc">Gunakan menu yang lebih kecil dengan daftar modul yang padat dan filter ringkas</string>
+    <string name="mod_menu_version">v1.0</string>
+    <string name="mod_menu_enabled">Menu Mod diaktifkan</string>
+    <string name="mod_menu_disabled">Menu Mod dinonaktifkan</string>
+    <string name="mod_menu_active_title">Menu Mod Aktif</string>
+    <string name="mod_menu_active_desc">Semua mod bawaan sekarang dapat diakses melalui Menu Mod dalam game. Nonaktifkan Menu Mod untuk menambahkan tombol overlay individual.</string>
+    <string name="mod_status_enabled">Diaktifkan</string>
+    <string name="mod_status_disabled">Dinonaktifkan</string>
+    <string name="mod_notification_enabled">%s diaktifkan</string>
+    <string name="mod_overlay_fps_unknown">FPS: --</string>
+    <string name="mod_overlay_fps_value">FPS: %1$d</string>
+    <string name="mod_overlay_cps_value">CPS: %1$d</string>
+    <string name="mod_config_overlay_button_size_dp">Ukuran Tombol Overlay (dp)</string>
+    <string name="mod_config_overlay_opacity_percent" formatted="false">Opasitas Overlay (%)</string>
+    <string name="mod_config_overlay_show_everywhere" formatted="false">Tampilkan di Mana Saja</string>
+    <string name="mod_config_cursor_sensitivity_percent" formatted="false">Sensitivitas Kursor (%)</string>
+    <string name="mod_config_zoom_level_percent" formatted="false">Level Zoom (%)</string>
+    <string name="mod_config_auto_sprint_keybind">Keybind Sprint Otomatis</string>
+    <string name="mod_config_zoom_keybind">Keybind Zoom</string>
+    <string name="mod_config_zoom_transition">Durasi Transisi (ms)</string>
+    <string name="mod_config_gyro_sensitivity_multiplier" formatted="false">Pengali Sensitivitas (100% = 1x)</string>
+    <string name="mod_config_gyro_horizontal_speed" formatted="false">Kecepatan Horizontal (%)</string>
+    <string name="mod_config_gyro_vertical_speed" formatted="false">Kecepatan Vertikal (%)</string>
+    <string name="mod_config_gyro_small_movement_filter">Filter Gerakan Kecil (0 = Nonaktif)</string>
+    <string name="mod_config_gyro_sensitivity_x" formatted="false">Sensitivitas Horizontal (%)</string>
+    <string name="mod_config_gyro_sensitivity_y" formatted="false">Sensitivitas Vertikal (%)</string>
+    <string name="mod_config_gyro_invert_x">Balik Sumbu Horizontal</string>
+    <string name="mod_config_gyro_invert_y">Balik Sumbu Vertikal</string>
+    <string name="mod_config_gyro_deadzone">Zona Mati</string>
+    <string name="mod_config_press_any_key">Tekan tombol apa saja untuk mengikat...</string>
+    <string name="mod_config_key_unknown">TIDAK DIKETAHUI</string>
+    <string name="mod_config_color_alpha_short">A</string>
+    <string name="mod_config_color_red_short">R</string>
+    <string name="mod_config_color_green_short">G</string>
+    <string name="mod_config_color_blue_short">B</string>
+    <string name="mod_config_color_hex_hint" formatted="false">#AARRGGBB</string>
+    <string name="hud_editor_drag_hint">Seret untuk memindahkan panel</string>
+    <string name="hud_editor_drag_description">Editor HUD. Seret area ini untuk memindahkan panel.</string>
+
+    <!-- Options Editor -->
+    <string name="edit_options">Edit Opsi</string>
+    <string name="options_file_not_found">File opsi tidak ditemukan</string>
+    <string name="no_options_found">Tidak ada opsi ditemukan</string>
+    <string name="search_options_hint">Cari opsi…</string>
+    <string name="no_matching_options">Tidak ada opsi yang cocok</string>
+    <string name="error_loading_options">Gagal memuat opsi</string>
+    <string name="options_saved">Opsi berhasil disimpan</string>
+
+    <!-- Quick Launch -->
+    <string name="quick_launch_title">Peluncuran Cepat</string>
+    <string name="quick_launch_subtitle">Luncurkan Minecraft dengan tindakan tertentu menggunakan protokol URI</string>
+    <string name="quick_launch_how_to_play">Cara Bermain</string>
+    <string name="quick_launch_how_to_play_desc">Buka layar Cara Bermain</string>
+    <string name="quick_launch_servers_tab">Tab Server</string>
+    <string name="quick_launch_servers_tab_desc">Buka tab server di menu main</string>
+    <string name="quick_launch_profile">Profil / Kamar Ganti</string>
+    <string name="quick_launch_profile_desc">Buka layar kustomisasi karakter</string>
+    <string name="quick_launch_store_home">Beranda Marketplace</string>
+    <string name="quick_launch_store_home_desc">Buka layar beranda Marketplace</string>
+    <string name="quick_launch_minecoins">Minecoins</string>
+    <string name="quick_launch_minecoins_desc">Buka layar pembelian Minecoins</string>
+    <string name="quick_launch_marketplace_pass">Marketplace Pass</string>
+    <string name="quick_launch_marketplace_pass_desc">Buka layar langganan Marketplace Pass</string>
+    <string name="quick_launch_connect_server">Hubungkan ke Server</string>
+    <string name="quick_launch_connect_server_desc">Hubungkan langsung ke server Bedrock</string>
+    <string name="quick_launch_add_server">Tambah Server Eksternal</string>
+    <string name="quick_launch_add_server_desc">Tambah server baru ke daftar server Anda</string>
+    <string name="quick_launch_realm_invite">Gabung Realm</string>
+    <string name="quick_launch_realm_invite_desc">Terima kode undangan Realm</string>
+    <string name="quick_launch_load_world">Muat Dunia</string>
+    <string name="quick_launch_load_world_desc">Muat dunia lokal berdasarkan nama</string>
+    <string name="quick_launch_command">Jalankan Perintah</string>
+    <string name="quick_launch_command_desc">Jalankan perintah slash di dalam game</string>
+    <string name="quick_launch_custom_uri">URI Kustom</string>
+    <string name="quick_launch_custom_uri_desc">Masukkan URI minecraft:// kustom</string>
+
+    <!-- Quick Launch Dialogs -->
+    <string name="server_ip_hint">Alamat IP Server</string>
+    <string name="server_port_hint">Port (default: 19132)</string>
+    <string name="server_name_hint">Nama Server</string>
+    <string name="realm_invite_code_hint">Kode Undangan Realm</string>
+    <string name="world_name_hint">Nama Dunia</string>
+    <string name="command_hint">Perintah (tanpa /)</string>
+    <string name="command_warning">Catatan: Ini akan memutuskan koneksi Anda jika digunakan di dunia lokal</string>
+    <string name="uri_hint">minecraft://…</string>
+    <string name="custom_uri_hint">Masukkan URI minecraft:// lengkap. Contoh:\nminecraft://openStore\nminecraft://?showStoreOffer=UUID</string>
+    <string name="select_tab">Pilih Tab:</string>
+
+    <!-- Quick Launch Validation -->
+    <string name="server_ip_required">IP Server diperlukan</string>
+    <string name="server_details_required">Nama dan IP server diperlukan</string>
+    <string name="invalid_port">Nomor port tidak valid</string>
+    <string name="invite_code_required">Kode undangan diperlukan</string>
+    <string name="world_name_required">Nama dunia diperlukan</string>
+    <string name="command_required">Perintah diperlukan</string>
+    <string name="invalid_minecraft_uri">URI minecraft:// tidak valid</string>
+
+    <!-- Quick Launch Actions -->
+    <string name="connect">Hubungkan</string>
+    <string name="join">Gabung</string>
+    <string name="load">Muat</string>
+    <string name="execute">Jalankan</string>
+
+    <!-- Quick Actions Menu -->
+    <string name="quick_launch">Peluncuran Cepat</string>
+    <string name="quick_launch_menu_subtitle">Luncurkan dengan tindakan URI</string>
+
+    <!-- CurseForge -->
+    <string name="curseforge_title">CurseForge</string>
+    <string name="curseforge_subtitle">Jelajahi dan unduh konten</string>
+    <string name="curseforge_search_hint">Cari konten…</string>
+    <string name="curseforge_download">Unduh</string>
+    <string name="curseforge_downloading">Mengunduh…</string>
+    <string name="curseforge_importing">engimpor…</string>
+    <string name="curseforge_download_failed">Gagal mengunduh</string>
+    <string name="curseforge_available_files">File yang Tersedia</string>
+
+    <!-- Navigation Bar -->
+    <string name="nav_launch">Luncurkan</string>
+    <string name="nav_import">Impor</string>
+    <string name="nav_instances">Instans</string>
+    <string name="nav_about">Tentang</string>
+    <string name="nav_settings">Pengaturan</string>
+
+    <string name="search_instances_hint">Cari…</string>
+    <string name="instances_label">Instans</string>
+    <string name="select_instance_title">Pilih Instans</string>
+    <string name="filter_all">Semua</string>
+    <string name="filter_custom">Kustom</string>
+    <string name="sort_version_newest">Versi (Terbaru)</string>
+    <string name="tag_installed">Terinstal</string>
+    <string name="tag_custom">Kustom</string>
+    <string name="vanilla_prefix">Vanilla %s</string>
+
+    <string name="about_page_title">Tentang</string>
+    <string name="about_subtitle">LeviLauncher — Launcher Minecraft Bedrock Modern</string>
+    <string name="about_authors_title">👥 Penulis &amp; Pemelihara</string>
+    <string name="about_author_name">DreamGuXiang</string>
+    <string name="about_author_badge">Penulis</string>
+    <string name="about_author_role">Penulis LeviLauncher</string>
+    <string name="about_afdian">Afdian</string>
+    <string name="about_patreon">Patreon</string>
+    <string name="about_source_title">Kode Sumber &amp; Open Source</string>
+    <string name="about_github_repo">GitHub · LeviLauncher</string>
+    <string name="about_github_org">LiteLDev</string>
+    <string name="about_license_note">Lihat LICENSE di repositori untuk detail lisensi.</string>
+    <string name="about_contribute_title">Berkontribusi</string>
+    <string name="about_contribute_desc">Kontribusi melalui Issues atau Pull Requests dipersilakan untuk meningkatkan LeviLauncher.</string>
+    <string name="about_issues">Issue</string>
+    <string name="about_star_fork">Star / Fork</string>
+
+    <string-array name="launcher_tips">
+        <item>Pengaturan memungkinkan Anda menyesuaikan tema, warna, latar belakang, dan opsi tampilan lain agar sesuai dengan setup Anda.</item>
+        <item>LeviLauncher bersifat open source. Gunakan GitHub issues untuk melaporkan masalah launcher atau menyarankan perbaikan.</item>
+        <item>Gunakan dropdown versi untuk mengganti instans saat ini dengan cepat.</item>
+        <item>Apakah ada yang benar-benar membaca ini?</item>
+        <item>Anda dapat menyeret mod untuk mengubah prioritas pemuatannya.</item>
+        <item>Coba Isolasi Versi!</item>
+        <item>Gunakan Peluncuran Cepat untuk langsung terhubung ke server tanpa membuka game terlebih dahulu.</item>
+        <item>Anda dapat mengimpor file .mcworld, .mcpack, dan .mcaddon dari halaman Manajemen Konten.</item>
+        <item>Kelola beberapa akun Xbox di dalam launcher dan beralih antar akun dengan mudah.</item>
+        <item>CurseForge memungkinkan Anda menjelajahi dan mengunduh konten komunitas secara langsung.</item>
+        <item>Muat modul SO native eksternal untuk memperluas atau meningkatkan fitur dan performa Minecraft.</item>
+    </string-array>
+    <!-- Personalization -->
+    <string name="theme_color_title">Warna Tema</string>
+    <string name="theme_color_desc">Warna aksen utama aplikasi</string>
+    <string name="preset_colors">WARNA PRESET</string>
+    <string name="more_colors">WARNA LAINNYA</string>
+    <string name="bg_image_title">Gambar Latar Belakang</string>
+    <string name="bg_image_desc">Pilih gambar untuk digunakan sebagai latar belakang</string>
+    <string name="bg_image_none">Tidak ada gambar yang dipilih</string>
+    <string name="bg_image_selected">Latar belakang kustom aktif</string>
+    <string name="bg_image_blur">Keburaman</string>
+    <string name="bg_image_blur_value">%1$dpx</string>
+    <string name="bg_image_brightness">Kecerahan</string>
+    <string name="bg_image_brightness_value">%1$d%%</string>
+    <string name="select_image">Pilih Gambar</string>
+    <string name="clear">Bersihkan</string>
+
+    <string name="unsupported_version_title">Versi Tidak Didukung</string>
+    <string name="unsupported_version_msg">Peluncur ini tidak mendukung versi Minecraft yang lebih lama dari 1.21.80.</string>
+
+    <!-- Generic UI strings added during localization cleanup -->
+    <string name="close">Tutup</string>
+    <string name="previous">Sebelumnya</string>
+    <string name="next">Berikutnya</string>
+    <string name="visible">Terlihat</string>
+    <string name="tutorial">Tutorial</string>
+    <string name="apply">Terapkan</string>
+    <string name="sort">Urutkan</string>
+    <string name="website">Situs Web</string>
+    <string name="description">Deskripsi</string>
+    <string name="category">Kategori</string>
+    <string name="maintainer">Pengelola</string>
+    <string name="youtube">YouTube</string>
+    <string name="github">GitHub</string>
+    <string name="discord">Discord</string>
+    <string name="screenshot_date_format">Tanggal: %1$s</string>
+    <string name="pagination_page_of">Halaman %1$d dari %2$s</string>
+    <string name="pagination_page_one">Halaman 1</string>
+    <string name="logcat_filter_all">SEMUA</string>
+    <string name="invalid_color_format">Format warna tidak valid</string>
+    <string name="world_directory_not_found">Direktori dunia tidak ditemukan</string>
+    <string name="worlds_directory_unavailable">Direktori dunia tidak tersedia</string>
+    <string name="delete_screenshot_confirm">Yakin ingin menghapus tangkapan layar ini?</string>
+    <string name="delete_server_confirm">Yakin ingin menghapus server ini?</string>
+    <string name="invalid_world_path">Jalur dunia tidak valid</string>
+    <string name="invalid_worlds_directory">Direktori dunia tidak valid</string>
+    <string name="cannot_open_link">Tidak dapat membuka tautan: %1$s</string>
+    <string name="no_files_found">Tidak ada file ditemukan</string>
+    <string name="failed_to_load_files">Gagal memuat file: %1$s</string>
+    <string name="no_website_link_available">Tidak ada tautan situs web yang tersedia</string>
+    <string name="sort_label_format">Urutkan: %1$s</string>
+    <string name="error_message_format">Kesalahan: %1$s</string>
+    <string name="world_name_placeholder">Nama Dunia</string>
+    <string name="world_game_mode_survival_placeholder">Mode Permainan: Survival</string>
+    <string name="world_size_placeholder">Ukuran: 15,2 MB</string>
+    <string name="world_last_played_placeholder">Terakhir dimainkan: 25 Des 2024 14:30</string>
+    <string name="server_name_placeholder">Nama Server</string>
+    <string name="property_name_placeholder">Nama Properti</string>
+    <string name="property_type_int">Bilangan Bulat</string>
+    <string name="value_hint">Nilai</string>
+    <string name="preparing_to_launch">Menyiapkan peluncuran</string>
+    <string name="resource_pack_name_placeholder">Nama Paket Sumber Daya</string>
+    <string name="resource_pack_size_placeholder">Ukuran: 2,5 MB</string>
+    <string name="resource_pack_description_placeholder">Deskripsi paket ditampilkan di sini</string>
+    <string name="mod_name_placeholder">Nama Mod</string>
+    <string name="mod_load_order_placeholder">Urutan muat: 1</string>
+    <string name="custom_color_hex_rgb">Warna Kustom (HEX/RGB)</string>
+    <string name="custom_color_hint">#RRGGBB atau R,G,B</string>
+    <string name="screenshot_name_placeholder">Nama Tangkapan Layar</string>
+    <string name="screenshot_date_placeholder">Tanggal: 2024-01-01 12:00:00</string>
+
+    <!-- More Buttons editor -->
+    <string name="more_buttons_intro">Buat tombol layar bergaya Minecraft yang masing-masing dipetakan ke tepat satu tombol keyboard. Tombol tidak pernah menjalankan makro, urutan tombol, pengulangan otomatis, atau autoclick.</string>
+    <string name="more_buttons_add_button">Tambah Tombol</string>
+    <string name="more_buttons_limit_reached">Batas maksimum %1$d tombol kustom telah tercapai.</string>
+    <string name="more_buttons_empty">Belum ada tombol kustom. Ketuk Tambah Tombol untuk membuatnya.</string>
+    <string name="more_buttons_mode_toggle">Toggle</string>
+    <string name="more_buttons_mode_momentary">Sesaat</string>
+    <string name="more_buttons_summary_format">%1$s  •  %2$s  •  ikon %3$d%%</string>
+    <string name="more_buttons_tap_again_delete">Ketuk Lagi untuk Menghapus</string>
+    <string name="more_buttons_choose_key">Pilih Tombol Keyboard</string>
+    <string name="more_buttons_choose_one_key_help">Pilih tepat satu tombol keyboard untuk tombol ini.</string>
+    <string name="more_buttons_search_keys">Cari tombol keyboard</string>
+    <string name="more_buttons_press_hardware_key">Tekan Tombol Keyboard Fisik…</string>
+    <string name="more_buttons_press_one_key">Tekan Satu Tombol</string>
+    <string name="more_buttons_hardware_key_help">Tekan tombol pada keyboard fisik. Tombol sistem Android akan diabaikan.</string>
+    <string name="more_buttons_key_unsupported">Tombol tersebut tidak didukung sebagai pemetaan keyboard Minecraft.</string>
+    <string name="more_buttons_tutorial_title">Tutorial Lebih Banyak Tombol</string>
+    <string name="more_buttons_tutorial_body">1. Unduh ikon SVG sederhana dari pustaka ikon. SVG Repo dan The SVG adalah tempat awal yang baik.\n\n2. Tambahkan tombol dan pilih tepat satu tombol keyboard.\n\n3. Impor SVG normal. Secara default warnanya diubah menjadi hitam murni (#000000).\n\n4. SVG saat ditekan bersifat opsional. Jika tidak disediakan, SVG normal digunakan kembali. Secara default ikon ditekan diubah menjadi #E6E6E6 dan digeser sedikit ke bawah seperti tombol Minecraft.\n\n5. Pertahankan Warna Asli memungkinkan warna SVG dipertahankan secara terpisah untuk keadaan normal dan ditekan.\n\n6. Ukuran Ikon dan Offset X/Y Ikon menyesuaikan gambar di dalam tombol bergaya Minecraft. Ukuran Tombol mengubah ukuran seluruh kontrol di layar.\n\n7. Pilih apakah pemetaan keyboard bersifat sesaat atau toggle. Sesaat menahan tombol keyboard hanya selama tombol layar ditahan; Toggle bergantian antara menekan dan melepas tombol pada setiap ketukan.\n\nLebih Banyak Tombol sengaja hanya mendukung satu tombol keyboard per tombol layar dan tidak menyediakan makro, urutan tombol, pengulangan otomatis, atau autoclick.</string>
+    <string name="more_buttons_open_svg_repo">Buka SVG Repo</string>
+    <string name="more_buttons_open_the_svg">Buka The SVG</string>
+    <string name="more_buttons_edit_title">Edit %1$s</string>
+    <string name="more_buttons_preview_normal_state">Pratinjau Keadaan Normal</string>
+    <string name="more_buttons_preview_pressed_state">Pratinjau Keadaan Ditekan</string>
+    <string name="more_buttons_name">Nama</string>
+    <string name="more_buttons_button_name_hint">Nama tombol</string>
+    <string name="more_buttons_key_mapping">Pemetaan tombol</string>
+    <string name="more_buttons_one_key_only">Setiap tombol kustom hanya dapat dipetakan ke satu tombol keyboard.</string>
+    <string name="more_buttons_toggle_button">Tombol toggle</string>
+    <string name="more_buttons_toggle_help">Mati: tahan tombol keyboard hanya selama tombol layar ditahan. Nyala: satu ketukan menekan tombol keyboard dan ketukan berikutnya melepasnya.</string>
+    <string name="more_buttons_normal_icon">Ikon normal</string>
+    <string name="more_buttons_choose_svg">Pilih SVG</string>
+    <string name="more_buttons_keep_original_colors">Pertahankan warna SVG asli</string>
+    <string name="more_buttons_normal_color_help">Mati: ubah warna ikon normal menjadi hitam murni (#000000). Nyala: pertahankan warna asli SVG.</string>
+    <string name="more_buttons_pressed_icon">Ikon ditekan</string>
+    <string name="more_buttons_choose_pressed_svg_optional">Pilih SVG Saat Ditekan (Opsional)</string>
+    <string name="more_buttons_keep_pressed_colors">Pertahankan warna asli saat ditekan</string>
+    <string name="more_buttons_pressed_color_help">SVG terpisah untuk keadaan ditekan bersifat opsional untuk tombol sesaat maupun toggle. Jika tidak ada, SVG normal digunakan kembali. Mati mengubah ikon ditekan menjadi #E6E6E6; Nyala mempertahankan warna SVG yang dipilih.</string>
+    <string name="more_buttons_icon_size">Ukuran ikon</string>
+    <string name="more_buttons_icon_x_offset">Offset X ikon</string>
+    <string name="more_buttons_icon_y_offset">Offset Y ikon</string>
+    <string name="more_buttons_button_size">Ukuran tombol</string>
+    <string name="more_buttons_opacity">Opasitas</string>
+    <string name="more_buttons_lock_position">Kunci posisi</string>
+    <string name="more_buttons_show_outside_hud">Tampilkan di luar HUD permainan</string>
+    <string name="more_buttons_position_help">Seluruh tombol tetap dapat dipindahkan dari Editor HUD. Offset X/Y ikon hanya menggeser gambar di dalam tombol dalam langkah kecil pada kanvas 512 px.</string>
+    <string name="more_buttons_unit_px">px</string>
+    <string name="more_buttons_unit_dp">dp</string>
+    <string name="more_buttons_invalid_svg">File tersebut tidak berisi dokumen SVG yang valid.</string>
+    <string name="more_buttons_svg_read_failed">File SVG tidak dapat dibaca.</string>
+    <string name="more_buttons_cannot_open_file">Tidak dapat membuka file.</string>
+    <string name="more_buttons_svg_too_large">SVG terlalu besar.</string>
+    <string name="more_buttons_enter_name">Masukkan nama tombol.</string>
+    <string name="more_buttons_choose_valid_key">Pilih satu tombol keyboard yang valid untuk tombol ini.</string>
+    <string name="more_buttons_choose_normal_svg">Pilih ikon SVG untuk keadaan normal.</string>
+    <string name="more_buttons_save_failed">Tombol ini tidak dapat disimpan.</string>
+    <string name="more_buttons_no_svg_selected">Tidak ada SVG yang dipilih</string>
+    <string name="more_buttons_default_name">Tombol</string>
+
+
+    <!-- Hotbar Slot -->
+    <string name="inbuilt_mod_hotbar_slot">Slot Hotbar</string>
+    <string name="inbuilt_mod_hotbar_slot_desc">Menambahkan tombol 1–9 terpisah untuk memilih slot hotbar</string>
+    <string name="hotbar_slot_content_description">Slot hotbar %1$d</string>
+    <string name="mod_config_hotbar_item_icons">Gunakan ikon item dari hotbar</string>
+    <string name="mod_config_hotbar_item_counts">Tampilkan jumlah item</string>
+    <string name="mod_config_hotbar_slot_enabled">Tampilkan slot hotbar %1$d</string>
+    <string name="mod_config_hotbar_slot_size">Ukuran slot hotbar %1$d (dp)</string>
+    <string name="mod_config_hotbar_slot_opacity">Opasitas slot hotbar %1$d</string>
+    <!-- Changelog & News -->
+    <string name="changelog_title">Yang baru</string>
+    <string name="changelog_version">LeviLauncher %1$s</string>
+    <string name="changelog_continue">Lanjutkan</string>
+    <string name="news_title">Berita launcher</string>
+    <string name="news_subtitle">Pembaruan, pengumuman, dan pemberitahuan penting dari tim LeviLauncher.</string>
+    <string name="news_enable_notifications">Aktifkan notifikasi</string>
+    <string name="news_refresh">Segarkan berita</string>
+    <string name="news_empty">Belum ada berita yang diterbitkan.</string>
+    <string name="news_read_more">Baca selengkapnya</string>
+    <string name="news_important">Penting</string>
+    <string name="news_refreshed">Berita diperbarui</string>
+    <string name="news_refresh_failed">Tidak dapat menyegarkan. Menampilkan berita yang tersimpan.</string>
+    <string name="news_unread_description">Berita launcher, %1$d belum dibaca</string>
+    <string name="news_notification_channel">Berita launcher</string>
+    <string name="news_notification_channel_description">Pengumuman dan pemberitahuan penting baru dari LeviLauncher</string>
+    <string name="mod_config_category_slots">Slot</string>
+    <string name="mod_config_category_appearance">Tampilan</string>
+    <string name="mod_config_category_behavior">Perilaku</string>
+    <string name="mod_config_category_motion">Gerakan</string>
+    <string name="mod_config_category_button">Tombol</string>
+    <string name="mod_config_visible_slots">Slot Terlihat</string>
+    <string name="mod_config_hotbar_slot_section">Slot Hotbar %1$d</string>
+    <!-- Selection & Batch Operations -->
+    <string name="select">Pilih</string>
+    <string name="select_all">Pilih Semua</string>
+    <string name="selected">Dipilih</string>
+    <string name="selected_count_zero">0 dipilih</string>
+    <string name="selected_count">%1$d dipilih</string>
+    <string name="more_actions">Tindakan lainnya</string>
+    <string name="world_meta">%1$s • %2$s</string>
+    <string name="pack_meta">v%1$s • %2$s</string>
+    <string name="no_worlds_found">Tidak ada dunia ditemukan</string>
+    <string name="no_worlds_message">Dunia Anda akan muncul di sini.</string>
+    <string name="no_packs_found">Tidak ada paket ditemukan</string>
+    <string name="no_packs_message">Paket yang terpasang akan muncul di sini.</string>
+    <string name="no_servers_found">Tidak ada server ditemukan</string>
+    <string name="no_servers_message">Server yang tersimpan akan muncul di sini.</string>
+    <string name="no_screenshots_found">Tidak ada tangkapan layar ditemukan</string>
+    <string name="no_screenshots_message">Tangkapan layar Minecraft akan muncul di sini.</string>
+    <string name="no_search_results">Tidak ada hasil untuk “%1$s”</string>
+    <string name="batch_delete_worlds_title">Hapus dunia yang dipilih?</string>
+    <string name="batch_delete_worlds_message">Hapus %1$d dunia yang dipilih? Cadangan akan dibuat sebelum penghapusan.</string>
+    <string name="batch_delete_packs_title">Hapus paket yang dipilih?</string>
+    <string name="batch_delete_packs_message">Hapus %1$d paket yang dipilih?</string>
+    <string name="batch_exporting">Mengekspor %1$d dari %2$d…</string>
+    <string name="batch_deleting">Menghapus %1$d dari %2$d…</string>
+    <string name="batch_transferring">Mentransfer %1$d dari %2$d…</string>
+    <string name="batch_result">%1$d selesai, %2$d gagal</string>
+    <string name="choose_export_folder">Pilih folder ekspor</string>
+</resources>

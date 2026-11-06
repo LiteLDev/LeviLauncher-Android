@@ -108,7 +108,7 @@ public final class DiscordPresence implements Application.ActivityLifecycleCallb
             startedAt = System.currentTimeMillis() / 1000;
         }
         String details = nextPhase == 2 ? "Playing Minecraft"
-                : nextPhase == 1 ? "Starting Minecraft" : "In the launcher";
+                : nextPhase == 1 ? "Starting Minecraft" : "Active in launcher";
         String state = nextPhase == 0 ? "Minecraft Launcher for Android"
                 : nextVersion.isEmpty() ? "Minecraft Bedrock" : "Minecraft " + nextVersion;
         return new Snapshot(details, state, startedAt);
