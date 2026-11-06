@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import org.levimc.launcher.core.crash.CrashReporter
+import org.levimc.launcher.core.discord.DiscordPresence
 import org.levimc.launcher.core.news.NewsNotificationHelper
 import org.levimc.launcher.settings.FeatureSettings
 import org.levimc.launcher.ui.dialogs.LogcatOverlayManager
@@ -23,6 +24,7 @@ class LauncherApplication : Application() {
         LogcatOverlayManager.init(this)
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this)
+        DiscordPresence.initialize(this)
     }
 
     companion object {

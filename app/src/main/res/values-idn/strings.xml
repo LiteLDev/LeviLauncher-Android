@@ -610,12 +610,12 @@
     <string name="dialog_message_exit_app">Apakah Anda yakin ingin keluar?</string>
     <string name="dialog_positive_exit">Keluar</string>
     <string name="show_logcat_overlay">Logcat overlay</string>
-    <string name="foreground_service">Layanan latar depan</string>
-    <string name="foreground_service_desc">Biarkan Minecraft tetap berjalan saat Anda berpindah aplikasi dengan mencegah Bedrock menangguhkan sesi aktif serta menjaga proses, CPU, dan Wi-Fi tetap aktif.</string>
-    <string name="foreground_service_warning">Catatan: Dapat membuat ponsel lebih cepat panas dan meningkatkan penggunaan baterai.</string>
-    <string name="foreground_service_channel">Perlindungan Minecraft di latar belakang</string>
-    <string name="foreground_service_notification_title">Minecraft tetap dijaga aktif</string>
-    <string name="foreground_service_notification_text">Mode latar belakang Minecraft aktif. CPU dan akses jaringan tetap tersedia untuk sesi saat ini.</string>
+
+
+
+
+
+
     <string name="logcat_live">Logcat: <b>hidup(live)</b></string>
     <string name="logcat_paused">Logcat: terhenti</string>
     <!-- Logcat Overlay i18n -->

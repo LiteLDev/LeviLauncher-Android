@@ -610,12 +610,12 @@
     <string name="dialog_message_exit_app">Çıkmak istediğinizden emin misiniz?</string>
     <string name="dialog_positive_exit">Çık</string>
     <string name="show_logcat_overlay">Logcat katmanı</string>
-    <string name="foreground_service">Ön plan hizmeti</string>
-    <string name="foreground_service_desc">Uygulamalar arasında geçiş yaparken Bedrock’un etkin oturumu askıya almasını önleyerek ve işlem, CPU ile Wi-Fi’yi etkin tutarak Minecraft’ın çalışmaya devam etmesini sağlar.</string>
-    <string name="foreground_service_warning">Not: Telefonunuzun daha hızlı ısınmasına ve pil kullanımının artmasına neden olabilir.</string>
-    <string name="foreground_service_channel">Minecraft arka plan koruması</string>
-    <string name="foreground_service_notification_title">Minecraft etkin tutuluyor</string>
-    <string name="foreground_service_notification_text">Minecraft arka plan modu etkin. Geçerli oturum için CPU ve ağ erişimi kullanılabilir tutuluyor.</string>
+
+
+
+
+
+
     <string name="logcat_live">Logcat: <b>canlı</b></string>
     <string name="logcat_paused">Logcat: duraklatıldı</string>
     <!-- Logcat Overlay i18n -->

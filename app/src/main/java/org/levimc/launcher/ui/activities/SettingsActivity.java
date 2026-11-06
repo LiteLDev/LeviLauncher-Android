@@ -31,6 +31,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.crash.CrashReporter;
+import org.levimc.launcher.core.discord.DiscordPresence;
 import org.levimc.launcher.preloader.PreloaderSignatureRulesManager;
 import org.levimc.launcher.settings.FeatureSettings;
 import org.levimc.launcher.ui.animation.DynamicAnim;
@@ -284,15 +285,19 @@ public class SettingsActivity extends BaseActivity {
             } catch (Throwable ignored) {}
         });
 
-        SwitchMaterial switchForegroundService = findViewById(R.id.switch_foreground_service);
-        switchForegroundService.setChecked(fs.isForegroundServiceEnabled());
-        switchForegroundService.setOnCheckedChangeListener((btn, checked) -> fs.setForegroundServiceEnabled(checked));
-
         SwitchMaterial switchCrashUpload = findViewById(R.id.switch_crash_upload);
         switchCrashUpload.setChecked(fs.isCrashUploadEnabled());
         switchCrashUpload.setOnCheckedChangeListener((btn, checked) -> {
             fs.setCrashUploadEnabled(checked);
             CrashReporter.refreshCrashlyticsCollection(this);
+        });
+
+        SwitchMaterial switchDiscordPresence = findViewById(R.id.switch_discord_presence);
+        switchDiscordPresence.setChecked(fs.isDiscordRichPresenceEnabled());
+        switchDiscordPresence.setEnabled(DiscordPresence.isConfigured());
+        switchDiscordPresence.setOnCheckedChangeListener((btn, checked) -> {
+            fs.setDiscordRichPresenceEnabled(checked);
+            DiscordPresence.refresh();
         });
 
         SwitchMaterial switchManagedLogin = findViewById(R.id.switch_managed_login);
@@ -501,12 +506,12 @@ public class SettingsActivity extends BaseActivity {
             switchLogcat.setTrackTintList(new ColorStateList(states, new int[]{trackChecked, 0xFF555555}));
         }
         
-        SwitchMaterial switchForegroundService = findViewById(R.id.switch_foreground_service);
-        if (switchForegroundService != null && accent != 0) {
+        SwitchMaterial switchDiscordPresence = findViewById(R.id.switch_discord_presence);
+        if (switchDiscordPresence != null && accent != 0) {
             int[][] states = {{android.R.attr.state_checked}, {}};
-            switchForegroundService.setThumbTintList(new ColorStateList(states, new int[]{accent, 0xFFAAAAAA}));
+            switchDiscordPresence.setThumbTintList(new ColorStateList(states, new int[]{accent, 0xFFAAAAAA}));
             int trackChecked = Color.argb(100, Color.red(accent), Color.green(accent), Color.blue(accent));
-            switchForegroundService.setTrackTintList(new ColorStateList(states, new int[]{trackChecked, 0xFF555555}));
+            switchDiscordPresence.setTrackTintList(new ColorStateList(states, new int[]{trackChecked, 0xFF555555}));
         }
 
         SwitchMaterial switchManagedLogin = findViewById(R.id.switch_managed_login);

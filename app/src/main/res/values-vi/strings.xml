@@ -610,12 +610,12 @@
     <string name="dialog_message_exit_app">Bạn có chắc chắn muốn thoát ra không?</string>
     <string name="dialog_positive_exit">Thoát</string>
     <string name="show_logcat_overlay">Lớp phủ Logcat</string>
-    <string name="foreground_service">Dịch vụ tiền cảnh</string>
-    <string name="foreground_service_desc">Giữ Minecraft tiếp tục chạy khi bạn chuyển ứng dụng bằng cách ngăn Bedrock tạm dừng phiên đang hoạt động và giữ tiến trình, CPU cùng Wi-Fi luôn hoạt động.</string>
-    <string name="foreground_service_warning">Lưu ý: Có thể khiến điện thoại nóng nhanh hơn và tăng mức sử dụng pin.</string>
-    <string name="foreground_service_channel">Bảo vệ Minecraft khi chạy nền</string>
-    <string name="foreground_service_notification_title">Minecraft đang được giữ hoạt động</string>
-    <string name="foreground_service_notification_text">Chế độ nền của Minecraft đang hoạt động. CPU và quyền truy cập mạng được duy trì cho phiên hiện tại.</string>
+
+
+
+
+
+
     <string name="logcat_live">Logcat: <b>trực tiếp</b></string>
     <string name="logcat_paused">Logcat: đã tạm dừng</string>
     <!-- Logcat Overlay i18n -->

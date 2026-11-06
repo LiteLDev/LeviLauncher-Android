@@ -610,12 +610,12 @@
     <string name="dialog_message_exit_app">确定要退出应用吗？</string>
     <string name="dialog_positive_exit">退出</string>
     <string name="show_logcat_overlay">显示日志悬浮窗</string>
-    <string name="foreground_service">前台服务</string>
-    <string name="foreground_service_desc">切换应用时阻止 Bedrock 暂停当前会话，并保持进程、CPU 和 Wi-Fi 活跃，从而让 Minecraft 继续运行。</string>
-    <string name="foreground_service_warning">注意：可能会让手机更快发热并增加电池消耗。</string>
-    <string name="foreground_service_channel">Minecraft 后台保护</string>
-    <string name="foreground_service_notification_title">正在保持 Minecraft 活跃</string>
-    <string name="foreground_service_notification_text">Minecraft 后台模式已启用。当前会话会持续保持 CPU 和网络访问可用。</string>
+
+
+
+
+
+
     <string name="logcat_live">Logcat：<b>实时</b></string>
     <string name="logcat_paused">Logcat：已暂停</string>
     <!-- Logcat Overlay i18n -->

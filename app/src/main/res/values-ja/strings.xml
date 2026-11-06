@@ -610,12 +610,12 @@
     <string name="dialog_message_exit_app">本当に終了してもよろしいですか？</string>
     <string name="dialog_positive_exit">終了</string>
     <string name="show_logcat_overlay">Logcat オーバーレイ</string>
-    <string name="foreground_service">フォアグラウンドサービス</string>
-    <string name="foreground_service_desc">アプリを切り替えても、Bedrock が実行中のセッションを一時停止しないようにし、プロセス、CPU、Wi-Fi を動作状態に保つことで Minecraft を実行し続けます。</string>
-    <string name="foreground_service_warning">注意: 端末が通常より早く熱くなり、バッテリー消費が増える場合があります。</string>
-    <string name="foreground_service_channel">Minecraft バックグラウンド保護</string>
-    <string name="foreground_service_notification_title">Minecraft を動作状態に保っています</string>
-    <string name="foreground_service_notification_text">Minecraft のバックグラウンドモードが有効です。現在のセッションで CPU とネットワークアクセスを利用できる状態に保っています。</string>
+
+
+
+
+
+
     <string name="logcat_live">Logcat: <b>ライブ</b></string>
     <string name="logcat_paused">Logcat: 一時停止中</string>
     <!-- Logcat Overlay i18n -->

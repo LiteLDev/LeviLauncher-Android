@@ -8,16 +8,11 @@ import androidx.lifecycle.ProcessLifecycleOwner;
 public class PresenceManager implements LifecycleObserver {
 
     private static boolean isAttached;
-    private static volatile boolean leviKeepRunningInBackground = false;
     private boolean m_paused = false;
 
     private static native void pausePresence();
 
     private static native void resumePresence();
-
-    public static void setLeviKeepRunningInBackground(boolean enabled) {
-        leviKeepRunningInBackground = enabled;
-    }
 
     static void attach() {
         if (isAttached) {
@@ -44,10 +39,6 @@ public class PresenceManager implements LifecycleObserver {
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     synchronized void onBackground() {
-        if (leviKeepRunningInBackground) {
-            System.out.println("Ignoring presence pause while Levi background mode is active");
-            return;
-        }
         if (m_paused) {
             System.out.println("Ignoring pause, already paused");
         } else {

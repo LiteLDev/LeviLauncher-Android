@@ -618,12 +618,12 @@
     <string name="dialog_message_exit_app">Вы уверены, что хотите выйти?</string>
     <string name="dialog_positive_exit">Выйти</string>
     <string name="show_logcat_overlay">Оверлей Logcat</string>
-    <string name="foreground_service">Служба переднего плана</string>
-    <string name="foreground_service_desc">Оставляет Minecraft запущенным при переключении между приложениями: не даёт Bedrock приостановить активный сеанс и поддерживает активность процесса, процессора и Wi-Fi.</string>
-    <string name="foreground_service_warning">Примечание: телефон может нагреваться быстрее, а расход батареи может увеличиться.</string>
-    <string name="foreground_service_channel">Защита Minecraft в фоновом режиме</string>
-    <string name="foreground_service_notification_title">Minecraft поддерживается активным</string>
-    <string name="foreground_service_notification_text">Фоновый режим Minecraft активен. Процессор и доступ к сети остаются доступными для текущего сеанса.</string>
+
+
+
+
+
+
     <string name="logcat_live">Logcat: <b>в реальном времени</b></string>
     <string name="logcat_paused">Logcat: приостановлен</string>
     <!-- Logcat Overlay i18n -->

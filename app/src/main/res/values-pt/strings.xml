@@ -610,12 +610,12 @@
     <string name="dialog_message_exit_app">Tem certeza de que deseja sair?</string>
     <string name="dialog_positive_exit">Sair</string>
     <string name="show_logcat_overlay">Sobreposição de Logcat</string>
-    <string name="foreground_service">Serviço em primeiro plano</string>
-    <string name="foreground_service_desc">Mantenha o Minecraft em execução ao alternar entre aplicativos, impedindo que o Bedrock suspenda a sessão ativa e mantendo o processo, a CPU e o Wi-Fi ativos.</string>
-    <string name="foreground_service_warning">Observação: pode fazer o telefone esquentar mais rápido e aumentar o consumo de bateria.</string>
-    <string name="foreground_service_channel">Proteção do Minecraft em segundo plano</string>
-    <string name="foreground_service_notification_title">Minecraft está sendo mantido ativo</string>
-    <string name="foreground_service_notification_text">O modo em segundo plano do Minecraft está ativo. A CPU e o acesso à rede estão sendo mantidos disponíveis para a sessão atual.</string>
+
+
+
+
+
+
     <string name="logcat_live">Logcat: <b>ao vivo</b></string>
     <string name="logcat_paused">Logcat: pausado</string>
     <!-- Logcat Overlay i18n -->

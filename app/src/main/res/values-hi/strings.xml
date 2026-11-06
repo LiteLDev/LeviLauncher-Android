@@ -610,12 +610,12 @@
     <string name="dialog_message_exit_app">क्या आप सुनिश्चित हैं कि आप बाहर निकलना चाहते हैं?</string>
     <string name="dialog_positive_exit">बाहर निकलें</string>
     <string name="show_logcat_overlay">Logcat ओवरले</string>
-    <string name="foreground_service">फ़ोरग्राउंड सेवा</string>
-    <string name="foreground_service_desc">ऐप बदलते समय Bedrock को सक्रिय सेशन सस्पेंड करने से रोककर और प्रोसेस, CPU तथा Wi-Fi को सक्रिय रखकर Minecraft को चलता रहने देता है।</string>
-    <string name="foreground_service_warning">नोट: इससे फ़ोन जल्दी गर्म हो सकता है और बैटरी की खपत बढ़ सकती है।</string>
-    <string name="foreground_service_channel">Minecraft बैकग्राउंड सुरक्षा</string>
-    <string name="foreground_service_notification_title">Minecraft को सक्रिय रखा जा रहा है</string>
-    <string name="foreground_service_notification_text">Minecraft का बैकग्राउंड मोड सक्रिय है। मौजूदा सेशन के लिए CPU और नेटवर्क एक्सेस उपलब्ध रखे जा रहे हैं।</string>
+
+
+
+
+
+
     <string name="logcat_live">Logcat: <b>लाइव</b></string>
     <string name="logcat_paused">Logcat: रुका हुआ है</string>
     <!-- Logcat Overlay i18n -->

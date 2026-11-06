@@ -8,8 +8,8 @@ public class FeatureSettings {
     private boolean versionIsolationEnabled = false;
     private boolean launcherManagedMcLoginEnabled = false;
     private boolean logcatOverlayEnabled = false;
-    private boolean foregroundServiceEnabled = false;
     private Boolean crashUploadEnabled = true;
+    private boolean discordRichPresenceEnabled = true;
 
     public enum StorageType {
         INTERNAL,
@@ -46,11 +46,11 @@ public class FeatureSettings {
     public boolean isLogcatOverlayEnabled() { return logcatOverlayEnabled; }
     public void setLogcatOverlayEnabled(boolean enabled) { this.logcatOverlayEnabled = enabled; autoSave(); }
 
-    public boolean isForegroundServiceEnabled() { return foregroundServiceEnabled; }
-    public void setForegroundServiceEnabled(boolean enabled) { this.foregroundServiceEnabled = enabled; autoSave(); }
-
     public boolean isCrashUploadEnabled() { return crashUploadEnabled == null || crashUploadEnabled; }
     public void setCrashUploadEnabled(boolean enabled) { this.crashUploadEnabled = enabled; autoSave(); }
+
+    public boolean isDiscordRichPresenceEnabled() { return discordRichPresenceEnabled; }
+    public void setDiscordRichPresenceEnabled(boolean enabled) { this.discordRichPresenceEnabled = enabled; autoSave(); }
 
 
     private void autoSave() {

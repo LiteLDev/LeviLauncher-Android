@@ -43,6 +43,7 @@ private const val RELAUNCH_AFTER_KILL_DELAY_MS = 700L
 
 object MinecraftProcessRestarter {
     fun restartLauncherAfterMinecraftExit(context: Context) {
+        org.levimc.launcher.core.discord.DiscordPresence.shutdown()
         val appContext = context.applicationContext
         val oldPid = Process.myPid()
         cancelLegacyLauncherRestart(appContext)

@@ -82,10 +82,6 @@ public class MainActivity extends GameActivity implements View.OnKeyListener, Fi
     private static boolean mHasStoragePermission ;
     private static boolean mHasReadMediaImagesPermission;
     public static MainActivity mInstance;
-    private boolean mLeviKeepRunningInBackground = false;
-    private boolean mLeviSuppressedGameActivityPause = false;
-    private boolean mLeviSuppressedGameActivityStop = false;
-    private boolean mLeviSuppressedGameActivityFocusLoss = false;
     Class SystemProperties;
     private ClipboardManager clipboardManager;
     Method getPropMethod;
@@ -1621,91 +1617,9 @@ public class MainActivity extends GameActivity implements View.OnKeyListener, Fi
         );
     }
 
-    public void setLeviKeepRunningInBackground(boolean enabled) {
-        mLeviKeepRunningInBackground = enabled;
-        com.microsoft.xal.androidjava.PresenceManager.setLeviKeepRunningInBackground(enabled);
-        if (!enabled) {
-            mLeviSuppressedGameActivityPause = false;
-            mLeviSuppressedGameActivityStop = false;
-            mLeviSuppressedGameActivityFocusLoss = false;
-        }
-    }
-
-    public boolean isLeviKeepRunningInBackground() {
-        return mLeviKeepRunningInBackground;
-    }
-
-    @Override
-    protected void onPauseNative(long handle) {
-        if (mLeviKeepRunningInBackground && !isFinishing()) {
-            mLeviSuppressedGameActivityPause = true;
-            Log.d("LeviBackground", "Suppressed GameActivity native pause");
-            return;
-        }
-        super.onPauseNative(handle);
-    }
-
-    @Override
-    protected void onResumeNative(long handle) {
-        if (mLeviSuppressedGameActivityPause) {
-            mLeviSuppressedGameActivityPause = false;
-            Log.d("LeviBackground", "Suppressed paired GameActivity native resume");
-            return;
-        }
-        super.onResumeNative(handle);
-    }
-
-    @Override
-    protected void onStopNative(long handle) {
-        if (mLeviKeepRunningInBackground && !isFinishing()) {
-            mLeviSuppressedGameActivityStop = true;
-            Log.d("LeviBackground", "Suppressed GameActivity native stop");
-            return;
-        }
-        super.onStopNative(handle);
-    }
-
-    @Override
-    protected void onStartNative(long handle) {
-        if (mLeviSuppressedGameActivityStop) {
-            mLeviSuppressedGameActivityStop = false;
-            Log.d("LeviBackground", "Suppressed paired GameActivity native start");
-            return;
-        }
-        super.onStartNative(handle);
-    }
-
-    @Override
-    protected void onWindowFocusChangedNative(long handle, boolean focused) {
-        if (mLeviKeepRunningInBackground) {
-            if (!focused) {
-                mLeviSuppressedGameActivityFocusLoss = true;
-                Log.d("LeviBackground", "Suppressed GameActivity native focus loss");
-                return;
-            }
-            if (mLeviSuppressedGameActivityFocusLoss) {
-                mLeviSuppressedGameActivityFocusLoss = false;
-                Log.d("LeviBackground", "Suppressed paired GameActivity native focus gain");
-                return;
-            }
-        }
-        super.onWindowFocusChangedNative(handle, focused);
-    }
-
-    @Override
-    protected void onTrimMemoryNative(long handle, int level) {
-        if (mLeviKeepRunningInBackground && level == ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN) {
-            Log.d("LeviBackground", "Suppressed UI-hidden trim callback");
-            return;
-        }
-        super.onTrimMemoryNative(handle, level);
-    }
-
     @Override
     public void onPause() {
-        if (!mLeviKeepRunningInBackground || isFinishing()) {
-            nativeSuspend();
-        }
+        nativeSuspend();
         super.onPause();
         if (isFinishing()) {
             nativeShutdown();
@@ -1714,9 +1628,7 @@ public class MainActivity extends GameActivity implements View.OnKeyListener, Fi
 
     @Override
     protected void onStop() {
-        if (!mLeviKeepRunningInBackground || isFinishing()) {
-            nativeStopThis();
-        }
+        nativeStopThis();
         super.onStop();
 
         for (ActivityListener activityListener : this.mActivityListeners) {

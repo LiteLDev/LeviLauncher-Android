@@ -12,7 +12,20 @@ on:
   workflow_dispatch:
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate release content
+        run: python3 scripts/validate_release_content.py
+
   build:
+    needs: validate
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -21,8 +34,31 @@ jobs:
           fetch-depth: 0
           submodules: "recursive"
 
-      - name: Validate release content
-        run: python3 scripts/validate_release_content.py
+      - name: Download Discord Social SDK
+        env:
+          GH_TOKEN: ${{ secrets.DISCORD_SDK_TOKEN }}
+          DISCORD_SDK_REPOSITORY: ${{ vars.DISCORD_SDK_REPOSITORY }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${GH_TOKEN:-}" ] || [ -z "${DISCORD_SDK_REPOSITORY:-}" ]; then
+            echo "::error::Configure the DISCORD_SDK_REPOSITORY Actions variable and DISCORD_SDK_TOKEN Actions secret."
+            exit 1
+          fi
+
+          mkdir -p app/libs
+          gh release download 'discord-sdk-1.10.19337' \
+            --repo "$DISCORD_SDK_REPOSITORY" \
+            --pattern 'discord_partner_sdk.aar' \
+            --dir app/libs \
+            --clobber
+
+          if ! printf '%s  %s\n' \
+            'b1b2491f1e1848c79fd6f1986d5aa1e0c8019e88a6e62c7be06b89e8e4870933' \
+            'app/libs/discord_partner_sdk.aar' | sha256sum --check --status; then
+            echo "::error::The Discord SDK AAR does not match the pinned 1.10.19337 build."
+            exit 1
+          fi
 
       - name: Prepare google-services.json
         env:
