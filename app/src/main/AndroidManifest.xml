@@ -9,6 +9,9 @@
     <uses-feature
         android:name="android.hardware.touchscreen"
         android:required="false" />
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="false" />
 
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" tools:node="remove" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" tools:node="remove" />
@@ -17,7 +20,7 @@
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" tools:node="remove" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" tools:node="remove" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" tools:node="remove" />
     <uses-permission android:name="android.permission.BLUETOOTH" tools:node="remove" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" tools:node="remove" />

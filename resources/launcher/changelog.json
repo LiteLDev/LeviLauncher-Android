@@ -1,19 +1,16 @@
 {
   "schemaVersion": 1,
-  "headline": "LeviLauncher v1.6.0",
-  "summary": "Added Minecraft 26.60 support, launcher HUD controls, new world tools, and numerous optimisations.",
+  "headline": "LeviLauncher v1.6.1",
+  "summary": "Added Discord Rich Presence and optional microphone permission, with faster startup and content management and improved Indonesian language support.",
   "sections": [
     {
       "title": "New Features",
       "items": [
         {
-          "text": "Added support for Minecraft 26.60."
+          "text": "Added Discord Rich Presence to show launcher activity, Minecraft version, and elapsed time. No login required in LeviLauncher."
         },
         {
-          "text": "Added an option to hide the launcher HUD and overlay buttons."
-        },
-        {
-          "text": "Added a world map and advanced NBT editing."
+          "text": "Added microphone permission for mod developers creating proximity voice chat mods. Disabled by default; enable it in Android's app permissions."
         }
       ]
     },
@@ -21,7 +18,16 @@
       "title": "Improvements",
       "items": [
         {
-          "text": "Made numerous performance optimisations."
+          "text": "Removed the foreground service. Update to BedrockTools v1.5.11 and enable No Disconnect to keep Minecraft running in the background and skip the loading screen when returning to the app."
+        },
+        {
+          "text": "Optimised native library extraction and caching to reduce repeated work and speed up Minecraft startup."
+        },
+        {
+          "text": "Optimised content management for faster pack imports and deletions, world list loading, and content counts."
+        },
+        {
+          "text": "The home screen now shows Skin Packs instead of Behavior Packs."
         }
       ]
     },
@@ -29,7 +35,7 @@
       "title": "Fixes",
       "items": [
         {
-          "text": "Fixed the options editor not working."
+          "text": "Fixed Indonesian locale handling and migrated existing language selections (#396)."
         }
       ]
     }
