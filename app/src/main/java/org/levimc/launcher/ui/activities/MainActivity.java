@@ -670,6 +670,14 @@ import okhttp3.OkHttpClient;
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (accountExecutor != null) {
+            accountExecutor.shutdown();
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         refreshAccountHeaderUI();

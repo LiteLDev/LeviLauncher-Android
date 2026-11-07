@@ -1604,5 +1604,8 @@ public class ContentListActivity extends BaseActivity {
         if (structureExtractor != null) {
             structureExtractor.shutdown();
         }
+        if (screenshotsAdapter != null) {
+            screenshotsAdapter.shutdown();
+        }
     }
 }

@@ -369,6 +369,7 @@ public class InstanceSettingsActivity extends BaseActivity {
             @Override
             public void onSuccess(String displayPath) {
                 finishBackupProgress();
+                if (isFinishing() || isDestroyed()) return;
                 new CustomAlertDialog(InstanceSettingsActivity.this)
                         .setTitleText(getString(R.string.instance_backup_success_title))
                         .setMessage(getString(R.string.instance_backup_success_message, displayPath))
@@ -379,6 +380,7 @@ public class InstanceSettingsActivity extends BaseActivity {
             @Override
             public void onError(String message) {
                 finishBackupProgress();
+                if (isFinishing() || isDestroyed()) return;
                 new CustomAlertDialog(InstanceSettingsActivity.this)
                         .setTitleText(getString(R.string.instance_backup_failed_title))
                         .setMessage(getString(R.string.instance_backup_failed_message, message))
@@ -411,6 +413,9 @@ public class InstanceSettingsActivity extends BaseActivity {
         if (pendingNameSave != null) {
             autoSaveHandler.removeCallbacks(pendingNameSave);
             pendingNameSave = null;
+        }
+        if (backupManager != null) {
+            backupManager.shutdown();
         }
         super.onDestroy();
     }

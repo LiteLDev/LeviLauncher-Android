@@ -616,6 +616,8 @@ public class InstancesActivity extends BaseActivity {
     }
 
     private void runNextBatchBackup() {
+        if (isFinishing() || isDestroyed()) return;
+
         if (batchBackupIndex >= pendingBatchBackupVersions.size()) {
             finishBatchBackup();
             return;
@@ -668,6 +670,12 @@ public class InstancesActivity extends BaseActivity {
 
     private void finishBatchBackup() {
         finishBatchBackupProgress();
+
+        if (isFinishing() || isDestroyed()) {
+            pendingBatchBackupVersions = new ArrayList<>();
+            batchBackupIndex = 0;
+            return;
+        }
 
         String savedLines = joinLines(batchBackupPaths);
         String failedLines = joinLines(batchBackupFailures);
@@ -813,6 +821,14 @@ public class InstancesActivity extends BaseActivity {
         setupBackupImportButton();
         setupBatchBackupButton();
         applyFilters();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (backupManager != null) {
+            backupManager.shutdown();
+        }
     }
 
     private static class GridSpacingDecoration extends RecyclerView.ItemDecoration {

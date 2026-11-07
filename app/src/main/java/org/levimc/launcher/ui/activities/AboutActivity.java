@@ -122,4 +122,12 @@ public class AboutActivity extends BaseActivity {
         });
         DynamicAnim.applyPressScale(btn);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (executor != null) {
+            executor.shutdownNow();
+        }
+    }
 }

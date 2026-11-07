@@ -122,6 +122,12 @@ public class InstanceBackupManager {
         this.context = context.getApplicationContext();
     }
 
+    public void shutdown() {
+        if (!executor.isShutdown()) {
+            executor.shutdown();
+        }
+    }
+
     public boolean needsDownloadsFolderSelection() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) return false;
         Uri tree = getBackupDownloadsTree();
