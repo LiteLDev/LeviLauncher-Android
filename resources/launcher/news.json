@@ -17,7 +17,7 @@
       "summary": "LeviLauncher now supports Android 17. You can now use the launcher on devices running Android 17.",
       "publishedAt": "2026-09-08T23:02:00Z",
       "category": "Important",
-      "url": "https://github.com/LiteLDev/LeviLaunchroid/commit/8dce7b88a53b57883d69885357d027cf8c2763e4",
+      "url": "https://github.com/LiteLDev/LeviLauncher-Android/commit/8dce7b88a53b57883d69885357d027cf8c2763e4",
       "important": true,
       "notify": false
     },
@@ -57,7 +57,7 @@
       "summary": "Tap the bell at the top of LeviLauncher to see announcements, release information, and important notices in one place.",
       "publishedAt": "2026-08-26T18:00:00Z",
       "category": "Launcher",
-      "url": "https://github.com/LiteLDev/LeviLaunchroid/releases",
+      "url": "https://github.com/LiteLDev/LeviLauncher-Android/releases",
       "important": false,
       "notify": false
     }

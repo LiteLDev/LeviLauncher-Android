@@ -31,7 +31,7 @@ public final class PreloaderSignatureRulesManager {
     private static final String PREFS_NAME = "preloader_signature_rules";
     private static final String KEY_LAST_SUCCESSFUL_UPDATE_TIME = "last_successful_update_time";
 
-    private static final String REMOTE_RULES_URL = "https://raw.githubusercontent.com/LiteLDev/LeviLaunchroid/refs/heads/main/resources/preloader/preloader_signature_rules_source.json";
+    private static final String REMOTE_RULES_URL = "https://raw.githubusercontent.com/LiteLDev/LeviLauncher-Android/refs/heads/main/resources/preloader/preloader_signature_rules_source.json";
 
     private static final AtomicBoolean refreshRunning = new AtomicBoolean(false);
     private static final OkHttpClient client = new OkHttpClient.Builder()

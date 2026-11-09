@@ -32,7 +32,7 @@
     <string name="about_title">☕ À propos</string>
     <string name="copyright">©2024–2026 LeviMC. Tous droits réservés.</string>
     <string name="font_license">Cette application utilise la police Misans.</string>
-    <string name="about_footer_github">GitHub : https://github.com/LiteLDev/LeviLaunchroid</string>
+    <string name="about_footer_github">GitHub : https://github.com/LiteLDev/LeviLauncher-Android</string>
     <string name="quick_actions_title">Actions rapides</string>
     <string name="content_mgmt_section_title">Gestion de contenu</string>
     <string name="misc_section_title">Divers</string>

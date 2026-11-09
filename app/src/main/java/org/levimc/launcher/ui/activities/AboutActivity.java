@@ -22,9 +22,9 @@ public class AboutActivity extends BaseActivity {
     private static final String AVATAR_URL = "https://avatars.githubusercontent.com/u/62042544?v=4";
     private static final String URL_AFDIAN = "https://afdian.com/a/DreamGuXiang";
     private static final String URL_PATREON = "https://www.patreon.com/c/DreamGuXiang";
-    private static final String URL_REPO = "https://github.com/LiteLDev/LeviLaunchroid";
+    private static final String URL_REPO = "https://github.com/LiteLDev/LeviLauncher-Android";
     private static final String URL_ORG = "https://github.com/LiteLDev";
-    private static final String URL_ISSUES = "https://github.com/LiteLDev/LeviLaunchroid/issues";
+    private static final String URL_ISSUES = "https://github.com/LiteLDev/LeviLauncher-Android/issues";
     private static final String MAINTAINER_AVATAR_URL = "https://yt3.googleusercontent.com/ft4khqXZ_fQn-DbSLg91kQy3_JUQ_73rbg18nOcmMtunX5bq25jzrThWQAk9YsFkTKFesUL7sg8=s160-c-k-c0x00ffffff-no-rj";
     private static final String URL_YOUTUBE = "https://www.youtube.com/c/mrpokeg";
 

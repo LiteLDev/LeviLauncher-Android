@@ -32,7 +32,7 @@
     <string name="about_title">☕ 关于</string>
     <string name="copyright">©2024–2026 LeviMC. 保留所有权利</string>
     <string name="font_license">本软件使用 Misans 字体</string>
-    <string name="about_footer_github">GitHub: https://github.com/LiteLDev/LeviLaunchroid</string>
+    <string name="about_footer_github">GitHub: https://github.com/LiteLDev/LeviLauncher-Android</string>
     <string name="quick_actions_title">快捷操作</string>
     <string name="content_mgmt_section_title">内容管理</string>
     <string name="misc_section_title">其他</string>

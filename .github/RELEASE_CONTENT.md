@@ -33,7 +33,7 @@ Add one new object to the beginning of `resources/launcher/news.json`. Use a per
   "summary": "The short text users will see in the inbox and notification.",
   "publishedAt": "2026-08-27T12:00:00Z",
   "category": "Announcement",
-  "url": "https://github.com/LiteLDev/LeviLaunchroid/releases",
+  "url": "https://github.com/LiteLDev/LeviLauncher-Android/releases",
   "important": false,
   "notify": true
 }
@@ -50,7 +50,7 @@ git push origin main
 
 Confirm that the public feed opens before testing refresh in the app:
 
-`https://raw.githubusercontent.com/LiteLDev/LeviLaunchroid/main/resources/launcher/news.json`
+`https://raw.githubusercontent.com/LiteLDev/LeviLauncher-Android/main/resources/launcher/news.json`
 
 If that URL returns `404: Not Found`, the `resources/launcher` files were not committed to `main`. Add and push them:
 

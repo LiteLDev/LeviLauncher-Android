@@ -8,11 +8,11 @@
 
 **A lightweight Android launcher for Minecraft Bedrock Edition**
 
-[![GitHub Release](https://img.shields.io/github/v/release/LiteLDev/LeviLaunchroid?style=flat-square&color=blue)](https://github.com/LiteLDev/LeviLaunchroid/releases)
-[![License: Apache 2.0](https://img.shields.io/github/license/LiteLDev/LeviLaunchroid)](https://github.com/LiteLDev/LeviLaunchroid/blob/main/LICENSE)
-[![Issues](https://img.shields.io/github/issues/LiteLDev/LeviLaunchroid?style=flat-square&color=red)](https://github.com/LiteLDev/LeviLaunchroid/issues)
-[![Stars](https://img.shields.io/github/stars/LiteLDev/LeviLaunchroid?style=flat-square&color=yellow)](https://github.com/LiteLDev/LeviLaunchroid)
-[![Downloads](https://img.shields.io/github/downloads/LiteLDev/LeviLaunchroid/total.svg)](https://github.com/LiteLDev/LeviLaunchroid/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/LiteLDev/LeviLauncher-Android?style=flat-square&color=blue)](https://github.com/LiteLDev/LeviLauncher-Android/releases)
+[![License: Apache 2.0](https://img.shields.io/github/license/LiteLDev/LeviLauncher-Android)](https://github.com/LiteLDev/LeviLauncher-Android/blob/main/LICENSE)
+[![Issues](https://img.shields.io/github/issues/LiteLDev/LeviLauncher-Android?style=flat-square&color=red)](https://github.com/LiteLDev/LeviLauncher-Android/issues)
+[![Stars](https://img.shields.io/github/stars/LiteLDev/LeviLauncher-Android?style=flat-square&color=yellow)](https://github.com/LiteLDev/LeviLauncher-Android)
+[![Downloads](https://img.shields.io/github/downloads/LiteLDev/LeviLauncher-Android/total.svg)](https://github.com/LiteLDev/LeviLauncher-Android/releases)
 [![Android](https://img.shields.io/badge/Android-9.0%2B-green?style=flat-square&logo=android)](https://www.android.com/)
 
 **[Documentation](https://docs.levimc.org/LeviLauncher/guide/quick-start?platform=android)** · **[Native mod development](https://docs.levimc.org/LeviLamina/developer_guides/android/)**
@@ -62,7 +62,7 @@ Before proceeding with LeviLauncher installation, ensure that you have the offic
 
 ### Installation Steps
 
-1. Visit the [Releases Page](https://github.com/LiteLDev/LeviLaunchroid/releases) and download the latest APK build
+1. Visit the [Releases Page](https://github.com/LiteLDev/LeviLauncher-Android/releases) and download the latest APK build
 2. Open the downloaded APK from your browser or file manager
 3. When Android asks, allow that app to install unknown apps (Settings > Apps > Special app access > Install unknown apps), then go back
 4. Tap Install to install the APK
@@ -89,7 +89,7 @@ If you want to build LeviLauncher from source or contribute to development, foll
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/LiteLDev/LeviLaunchroid.git
+   git clone https://github.com/LiteLDev/LeviLauncher-Android.git
    ```
 
 2. Open the project directory in Android Studio
@@ -106,7 +106,7 @@ If you want to build LeviLauncher from source or contribute to development, foll
 
 > **Build Tip:** For faster builds during development, use `Build > Make Project` to compile incrementally instead of full rebuilds.
 
-The project root is named `levilauncher` in the Gradle settings, while the repository is `LeviLaunchroid`. To build from the command line:
+The project root is named `levilauncher` in the Gradle settings, while the repository is `LeviLauncher-Android`. To build from the command line:
 
 ```bash
 ./gradlew assembleDebug
@@ -183,7 +183,7 @@ LeviLauncher would not be possible without the contributions and support of many
 - **LeviMC** – For maintaining the LeviLauncher project and providing infrastructure support
 - **Android Community** – For excellent documentation, libraries, and tools that made this launcher possible
 - **Open Source Community** – For all the libraries, frameworks, and tools that power this project
-- **Contributors** – A heartfelt thank you to all [contributors](https://github.com/LiteLDev/LeviLaunchroid/graphs/contributors) who have continuously improved and maintained LeviLauncher through their time and expertise
+- **Contributors** – A heartfelt thank you to all [contributors](https://github.com/LiteLDev/LeviLauncher-Android/graphs/contributors) who have continuously improved and maintained LeviLauncher through their time and expertise
 
 ---
 
@@ -191,11 +191,11 @@ LeviLauncher would not be possible without the contributions and support of many
 
 **Author / Team:** LeviMC
 
-**Project Repository:** [https://github.com/LiteLDev/LeviLaunchroid](https://github.com/LiteLDev/LeviLaunchroid)
+**Project Repository:** [https://github.com/LiteLDev/LeviLauncher-Android](https://github.com/LiteLDev/LeviLauncher-Android)
 
 **Documentation:** [docs.levimc.org/LeviLauncher](https://docs.levimc.org/LeviLauncher/guide/quick-start?platform=android) · native mods: [docs.levimc.org/LeviLamina](https://docs.levimc.org/LeviLamina/developer_guides/android/)
 
-**Report Issues:** [GitHub Issues Page](https://github.com/LiteLDev/LeviLaunchroid/issues)
+**Report Issues:** [GitHub Issues Page](https://github.com/LiteLDev/LeviLauncher-Android/issues)
 
 **For support and questions:** Please create an issue on the GitHub repository or contact LeviMC directly
 
@@ -203,11 +203,11 @@ LeviLauncher would not be possible without the contributions and support of many
 
 <div align="center">
 
-[![GitHub Release](https://img.shields.io/github/v/release/LiteLDev/LeviLaunchroid?style=flat-square&color=blue)](https://github.com/LiteLDev/LeviLaunchroid/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/LiteLDev/LeviLauncher-Android?style=flat-square&color=blue)](https://github.com/LiteLDev/LeviLauncher-Android/releases)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0)
-[![Issues](https://img.shields.io/github/issues/LiteLDev/LeviLaunchroid?style=flat-square&color=red)](https://github.com/LiteLDev/LeviLaunchroid/issues)
-[![Stars](https://img.shields.io/github/stars/LiteLDev/LeviLaunchroid?style=flat-square&color=yellow)](https://github.com/LiteLDev/LeviLaunchroid)
-[![Downloads](https://img.shields.io/github/downloads/LiteLDev/LeviLaunchroid/total.svg)](https://github.com/LiteLDev/LeviLaunchroid/releases)
+[![Issues](https://img.shields.io/github/issues/LiteLDev/LeviLauncher-Android?style=flat-square&color=red)](https://github.com/LiteLDev/LeviLauncher-Android/issues)
+[![Stars](https://img.shields.io/github/stars/LiteLDev/LeviLauncher-Android?style=flat-square&color=yellow)](https://github.com/LiteLDev/LeviLauncher-Android)
+[![Downloads](https://img.shields.io/github/downloads/LiteLDev/LeviLauncher-Android/total.svg)](https://github.com/LiteLDev/LeviLauncher-Android/releases)
 [![Android](https://img.shields.io/badge/Android-9.0%2B-green?style=flat-square&logo=android)](https://www.android.com/)
 
 **Made with ❤️ by LeviMC**
