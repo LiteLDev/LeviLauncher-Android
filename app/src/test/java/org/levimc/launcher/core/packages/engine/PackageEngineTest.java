@@ -193,6 +193,21 @@ public class PackageEngineTest {
     }
 
     @Test
+    public void aPackageOfAVersionRefSatisfiesItsDependentsWithoutTheNetwork() throws Exception {
+        // As the app installs LeviLamina ("<id>#client@<version>") and then mods that need "<id>#client <range>".
+        String ll = B + "#client";
+        server.commit(B, "v1.1.0", "lip.toml", TestHttps.toml(B, "1.1.0", "").replace("variants.\"\"", "variants.\"client\""));
+        install(ll + "@1.1.0");
+        String mod = local("m", "example.com/p/mod", "1.0.0", "deps = { \"" + ll + "\" = \"1.*\" }\n" + self("m.txt", "m.txt"), "m.txt", "m");
+        String other = local("o", "example.com/p/other", "1.0.0", self("o.txt", "o.txt"), "o.txt", "o");
+        install(mod, other);
+        server.close(); // offline: B cannot be resolved again
+        PackageEngine.Plan plan = uninstall("example.com/p/other");
+        assertEquals(Collections.singletonList("example.com/p/other@1.0.0"), ids(plan.uninstall));
+        assertTrue(exists("m.txt") && !exists("o.txt"));
+    }
+
+    @Test
     public void updateReplacesOnlyChangedPackages() throws Exception {
         pub(A, "1.0.0", self("a.txt", "a.txt"), "a.txt", "v1");
         install(A);

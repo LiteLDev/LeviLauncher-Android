@@ -8,14 +8,27 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.levimc.launcher.core.packages.InstalledPackages;
 import org.levimc.launcher.core.packages.PackageService;
+import org.levimc.launcher.core.packages.engine.Cancel;
+import org.levimc.launcher.core.packages.engine.Listener;
+import org.levimc.launcher.core.versions.GameVersion;
+import org.levimc.launcher.settings.FeatureSettings;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 public class BatchTest {
+    @Rule
+    public TemporaryFolder tmp = new TemporaryFolder();
     static InstalledFragment.Model.Row row(String id, String variant, String version, boolean explicit, String name,
                                      InstalledFragment.Model.UpdateState update, String target) {
         String identity = variant.isEmpty() ? id : id + "#" + variant;
@@ -66,5 +79,38 @@ public class BatchTest {
         assertEquals("", o.code());
         assertFalse(o.changed);
         assertEquals(Arrays.asList(FOO, BAR), PackageActions.Batch.distinct(Arrays.asList(FOO, BAR, FOO)));
+    }
+
+    /** A failed item keeps the engine's message, so the result dialog can say why (not only "Failed to uninstall package"). */
+    @Test
+    public void testFailureKeepsTheCause() throws Exception {
+        PackageService service = new PackageService(null, new FeatureSettings(), tmp.newFolder("files"), tmp.newFolder("cache"));
+        PackageService.set(service);
+        File dir = tmp.newFolder("instance"), src = tmp.newFolder("pkg");
+        Files.write(new File(src, "lip.toml").toPath(), ("format = 4\nid = \"example.com/a/data\"\nversion = \"1.0.0\"\n"
+                + "[[variants.\"\"]]\nside = \"client\"\nplatform = \"" + PackageService.rid() + "\"\n"
+                + "assets = [{ type = \"self\", place = [{ src = \"d.txt\", dest = \"d.txt\" }] }]\n").getBytes(StandardCharsets.UTF_8));
+        Files.write(new File(src, "d.txt").toPath(), "d".getBytes(StandardCharsets.UTF_8));
+        GameVersion instance = new GameVersion("instance", "Instance", "1.21.50.07", dir, false, "", "arm64-v8a");
+        assertEquals("", service.installSource(new Cancel(), Listener.NONE, instance, src.getPath()));
+        File mods = new File(dir, "mods");
+        assertTrue(mods.delete() && mods.createNewFile()); // 'mods' is a file now: the uninstall fails before any change
+
+        List<String> forwarded = new ArrayList<>();
+        PackageActions.Batch.Cause cause = new PackageActions.Batch.Cause(new Listener() {
+            @Override
+            public void log(Level level, String message) {
+                forwarded.add(level + " " + message);
+            }
+
+            @Override
+            public void progress(String id, Stage stage, String pkg, long current, long total, boolean bytes) {
+            }
+        });
+        assertEquals(PackageService.ERR_PACKAGE_UNINSTALL_FAILED,
+                service.uninstallById(new Cancel(), cause, instance, "example.com/a/data", "example.com/a/data"));
+        assertTrue(cause.last(), cause.last().contains("'mods' in the workspace is not a directory"));
+        assertTrue(forwarded.contains("ERROR " + cause.last()));
+        assertTrue(new File(dir, "d.txt").isFile());
     }
 }

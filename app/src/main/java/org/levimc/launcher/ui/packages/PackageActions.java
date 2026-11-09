@@ -18,8 +18,10 @@ import org.levimc.launcher.R;
 import org.levimc.launcher.core.mods.Mod;
 import org.levimc.launcher.core.packages.Catalog;
 import org.levimc.launcher.core.packages.CatalogModels;
+import org.levimc.launcher.core.packages.InstallPlanner;
 import org.levimc.launcher.core.packages.InstalledPackages;
 import org.levimc.launcher.core.packages.PackageService;
+import org.levimc.launcher.core.packages.engine.Listener;
 import org.levimc.launcher.core.packages.engine.Source;
 import org.levimc.launcher.core.versions.GameVersion;
 import org.levimc.launcher.ui.activities.InstanceSettingsActivity;
@@ -626,15 +628,43 @@ public final class PackageActions {
         public static final class Failure {
             public final String name;
             public final String code;
+            /** The engine's message of the failure (its cause), or "". */
+            public final String detail;
 
-            Failure(String name, String code) {
+            Failure(String name, String code, String detail) {
                 this.name = name;
                 this.code = code;
+                this.detail = detail;
             }
 
             @Override
             public String toString() {
-                return name + ": " + code;
+                return name + ": " + code + (detail.isEmpty() ? "" : " (" + detail + ")");
+            }
+        }
+
+        /** A listener that passes everything on to another and keeps the last error message: the cause of one item's failure. */
+        static final class Cause implements Listener {
+            private final Listener to;
+            private String last = "";
+
+            Cause(Listener to) {
+                this.to = to;
+            }
+
+            String last() {
+                return last;
+            }
+
+            @Override
+            public void log(Level level, String message) {
+                if (level == Level.ERROR && message != null) last = message.trim();
+                to.log(level, message);
+            }
+
+            @Override
+            public void progress(String id, Stage stage, String pkg, long current, long total, boolean bytes) {
+                to.progress(id, stage, pkg, current, total, bytes);
             }
         }
 
@@ -681,6 +711,9 @@ public final class PackageActions {
                     || row.targetVersion.isEmpty()) {
                 return PackageService.ERR_NO_UPDATE_SOURCE;
             }
+            if (row.update == InstalledFragment.Model.UpdateState.INCOMPATIBLE) {
+                return InstallPlanner.BLOCK_NO_COMPATIBLE_LOADER;
+            }
             if (row.update != InstalledFragment.Model.UpdateState.AVAILABLE) {
                 return PackageService.ERR_ALREADY_LATEST;
             }
@@ -719,22 +752,23 @@ public final class PackageActions {
                                           InstalledFragment.Model.Row row, Outcome out) {
             tools.addLog(TaskSession.LogLevel.INFO, texts.get().getString(R.string.pkg_log_update, row.name));
             String err = checkUpdate(row);
+            Cause cause = new Cause(tools.listener());
             if (err.isEmpty()) {
-                err = PackageService.get().installPackage(tools.cancel(), tools.listener(), v, row.identifier, row.targetVersion);
+                err = PackageService.get().installPackage(tools.cancel(), cause, v, row.identifier, row.targetVersion);
                 out.changed = true;
             }
-            return record(tools, row, err, out);
+            return record(tools, row, err, cause.last(), out);
         }
 
         /** Adds row's result to out; false when the batch stops (cancelled). */
-        private static boolean record(TaskSession.Tools tools, InstalledFragment.Model.Row row, String err, Outcome out) {
+        private static boolean record(TaskSession.Tools tools, InstalledFragment.Model.Row row, String err, String detail, Outcome out) {
             if (err.isEmpty()) {
                 out.done.add(row.name);
                 tools.addLog(TaskSession.LogLevel.SUCCESS, row.name + ": ok");
                 return true;
             }
             tools.addLog(TaskSession.LogLevel.ERROR, row.name + ": " + err);
-            out.failed.add(new Failure(row.name, err));
+            out.failed.add(new Failure(row.name, err, detail));
             out.cancelled = PackageService.ERR_PKG_TASK_CANCELLED.equals(err);
             return !out.cancelled;
         }
@@ -770,10 +804,11 @@ public final class PackageActions {
         private static boolean uninstallItem(TaskSession.Tools tools, Supplier<Context> texts, GameVersion v,
                                              InstalledFragment.Model.Row row, Outcome out) {
             if (row.leviLamina) {
-                return record(tools, row, PackageService.ERR_LL_MANAGED_IN_VERSION_SETTINGS, out);
+                return record(tools, row, PackageService.ERR_LL_MANAGED_IN_VERSION_SETTINGS, "", out);
             }
             tools.addLog(TaskSession.LogLevel.INFO, texts.get().getString(R.string.pkg_log_uninstall, row.name));
-            String code = PackageService.get().uninstallById(tools.cancel(), tools.listener(), v, row.pkg.id, row.pkg.identity);
+            Cause cause = new Cause(tools.listener());
+            String code = PackageService.get().uninstallById(tools.cancel(), cause, v, row.pkg.id, row.pkg.identity);
             out.changed = true;
             if (PackageService.ERR_PACKAGE_DEMOTED_TO_DEPENDENCY.equals(code)) {
                 tools.addLog(TaskSession.LogLevel.WARNING, row.name + ": " + code);
@@ -785,7 +820,7 @@ public final class PackageActions {
             if (!kept.isEmpty()) {
                 tools.addLog(TaskSession.LogLevel.WARNING, keptUserData(texts, row.name, kept));
             }
-            return record(tools, row, code, out);
+            return record(tools, row, code, cause.last(), out);
         }
 
         static String keptUserData(Supplier<Context> texts, String name, List<String> folders) {
@@ -855,7 +890,9 @@ public final class PackageActions {
             addSection(a, sections, R.string.pkg_result_kept, a.getColor(R.color.pkg_log_warning), o.demoted);
             List<String> failed = new ArrayList<>();
             for (PackageActions.Batch.Failure f : o.failed) {
-                failed.add(a.getString(R.string.pkg_result_item_error, f.name, PkgUi.ErrorText.describe(a, f.code)));
+                // The headline, then the causes and the engine's message, indented under the item.
+                failed.add(a.getString(R.string.pkg_result_item_error, f.name,
+                        PkgUi.ErrorText.full(a, f.code, f.detail).replace("\n", "\n    ")));
             }
             addSection(a, sections, R.string.pkg_result_failed, a.getColor(R.color.error), failed);
             new CustomAlertDialog(a)
