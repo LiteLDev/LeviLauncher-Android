@@ -189,7 +189,7 @@
     <string name="toast_delete_failed">Échec de la suppression : %1$s</string>
     <string name="error_delete_builtin_version">Impossible de supprimer la version intégrée</string>
     <string name="invalid_mod_file">Échec</string>
-    <string name="invalid_mod_file_reason">Seuls les fichiers .so, les packages de mod .zip ou les packages de mod .levipack sont autorisés. Le fichier sélectionné n\'est pas un mod natif valide.</string>
+    <string name="invalid_mod_file_reason">Seuls les fichiers .so, les packages de mod .zip ou les packages de mod .levipack/.mcmod sont autorisés. Le fichier sélectionné n\'est pas un mod natif valide.</string>
     <string name="invalid_zip_mod_package_title">Package ZIP de mod invalide</string>
     <string name="invalid_zip_mod_package_message">Le package ZIP de mod doit contenir manifest.json et un fichier .so.</string>
     <string name="error_versions">Versions erronées</string>

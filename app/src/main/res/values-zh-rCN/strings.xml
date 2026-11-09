@@ -189,9 +189,12 @@
     <string name="toast_delete_failed">删除失败: %1$s</string>
     <string name="error_delete_builtin_version">不能删除内置版本</string>
     <string name="invalid_mod_file">失败</string>
-    <string name="invalid_mod_file_reason">仅允许导入 .so 文件、.zip 模组包或 .levipack 模组包。所选文件不是有效的原生模组导入包。</string>
+    <string name="invalid_mod_file_reason">仅允许导入 .so 文件、.zip 模组包或 .levipack/.mcmod 模组包。所选文件不是有效的原生模组导入包。</string>
     <string name="invalid_zip_mod_package_title">非法 ZIP 模组包</string>
     <string name="invalid_zip_mod_package_message">ZIP 模组包必须包含 manifest.json 与 .so 文件。</string>
+    <string name="invalid_mcmod_package_title">非法 .mcmod 模组包</string>
+    <string name="invalid_mcmod_package_message">.mcmod 的内容就是 mods/&lt;name&gt;/ 目录：根目录须有 manifest.json，其 \"name\" 即目录名，\"type\" 为 \"preload-native\"，\"entry\" 指向包内的 .so 文件。</string>
+    <string name="mod_import_refused_by_packages">无法导入到 mods/%1$s：%2$s。请改用包管理器更新或移除它。</string>
     <string name="error_versions">错误版本</string>
 
     <string name="dialog_title_delete_mod">删除 Mod</string>

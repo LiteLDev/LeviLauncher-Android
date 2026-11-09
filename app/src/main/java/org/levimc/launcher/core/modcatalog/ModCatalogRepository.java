@@ -156,7 +156,8 @@ public final class ModCatalogRepository {
         }
         if (TextUtils.isEmpty(asset.name)) asset.name = fileNameFromUrl(asset.downloadUrl);
         String lowerName = value(asset.name).toLowerCase(Locale.ROOT);
-        if (!lowerName.endsWith(".levipack") && !lowerName.endsWith(".zip") && !lowerName.endsWith(".so")) {
+        if (!lowerName.endsWith(".levipack") && !lowerName.endsWith(".mcmod")
+                && !lowerName.endsWith(".zip") && !lowerName.endsWith(".so")) {
             return false;
         }
         if (asset.size < 0) return false;

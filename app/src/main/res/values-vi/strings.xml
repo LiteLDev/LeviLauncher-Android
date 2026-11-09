@@ -189,7 +189,7 @@
     <string name="toast_delete_failed">Xóa không thành công: %1$s</string>
     <string name="error_delete_builtin_version">Không thể xóa phiên bản tích hợp sẵn</string>
     <string name="invalid_mod_file">Không thành công</string>
-    <string name="invalid_mod_file_reason">Chỉ cho phép tệp .so, gói mod .zip hoặc gói mod .levipack | Tệp đã chọn không phải là gói nhập mod hợp lệ.</string>
+    <string name="invalid_mod_file_reason">Chỉ cho phép tệp .so, gói mod .zip hoặc gói mod .levipack/.mcmod | Tệp đã chọn không phải là gói nhập mod hợp lệ.</string>
     <string name="invalid_zip_mod_package_title">Gói mod ZIP không hợp lệ</string>
     <string name="invalid_zip_mod_package_message">Gói mod ZIP phải chứa file manifest.json và file .so.</string>
     <string name="error_versions">Phiên bản lỗi</string>

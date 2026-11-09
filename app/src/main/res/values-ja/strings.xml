@@ -189,7 +189,7 @@
     <string name="toast_delete_failed">削除に失敗しました: %1$s</string>
     <string name="error_delete_builtin_version">組み込みバージョンは削除できません</string>
     <string name="invalid_mod_file">失敗</string>
-    <string name="invalid_mod_file_reason">.so ファイル、.zip モッドパッケージ、または .levipack モッドパッケージのみ許可されています。</string>
+    <string name="invalid_mod_file_reason">.so ファイル、.zip モッドパッケージ、または .levipack/.mcmod モッドパッケージのみ許可されています。</string>
     <string name="invalid_zip_mod_package_title">無効な ZIP モッドパッケージ</string>
     <string name="invalid_zip_mod_package_message">ZIP モッドパッケージには manifest.json と .so ファイルが含まれている必要があります。</string>
     <string name="error_versions">エラーバージョン</string>

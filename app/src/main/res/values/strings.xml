@@ -189,9 +189,12 @@
     <string name="toast_delete_failed">Delete failed: %1$s</string>
     <string name="error_delete_builtin_version">Cannot delete built-in version</string>
     <string name="invalid_mod_file">Failed</string>
-    <string name="invalid_mod_file_reason">Only .so files, .zip mod packages, or .levipack mod packages are allowed. The selected file is not a valid native mod import package.</string>
+    <string name="invalid_mod_file_reason">Only .so files, .zip mod packages, or .levipack/.mcmod mod packages are allowed. The selected file is not a valid native mod import package.</string>
     <string name="invalid_zip_mod_package_title">Invalid ZIP Mod Package</string>
     <string name="invalid_zip_mod_package_message">The ZIP mod package must contain manifest.json and a .so file.</string>
+    <string name="invalid_mcmod_package_title">Invalid .mcmod Package</string>
+    <string name="invalid_mcmod_package_message">A .mcmod holds exactly the contents of mods/&lt;name&gt;/: manifest.json at its root, with \"name\" as the folder name, \"type\": \"preload-native\" and an \"entry\" .so file.</string>
+    <string name="mod_import_refused_by_packages">Cannot import into mods/%1$s: %2$s. Update or remove it with the package manager instead.</string>
     <string name="error_versions">Error Versions</string>
 
     <string name="dialog_title_delete_mod">Delete Mod</string>

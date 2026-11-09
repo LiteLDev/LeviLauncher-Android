@@ -433,6 +433,14 @@ public class ModManager {
 
     /** Why the package manager forbids deleting mod folder modId, or null when it does not. */
     private String pkgDeleteRefusal(String modId) {
+        return packageRefusal(modsDir, modId);
+    }
+
+    /**
+     * Why the package manager forbids changing mod folder {@code modId} of {@code modsDir}
+     * (deleting it, or importing files into it), or null when it does not.
+     */
+    public static String packageRefusal(File modsDir, String modId) {
         File workspace = modsDir.getParentFile();
         if (workspace == null) {
             return null;

@@ -326,6 +326,11 @@
                 <data android:pathPattern="/.*\\..*\\..*\\.levipack" />
                 <data android:pathPattern="/.*\\..*\\..*\\..*\\.levipack" />
                 <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\.levipack" />
+                <data android:pathPattern="/.*\\.mcmod" />
+                <data android:pathPattern="/.*\\..*\\.mcmod" />
+                <data android:pathPattern="/.*\\..*\\..*\\.mcmod" />
+                <data android:pathPattern="/.*\\..*\\..*\\..*\\.mcmod" />
+                <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\.mcmod" />
                 <data android:pathPattern="/.*\\.so" />
                 <data android:pathPattern="/.*\\..*\\.so" />
                 <data android:pathPattern="/.*\\..*\\..*\\.so" />
@@ -354,6 +359,7 @@
                 <data android:pathSuffix=".zip" />
                 <data android:pathSuffix=".levibackup" />
                 <data android:pathSuffix=".levipack" />
+                <data android:pathSuffix=".mcmod" />
                 <data android:pathSuffix=".so" />
                 <data android:pathSuffix=".mcworld" />
                 <data android:pathSuffix=".mcpack" />
@@ -385,6 +391,11 @@
                 <data android:pathPattern="/.*\\..*\\..*\\.levipack" />
                 <data android:pathPattern="/.*\\..*\\..*\\..*\\.levipack" />
                 <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\.levipack" />
+                <data android:pathPattern="/.*\\.mcmod" />
+                <data android:pathPattern="/.*\\..*\\.mcmod" />
+                <data android:pathPattern="/.*\\..*\\..*\\.mcmod" />
+                <data android:pathPattern="/.*\\..*\\..*\\..*\\.mcmod" />
+                <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\.mcmod" />
                 <data android:pathPattern="/.*\\.so" />
                 <data android:pathPattern="/.*\\..*\\.so" />
                 <data android:pathPattern="/.*\\..*\\..*\\.so" />
@@ -413,6 +424,7 @@
                 <data android:pathSuffix=".zip" />
                 <data android:pathSuffix=".levibackup" />
                 <data android:pathSuffix=".levipack" />
+                <data android:pathSuffix=".mcmod" />
                 <data android:pathSuffix=".so" />
                 <data android:pathSuffix=".mcworld" />
                 <data android:pathSuffix=".mcpack" />

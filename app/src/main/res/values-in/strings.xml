@@ -189,7 +189,7 @@
     <string name="toast_delete_failed">Penghapusan gagal: %1$s</string>
     <string name="error_delete_builtin_version">Tidak dapat menghapus versi bawaan</string>
     <string name="invalid_mod_file">Gagal</string>
-    <string name="invalid_mod_file_reason">Hanya file .so, paket mod .zip, atau paket mod .levipack yang diizinkan. File yang dipilih bukan paket impor mod native yang valid.</string>
+    <string name="invalid_mod_file_reason">Hanya file .so, paket mod .zip, atau paket mod .levipack/.mcmod yang diizinkan. File yang dipilih bukan paket impor mod native yang valid.</string>
     <string name="invalid_zip_mod_package_title">Paket Mod ZIP Tidak Valid</string>
     <string name="invalid_zip_mod_package_message">Paket mod ZIP harus berisi manifest.json dan file .so.</string>
     <string name="error_versions">Versi Yang Rusak</string>

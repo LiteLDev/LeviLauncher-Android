@@ -189,7 +189,7 @@
     <string name="toast_delete_failed">Falha ao excluir: %1$s</string>
     <string name="error_delete_builtin_version">Não é possível excluir a versão integrada</string>
     <string name="invalid_mod_file">Falha</string>
-    <string name="invalid_mod_file_reason">Apenas arquivos .so, pacotes de mod .zip ou pacotes de mod .levipack são permitidos. O arquivo selecionado não é válido.</string>
+    <string name="invalid_mod_file_reason">Apenas arquivos .so, pacotes de mod .zip ou pacotes de mod .levipack/.mcmod são permitidos. O arquivo selecionado não é válido.</string>
     <string name="invalid_zip_mod_package_title">Pacote ZIP de mod inválido</string>
     <string name="invalid_zip_mod_package_message">O pacote ZIP de mod deve conter manifest.json e um arquivo .so.</string>
     <string name="error_versions">Versões com Erro</string>

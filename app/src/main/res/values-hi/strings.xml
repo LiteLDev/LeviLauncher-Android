@@ -189,7 +189,7 @@
     <string name="toast_delete_failed">हटाना विफल: %1$s</string>
     <string name="error_delete_builtin_version">अंतर्निहित संस्करण को हटाया नहीं जा सकता</string>
     <string name="invalid_mod_file">विफल</string>
-    <string name="invalid_mod_file_reason">केवल .so फ़ाइलें, .zip मॉड पैकेज या .levipack मॉड पैकेज की अनुमति है। चयनित फ़ाइल एक मान्य देशी मॉड आयात पैकेज नहीं है।</string>
+    <string name="invalid_mod_file_reason">केवल .so फ़ाइलें, .zip मॉड पैकेज या .levipack/.mcmod मॉड पैकेज की अनुमति है। चयनित फ़ाइल एक मान्य देशी मॉड आयात पैकेज नहीं है।</string>
     <string name="invalid_zip_mod_package_title">अमान्य ZIP मॉड पैकेज</string>
     <string name="invalid_zip_mod_package_message">ZIP मॉड पैकेज में manifest.json और एक .so फ़ाइल होनी चाहिए।</string>
     <string name="error_versions">त्रुटि वाले संस्करण</string>
