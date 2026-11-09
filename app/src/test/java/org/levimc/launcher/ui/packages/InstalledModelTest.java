@@ -18,6 +18,7 @@ import org.levimc.launcher.core.packages.WorkspaceFixture;
 import org.levimc.launcher.core.packages.CatalogModels;
 import org.levimc.launcher.core.packages.CatalogModels;
 import org.levimc.launcher.core.packages.Catalog;
+import org.levimc.launcher.core.packages.LeviLamina;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -239,5 +240,75 @@ public class InstalledModelTest {
         assertNull(InstalledFragment.Model.catalogAvailability(index, "a/unknown", "1.0.0", RID));
         assertNull(InstalledFragment.Model.catalogAvailability(index, "not an id", "1.0.0", RID));
         assertNull(InstalledFragment.Model.catalogAvailability(null, "a/foo", "1.1.0", RID));
+    }
+
+    /** LeviLamina 26.60.3 and Vibrant Toggle 1.2.0 (on LeviLamina 26.60.*), as on the device. */
+    private InstalledPackages loaderWorkspace(String name, boolean withLoader) throws Exception {
+        File dir = tmp.newFolder(name);
+        WorkspaceFixture.Pkg ll = new WorkspaceFixture.Pkg("github.com/LiteLDev/LeviLamina", "client", "26.60.3", true, null,
+                "mods/LeviLamina/manifest.json");
+        WorkspaceFixture.Pkg vv = new WorkspaceFixture.Pkg("github.com/jasmijasmi/VV-toggle", "client", "1.2.0", true,
+                "{ \"github.com/LiteLDev/LeviLamina#client\": \"26.60.*\" }", "mods/VV-toggle/manifest.json");
+        if (withLoader) {
+            WorkspaceFixture.write(dir, RID, ll, vv);
+        } else {
+            WorkspaceFixture.write(dir, RID, vv);
+        }
+        return InstalledPackages.read(dir);
+    }
+
+    private static String vvVersion(String version, String ll) {
+        return "{\"version\": \"" + version + "\", \"variants\": {\"client\": [{\"side\": \"client\", "
+                + "\"platform\": \"" + RID + "\", \"deps\": {\"github.com/LiteLDev/LeviLamina#client\": \"" + ll + "\"}}]}}";
+    }
+
+    private static Catalog.Index vvIndex(String... versions) {
+        return Catalog.Index.build(Arrays.asList(CatalogModels.Detail.parse("{\"id\": \"github.com/jasmijasmi/VV-toggle\", "
+                + "\"name\": \"Vibrant Toggle\", \"versions\": [" + String.join(",", versions) + "]}")), RID);
+    }
+
+    @Test
+    public void testUpdateOffersTheNewestVersionTheInstalledLoaderAccepts() throws Exception {
+        // 1.3.0 needs LeviLamina 26.70.*; the installed 26.60.3 fits 1.2.1 only.
+        Catalog.Index index = vvIndex(vvVersion("1.3.0", "26.70.*"), vvVersion("1.2.1", "26.60.*"),
+                vvVersion("1.2.0", "26.60.*"));
+        InstalledFragment.Model.Row vv = row(InstalledFragment.Model.build(loaderWorkspace("Loader", true), index, null, RID),
+                "github.com/jasmijasmi/VV-toggle#client");
+        assertEquals(InstalledFragment.Model.UpdateState.AVAILABLE, vv.update);
+        assertEquals("1.2.1", vv.targetVersion);
+        assertTrue(vv.canUpdate());
+    }
+
+    @Test
+    public void testUpdateNeedingAnotherLoaderIsIncompatible() throws Exception {
+        // Only 1.3.0 is newer, and it needs LeviLamina 26.70.*: no update, an incompatible state naming it.
+        Catalog.Index index = vvIndex(vvVersion("1.3.0", "26.70.*"), vvVersion("1.2.0", "26.60.*"));
+        InstalledFragment.Model.Row vv = row(InstalledFragment.Model.build(loaderWorkspace("Loader", true), index, null, RID),
+                "github.com/jasmijasmi/VV-toggle#client");
+        assertEquals(InstalledFragment.Model.UpdateState.INCOMPATIBLE, vv.update);
+        assertEquals("1.3.0", vv.targetVersion);
+        assertFalse(vv.canUpdate());
+        assertTrue(PackageActions.Batch.updatable(Arrays.asList(vv)).isEmpty());
+        assertEquals("ERR_LL_NO_COMPATIBLE_VERSION", PackageActions.Batch.checkUpdate(vv));
+    }
+
+    @Test
+    public void testUpdateWithoutLoaderFollowsTheDatabase() throws Exception {
+        Catalog.Index index = vvIndex(vvVersion("1.3.0", "26.70.*"), vvVersion("1.2.1", "26.60.*"),
+                vvVersion("1.2.0", "26.60.*"));
+        InstalledPackages noLoader = loaderWorkspace("NoLoader", false);
+        Map<String, List<String>> raw = new java.util.HashMap<>();
+        raw.put("1.26.60.05", Arrays.asList("26.60.3"));
+        LeviLamina.Db db = LeviLamina.Db.normalize(raw);
+        // The instance's versionName names the database key 1.26.60.05: LeviLamina 26.60.3 fits 1.2.1.
+        InstalledFragment.Model.Row vv = row(InstalledFragment.Model.build(noLoader, index, null, RID, db, "1.26.60.5"),
+                "github.com/jasmijasmi/VV-toggle#client");
+        assertEquals(InstalledFragment.Model.UpdateState.AVAILABLE, vv.update);
+        assertEquals("1.2.1", vv.targetVersion);
+        // Without the database nothing tells: the newest.
+        vv = row(InstalledFragment.Model.build(noLoader, index, null, RID, null, "1.26.60.5"),
+                "github.com/jasmijasmi/VV-toggle#client");
+        assertEquals("1.3.0", vv.targetVersion);
+        assertTrue(vv.canUpdate());
     }
 }

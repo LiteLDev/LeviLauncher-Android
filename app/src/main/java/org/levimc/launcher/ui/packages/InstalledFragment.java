@@ -39,7 +39,9 @@ import org.levimc.launcher.core.mods.Mod;
 import org.levimc.launcher.core.mods.ModManager;
 import org.levimc.launcher.core.packages.Catalog;
 import org.levimc.launcher.core.packages.CatalogModels;
+import org.levimc.launcher.core.packages.InstallPlanner;
 import org.levimc.launcher.core.packages.InstalledPackages;
+import org.levimc.launcher.core.packages.LeviLamina;
 import org.levimc.launcher.core.packages.LocalSources;
 import org.levimc.launcher.core.packages.PackageService;
 import org.levimc.launcher.core.packages.engine.Cancel;
@@ -62,6 +64,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class InstalledFragment extends Fragment implements PackagesActivity.TargetListener,
         TaskSession.GlobalListener {
@@ -355,14 +358,14 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
                 PackageService.warn("installed packages: cannot read the mods of " + v.directoryName, e);
                 mods = Collections.emptyList();
             }
-            InstalledFragment.Loader.Snapshot local = InstalledFragment.Loader.local(ws, mods);
+            InstalledFragment.Loader.Snapshot local = InstalledFragment.Loader.local(v, ws, mods);
             boolean needOnline = refreshCatalog || local.catalog != InstalledFragment.Loader.CatalogState.READY;
             main.post(() -> onSnapshot(req, local, needOnline && !ws.isEmpty()));
             if (!needOnline || ws.isEmpty()) {
                 return;
             }
             try {
-                InstalledFragment.Loader.Snapshot online = InstalledFragment.Loader.online(c, ws, mods, refreshCatalog);
+                InstalledFragment.Loader.Snapshot online = InstalledFragment.Loader.online(c, v, ws, mods, refreshCatalog);
                 main.post(() -> onSnapshot(req, online, false));
             } catch (PackageService.Failure ignored) {
                 // The view is gone.
@@ -756,6 +759,8 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
         public enum UpdateState {
             AVAILABLE,
             LATEST,
+            /** A newer version exists, but none the instance's LeviLamina accepts; targetVersion is the newest. */
+            INCOMPATIBLE,
             NO_SOURCE
         }
 
@@ -880,6 +885,23 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
 
         public static List<Row> build(InstalledPackages ws, @Nullable Catalog.Index index, @Nullable List<ModEntry> mods,
                                       String rid) {
+            return build(ws, index, mods, rid, null, "");
+        }
+
+        /**
+         * db and gameVersion: what tells, when LeviLamina is not installed, which LeviLamina an update may need
+         * (none: any); with LeviLamina installed, an update is a version that LeviLamina accepts.
+         */
+        public static List<Row> build(InstalledPackages ws, @Nullable Catalog.Index index, @Nullable List<ModEntry> mods,
+                                      String rid, @Nullable LeviLamina.Db db, String gameVersion) {
+            String installedLoader = "";
+            for (InstalledPackages.Pkg p : ws.packages()) {
+                if (PackageService.isLeviLamina(p.id)) {
+                    installedLoader = p.version;
+                }
+            }
+            String loader = installedLoader;
+            Predicate<CatalogModels.PackageFile> fitsLoader = f -> InstallPlanner.fitsLoader(f, loader, db, gameVersion);
             Map<String, ModEntry> modsByFolder = new HashMap<>();
             if (mods != null) {
                 for (ModEntry m : mods) {
@@ -919,9 +941,14 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
                 UpdateState update = UpdateState.NO_SOURCE;
                 String identifier = PackageService.frontendIdentifier(p.id, p.variant);
                 if (!ll && c != null && identifier != null) {
-                    target = targetVersion(c, p.variant, rid);
-                    if (!target.isEmpty()) {
-                        update = CatalogModels.Versions.canUpdate(p.version, target) ? UpdateState.AVAILABLE : UpdateState.LATEST;
+                    target = targetVersion(c, p.variant, rid, f -> true);
+                    String fitting = targetVersion(c, p.variant, rid, fitsLoader);
+                    if (!fitting.isEmpty() && CatalogModels.Versions.canUpdate(p.version, fitting)) {
+                        target = fitting;
+                        update = UpdateState.AVAILABLE;
+                    } else if (!target.isEmpty()) {
+                        update = CatalogModels.Versions.canUpdate(p.version, target) ? UpdateState.INCOMPATIBLE
+                                : UpdateState.LATEST;
                     }
                 }
                 List<String> requiredBy = new ArrayList<>();
@@ -950,13 +977,14 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
             return index.find(p.id);
         }
 
-        static String targetVersion(CatalogModels.Pkg c, String variant, String rid) {
+        static String targetVersion(CatalogModels.Pkg c, String variant, String rid,
+                                    Predicate<CatalogModels.PackageFile> fits) {
             CatalogModels.Variant v = updateVariant(c, variant);
             List<String> versions = v != null ? v.versions : c.versions;
             List<String> candidates = new ArrayList<>();
             for (String version : versions) {
                 CatalogModels.PackageFile file = v != null ? v.findFile(version) : null;
-                if (file == null || file.availability(rid) != CatalogModels.Availability.UNAVAILABLE) {
+                if (file == null || (file.availability(rid) != CatalogModels.Availability.UNAVAILABLE && fits.test(file))) {
                     candidates.add(version);
                 }
             }
@@ -1191,6 +1219,9 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
                 text = c.getString(R.string.pkg_installed_update_available, row.targetVersion);
                 color = c.getColor(R.color.pkg_status_success);
                 clickable = !selecting && !busy;
+            } else if (row.update == InstalledFragment.Model.UpdateState.INCOMPATIBLE) {
+                text = c.getString(R.string.pkg_installed_update_incompatible, row.targetVersion);
+                color = c.getColor(R.color.pkg_log_warning);
             } else if (row.update == InstalledFragment.Model.UpdateState.LATEST) {
                 text = c.getString(R.string.pkg_installed_update_latest);
                 color = c.getColor(R.color.pkg_status_neutral);
@@ -1268,15 +1299,23 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
             return InstalledPackages.of(v);
         }
 
-        static Snapshot local(InstalledPackages ws, List<InstalledFragment.Model.ModEntry> mods) {
+        /** The rows, with the LeviLamina database in memory for an instance without LeviLamina. */
+        static List<InstalledFragment.Model.Row> rows(GameVersion v, InstalledPackages ws, @Nullable Catalog.Index index,
+                                                      @Nullable List<InstalledFragment.Model.ModEntry> mods) {
+            LeviLamina.DbClient.Result db = LeviLamina.DbClient.get().cached();
+            return InstalledFragment.Model.build(ws, index, mods, PackageService.rid(), db == null ? null : db.db,
+                    PackagesActivity.Instances.gameVersion(v));
+        }
+
+        static Snapshot local(GameVersion v, InstalledPackages ws, List<InstalledFragment.Model.ModEntry> mods) {
             Catalog.Result cached = Catalog.get().cached();
             Catalog.Index index = cached == null ? null : cached.index;
             CatalogState state = cached == null ? CatalogState.LOADING : cached.stale ? CatalogState.UNAVAILABLE : CatalogState.READY;
-            return new Snapshot(ws, InstalledFragment.Model.build(ws, index, mods, PackageService.rid()), state);
+            return new Snapshot(ws, rows(v, ws, index, mods), state);
         }
 
-        static Snapshot online(Cancel ctx, InstalledPackages ws, List<InstalledFragment.Model.ModEntry> mods, boolean refresh)
-                throws PackageService.Failure {
+        static Snapshot online(Cancel ctx, GameVersion v, InstalledPackages ws, List<InstalledFragment.Model.ModEntry> mods,
+                               boolean refresh) throws PackageService.Failure {
             Catalog.Index index = null;
             CatalogState state;
             try {
@@ -1291,7 +1330,7 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
                 index = cached == null ? null : cached.index;
                 state = CatalogState.UNAVAILABLE;
             }
-            return new Snapshot(ws, InstalledFragment.Model.build(ws, index, mods, PackageService.rid()), state);
+            return new Snapshot(ws, rows(v, ws, index, mods), state);
         }
 
         public static void loadForMods(Cancel ctx, @Nullable GameVersion v, @Nullable List<Mod> mods,
@@ -1312,7 +1351,7 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
                     InstalledPackages ws = workspace(v);
                     if (!ws.isEmpty()) {
                         // Badges and update chips only: the catalogue in memory or on disk, never the network.
-                        rows = InstalledFragment.Model.build(ws, Catalog.get().offlineIndex(), entries, PackageService.rid());
+                        rows = rows(v, ws, Catalog.get().offlineIndex(), entries);
                     }
                 } catch (PackageService.Failure | RuntimeException e) {
                     if (ctx.isCancelled()) return;

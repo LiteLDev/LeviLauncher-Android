@@ -292,6 +292,7 @@
     <string name="pkg_installed_required_by">Required by: %1$s</string>
     <string name="pkg_installed_update_available">Update to %1$s</string>
     <string name="pkg_installed_update_latest">Already latest</string>
+    <string name="pkg_installed_update_incompatible">%1$s: incompatible with LeviLamina</string>
     <string name="pkg_installed_no_update_source">No update source</string>
     <string name="pkg_installed_ll_managed">Managed in Loader settings</string>
     <string name="pkg_installed_actions">Actions for %1$s</string>
