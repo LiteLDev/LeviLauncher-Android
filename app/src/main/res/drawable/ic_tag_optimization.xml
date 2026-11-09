@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Featured tag "optimization": the "Potion" sprite of levimc-kit (kit/assets/sprites.mjs, MIT, (c) LeviMC;
+     see assets/licenses/NOTICE-levimc-kit.txt). Generated, do not edit. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp"
+    android:height="16dp"
+    android:viewportWidth="16"
+    android:viewportHeight="16">
+    <path
+        android:fillColor="#1C1630"
+        android:pathData="M6,1h4v1h-4zM6,2h1v1h-1zM9,2h1v1h-1zM7,3h2v1h-2zM6,4h1v1h-1zM9,4h1v1h-1zM6,5h1v1h-1zM9,5h1v1h-1zM5,6h1v1h-1zM10,6h1v1h-1zM4,7h1v1h-1zM11,7h1v1h-1zM3,8h1v1h-1zM12,8h1v1h-1zM3,9h1v1h-1zM12,9h1v1h-1zM3,10h1v1h-1zM12,10h1v1h-1zM3,11h1v1h-1zM12,11h1v1h-1zM3,12h1v1h-1zM12,12h1v1h-1zM4,13h1v1h-1zM11,13h1v1h-1zM5,14h6v1h-6z" />
+    <path
+        android:fillColor="#8A5A33"
+        android:pathData="M7,2h2v1h-2z" />
+    <path
+        android:fillColor="#D8E6EE"
+        android:pathData="M7,4h2v1h-2zM7,5h1v1h-1zM6,6h3v1h-3zM5,7h1v1h-1zM10,7h1v1h-1zM4,8h1v1h-1zM11,8h1v1h-1z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M8,5h1v1h-1zM9,6h1v1h-1zM6,9h1v1h-1zM5,10h1v1h-1z" />
+    <path
+        android:fillColor="#B493FF"
+        android:pathData="M6,7h4v1h-4zM5,8h1v1h-1zM4,9h1v1h-1z" />
+    <path
+        android:fillColor="#8E5CF6"
+        android:pathData="M6,8h5v1h-5zM5,9h1v1h-1zM7,9h5v1h-5zM4,10h1v1h-1zM6,10h4v1h-4zM4,11h6v1h-6zM4,12h5v1h-5z" />
+    <path
+        android:fillColor="#6A3FD0"
+        android:pathData="M10,10h2v1h-2zM10,11h2v1h-2zM9,12h3v1h-3zM5,13h6v1h-6z" />
+</vector>

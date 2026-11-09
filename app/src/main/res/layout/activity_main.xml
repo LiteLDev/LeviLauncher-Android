@@ -527,6 +527,43 @@
                                 android:textSize="16sp" />
                         </LinearLayout>
 
+                        <!-- LeviMC Mods  Row -->
+                        <LinearLayout
+                            android:id="@+id/misc_pkg_row"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingVertical="8dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:foreground="?attr/selectableItemBackground">
+
+                            <ImageView
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                android:src="@drawable/ic_modules"
+                                android:scaleType="fitCenter"
+                                app:tint="@color/on_surface" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="8dp"
+                                android:text="@string/pkg_title_mods"
+                                android:fontFamily="@font/misans"
+                                android:textColor="@color/on_surface"
+                                android:textSize="13sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="›"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="16sp" />
+                        </LinearLayout>
+
                         <!-- Microsoft Accounts Row -->
                         <LinearLayout
                             android:id="@+id/misc_accounts_row"

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Featured tag "teleport": the "Arrow right" sprite of levimc-kit (kit/assets/sprites.mjs, MIT, (c) LeviMC;
+     see assets/licenses/NOTICE-levimc-kit.txt). Generated, do not edit. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp"
+    android:height="16dp"
+    android:viewportWidth="16"
+    android:viewportHeight="16">
+    <path
+        android:fillColor="?attr/colorOnSurface"
+        android:pathData="M8,3h2v1h-2zM8,4h3v1h-3zM9,5h3v1h-3zM10,6h3v1h-3zM2,7h12v1h-12zM2,8h12v1h-12zM10,9h3v1h-3zM9,10h3v1h-3zM8,11h3v1h-3zM8,12h2v1h-2z" />
+</vector>

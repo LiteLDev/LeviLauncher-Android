@@ -117,6 +117,14 @@
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/mod_pkg_chip"
+                    style="@style/PkgChip"
+                    android:layout_marginTop="10dp"
+                    android:maxLines="2"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <TextView
                     android:id="@+id/mod_description_detail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -213,6 +221,63 @@
                     android:paddingHorizontal="14dp"
                     android:paddingVertical="0dp"
                     android:text="@string/configure"
+                    android:textAllCaps="false"
+                    android:textColor="@color/on_primary"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/pkg_update_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_launch_button"
+                    android:fontFamily="@font/misans"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:minHeight="0dp"
+                    android:minWidth="0dp"
+                    android:paddingHorizontal="14dp"
+                    android:paddingVertical="0dp"
+                    android:text="@string/pkg_menu_update"
+                    android:textAllCaps="false"
+                    android:textColor="@color/on_primary"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/pkg_promote_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_launch_button"
+                    android:fontFamily="@font/misans"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:minHeight="0dp"
+                    android:minWidth="0dp"
+                    android:paddingHorizontal="14dp"
+                    android:paddingVertical="0dp"
+                    android:text="@string/pkg_action_promote"
+                    android:textAllCaps="false"
+                    android:textColor="@color/on_primary"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/pkg_open_package_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_launch_button"
+                    android:fontFamily="@font/misans"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:minHeight="0dp"
+                    android:minWidth="0dp"
+                    android:paddingHorizontal="14dp"
+                    android:paddingVertical="0dp"
+                    android:text="@string/pkg_menu_open_package"
                     android:textAllCaps="false"
                     android:textColor="@color/on_primary"
                     android:textSize="13sp"

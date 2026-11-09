@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="pkg_status_success">#4AE0A0</color>
+    <color name="pkg_log_warning">#FFB74D</color>
+    <color name="pkg_log_success">#4AE0A0</color>
+    <color name="pkg_log_panel">#1AFFFFFF</color>
+    <color name="pkg_error_notice">#26FF6B6B</color>
+    <color name="pkg_status_neutral">#AAAAAA</color>
+</resources>

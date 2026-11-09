@@ -25,6 +25,8 @@ import org.levimc.launcher.core.versions.VersionManager;
 import org.levimc.launcher.ui.animation.DynamicAnim;
 import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
 import org.levimc.launcher.ui.dialogs.InstallProgressDialog;
+import org.levimc.launcher.ui.packages.PackagesActivity;
+import org.levimc.launcher.ui.packages.LoaderCard;
 import org.levimc.launcher.util.InstanceBackupManager;
 import org.levimc.launcher.util.InstanceShortcutManager;
 
@@ -51,6 +53,7 @@ public class InstanceSettingsActivity extends BaseActivity {
     private Runnable pendingNameSave;
     private boolean populatingData;
     private String lastSavedInstanceName = "";
+    private LoaderCard loaderSection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +98,22 @@ public class InstanceSettingsActivity extends BaseActivity {
 
         initViews();
         populateData();
-        selectTab(tabGeneral);
+        loaderSection = new LoaderCard(this, version, findViewById(R.id.pkg_loader_card));
+        // The "Go to Loader" links open the management tab (PackagesActivity.Links.EXTRA_TAB) on the Loader card.
+        boolean toLoader = PackagesActivity.Links.SCROLL_TO_LOADER.equals(getIntent().getStringExtra(PackagesActivity.Links.EXTRA_SCROLL_TO));
+        selectTab(toLoader || PackagesActivity.Links.TAB_MANAGEMENT.equals(getIntent().getStringExtra(PackagesActivity.Links.EXTRA_TAB))
+                ? tabManagement : tabGeneral);
+        if (toLoader) {
+            LoaderCard.scrollTo(findViewById(R.id.instance_settings_scroll), loaderSection.root());
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (loaderSection != null) {
+            loaderSection.onResume();
+        }
     }
 
     private void initViews() {
@@ -241,6 +259,9 @@ public class InstanceSettingsActivity extends BaseActivity {
             } else {
                 sections[i].setVisibility(View.GONE);
             }
+        }
+        if (loaderSection != null) {
+            loaderSection.setVisible(selectedTab == tabManagement);
         }
     }
 
@@ -411,6 +432,10 @@ public class InstanceSettingsActivity extends BaseActivity {
         if (pendingNameSave != null) {
             autoSaveHandler.removeCallbacks(pendingNameSave);
             pendingNameSave = null;
+        }
+        if (loaderSection != null) {
+            loaderSection.onDestroy();
+            loaderSection = null;
         }
         super.onDestroy();
     }

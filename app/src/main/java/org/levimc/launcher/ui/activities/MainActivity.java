@@ -789,6 +789,8 @@ import okhttp3.OkHttpClient;
 
     private void initMiscellaneousSection() {
         binding.miscCurseforgeRow.setOnClickListener(v -> startActivity(new Intent(this, CurseForgeActivity.class)));
+        binding.miscPkgRow.setOnClickListener(v -> startActivity(org.levimc.launcher.ui.packages.PackagesActivity.intent(
+                this, versionManager != null ? versionManager.getSelectedVersion() : null, null)));
         binding.miscAccountsRow.setOnClickListener(v -> startActivity(new Intent(this, AccountsActivity.class)));
         binding.miscQuickLaunchRow.setOnClickListener(v -> startActivity(new Intent(this, QuickLaunchActivity.class)));
     }

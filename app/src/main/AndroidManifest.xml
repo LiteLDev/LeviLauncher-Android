@@ -232,6 +232,23 @@
             tools:ignore="DiscouragedApi" />
 
         <activity
+            android:name=".ui.packages.PackagesActivity"
+            android:theme="@style/Base.Theme.FullScreen"
+            android:screenOrientation="sensorLandscape"
+            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan"
+            tools:ignore="DiscouragedApi" />
+
+        <activity
+            android:name=".ui.packages.PackageActivity"
+            android:theme="@style/Base.Theme.FullScreen"
+            android:screenOrientation="sensorLandscape"
+            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
+            android:exported="false"
+            tools:ignore="DiscouragedApi" />
+
+        <activity
             android:name=".ui.activities.ContentDetailsActivity"
             android:theme="@style/Base.Theme.FullScreen"
             android:screenOrientation="sensorLandscape"

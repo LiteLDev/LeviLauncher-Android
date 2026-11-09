@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Body of InstallByIdDialog (a CustomAlertDialog custom view). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/misans"
+        android:lineSpacingExtra="2dp"
+        android:text="@string/pkg_install_id_body"
+        android:textColor="@color/text_secondary"
+        android:textSize="12sp" />
+
+    <EditText
+        android:id="@+id/pkg_install_id_input"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_cf_search"
+        android:fontFamily="@font/misans"
+        android:hint="@string/pkg_install_id_hint"
+        android:imeOptions="actionDone"
+        android:importantForAutofill="no"
+        android:inputType="textUri"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:singleLine="true"
+        android:textColor="@color/on_surface"
+        android:textColorHint="@color/text_secondary"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/pkg_install_id_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:fontFamily="@font/misans"
+        android:textColor="@color/text_secondary"
+        android:textSize="12sp" />
+</LinearLayout>

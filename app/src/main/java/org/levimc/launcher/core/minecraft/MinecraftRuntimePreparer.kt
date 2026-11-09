@@ -6,6 +6,8 @@ import android.content.pm.ApplicationInfo
 import android.os.Build
 import org.levimc.launcher.R
 import org.levimc.launcher.core.auth.MsftAuthManager
+import org.levimc.launcher.core.packages.InstalledPackages
+import org.levimc.launcher.core.packages.PackageService
 import org.levimc.launcher.core.mods.Mod
 import org.levimc.launcher.core.mods.ModManager
 import org.levimc.launcher.core.mods.ModNativeLoader
@@ -80,9 +82,13 @@ object MinecraftRuntimePreparer {
         prepareMinecraftIntent(context, launchIntent, gameManager, version)
         trace.mark("Launch intent prepared")
 
+        listener.onProgress(32, "Checking packages")
+        checkPackageWorkspace(context, version, listener, trace)
+
         listener.onProgress(34, "Checking mods")
         val modManager = ModManager.getInstance()
         modManager.setCurrentVersion(version)
+        orderPackageMods(context, version, modManager, listener, trace)
         trace.mark("ModManager state prepared")
 
         if (gameManager.shouldLoadMallocRedirect()) {
@@ -157,6 +163,38 @@ object MinecraftRuntimePreparer {
         listener.onProgress(100, "Runtime ready", "Entering Minecraft")
         trace.milestone("Runtime preparation finished")
         return PreparedRuntime(version, gameManager, nativeModResult.skippedIncompatibleMods)
+    }
+
+    /**
+     * Refuses to launch while a package operation changes the instance, and finishes or undoes an
+     * operation an earlier process left interrupted, so the game loads a consistent mods folder.
+     */
+    private fun checkPackageWorkspace(context: Context, version: GameVersion, listener: ProgressListener, trace: LaunchTrace) {
+        val workspace = PackageService.get().workspaceDir(version)
+        if (!workspace.isDirectory) return
+        try {
+            PackageService.get().lockWorkspace(workspace).close()
+        } catch (error: java.io.IOException) {
+            trace.error("package workspace check failed", error.message ?: "")
+            throw IllegalStateException(error.message, error)
+        }
+        trace.mark("package workspace ready")
+    }
+
+    /**
+     * Loads every package's mods after the mods of the packages it depends on: a manual reorder in
+     * the mod list may have broken the order fixed after each operation.
+     */
+    private fun orderPackageMods(context: Context, version: GameVersion, modManager: ModManager, listener: ProgressListener, trace: LaunchTrace) {
+        val workspace = PackageService.get().workspaceDir(version)
+        if (!workspace.isDirectory) return
+        try {
+            if (InstalledPackages.applyLoadOrder(modManager, InstalledPackages.read(workspace))) {
+                listener.onLog("Moved package mods after the mods they depend on")
+            }
+        } catch (error: Exception) {
+            trace.warning("package mod load order unchecked", PackageService.message(error))
+        }
     }
 
     @JvmStatic

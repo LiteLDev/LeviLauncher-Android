@@ -47,20 +47,61 @@
             android:textColor="@color/text_secondary"
             android:visibility="gone"/>
 
-        <TextView
-            android:id="@+id/mod_config_badge"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:background="@drawable/bg_mod_page_badge"
-            android:fontFamily="@font/misans"
-            android:paddingHorizontal="7dp"
-            android:paddingVertical="2dp"
-            android:text="@string/mod_config_badge"
-            android:textColor="@color/primary"
-            android:textSize="10sp"
-            android:textStyle="bold"
-            android:visibility="gone" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/mod_config_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/bg_mod_page_badge"
+                android:fontFamily="@font/misans"
+                android:paddingHorizontal="7dp"
+                android:paddingVertical="2dp"
+                android:text="@string/mod_config_badge"
+                android:textColor="@color/primary"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/mod_pkg_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/bg_mod_page_badge"
+                android:fontFamily="@font/misans"
+                android:paddingHorizontal="7dp"
+                android:paddingVertical="2dp"
+                android:text="@string/pkg_mod_badge"
+                android:textColor="@color/primary"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/mod_pkg_update"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/bg_pkg_status_chip"
+                android:backgroundTint="@color/pkg_status_success"
+                android:ellipsize="end"
+                android:fontFamily="@font/misans"
+                android:maxLines="1"
+                android:paddingHorizontal="7dp"
+                android:paddingVertical="2dp"
+                android:textColor="@color/on_primary"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout

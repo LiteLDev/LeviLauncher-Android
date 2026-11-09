@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One section of PackageActions.BatchResultDialog: a heading and its items. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/pkg_result_heading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/misans"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/pkg_result_items"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/bg_pkg_log_panel"
+        android:fontFamily="@font/misans"
+        android:lineSpacingExtra="3dp"
+        android:padding="8dp"
+        android:textColor="@color/on_surface"
+        android:textIsSelectable="true"
+        android:textSize="12sp" />
+</LinearLayout>

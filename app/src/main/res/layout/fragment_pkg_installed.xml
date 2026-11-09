@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Installed tab of PackagesActivity (the package part of upstream ModsPage): the instance's package packages. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/pkg_inst_search"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/bg_cf_search"
+            android:drawableStart="@drawable/ic_search"
+            android:drawablePadding="9dp"
+            android:drawableTint="@color/text_secondary"
+            android:fontFamily="@font/misans"
+            android:hint="@string/pkg_installed_search_hint"
+            android:imeOptions="actionSearch"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:singleLine="true"
+            android:textColor="@color/on_surface"
+            android:textColorHint="@color/text_secondary"
+            android:textSize="13sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/pkg_inst_btn_refresh"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/misans"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:paddingHorizontal="12dp"
+            android:text="@string/pkg_refresh"
+            android:textAllCaps="false"
+            android:textColor="@color/on_surface"
+            android:textSize="12sp"
+            app:cornerRadius="12dp"
+            app:strokeColor="@color/divider"
+            app:strokeWidth="1dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/pkg_inst_btn_file"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/misans"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:paddingHorizontal="12dp"
+            android:text="@string/pkg_installed_install_file"
+            android:textAllCaps="false"
+            android:textColor="@color/on_surface"
+            android:textSize="12sp"
+            app:cornerRadius="12dp"
+            app:icon="@drawable/ic_upload"
+            app:iconPadding="5dp"
+            app:iconSize="15dp"
+            app:iconTint="@color/on_surface"
+            app:strokeColor="@color/divider"
+            app:strokeWidth="1dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/pkg_inst_btn_id"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:backgroundTint="@color/primary"
+            android:fontFamily="@font/misans"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:paddingHorizontal="12dp"
+            android:text="@string/pkg_installed_install_id"
+            android:textAllCaps="false"
+            android:textColor="@color/on_primary"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:cornerRadius="12dp"
+            app:icon="@drawable/ic_add"
+            app:iconPadding="5dp"
+            app:iconSize="15dp"
+            app:iconTint="@color/on_primary" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/pkg_inst_filters"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/pkg_inst_filter_all"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:background="@drawable/bg_tab_unselected"
+            android:fontFamily="@font/misans"
+            android:gravity="center"
+            android:paddingHorizontal="12dp"
+            android:text="@string/pkg_installed_filter_all"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/pkg_inst_filter_explicit"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginStart="6dp"
+            android:background="@drawable/bg_tab_unselected"
+            android:fontFamily="@font/misans"
+            android:gravity="center"
+            android:paddingHorizontal="12dp"
+            android:text="@string/pkg_installed_filter_explicit"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/pkg_inst_filter_dependency"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginStart="6dp"
+            android:background="@drawable/bg_tab_unselected"
+            android:fontFamily="@font/misans"
+            android:gravity="center"
+            android:paddingHorizontal="12dp"
+            android:text="@string/pkg_installed_filter_dependency"
+            android:textSize="12sp" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/pkg_inst_only_enabled"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginStart="12dp"
+            android:fontFamily="@font/misans"
+            android:text="@string/pkg_installed_only_enabled"
+            android:textColor="@color/on_surface"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/pkg_inst_summary"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:fontFamily="@font/misans"
+            android:gravity="end"
+            android:maxLines="1"
+            android:textColor="@color/text_secondary"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/pkg_inst_selection_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/pkg_inst_selected_count"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/misans"
+            android:textColor="@color/on_surface"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/pkg_inst_select_all"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:fontFamily="@font/misans"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:paddingHorizontal="10dp"
+            android:text="@string/pkg_installed_select_all"
+            android:textAllCaps="false"
+            android:textColor="@color/on_surface"
+            android:textSize="12sp"
+            app:cornerRadius="10dp"
+            app:strokeColor="@color/divider"
+            app:strokeWidth="1dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/pkg_inst_update_selected"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:layout_marginStart="6dp"
+            android:fontFamily="@font/misans"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:paddingHorizontal="10dp"
+            android:text="@string/pkg_installed_update_selected"
+            android:textAllCaps="false"
+            android:textColor="@color/on_surface"
+            android:textSize="12sp"
+            app:cornerRadius="10dp"
+            app:strokeColor="@color/divider"
+            app:strokeWidth="1dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/pkg_inst_uninstall_selected"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:layout_marginStart="6dp"
+            android:fontFamily="@font/misans"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:paddingHorizontal="10dp"
+            android:text="@string/pkg_installed_uninstall_selected"
+            android:textAllCaps="false"
+            android:textColor="@color/error"
+            android:textSize="12sp"
+            app:cornerRadius="10dp"
+            app:strokeColor="@color/divider"
+            app:strokeWidth="1dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/pkg_inst_selection_done"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:layout_marginStart="6dp"
+            android:fontFamily="@font/misans"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:minWidth="0dp"
+            android:paddingHorizontal="10dp"
+            android:text="@string/pkg_installed_selection_done"
+            android:textAllCaps="false"
+            android:textColor="@color/on_surface"
+            android:textSize="12sp"
+            app:cornerRadius="10dp"
+            app:strokeColor="@color/divider"
+            app:strokeWidth="1dp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/pkg_inst_notice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:fontFamily="@font/misans"
+        android:textColor="@color/pkg_log_warning"
+        android:textSize="11sp"
+        android:visibility="gone" />
+
+    <org.levimc.launcher.ui.packages.TaskProgressView
+        android:id="@+id/pkg_inst_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:visibility="gone" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="6dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/pkg_inst_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="12dp"
+            android:scrollbars="none" />
+
+        <LinearLayout
+            android:id="@+id/pkg_inst_empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/pkg_inst_empty_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/misans"
+                android:gravity="center"
+                android:maxWidth="520dp"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/pkg_inst_empty_action"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="38dp"
+                android:layout_marginTop="12dp"
+                android:fontFamily="@font/misans"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="@string/pkg_retry"
+                android:textAllCaps="false"
+                android:textColor="@color/on_surface"
+                android:textSize="12sp"
+                android:visibility="gone"
+                app:cornerRadius="12dp"
+                app:strokeColor="@color/divider"
+                app:strokeWidth="1dp" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/pkg_inst_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+    </FrameLayout>
+</LinearLayout>

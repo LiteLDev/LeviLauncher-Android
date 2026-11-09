@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A package version row of the Versions tab (PackageActivity.VersionAdapter). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="14dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="6dp"
+    android:paddingBottom="8dp">
+
+    <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/bg_cf_icon"
+        android:importantForAccessibility="no"
+        android:padding="6dp"
+        android:src="@drawable/ic_modules"
+        app:tint="@color/text_secondary" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/pkg_row_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/misans"
+                android:textColor="@color/on_surface"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                tools:text="LHolo 1.2.0" />
+
+            <TextView
+                android:id="@+id/pkg_row_badge"
+                style="@style/PkgChip"
+                android:layout_marginStart="8dp"
+                android:textStyle="bold"
+                tools:text="No Android build" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/pkg_row_ranges"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:fontFamily="@font/misans"
+            android:textColor="@color/text_secondary"
+            android:textSize="11sp"
+            tools:text="LeviLamina 26.60.*" />
+
+        <TextView
+            android:id="@+id/pkg_row_deps_toggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:background="?attr/selectableItemBackground"
+            android:fontFamily="@font/misans"
+            android:paddingVertical="2dp"
+            android:textColor="@color/text_secondary"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            tools:text="▸ 2 dependencies" />
+
+        <TextView
+            android:id="@+id/pkg_row_deps"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:lineSpacingExtra="2dp"
+            android:textColor="@color/text_secondary"
+            android:textIsSelectable="true"
+            android:textSize="11sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/pkg_row_install"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="34dp"
+        android:layout_marginStart="8dp"
+        android:fontFamily="@font/misans"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:minWidth="0dp"
+        android:paddingHorizontal="10dp"
+        android:text="@string/pkg_install"
+        android:textAllCaps="false"
+        android:textColor="@color/on_surface"
+        android:textSize="12sp"
+        app:cornerRadius="10dp"
+        app:icon="@drawable/ic_download"
+        app:iconPadding="4dp"
+        app:iconSize="14dp"
+        app:iconTint="@color/on_surface"
+        app:strokeColor="@color/divider" />
+</LinearLayout>

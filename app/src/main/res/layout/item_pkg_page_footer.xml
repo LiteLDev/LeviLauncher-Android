@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Pagination row under the catalogue results (PagePagination). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingHorizontal="14dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="16dp">
+
+    <Button
+        android:id="@+id/pkg_page_prev"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:layout_weight="1"
+        android:background="@drawable/bg_mod_menu_toggle"
+        android:fontFamily="@font/misans"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingHorizontal="3dp"
+        android:text="@string/pkg_page_prev"
+        android:textAllCaps="false"
+        android:textColor="@color/primary"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/pkg_page_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp"
+        android:fontFamily="@font/misans"
+        android:textColor="@color/text_secondary"
+        android:textSize="12sp" />
+
+    <Button
+        android:id="@+id/pkg_page_next"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:layout_weight="1"
+        android:background="@drawable/bg_mod_menu_toggle"
+        android:fontFamily="@font/misans"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingHorizontal="3dp"
+        android:text="@string/pkg_page_next"
+        android:textAllCaps="false"
+        android:textColor="@color/primary"
+        android:textSize="12sp" />
+</LinearLayout>

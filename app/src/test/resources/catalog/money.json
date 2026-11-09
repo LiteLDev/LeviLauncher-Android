@@ -1,0 +1,15 @@
+{
+  "id": "github.com/LiteLDev/LegacyMoney", "name": "LegacyMoney", "owner": "LiteLDev", "stars": 50,
+  "updated": "2026-01-01T00:00:00Z", "created": "2023-05-01T00:00:00Z",
+  "description": "Economy for servers and clients", "tags": ["money", "category:API"], "license": "MIT",
+  "side": ["server", "client"], "platform": ["android-arm64", "win-x64"], "gameVersions": ["1.26.60", "1.26.51"],
+  "latest": {"variant": "", "version": "0.9.2", "install": "lip install github.com/LiteLDev/LegacyMoney@0.9.2"},
+  "versions": [
+    {"version": "0.9.1", "variants": {"": [
+      {"side": "server", "platform": "win-x64", "deps": {"github.com/LiteLDev/LeviLamina": "26.51.*"}},
+      {"side": "client", "platform": "android-arm64", "deps": {"github.com/LiteLDev/LeviLamina#client": "26.51.*"}}]}},
+    {"version": "0.9.2", "variants": {"": [
+      {"side": "server", "platform": "win-x64", "deps": {"github.com/LiteLDev/LeviLamina": "26.60.*", "github.com/LiteLDev/iListenAttentively": "0.18.*"}},
+      {"side": "client", "platform": "android-arm64", "deps": {"github.com/LiteLDev/LeviLamina#client": "26.60.*"}}]}}
+  ]
+}

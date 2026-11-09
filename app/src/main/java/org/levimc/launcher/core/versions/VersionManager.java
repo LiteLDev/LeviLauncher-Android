@@ -12,6 +12,7 @@ import android.os.Looper;
 import androidx.annotation.NonNull;
 
 import org.levimc.launcher.R;
+import org.levimc.launcher.core.packages.PackageService;
 import org.levimc.launcher.core.minecraft.MinecraftLauncher;
 import org.levimc.launcher.core.mods.ModManager;
 import org.levimc.launcher.ui.activities.MainActivity;
@@ -803,6 +804,15 @@ public class VersionManager {
             return;
         }
 
+        // No package operation may run on the instance while it is deleted.
+        PackageService.Held pkgLock = version.versionDir == null ? null
+                : PackageService.get().tryLock(version.versionDir);
+        if (version.versionDir != null && pkgLock == null) {
+            if (callback != null)
+                callback.onDeleteFailed(new IllegalStateException(context.getString(R.string.pkg_err_workspace_busy)));
+            return;
+        }
+
         ModManager modManager = ModManager.getInstance();
         if (modManager.getCurrentVersion() != null &&
                 modManager.getCurrentVersion().equals(version)) {
@@ -855,6 +865,10 @@ public class VersionManager {
             } catch (Exception e) {
                 if (callback != null)
                     callback.onDeleteFailed(e);
+            } finally {
+                if (pkgLock != null) {
+                    pkgLock.close();
+                }
             }
         }).start();
     }

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Featured tag "bugfix": the "Bug" sprite of levimc-kit (kit/assets/sprites.mjs, MIT, (c) LeviMC;
+     see assets/licenses/NOTICE-levimc-kit.txt). Generated, do not edit. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp"
+    android:height="16dp"
+    android:viewportWidth="16"
+    android:viewportHeight="16">
+    <path
+        android:fillColor="#3A2A30"
+        android:pathData="M4,1h1v1h-1zM11,1h1v1h-1zM5,2h1v1h-1zM10,2h1v1h-1zM2,4h1v1h-1zM13,4h1v1h-1zM3,5h1v1h-1zM12,5h1v1h-1zM1,7h2v1h-2zM13,7h2v1h-2zM1,9h2v1h-2zM13,9h2v1h-2zM2,11h1v1h-1zM13,11h1v1h-1z" />
+    <path
+        android:fillColor="#2A1018"
+        android:pathData="M6,3h4v1h-4zM5,4h1v1h-1zM7,4h2v1h-2zM10,4h1v1h-1zM4,5h8v1h-8zM4,6h1v1h-1zM11,6h1v1h-1zM3,7h1v1h-1zM12,7h1v1h-1zM3,8h1v1h-1zM12,8h1v1h-1zM3,9h1v1h-1zM12,9h1v1h-1zM3,10h1v1h-1zM12,10h1v1h-1zM3,11h1v1h-1zM12,11h1v1h-1zM4,12h1v1h-1zM11,12h1v1h-1zM5,13h6v1h-6z" />
+    <path
+        android:fillColor="#FF5A5A"
+        android:pathData="M6,4h1v1h-1zM9,4h1v1h-1z" />
+    <path
+        android:fillColor="#C2577A"
+        android:pathData="M5,6h2v1h-2zM8,6h3v1h-3zM4,7h3v1h-3zM8,7h4v1h-4zM4,8h3v1h-3zM8,8h4v1h-4zM4,9h3v1h-3zM8,9h4v1h-4zM4,10h3v1h-3zM8,10h4v1h-4zM4,11h3v1h-3zM8,11h4v1h-4zM5,12h2v1h-2zM8,12h3v1h-3z" />
+    <path
+        android:fillColor="#8F3A57"
+        android:pathData="M7,6h1v1h-1zM7,7h1v1h-1zM7,8h1v1h-1zM7,9h1v1h-1zM7,10h1v1h-1zM7,11h1v1h-1zM7,12h1v1h-1z" />
+</vector>

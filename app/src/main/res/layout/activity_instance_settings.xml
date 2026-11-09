@@ -7,6 +7,7 @@
     android:background="@color/background">
 
     <ScrollView
+        android:id="@+id/instance_settings_scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
@@ -402,6 +403,12 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:visibility="gone">
+
+                    <include
+                        layout="@layout/view_pkg_loader_card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="14dp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
