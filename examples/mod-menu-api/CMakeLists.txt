@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(levilaunchroid_mod_menu_examples LANGUAGES CXX)
+project(levilauncher_android_mod_menu_examples LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

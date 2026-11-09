@@ -32,7 +32,7 @@
     <string name="about_title">☕ Về</string>
     <string name="copyright">©2024–2026 LeviMC. Mọi quyền được bảo lưu.</string>
     <string name="font_license">Ứng dụng đang sử dụng phông chữ Misans.</string>
-    <string name="about_footer_github">GitHub: https://github.com/LiteLDev/LeviLaunchroid</string>
+    <string name="about_footer_github">GitHub: https://github.com/LiteLDev/LeviLauncher-Android</string>
     <string name="quick_actions_title">Thao tác nhanh</string>
     <string name="content_mgmt_section_title">Quản lý nội dung</string>
     <string name="misc_section_title">Khác</string>
