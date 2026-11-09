@@ -122,27 +122,52 @@ public final class InstallPlanner {
         return null;
     }
 
-    public static Plan decide(Input in) {
-        String rid = in.rid == null ? PackageService.rid() : in.rid;
-        String requestedGame = CatalogModels.Versions.normalizeSemverInput(in.gameVersion);
-        String resolvedGame = requestedGame;
-        if (in.hasDb() && !requestedGame.isEmpty() && !requestedGame.equalsIgnoreCase("latest")
-                && !in.db.asMap().containsKey(requestedGame)) {
+    /** The database key of an instance's game version (gameVersion itself when the database has none). */
+    static String resolveGame(LeviLamina.Db db, String gameVersion) {
+        String requested = CatalogModels.Versions.normalizeSemverInput(gameVersion);
+        if (db != null && !db.isEmpty() && !requested.isEmpty() && !requested.equalsIgnoreCase("latest")
+                && !db.asMap().containsKey(requested)) {
             // Android: the instance's versionName ("1.21.132.1") names a database key ("1.21.132.01").
-            String key = in.db.resolveGame(requestedGame);
+            String key = db.resolveGame(requested);
             if (key != null) {
-                resolvedGame = key;
+                return key;
             }
         }
-        String game = resolvedGame;
+        return requested;
+    }
+
+    /**
+     * Whether a version's LeviLamina ranges fit an instance: the installed LeviLamina when there is one, else a
+     * LeviLamina the database lists for the instance's game. True when it needs no LeviLamina, or when neither is known.
+     */
+    public static boolean fitsLoader(CatalogModels.PackageFile f, String installedLoader, LeviLamina.Db db,
+                                     String gameVersion) {
+        if (f.llRanges.isEmpty()) {
+            return true;
+        }
+        String ll = PackageService.trim(installedLoader);
+        if (!ll.isEmpty()) {
+            return CatalogModels.Versions.compatible(ll, f.llRanges);
+        }
+        String game = resolveGame(db, gameVersion);
+        if (db == null || db.isEmpty() || game.isEmpty()) {
+            return true;
+        }
+        return CatalogModels.Versions.compatibleWithAny(f.llRanges, db.versions(game));
+    }
+
+    public static Plan decide(Input in) {
+        String rid = in.rid == null ? PackageService.rid() : in.rid;
+        String game = resolveGame(in.db, in.gameVersion);
         List<CatalogModels.PackageFile> files = new ArrayList<>();
         if (in.variant != null) {
             files.addAll(in.variant.sortedFiles());
         }
-        CatalogModels.InstallState loader = in.loader == null ? CatalogModels.InstallState.NOT_INSTALLED : in.loader;
-        CatalogModels.InstallState pkg = in.pkg == null ? CatalogModels.InstallState.NOT_INSTALLED : in.pkg;
         Builder p = new Builder();
         p.gameVersion = game;
+        CatalogModels.InstallState loader = in.loader == null ? CatalogModels.InstallState.NOT_INSTALLED : in.loader;
+        CatalogModels.InstallState pkg = in.pkg == null ? CatalogModels.InstallState.NOT_INSTALLED : in.pkg;
+        String installedLoader = loader.installed ? PackageService.trim(loader.installedVersion) : "";
         CatalogModels.PackageFile file = null;
         String want = PackageService.trim(in.version);
         if (!want.isEmpty()) {
@@ -156,12 +181,19 @@ public final class InstallPlanner {
         } else {
             // Prefer a stable release, so a pre-release the dotted order ranks
             // above its own release (1.0.0-rc.1 > 1.0.0) is not picked; and a
-            // build for this platform over one with no declared platform.
-            for (CatalogModels.Availability tier : new CatalogModels.Availability[]{CatalogModels.Availability.AVAILABLE, CatalogModels.Availability.UNKNOWN}) {
-                file = first(files, f -> f.availability(rid) == tier
-                        && CatalogModels.Versions.isStable(f.version) && in.supportsGame(f, game));
-                if (file == null) {
-                    file = first(files, f -> f.availability(rid) == tier && in.supportsGame(f, game));
+            // build for this platform over one with no declared platform. A version the installed
+            // LeviLamina accepts comes first, so a newer one needing another LeviLamina is not offered over it.
+            for (boolean fitInstalled : new boolean[]{true, false}) {
+                for (CatalogModels.Availability tier : new CatalogModels.Availability[]{CatalogModels.Availability.AVAILABLE, CatalogModels.Availability.UNKNOWN}) {
+                    FilePredicate fits = f -> f.availability(rid) == tier && in.supportsGame(f, game)
+                            && (!fitInstalled || fitsLoader(f, installedLoader, null, ""));
+                    file = first(files, f -> fits.test(f) && CatalogModels.Versions.isStable(f.version));
+                    if (file == null) {
+                        file = first(files, fits);
+                    }
+                    if (file != null) {
+                        break;
+                    }
                 }
                 if (file != null) {
                     break;

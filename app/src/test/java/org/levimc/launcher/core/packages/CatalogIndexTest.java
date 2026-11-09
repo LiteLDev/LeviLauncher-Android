@@ -569,6 +569,31 @@ public class CatalogIndexTest {
     }
 
     @Test
+    public void testDecidePicksTheNewestVersionTheInstalledLoaderAccepts() {
+        // The game (1.26.60.05) has LeviLamina 26.60.0 and 26.60.4; 26.60.0 is installed.
+        CatalogModels.Variant v = new CatalogModels.Variant("client", "github.com/a/mod#client", Arrays.asList(
+                CatalogModels.PackageFile.of("1.3.0", Collections.singletonMap("github.com/LiteLDev/LeviLamina#client", ">=26.60.4"), RID),
+                CatalogModels.PackageFile.of("1.2.1", Collections.singletonMap("github.com/LiteLDev/LeviLamina#client", "26.60.*"), RID)));
+        InstallPlanner.Input in = input(v);
+        in.gameVersion = "1.26.60.05";
+        in.db = Fixtures.db();
+        in.loader = CatalogModels.InstallState.installed(true, "26.60.0");
+        InstallPlanner.Plan p = InstallPlanner.decide(in);
+        assertEquals("1.2.1", p.version);
+        assertTrue(p.loaderCompatible);
+        assertFalse(p.needsLoader);
+        assertEquals("", p.blocker);
+        // Without LeviLamina the newest version the game supports.
+        in.loader = CatalogModels.InstallState.NOT_INSTALLED;
+        assertEquals("1.3.0", InstallPlanner.decide(in).version);
+        // No version fits the installed LeviLamina: the newest stays, shown as needing another LeviLamina.
+        in.loader = CatalogModels.InstallState.installed(true, "26.51.1");
+        p = InstallPlanner.decide(in);
+        assertEquals("1.3.0", p.version);
+        assertTrue(p.replacesLoader);
+    }
+
+    @Test
     public void testDecideAndroidAvailability() {
         CatalogModels.Variant v = Fixtures.pkg(Fixtures.ANDROID).defaultVariant();
         LeviLamina.Db db = Fixtures.db();

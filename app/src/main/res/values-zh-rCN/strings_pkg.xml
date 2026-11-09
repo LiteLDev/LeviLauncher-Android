@@ -286,6 +286,7 @@
     <string name="pkg_installed_required_by">被依赖于：%1$s</string>
     <string name="pkg_installed_update_available">更新到 %1$s</string>
     <string name="pkg_installed_update_latest">已是最新</string>
+    <string name="pkg_installed_update_incompatible">%1$s：与 LeviLamina 不兼容</string>
     <string name="pkg_installed_no_update_source">没有可用的更新源</string>
     <string name="pkg_installed_ll_managed">在加载器设置中管理</string>
     <string name="pkg_installed_actions">%1$s 的操作</string>
