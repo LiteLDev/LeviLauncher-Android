@@ -446,9 +446,19 @@ final class Resolver implements Closeable {
             return false;
         }
 
-        /** {@link #satisfies}, and a package of a ref stands in only when the request has a candidate (workspace 3). */
+        /**
+         * {@link #satisfies}, and a package of a ref stands in only when the request has a candidate (workspace 3).
+         * A package of {@code @<version>} is itself a candidate of the request: the archive of the version tag
+         * {@code v<version>}, with the variant's entry (package 4), when that tag's version satisfies the range
+         * too (package 4, step 1); so it needs no resolving (and no network).
+         */
         private boolean standsIn(Candidate c, Request r) throws PackageException {
-            return satisfies(c, r) && (!c.source.hasRef() || r.source.hasRef() || resolve(r.source, r.range, r.fresh).get(0) != null);
+            return satisfies(c, r) && (!c.source.hasRef() || r.source.hasRef() || tagSatisfies(c.source, r)
+                    || resolve(r.source, r.range, r.fresh).get(0) != null);
+        }
+
+        private boolean tagSatisfies(Source s, Request r) {
+            return s.version != null && (r.range == null || SemVer.Range.parse(r.range).matches(s.version));
         }
 
         /** Records the first failure (the deepest point the search reached first); returns false. */
