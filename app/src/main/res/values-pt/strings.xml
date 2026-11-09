@@ -205,6 +205,7 @@
     <string name="instance_tab_general">Geral</string>
     <string name="instance_tab_launch_options">Opções de Início</string>
     <string name="instance_tab_management">Gerenciamento</string>
+    <string name="instance_tab_loader">Carregador</string>
     <string name="instance_new_name">Novo Nome</string>
     <string name="instance_rename_hint">Apenas a pasta é renomeada. A versão não será afetada.</string>
     <string name="instance_custom_icon">Ícone Personalizado (requer um quadrado)</string>

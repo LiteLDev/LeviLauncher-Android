@@ -193,6 +193,30 @@ public final class InstalledPackages {
         return null;
     }
 
+    /** The installed LeviLamina (any variant); null when none. */
+    public Pkg leviLamina() {
+        for (Pkg p : packages) if (PackageService.isLeviLamina(p.id)) return p;
+        return null;
+    }
+
+    /**
+     * Lowercased names of the mod folders that make up the loader: LeviLamina's and those of the packages installed
+     * only as its dependencies. They are shown as the loader, not as mods.
+     */
+    public Set<String> loaderFolderKeys() {
+        Set<String> out = new HashSet<>();
+        Pkg ll = leviLamina();
+        if (ll == null) return out;
+        Set<Pkg> loader = new HashSet<>();
+        loader.add(ll);
+        loader.addAll(transitiveDependenciesOf(ll));
+        for (Pkg p : loader) {
+            if (p != ll && (p.explicit || !loader.containsAll(dependentsOf(p)))) continue;
+            for (String f : p.folders) out.add(key(f));
+        }
+        return out;
+    }
+
     /** The installed packages that depend on p directly. */
     public List<Pkg> dependentsOf(Pkg p) {
         List<Pkg> out = new ArrayList<>();

@@ -98,6 +98,21 @@
                         android:focusable="true" />
 
                     <TextView
+                        android:id="@+id/tab_loader"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:layout_marginStart="8dp"
+                        android:paddingHorizontal="16dp"
+                        android:gravity="center"
+                        android:text="@string/instance_tab_loader"
+                        android:fontFamily="@font/misans"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp"
+                        android:background="@drawable/bg_tab_unselected"
+                        android:clickable="true"
+                        android:focusable="true" />
+
+                    <TextView
                         android:id="@+id/tab_management"
                         android:layout_width="wrap_content"
                         android:layout_height="32dp"
@@ -398,7 +413,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/section_management"
+                    android:id="@+id/section_loader"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -407,8 +422,15 @@
                     <include
                         layout="@layout/view_pkg_loader_card"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="14dp" />
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/section_management"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <LinearLayout
                         android:layout_width="match_parent"

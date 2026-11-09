@@ -223,7 +223,7 @@ public class ModsAdapter extends RecyclerView.Adapter<ModsAdapter.ModViewHolder>
         TextView name;
         TextView orderText;
         TextView configBadge;
-        TextView pkgBadge;
+        View pkgBadge;
         TextView pkgUpdate;
         TextView authorText;
         TextView versionText;

@@ -600,9 +600,19 @@ import okhttp3.OkHttpClient;
             if (binding.minecraftTitleText != null) {
                 pm.applySolidAccentText(binding.minecraftTitleText, accent);
             }
+            binding.loaderChip.setTextColor(accent);
         }
 
         viewModel.getModsLiveData().observe(this, this::updateModsUI);
+        // An instance with LeviLamina installed shows it by the title (it is not listed among the mods).
+        binding.loaderChip.setOnClickListener(v -> org.levimc.launcher.ui.packages.PackageActions.openLoaderSettings(
+                this, versionManager != null ? versionManager.getSelectedVersion() : null));
+        viewModel.getLoaderLiveData().observe(this, llVersion -> {
+            boolean shown = llVersion != null;
+            binding.loaderChip.setVisibility(shown ? View.VISIBLE : View.GONE);
+            binding.loaderChip.setContentDescription(shown
+                    ? getString(R.string.pkg_loader_name) + " " + llVersion : null);
+        });
     }
 
     private void updateViewModelVersion() {

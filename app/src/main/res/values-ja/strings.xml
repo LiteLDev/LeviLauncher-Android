@@ -205,6 +205,7 @@
     <string name="instance_tab_general">一般</string>
     <string name="instance_tab_launch_options">起動オプション</string>
     <string name="instance_tab_management">管理</string>
+    <string name="instance_tab_loader">ローダー</string>
     <string name="instance_new_name">新しい名前</string>
     <string name="instance_rename_hint">フォルダ名のみを変更します。バージョンとタイプには影響しません。</string>
     <string name="instance_custom_icon">カスタムアイコン (正方形が必要)</string>

@@ -7,12 +7,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -150,26 +148,6 @@ public final class LoaderCard implements TaskSession.GlobalListener {
         main.removeCallbacksAndMessages(null);
         TaskSession.removeGlobalListener(this);
         progress.unbind();
-    }
-
-    public static void scrollTo(ScrollView scroll, View card) {
-        ViewTreeObserver.OnGlobalLayoutListener[] holder = new ViewTreeObserver.OnGlobalLayoutListener[1];
-        holder[0] = () -> {
-            if (card.getHeight() == 0) {
-                return;
-            }
-            scroll.getViewTreeObserver().removeOnGlobalLayoutListener(holder[0]);
-            int y = 0;
-            View v = card;
-            while (v != null && v != scroll) {
-                y += v.getTop();
-                v = v.getParent() instanceof View ? (View) v.getParent() : null;
-            }
-            int margin = Math.round(8 * scroll.getResources().getDisplayMetrics().density);
-            scroll.smoothScrollTo(0, Math.max(0, y - margin));
-        };
-        scroll.getViewTreeObserver().addOnGlobalLayoutListener(holder[0]);
-        scroll.requestLayout();
     }
 
     // #region Loading

@@ -205,6 +205,7 @@
     <string name="instance_tab_general">Chung</string>
     <string name="instance_tab_launch_options">Tùy chọn khởi chạy</string>
     <string name="instance_tab_management">Quản lý</string>
+    <string name="instance_tab_loader">Trình tải</string>
     <string name="instance_new_name">Tên mới</string>
     <string name="instance_rename_hint">Chỉ đổi tên thư mục. Phiên bản và loại trò chơi không bị ảnh hưởng.</string>
     <string name="instance_custom_icon">Icon tùy chỉnh (khuyến khích hình vuông)</string>

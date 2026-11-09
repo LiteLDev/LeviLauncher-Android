@@ -205,6 +205,7 @@
     <string name="instance_tab_general">Общие</string>
     <string name="instance_tab_launch_options">Параметры запуска</string>
     <string name="instance_tab_management">Управление</string>
+    <string name="instance_tab_loader">Загрузчик</string>
     <string name="instance_new_name">Новое имя</string>
     <string name="instance_rename_hint">Переименовывается только папка. Версия и тип игры не изменяются.</string>
     <string name="instance_custom_icon">Пользовательский значок (требуется квадрат)</string>

@@ -205,6 +205,7 @@
     <string name="instance_tab_general">सामान्य</string>
     <string name="instance_tab_launch_options">लॉन्च विकल्प</string>
     <string name="instance_tab_management">प्रबंधन</string>
+    <string name="instance_tab_loader">लोडर</string>
     <string name="instance_new_name">नया नाम</string>
     <string name="instance_rename_hint">केवल फ़ोल्डर का नाम बदलें। गेम संस्करण और प्रकार अप्रभावित रहेंगे।</string>
     <string name="instance_custom_icon">कस्टम आइकन (वर्ग आवश्यक)</string>

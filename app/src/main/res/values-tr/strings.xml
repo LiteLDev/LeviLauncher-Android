@@ -205,6 +205,7 @@
     <string name="instance_tab_general">Genel</string>
     <string name="instance_tab_launch_options">Başlatma Seçenekleri</string>
     <string name="instance_tab_management">Yönetim</string>
+    <string name="instance_tab_loader">Yükleyici</string>
     <string name="instance_new_name">Yeni Ad</string>
     <string name="instance_rename_hint">Yalnızca klasörü yeniden adlandırır. Oyun sürümü ve türü etkilenmez.</string>
     <string name="instance_custom_icon">Özel Simge (kare gerekli)</string>

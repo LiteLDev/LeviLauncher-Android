@@ -208,6 +208,7 @@
     <string name="instance_tab_general">常规</string>
     <string name="instance_tab_launch_options">启动选项</string>
     <string name="instance_tab_management">管理</string>
+    <string name="instance_tab_loader">加载器</string>
     <string name="instance_new_name">新名称</string>
     <string name="instance_rename_hint">仅重命名文件夹。游戏版本和类型不受影响。</string>
     <string name="instance_custom_icon">自定义图标（需为正方形）</string>

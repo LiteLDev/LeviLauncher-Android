@@ -39,8 +39,8 @@ public class InstanceSettingsActivity extends BaseActivity {
     private InstallProgressDialog backupProgressDialog;
     private Button backupButton;
 
-    private TextView tabGeneral, tabLaunchOptions, tabManagement;
-    private View sectionGeneral, sectionLaunchOptions, sectionManagement;
+    private TextView tabGeneral, tabLaunchOptions, tabLoader, tabManagement;
+    private View sectionGeneral, sectionLaunchOptions, sectionLoader, sectionManagement;
 
     private EditText editName;
     private SwitchMaterial switchIsolation;
@@ -99,13 +99,10 @@ public class InstanceSettingsActivity extends BaseActivity {
         initViews();
         populateData();
         loaderSection = new LoaderCard(this, version, findViewById(R.id.pkg_loader_card));
-        // The "Go to Loader" links open the management tab (PackagesActivity.Links.EXTRA_TAB) on the Loader card.
-        boolean toLoader = PackagesActivity.Links.SCROLL_TO_LOADER.equals(getIntent().getStringExtra(PackagesActivity.Links.EXTRA_SCROLL_TO));
-        selectTab(toLoader || PackagesActivity.Links.TAB_MANAGEMENT.equals(getIntent().getStringExtra(PackagesActivity.Links.EXTRA_TAB))
-                ? tabManagement : tabGeneral);
-        if (toLoader) {
-            LoaderCard.scrollTo(findViewById(R.id.instance_settings_scroll), loaderSection.root());
-        }
+        // The "Go to Loader" links open the Loader tab (PackagesActivity.Links.EXTRA_TAB).
+        String tab = getIntent().getStringExtra(PackagesActivity.Links.EXTRA_TAB);
+        selectTab(PackagesActivity.Links.TAB_LOADER.equals(tab) ? tabLoader
+                : PackagesActivity.Links.TAB_MANAGEMENT.equals(tab) ? tabManagement : tabGeneral);
     }
 
     @Override
@@ -119,10 +116,12 @@ public class InstanceSettingsActivity extends BaseActivity {
     private void initViews() {
         tabGeneral = findViewById(R.id.tab_general);
         tabLaunchOptions = findViewById(R.id.tab_launch_options);
+        tabLoader = findViewById(R.id.tab_loader);
         tabManagement = findViewById(R.id.tab_management);
 
         sectionGeneral = findViewById(R.id.section_general);
         sectionLaunchOptions = findViewById(R.id.section_launch_options);
+        sectionLoader = findViewById(R.id.section_loader);
         sectionManagement = findViewById(R.id.section_management);
 
         editName = findViewById(R.id.edit_instance_name);
@@ -133,6 +132,7 @@ public class InstanceSettingsActivity extends BaseActivity {
 
         tabGeneral.setOnClickListener(v -> selectTab(tabGeneral));
         tabLaunchOptions.setOnClickListener(v -> selectTab(tabLaunchOptions));
+        tabLoader.setOnClickListener(v -> selectTab(tabLoader));
         tabManagement.setOnClickListener(v -> selectTab(tabManagement));
 
         switchIsolation.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -227,8 +227,8 @@ public class InstanceSettingsActivity extends BaseActivity {
     }
 
     private void selectTab(TextView selectedTab) {
-        TextView[] tabs = {tabGeneral, tabLaunchOptions, tabManagement};
-        View[] sections = {sectionGeneral, sectionLaunchOptions, sectionManagement};
+        TextView[] tabs = {tabGeneral, tabLaunchOptions, tabLoader, tabManagement};
+        View[] sections = {sectionGeneral, sectionLaunchOptions, sectionLoader, sectionManagement};
 
         org.levimc.launcher.util.PersonalizationManager pm = new org.levimc.launcher.util.PersonalizationManager(this);
         int accent = pm.getAccentColor();
@@ -261,7 +261,7 @@ public class InstanceSettingsActivity extends BaseActivity {
             }
         }
         if (loaderSection != null) {
-            loaderSection.setVisible(selectedTab == tabManagement);
+            loaderSection.setVisible(selectedTab == tabLoader);
         }
     }
 

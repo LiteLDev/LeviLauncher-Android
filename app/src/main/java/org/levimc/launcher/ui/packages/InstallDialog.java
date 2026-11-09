@@ -534,8 +534,7 @@ public final class InstallDialog extends Dialog implements DefaultLifecycleObser
     private void goToLoader(GameVersion target) {
         Intent intent = new Intent(activity, InstanceSettingsActivity.class);
         intent.putExtra("version", target);
-        intent.putExtra(PackagesActivity.Links.EXTRA_TAB, PackagesActivity.Links.TAB_MANAGEMENT);
-        intent.putExtra(PackagesActivity.Links.EXTRA_SCROLL_TO, PackagesActivity.Links.SCROLL_TO_LOADER);
+        intent.putExtra(PackagesActivity.Links.EXTRA_TAB, PackagesActivity.Links.TAB_LOADER);
         dismiss();
         Toast.makeText(activity, R.string.pkg_ll_missing_redirect, Toast.LENGTH_SHORT).show();
         activity.startActivity(intent);

@@ -307,9 +307,8 @@ public class PackagesActivity extends BaseActivity {
         public static final String DEVELOPER_GUIDE_URL = "https://docs.levimc.org/lip/guides/creating_packages.html";
 
         public static final String EXTRA_TAB = "tab";
-        public static final String EXTRA_SCROLL_TO = "scroll_to";
         public static final String TAB_MANAGEMENT = "management";
-        public static final String SCROLL_TO_LOADER = "loader";
+        public static final String TAB_LOADER = "loader";
 
         private Links() {
         }

@@ -208,6 +208,7 @@
     <string name="instance_tab_general">General</string>
     <string name="instance_tab_launch_options">Launch Options</string>
     <string name="instance_tab_management">Management</string>
+    <string name="instance_tab_loader">Loader</string>
     <string name="instance_new_name">New Name</string>
     <string name="instance_rename_hint">Only rename the folder. Game version and type are unaffected.</string>
     <string name="instance_custom_icon">Custom Icon (square required)</string>

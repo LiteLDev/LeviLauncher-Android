@@ -205,6 +205,7 @@
     <string name="instance_tab_general">General</string>
     <string name="instance_tab_launch_options">Opciones de Inicio</string>
     <string name="instance_tab_management">Gestión</string>
+    <string name="instance_tab_loader">Cargador</string>
     <string name="instance_new_name">Nuevo Nombre</string>
     <string name="instance_rename_hint">Solo renombra la carpeta. La versión y el tipo de juego no se ven afectados.</string>
     <string name="instance_custom_icon">Icono Personalizado (requiere cuadrado)</string>

@@ -46,6 +46,30 @@ public class LoadOrderTest {
     }
 
     @Test
+    public void testLoaderFolders() throws Exception {
+        File dir = tmp.newFolder("Loader");
+        WorkspaceFixture.write(dir, "android-arm64",
+                new WorkspaceFixture.Pkg("github.com/LiteLDev/LeviLamina", "", "1.0.0", true,
+                        "{ \"github.com/a/runtime\": \"1.0.0\", \"github.com/a/shared\": \"1.0.0\" }",
+                        "mods/LeviLamina/a.so"),
+                new WorkspaceFixture.Pkg("github.com/a/runtime", "", "1.0.0", false, null, "mods/Runtime/a.so"),
+                new WorkspaceFixture.Pkg("github.com/a/shared", "", "1.0.0", false, null, "mods/shared/a.so"),
+                new WorkspaceFixture.Pkg("github.com/a/mod", "", "1.0.0", true,
+                        "{ \"github.com/LiteLDev/LeviLamina\": \"1.0.0\", \"github.com/a/shared\": \"1.0.0\" }",
+                        "mods/mod/a.so"));
+        InstalledPackages ws = InstalledPackages.read(dir);
+        assertEquals("1.0.0", ws.leviLamina().version);
+        // LeviLamina and what only it pulled in; not a dependency a mod needs too, nor the mods.
+        assertEquals(new java.util.HashSet<>(l("levilamina", "runtime")), ws.loaderFolderKeys());
+
+        File none = tmp.newFolder("NoLoader");
+        WorkspaceFixture.write(none, "android-arm64",
+                new WorkspaceFixture.Pkg("github.com/a/mod", "", "1.0.0", true, null, "mods/mod/a.so"));
+        assertEquals(null, InstalledPackages.read(none).leviLamina());
+        assertEquals(Collections.emptySet(), InstalledPackages.read(none).loaderFolderKeys());
+    }
+
+    @Test
     public void testTransitiveDependencies() throws Exception {
         File dir = tmp.newFolder("Chain");
         WorkspaceFixture.write(dir, "android-arm64",

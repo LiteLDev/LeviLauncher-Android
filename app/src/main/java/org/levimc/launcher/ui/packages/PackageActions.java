@@ -184,8 +184,7 @@ public final class PackageActions {
         if (v != null) {
             intent.putExtra("version", v);
         }
-        intent.putExtra(PackagesActivity.Links.EXTRA_TAB, PackagesActivity.Links.TAB_MANAGEMENT);
-        intent.putExtra(PackagesActivity.Links.EXTRA_SCROLL_TO, PackagesActivity.Links.SCROLL_TO_LOADER);
+        intent.putExtra(PackagesActivity.Links.EXTRA_TAB, PackagesActivity.Links.TAB_LOADER);
         a.startActivity(intent);
     }
 
