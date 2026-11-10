@@ -1,6 +1,8 @@
 package org.levimc.launcher.ui.activities;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -38,6 +40,7 @@ import org.levimc.launcher.core.versions.GameVersion;
 import org.levimc.launcher.core.versions.VersionManager;
 import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
 import org.levimc.launcher.util.ApkImportManager;
+import org.levimc.launcher.util.PersonalizationManager;
 import org.levimc.launcher.util.StorageAccess;
 
 import java.util.ArrayList;
@@ -84,6 +87,7 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
     private MaterialButton emptyAction;
     private ReleaseAdapter adapter;
 
+    private int accent;
     private int typeFilter = TYPE_ALL;
     private int statusFilter = STATUS_ALL;
     private long latestVersionCode;
@@ -120,6 +124,12 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
         empty = findViewById(R.id.game_download_empty);
         emptyText = findViewById(R.id.game_download_empty_text);
         emptyAction = findViewById(R.id.game_download_empty_action);
+
+        accent = new PersonalizationManager(this).getAccentColor();
+        tintFilled(accountButton);
+        tintFilled(emptyAction);
+        tintOutlined(findViewById(R.id.game_download_by_code));
+        tintOutlined(findViewById(R.id.game_download_local_install));
 
         adapter = new ReleaseAdapter();
         recycler.setLayoutManager(new LinearLayoutManager(this));
@@ -186,6 +196,19 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
     protected void onDestroy() {
         executor.shutdown();
         super.onDestroy();
+    }
+
+    /** Filled buttons follow the launcher's accent color, as on the other pages. */
+    private void tintFilled(MaterialButton button) {
+        if (accent == 0 || button == null) return;
+        button.setBackgroundTintList(ColorStateList.valueOf(accent));
+        button.setTextColor(Color.WHITE);
+    }
+
+    private void tintOutlined(MaterialButton button) {
+        if (accent == 0 || button == null) return;
+        button.setStrokeColor(ColorStateList.valueOf(accent));
+        button.setTextColor(accent);
     }
 
     private interface OnSelected {
@@ -564,6 +587,8 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
             progressBar = view.findViewById(R.id.game_release_progress);
             progressText = view.findViewById(R.id.game_release_progress_text);
             error = view.findViewById(R.id.game_release_error);
+            tintFilled(action);
+            tintOutlined(secondary);
         }
 
         void bind(GameRelease release) {

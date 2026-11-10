@@ -4,7 +4,6 @@ import android.content.Context;
 import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.util.AtomicFile;
-import android.util.Base64;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -136,16 +135,5 @@ public final class PlayAccountStore {
         int read;
         while ((read = in.read(buffer)) != -1) out.write(buffer, 0, read);
         return out.toByteArray();
-    }
-
-    static String redact(String email) {
-        if (email == null) return "";
-        int at = email.indexOf('@');
-        return at <= 1 ? email : email.charAt(0) + "***" + email.substring(at);
-    }
-
-    @SuppressWarnings("unused")
-    private static String b64(byte[] bytes) {
-        return Base64.encodeToString(bytes, Base64.NO_WRAP);
     }
 }
