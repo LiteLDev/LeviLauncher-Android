@@ -410,7 +410,7 @@
     <string name="pkg_settings_desc">Built-in package manager used to install and update mods. Clean its cache if package downloads fail.</string>
     <string name="pkg_settings_proxy_title">GitHub proxy</string>
     <string name="pkg_settings_proxy_desc">GitHub proxy used when downloading packages. Save an empty field to restore the default.</string>
-    <string name="pkg_settings_proxy_hint">https://github.bibk.top</string>
+    <string name="pkg_settings_proxy_hint">https://gh-proxy.org/https://github.com</string>
     <string name="pkg_settings_proxy_preset_custom">Custom</string>
     <string name="pkg_settings_proxy_saved">GitHub proxy saved</string>
     <string name="pkg_settings_proxy_save_failed">Failed to save the GitHub proxy</string>

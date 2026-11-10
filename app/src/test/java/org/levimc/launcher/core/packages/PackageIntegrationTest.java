@@ -151,4 +151,29 @@ public class PackageIntegrationTest {
         assertEquals("", service.setGithubProxy(""));
         assertNull(service.config().githubProxy());
     }
+
+    @Test
+    public void fullUrlGithubProxiesAreCompleted() throws Exception {
+        assertEquals("https://gh-proxy.org/https://github.com", PackageService.DEFAULT_GITHUB_PROXY);
+        assertEquals(PackageService.DEFAULT_GITHUB_PROXY, PackageService.completeGithubProxy("https://gh-proxy.org"));
+        assertEquals("https://cdn.gh-proxy.org/https://github.com", PackageService.completeGithubProxy("https://cdn.gh-proxy.org/"));
+        assertEquals("https://GHPROXY.vip/https://github.com", PackageService.completeGithubProxy("https://GHPROXY.vip"));
+        assertEquals(PackageService.DEFAULT_GITHUB_PROXY, PackageService.completeGithubProxy(PackageService.DEFAULT_GITHUB_PROXY));
+        assertEquals("https://proxy.example", PackageService.completeGithubProxy("https://proxy.example"));
+        assertEquals("https://gh-proxy.org/x", PackageService.completeGithubProxy("https://gh-proxy.org/x"));
+        assertEquals("https://gh-proxy.org?k=v", PackageService.completeGithubProxy("https://gh-proxy.org?k=v"));
+        assertEquals("https://notgh-proxy.org", PackageService.completeGithubProxy("https://notgh-proxy.org"));
+        assertNull(PackageService.completeGithubProxy(null));
+
+        // Saving completes a bare full-URL proxy, and the engine's rewrite then reaches GitHub through it.
+        assertEquals("", service.setGithubProxy("https://gh-proxy.org/"));
+        assertEquals(PackageService.DEFAULT_GITHUB_PROXY, service.config().githubProxy());
+        assertEquals("https://gh-proxy.org/https://github.com/LiteLDev/x",
+                PackageEngine.githubProxied(service.effectiveGithubProxy(), "https://github.com/LiteLDev/x"));
+
+        // A bare proxy saved by an earlier version is completed and saved back.
+        service.config().setGithubProxy("https://ghproxy.vip");
+        assertEquals("https://ghproxy.vip/https://github.com", service.configuredGithubProxy());
+        assertEquals("https://ghproxy.vip/https://github.com", service.config().githubProxy());
+    }
 }

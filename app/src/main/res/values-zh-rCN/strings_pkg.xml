@@ -399,7 +399,7 @@
     <string name="pkg_settings_desc">内置的包管理器，用于安装和更新模组。若软件包下载失败，可清理其缓存。</string>
     <string name="pkg_settings_proxy_title">GitHub 代理</string>
     <string name="pkg_settings_proxy_desc">下载软件包时使用的 GitHub 代理。留空并保存可恢复默认值。</string>
-    <string name="pkg_settings_proxy_hint">https://github.bibk.top</string>
+    <string name="pkg_settings_proxy_hint">https://gh-proxy.org/https://github.com</string>
     <string name="pkg_settings_proxy_preset_custom">自定义</string>
     <string name="pkg_settings_proxy_saved">GitHub 代理已保存</string>
     <string name="pkg_settings_proxy_save_failed">保存 GitHub 代理失败</string>

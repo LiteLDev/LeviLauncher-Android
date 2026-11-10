@@ -261,7 +261,7 @@ public final class SettingsCard {
 
     private void setupProxy() {
         String[] labels = new String[Model.PROXY_PRESETS.length + 1];
-        for (int i = 0; i < Model.PROXY_PRESETS.length; i++) labels[i] = Model.PROXY_PRESETS[i].replaceFirst("^https?://", "");
+        for (int i = 0; i < Model.PROXY_PRESETS.length; i++) labels[i] = Model.presetLabel(Model.PROXY_PRESETS[i]);
         labels[Model.PROXY_PRESETS.length] = activity.getString(R.string.pkg_settings_proxy_preset_custom);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(activity, R.layout.spinner_item, labels);
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
@@ -315,7 +315,7 @@ public final class SettingsCard {
 
     private static ProxyState readProxy() {
         ProxyState s = new ProxyState();
-        String configured = PackageService.get().config().githubProxy();
+        String configured = PackageService.get().configuredGithubProxy();
         s.display = configured != null ? configured : PackageService.DEFAULT_GITHUB_PROXY;
         s.source = SettingsCard.Model.proxySource(configured != null, PackageService.mirrorEnabled());
         return s;
@@ -529,9 +529,19 @@ public final class SettingsCard {
     public final static class Model {
         public static final PackageService.MirrorMode[] MIRROR_MODES = {PackageService.MirrorMode.AUTO, PackageService.MirrorMode.ON, PackageService.MirrorMode.OFF};
 
-        /** Prefix-style GitHub proxies offered by the picker (LeviLauncher's presets); any other URL can be typed. */
-        public static final String[] PROXY_PRESETS = {PackageService.DEFAULT_GITHUB_PROXY, "https://gh-proxy.org",
-                "https://hk.gh-proxy.org", "https://cdn.gh-proxy.org", "https://edgeone.gh-proxy.org", "https://ghproxy.vip"};
+        /**
+         * GitHub proxies offered by the picker, as LeviLauncher (Windows) offers them; any other URL can be typed.
+         * The engine appends the request's path to the proxy, so proxies that take a whole GitHub URL end in
+         * "/https://github.com".
+         */
+        public static final String[] PROXY_PRESETS = {
+                "https://gh.bibk.top/https://github.com",
+                PackageService.DEFAULT_GITHUB_PROXY,
+                "https://v4.gh-proxy.org/https://github.com",
+                "https://v6.gh-proxy.org/https://github.com",
+                "https://cdn.gh-proxy.org/https://github.com",
+                "https://axisnow.gh-proxy.org/https://github.com",
+                "https://ghproxy.vip/https://github.com"};
 
         public enum ProxySource {
             SET,
@@ -560,6 +570,11 @@ public final class SettingsCard {
                 return ProxySource.SET;
             }
             return mirrorEnabled ? ProxySource.DEFAULT_MIRROR_ON : ProxySource.DEFAULT_MIRROR_OFF;
+        }
+
+        /** The picker label of a preset: its host, without the scheme and the GitHub URL suffix. */
+        public static String presetLabel(String url) {
+            return url.replaceFirst("^https?://", "").replaceFirst("/https://github\\.com$", "");
         }
 
         /** The preset that {@code url} is (trimmed, without trailing '/'), or -1. */
