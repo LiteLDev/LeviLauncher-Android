@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fill of the split launch button with the v1.6.1 launch button shape (8dp corners).
+     MainActivity re-colors it with the chosen theme color. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/primary" />
+    <corners android:radius="8dp" />
+</shape>

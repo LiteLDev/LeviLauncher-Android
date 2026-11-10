@@ -2,6 +2,5 @@
 <!-- Card surface (Windows glass card: surface fill, faint 1dp border). -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
     <solid android:color="@color/surface" />
-    <corners android:radius="20dp" />
-    <stroke android:width="1dp" android:color="@color/ui_card_stroke" />
+    <corners android:radius="8dp" />
 </shape>

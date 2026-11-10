@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,19 +11,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingStart="8dp"
+        android:paddingTop="15dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="8dp">
 
-        <!-- Header -->
+        <!-- Header: title and subtitle on the page background (v1.6.1); the card wrapper is invisible. -->
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.Levi.Card"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="0dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="18dp">
+                android:padding="0dp">
 
                 <TextView
                     android:id="@+id/header"
@@ -35,29 +45,31 @@
                     android:id="@+id/subtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
                     android:text="@string/quick_launch_subtitle"
-                    android:textAppearance="@style/TextAppearance.Levi.PageSubtitle" />
+                    android:textAppearance="@style/TextAppearance.Levi.PageSubtitle"
+                    android:textSize="14sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Actions -->
+        <!-- Actions: standalone cards (v1.6.1), no outer list card. -->
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.Levi.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp">
+            android:layout_marginTop="8dp"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="0dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/quick_actions_recycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:clipToPadding="false"
                 android:nestedScrollingEnabled="false"
                 android:overScrollMode="never"
-                android:paddingStart="8dp"
-                android:paddingTop="6dp"
-                android:paddingEnd="8dp"
-                android:paddingBottom="6dp"
+                android:padding="8dp"
                 tools:listitem="@layout/item_quick_launch" />
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>

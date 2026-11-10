@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- v1.6.1 search/text field metrics (8dp corners, 1dp focus stroke), current colors. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/ui_input" />
+            <corners android:radius="8dp" />
+            <stroke android:width="1dp" android:color="@color/primary" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/ui_input" />
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+</selector>

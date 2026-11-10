@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- CurseForge (Windows CurseForgePage): header card with title, search and labelled selects; results in a card. -->
+<!-- CurseForge (v1.6.1 layout): title + sort row, full-width search row, class/version filter row on the page background; standalone result cards. -->
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp">
+    android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -19,37 +17,79 @@
             style="@style/Widget.Levi.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="12dp"
+            android:layout_marginStart="14dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="14dp"
+            android:layout_marginBottom="8dp"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="0dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
             app:layout_scrollFlags="scroll|enterAlways">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="18dp">
+                android:padding="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/cf_title"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="14dp"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="12dp"
                         android:singleLine="true"
                         android:text="@string/curseforge_title"
-                        android:textAppearance="@style/TextAppearance.Levi.PageTitle" />
+                        android:textAppearance="@style/TextAppearance.Levi.PageTitle"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/CatalogFieldLabel"
+                            android:layout_marginStart="0dp"
+                            android:layout_marginEnd="6dp"
+                            android:layout_marginBottom="0dp"
+                            android:text="@string/catalog_cf_sort" />
+
+                        <TextView
+                            android:id="@+id/btn_sort"
+                            style="@style/CatalogSelect"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:minWidth="96dp"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <EditText
                         android:id="@+id/search_box"
                         style="@style/Widget.Levi.Input"
                         android:layout_width="0dp"
-                        android:layout_height="44dp"
+                        android:layout_height="40dp"
                         android:layout_weight="1"
+                        android:drawablePadding="9dp"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
                         android:drawableStart="@drawable/ic_ui_search"
                         android:hint="@string/catalog_cf_search_hint"
                         android:imeOptions="actionSearch"
@@ -60,8 +100,8 @@
                         android:id="@+id/btn_search"
                         style="@style/Widget.Levi.Button.Primary"
                         android:layout_width="wrap_content"
-                        android:layout_height="44dp"
-                        android:layout_marginStart="10dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="8dp"
                         android:text="@string/catalog_cf_search"
                         app:icon="@drawable/ic_ui_search" />
                 </LinearLayout>
@@ -69,7 +109,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="9dp"
                     android:baselineAligned="false"
                     android:orientation="horizontal">
 
@@ -77,16 +117,23 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
                         <TextView
                             style="@style/CatalogFieldLabel"
+                            android:layout_marginStart="0dp"
+                            android:layout_marginEnd="6dp"
+                            android:layout_marginBottom="0dp"
                             android:text="@string/catalog_cf_class" />
 
                         <TextView
                             android:id="@+id/cf_select_class"
                             style="@style/CatalogSelect"
-                            android:layout_width="match_parent" />
+                            android:layout_width="0dp"
+                            android:layout_height="32dp"
+                            android:layout_weight="1"
+                            android:textSize="11sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -95,33 +142,23 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
                         android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
                         <TextView
                             style="@style/CatalogFieldLabel"
+                            android:layout_marginStart="0dp"
+                            android:layout_marginEnd="6dp"
+                            android:layout_marginBottom="0dp"
                             android:text="@string/catalog_cf_game_version" />
 
                         <TextView
                             android:id="@+id/cf_select_version"
                             style="@style/CatalogSelect"
-                            android:layout_width="match_parent" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            style="@style/CatalogFieldLabel"
-                            android:text="@string/catalog_cf_sort" />
-
-                        <TextView
-                            android:id="@+id/btn_sort"
-                            style="@style/CatalogSelect"
-                            android:layout_width="match_parent" />
+                            android:layout_width="0dp"
+                            android:layout_height="32dp"
+                            android:layout_weight="1"
+                            android:textSize="11sp" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -133,7 +170,10 @@
         style="@style/Widget.Levi.Card"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="16dp"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="0dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <FrameLayout
@@ -145,10 +185,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:clipToPadding="false"
-                android:paddingStart="12dp"
-                android:paddingTop="8dp"
-                android:paddingEnd="12dp"
-                android:paddingBottom="8dp"
+                android:paddingStart="6dp"
+                android:paddingTop="4dp"
+                android:paddingEnd="6dp"
+                android:paddingBottom="12dp"
                 android:scrollbars="none" />
 
             <LinearLayout

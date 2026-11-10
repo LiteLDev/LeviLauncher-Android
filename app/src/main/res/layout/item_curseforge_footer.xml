@@ -6,12 +6,18 @@
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="horizontal"
+    android:paddingStart="14dp"
     android:paddingTop="10dp"
-    android:paddingBottom="6dp">
+    android:paddingEnd="14dp"
+    android:paddingBottom="16dp">
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_prev_page"
         style="@style/Widget.Levi.Button.Icon"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:minWidth="36dp"
+        android:minHeight="36dp"
         android:contentDescription="@string/previous"
         android:enabled="false"
         app:icon="@drawable/ic_ui_arrow_back" />
@@ -20,15 +26,20 @@
         android:id="@+id/tv_page_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="14dp"
-        android:layout_marginEnd="14dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
         android:text="@string/pagination_page_one"
         android:textAppearance="@style/TextAppearance.Levi.Body"
-        android:textStyle="bold" />
+        android:textSize="12sp"
+        android:textStyle="normal" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_next_page"
         style="@style/Widget.Levi.Button.Icon"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:minWidth="36dp"
+        android:minHeight="36dp"
         android:contentDescription="@string/next"
         android:enabled="false"
         app:icon="@drawable/ic_ui_arrow_forward" />

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Settings, aligned with LeviLauncher for Windows: header card (title, search, tabs) and the
+<!-- Settings, laid out as v1.6.1: title/subtitle (search at the right) and tab pills on the page, then the
      selected tab's settings in cards with divider-separated rows. Rows carry the tag "settings_row"
      (from @style/settings_Row) so the search box can find them. -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
@@ -15,16 +15,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingStart="20dp"
+        android:paddingTop="15dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="24dp">
 
-        <!-- Header card -->
-        <com.google.android.material.card.MaterialCardView style="@style/settings_Card">
+        <!-- Header (v1.6.1: title and subtitle directly on the page background, no card;
+             the search box sits at the right of the title row, the tab pills in a row below) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="18dp">
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -49,16 +55,17 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
+                            android:layout_marginTop="4dp"
                             android:text="@string/settings_ui_subtitle"
-                            android:textAppearance="@style/TextAppearance.Levi.PageSubtitle" />
+                            android:textAppearance="@style/TextAppearance.Levi.PageSubtitle"
+                            android:textSize="14sp" />
                     </LinearLayout>
 
                     <EditText
                         android:id="@+id/settings_search"
                         style="@style/Widget.Levi.Input"
                         android:layout_width="240dp"
-                        android:layout_height="44dp"
+                        android:layout_height="40dp"
                         android:drawableStart="@drawable/ic_ui_search"
                         android:hint="@string/settings_ui_search_hint"
                         android:imeOptions="actionSearch|flagNoExtractUi"
@@ -80,23 +87,22 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:fillViewport="true"
                     android:overScrollMode="never"
                     android:scrollbars="none">
 
                     <org.levimc.launcher.ui.widget.SegmentedControl
                         android:id="@+id/settings_tabs"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 </HorizontalScrollView>
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
 
         <FrameLayout
             android:id="@+id/settings_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="20dp">
 
             <!-- ============================== Basic ============================== -->
             <LinearLayout
@@ -187,7 +193,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="18dp">
+                        android:padding="16dp">
 
                         <!-- Sub-sections (Windows button row: selected = primary, others secondary) -->
                         <HorizontalScrollView
@@ -195,7 +201,7 @@
                             android:layout_height="wrap_content"
                             android:background="@drawable/bg_ui_strip"
                             android:overScrollMode="never"
-                            android:padding="6dp"
+                            android:padding="0dp"
                             android:scrollbars="none">
 
                             <LinearLayout
@@ -207,14 +213,22 @@
                                     android:id="@+id/personalize_nav_theme"
                                     style="@style/Widget.Levi.Button.Secondary"
                                     android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="32dp"
+                                    android:minHeight="0dp"
+                                    android:paddingStart="16dp"
+                                    android:paddingEnd="16dp"
+                                    app:cornerRadius="16dp"
                                     android:text="@string/settings_ui_section_theme" />
 
                                 <com.google.android.material.button.MaterialButton
                                     android:id="@+id/personalize_nav_layout"
                                     style="@style/Widget.Levi.Button.Secondary"
                                     android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="32dp"
+                                    android:minHeight="0dp"
+                                    android:paddingStart="16dp"
+                                    android:paddingEnd="16dp"
+                                    app:cornerRadius="16dp"
                                     android:layout_marginStart="8dp"
                                     android:text="@string/settings_ui_section_layout" />
 
@@ -222,7 +236,11 @@
                                     android:id="@+id/personalize_nav_wallpaper"
                                     style="@style/Widget.Levi.Button.Secondary"
                                     android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="32dp"
+                                    android:minHeight="0dp"
+                                    android:paddingStart="16dp"
+                                    android:paddingEnd="16dp"
+                                    app:cornerRadius="16dp"
                                     android:layout_marginStart="8dp"
                                     android:text="@string/settings_ui_section_wallpaper" />
 
@@ -230,7 +248,11 @@
                                     android:id="@+id/personalize_nav_material"
                                     style="@style/Widget.Levi.Button.Secondary"
                                     android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="32dp"
+                                    android:minHeight="0dp"
+                                    android:paddingStart="16dp"
+                                    android:paddingEnd="16dp"
+                                    app:cornerRadius="16dp"
                                     android:layout_marginStart="8dp"
                                     android:text="@string/settings_ui_section_material" />
                             </LinearLayout>
@@ -249,8 +271,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical"
-                                android:paddingTop="12dp"
-                                android:paddingBottom="16dp"
+                                android:paddingTop="14dp"
+                                android:paddingBottom="14dp"
                                 android:tag="settings_row">
 
                                 <TextView
@@ -282,7 +304,7 @@
                                     android:layout_marginTop="12dp"
                                     android:background="@drawable/bg_ui_strip"
                                     android:orientation="vertical"
-                                    android:padding="14dp"
+                                    android:padding="12dp"
                                     android:visibility="gone">
 
                                     <TextView
@@ -312,20 +334,20 @@
                                                 android:id="@+id/theme_schedule_start"
                                                 style="@style/Widget.Levi.Input"
                                                 android:layout_width="wrap_content"
-                                                android:layout_height="44dp"
-                                                android:layout_marginTop="6dp"
+                                                android:layout_height="40dp"
+                                                android:layout_marginTop="8dp"
                                                 android:background="@drawable/bg_ui_input"
                                                 android:clickable="true"
                                                 android:drawableEnd="@drawable/ic_ui_schedule"
                                                 android:focusable="true"
                                                 android:gravity="center_vertical"
-                                                android:minWidth="140dp" />
+                                                android:minWidth="120dp" />
                                         </LinearLayout>
 
                                         <LinearLayout
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:layout_marginStart="16dp"
+                                            android:layout_marginStart="8dp"
                                             android:orientation="vertical">
 
                                             <TextView
@@ -338,14 +360,14 @@
                                                 android:id="@+id/theme_schedule_end"
                                                 style="@style/Widget.Levi.Input"
                                                 android:layout_width="wrap_content"
-                                                android:layout_height="44dp"
-                                                android:layout_marginTop="6dp"
+                                                android:layout_height="40dp"
+                                                android:layout_marginTop="8dp"
                                                 android:background="@drawable/bg_ui_input"
                                                 android:clickable="true"
                                                 android:drawableEnd="@drawable/ic_ui_schedule"
                                                 android:focusable="true"
                                                 android:gravity="center_vertical"
-                                                android:minWidth="140dp" />
+                                                android:minWidth="120dp" />
                                         </LinearLayout>
                                     </LinearLayout>
 
@@ -359,14 +381,14 @@
 
                                         <FrameLayout
                                             android:id="@+id/theme_sunrise_chip"
-                                            android:layout_width="32dp"
-                                            android:layout_height="32dp"
+                                            android:layout_width="28dp"
+                                            android:layout_height="28dp"
                                             android:background="@drawable/bg_ui_icon_chip">
 
                                             <ImageView
                                                 android:id="@+id/theme_sunrise_icon"
-                                                android:layout_width="18dp"
-                                                android:layout_height="18dp"
+                                                android:layout_width="16dp"
+                                                android:layout_height="16dp"
                                                 android:layout_gravity="center"
                                                 android:importantForAccessibility="no"
                                                 android:src="@drawable/ic_ui_sunrise" />
@@ -375,7 +397,7 @@
                                         <LinearLayout
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:layout_marginStart="8dp"
+                                            android:layout_marginStart="6dp"
                                             android:orientation="vertical">
 
                                             <TextView
@@ -391,15 +413,15 @@
 
                                         <FrameLayout
                                             android:id="@+id/theme_sunset_chip"
-                                            android:layout_width="32dp"
-                                            android:layout_height="32dp"
+                                            android:layout_width="28dp"
+                                            android:layout_height="28dp"
                                             android:layout_marginStart="24dp"
                                             android:background="@drawable/bg_ui_icon_chip">
 
                                             <ImageView
                                                 android:id="@+id/theme_sunset_icon"
-                                                android:layout_width="18dp"
-                                                android:layout_height="18dp"
+                                                android:layout_width="16dp"
+                                                android:layout_height="16dp"
                                                 android:layout_gravity="center"
                                                 android:importantForAccessibility="no"
                                                 android:src="@drawable/ic_moon" />
@@ -408,7 +430,7 @@
                                         <LinearLayout
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:layout_marginStart="8dp"
+                                            android:layout_marginStart="6dp"
                                             android:orientation="vertical">
 
                                             <TextView
@@ -440,7 +462,7 @@
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="18dp"
+                                android:layout_marginTop="14dp"
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
 
@@ -464,9 +486,9 @@
 
                                 <ImageView
                                     android:id="@+id/edit_mode_icon"
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
-                                    android:layout_marginEnd="10dp"
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    android:layout_marginEnd="6dp"
                                     android:importantForAccessibility="no"
                                     android:src="@drawable/ic_sun" />
 
@@ -494,7 +516,7 @@
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="16dp"
+                                android:layout_marginTop="12dp"
                                 android:background="@drawable/bg_ui_card_inner"
                                 android:orientation="vertical"
                                 android:padding="16dp">
@@ -511,10 +533,10 @@
                                         android:orientation="horizontal">
 
                                         <ImageView
-                                            android:layout_width="20dp"
-                                            android:layout_height="20dp"
-                                            android:layout_marginTop="1dp"
-                                            android:layout_marginEnd="10dp"
+                                            android:layout_width="16dp"
+                                            android:layout_height="16dp"
+                                            android:layout_marginTop="2dp"
+                                            android:layout_marginEnd="6dp"
                                             android:importantForAccessibility="no"
                                             android:src="@drawable/ic_ui_palette"
                                             app:tint="@color/primary" />
@@ -538,7 +560,8 @@
                                     <TextView
                                         style="@style/settings_Label"
                                         android:layout_marginTop="14dp"
-                                        android:text="@string/preset_colors" />
+                                        android:text="@string/preset_colors"
+                                        android:textSize="11sp" />
 
                                     <LinearLayout
                                         android:id="@+id/color_preset_grid"
@@ -552,7 +575,8 @@
                                     <TextView
                                         style="@style/settings_Label"
                                         android:layout_marginTop="14dp"
-                                        android:text="@string/more_colors" />
+                                        android:text="@string/more_colors"
+                                        android:textSize="11sp" />
 
                                     <LinearLayout
                                         android:id="@+id/color_more_grid"
@@ -566,8 +590,8 @@
 
                                 <View
                                     style="@style/settings_Divider"
-                                    android:layout_marginTop="16dp"
-                                    android:layout_marginBottom="16dp" />
+                                    android:layout_marginTop="14dp"
+                                    android:layout_marginBottom="14dp" />
 
                                 <LinearLayout
                                     android:layout_width="match_parent"
@@ -581,10 +605,10 @@
                                         android:orientation="horizontal">
 
                                         <ImageView
-                                            android:layout_width="20dp"
-                                            android:layout_height="20dp"
-                                            android:layout_marginTop="1dp"
-                                            android:layout_marginEnd="10dp"
+                                            android:layout_width="16dp"
+                                            android:layout_height="16dp"
+                                            android:layout_marginTop="2dp"
+                                            android:layout_marginEnd="6dp"
                                             android:importantForAccessibility="no"
                                             android:src="@drawable/settings_ic_layers"
                                             app:tint="@color/primary" />
@@ -649,15 +673,15 @@
 
                                         <View
                                             android:id="@+id/base_color_swatch"
-                                            android:layout_width="44dp"
-                                            android:layout_height="44dp" />
+                                            android:layout_width="40dp"
+                                            android:layout_height="40dp" />
 
                                         <EditText
                                             android:id="@+id/base_color_input"
                                             style="@style/Widget.Levi.Input"
                                             android:layout_width="0dp"
-                                            android:layout_height="44dp"
-                                            android:layout_marginStart="10dp"
+                                            android:layout_height="40dp"
+                                            android:layout_marginStart="8dp"
                                             android:layout_weight="1"
                                             android:hint="@string/custom_color_hint"
                                             android:imeOptions="actionDone|flagNoExtractUi"
@@ -669,8 +693,9 @@
                                             style="@style/Widget.Levi.Button.Primary"
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            android:layout_marginStart="10dp"
-                                            android:text="@string/apply" />
+                                            android:layout_marginStart="8dp"
+                                            android:text="@string/apply"
+                                            android:textSize="12sp" />
                                     </LinearLayout>
                                 </LinearLayout>
 
@@ -791,7 +816,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="vertical"
-                                android:paddingTop="12dp"
+                                android:paddingTop="14dp"
                                 android:paddingBottom="14dp"
                                 android:tag="settings_row">
 
@@ -810,7 +835,7 @@
                                     android:background="@drawable/bg_ui_strip"
                                     android:gravity="center_vertical"
                                     android:orientation="horizontal"
-                                    android:padding="10dp">
+                                    android:padding="12dp">
 
                                     <ImageView
                                         android:id="@+id/bg_image_preview"
@@ -857,7 +882,7 @@
                                 <HorizontalScrollView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="10dp"
+                                    android:layout_marginTop="12dp"
                                     android:overScrollMode="never"
                                     android:scrollbars="none">
 
@@ -870,7 +895,11 @@
                                             android:id="@+id/btn_next_bg_image"
                                             style="@style/Widget.Levi.Button.Secondary"
                                             android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
+                                            android:layout_height="32dp"
+                                            android:minHeight="0dp"
+                                            android:paddingStart="14dp"
+                                            android:paddingEnd="14dp"
+                                            android:textSize="11sp"
                                             android:text="@string/settings_ui_next_image"
                                             app:icon="@drawable/ic_ui_refresh" />
 
@@ -878,7 +907,11 @@
                                             android:id="@+id/btn_clear_bg_image"
                                             style="@style/Widget.Levi.Button.Danger"
                                             android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
+                                            android:layout_height="32dp"
+                                            android:minHeight="0dp"
+                                            android:paddingStart="14dp"
+                                            android:paddingEnd="14dp"
+                                            android:textSize="11sp"
                                             android:layout_marginStart="8dp"
                                             android:text="@string/settings_ui_clear_folder"
                                             app:icon="@drawable/ic_ui_delete" />
@@ -887,7 +920,11 @@
                                             android:id="@+id/btn_select_bg_image"
                                             style="@style/Widget.Levi.Button.Secondary"
                                             android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
+                                            android:layout_height="32dp"
+                                            android:minHeight="0dp"
+                                            android:paddingStart="14dp"
+                                            android:paddingEnd="14dp"
+                                            android:textSize="11sp"
                                             android:layout_marginStart="8dp"
                                             android:text="@string/settings_ui_select_image"
                                             app:icon="@drawable/ic_ui_image" />
@@ -896,7 +933,11 @@
                                             android:id="@+id/btn_select_bg_folder"
                                             style="@style/Widget.Levi.Button.Primary"
                                             android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
+                                            android:layout_height="32dp"
+                                            android:minHeight="0dp"
+                                            android:paddingStart="14dp"
+                                            android:paddingEnd="14dp"
+                                            android:textSize="11sp"
                                             android:layout_marginStart="8dp"
                                             android:text="@string/settings_ui_select_folder"
                                             app:icon="@drawable/ic_ui_folder" />
@@ -950,13 +991,13 @@
                                         android:id="@+id/bg_fit_mode"
                                         style="@style/Widget.Levi.Input"
                                         android:layout_width="wrap_content"
-                                        android:layout_height="44dp"
+                                        android:layout_height="36dp"
                                         android:background="@drawable/bg_ui_input"
                                         android:clickable="true"
                                         android:drawableEnd="@drawable/ic_ui_expand_more"
                                         android:focusable="true"
                                         android:gravity="center_vertical"
-                                        android:minWidth="140dp" />
+                                        android:minWidth="120dp" />
                                 </LinearLayout>
 
                                 <View style="@style/settings_Divider" />
@@ -1111,7 +1152,8 @@
 
                                 <TextView
                                     style="@style/settings_Label"
-                                    android:text="@string/settings_ui_material_presets" />
+                                    android:text="@string/settings_ui_material_presets"
+                                    android:textSize="11sp" />
 
                                 <FrameLayout
                                     android:id="@+id/material_preset_holder"
@@ -1335,6 +1377,8 @@
                                 style="@style/Widget.Levi.Button.Primary"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:paddingStart="20dp"
+                                android:paddingEnd="20dp"
                                 android:text="@string/check_update" />
                         </LinearLayout>
 
@@ -1358,6 +1402,8 @@
                                 style="@style/Widget.Levi.Button.Secondary"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:paddingStart="20dp"
+                                android:paddingEnd="20dp"
                                 android:text="@string/preloader_sigs_update" />
                         </LinearLayout>
                     </LinearLayout>
@@ -1396,13 +1442,21 @@
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/settings_btn_github"
                                 style="@style/Widget.Levi.Button.Icon"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:minWidth="28dp"
+                                android:minHeight="28dp"
                                 android:contentDescription="@string/github"
                                 app:icon="@drawable/ic_github" />
 
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/settings_btn_discord"
                                 style="@style/Widget.Levi.Button.Icon"
-                                android:layout_marginStart="8dp"
+                                android:layout_width="28dp"
+                                android:layout_height="28dp"
+                                android:layout_marginStart="12dp"
+                                android:minWidth="28dp"
+                                android:minHeight="28dp"
                                 android:contentDescription="@string/discord"
                                 app:icon="@drawable/ic_discord" />
                         </LinearLayout>

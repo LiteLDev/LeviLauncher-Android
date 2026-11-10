@@ -40,7 +40,7 @@ public class SegmentedControl extends LinearLayout {
     private int selected = -1;
     private boolean equalWidth = true;
     private boolean vertical;
-    private float textSizeSp = 14f;
+    private float textSizeSp = 13f;
     @Nullable
     private Typeface baseTypeface;
     @Nullable
@@ -53,11 +53,10 @@ public class SegmentedControl extends LinearLayout {
     public SegmentedControl(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setOrientation(HORIZONTAL);
-        setBackgroundResource(R.drawable.bg_ui_segment_track);
-        int pad = dp(4);
-        setPadding(pad, pad, pad, pad);
-        setMinimumHeight(dp(48));
+        // Horizontal (the default, stacked pages): v1.6.1 tab pills, separate 32dp pills with 8dp gaps
+        // and no track. Vertical (two-pane side panel) keeps the track.
         setGravity(Gravity.CENTER_VERTICAL);
+        applyTrack();
     }
 
     /** True (default): segments share the width. False: each segment wraps its label (scrollable rows). */
@@ -74,11 +73,14 @@ public class SegmentedControl extends LinearLayout {
         this.vertical = vertical;
         setOrientation(vertical ? VERTICAL : HORIZONTAL);
         setGravity(vertical ? Gravity.NO_GRAVITY : Gravity.CENTER_VERTICAL);
+        applyTrack();
         for (TextView t : segments) {
             t.setGravity(vertical ? Gravity.CENTER_VERTICAL | Gravity.START : Gravity.CENTER);
-            t.setMinHeight(dp(vertical ? 44 : 40));
+            t.setMinHeight(dp(vertical ? 44 : 32));
+            t.setPadding(dp(vertical ? 14 : 16), 0, dp(vertical ? 14 : 16), 0);
             t.setLayoutParams(segmentParams());
         }
+        applyState();
     }
 
     public void setTextSizeSp(float sp) {
@@ -103,8 +105,8 @@ public class SegmentedControl extends LinearLayout {
         t.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSp);
         if (baseTypeface == null) baseTypeface = ResourcesCompat.getFont(getContext(), R.font.misans);
         t.setTypeface(baseTypeface);
-        t.setMinHeight(dp(vertical ? 44 : 40));
-        t.setPadding(dp(14), 0, dp(14), 0);
+        t.setMinHeight(dp(vertical ? 44 : 32));
+        t.setPadding(dp(vertical ? 14 : 16), 0, dp(vertical ? 14 : 16), 0);
         if (iconRes != 0) {
             Drawable d = ContextCompat.getDrawable(getContext(), iconRes);
             if (d != null) {
@@ -125,9 +127,23 @@ public class SegmentedControl extends LinearLayout {
 
     private LayoutParams segmentParams() {
         if (vertical) return new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
-        return equalWidth
-                ? new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f)
-                : new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        // v1.6.1 tab pills size to their label, 8dp apart.
+        LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+        lp.setMarginEnd(dp(8));
+        return lp;
+    }
+
+    private void applyTrack() {
+        if (vertical) {
+            setBackgroundResource(R.drawable.bg_ui_segment_track);
+            int pad = dp(4);
+            setPadding(pad, pad, pad, pad);
+            setMinimumHeight(dp(48));
+        } else {
+            setBackground(null);
+            setPadding(0, 0, 0, 0);
+            setMinimumHeight(0);
+        }
     }
 
     public void setOnSegmentSelectedListener(@Nullable OnSegmentSelectedListener listener) {
@@ -159,7 +175,8 @@ public class SegmentedControl extends LinearLayout {
         for (int i = 0; i < segments.size(); i++) {
             TextView t = segments.get(i);
             boolean on = i == selected;
-            t.setBackgroundResource(on ? R.drawable.bg_ui_segment_selected : 0);
+            t.setBackgroundResource(on ? R.drawable.bg_ui_segment_selected
+                    : vertical ? 0 : R.drawable.bg_ui_segment_track);
             t.setElevation(on ? dp(1) : 0);
             t.setTextColor(on ? active : inactive);
             t.setTypeface(Typeface.create(baseTypeface, on ? Typeface.BOLD : Typeface.NORMAL));

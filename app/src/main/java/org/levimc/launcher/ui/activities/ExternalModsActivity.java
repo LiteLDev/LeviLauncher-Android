@@ -19,7 +19,7 @@ import android.widget.Toast;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.widget.CompoundButtonCompat;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
@@ -124,7 +124,9 @@ public final class ExternalModsActivity extends BaseActivity {
     }
 
     private void setupRecycler() {
-        recycler.setLayoutManager(new LinearLayoutManager(this));
+        // v1.6.1 grid: about 3 cards across on a landscape phone, at least one.
+        int spans = Math.max(1, getResources().getConfiguration().screenWidthDp / 280);
+        recycler.setLayoutManager(new GridLayoutManager(this, spans));
         adapter = new ExternalModsAdapter(minecraftVersion, this::handleModAction);
         recycler.setAdapter(adapter);
     }
