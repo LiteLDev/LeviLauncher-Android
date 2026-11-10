@@ -105,7 +105,7 @@
     <string name="settings_tab_personalize">Персонализация</string>
     <string name="settings_tab_updates">Обновления</string>
     <string name="settings_tab_about">О приложении</string>
-    <string name="settings_tab_components">Сторонние компоненты</string>
+    <string name="settings_tab_components">Управление пакетами</string>
     <string name="settings_tab_others">Другие</string>
     <string name="settings_tab_privacy">Конфиденциальность</string>
     <string name="settings_personalize_theme">Тема и цвета</string>

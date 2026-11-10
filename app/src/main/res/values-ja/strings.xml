@@ -105,7 +105,7 @@
     <string name="settings_tab_personalize">カスタマイズ</string>
     <string name="settings_tab_updates">アップデート</string>
     <string name="settings_tab_about">アプリについて</string>
-    <string name="settings_tab_components">サードパーティ製コンポーネント</string>
+    <string name="settings_tab_components">パッケージ管理</string>
     <string name="settings_tab_others">その他</string>
     <string name="settings_tab_privacy">プライバシー</string>
     <string name="settings_personalize_theme">テーマと配色</string>

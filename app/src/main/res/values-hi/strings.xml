@@ -105,7 +105,7 @@
     <string name="settings_tab_personalize">वैयक्तिकरण</string>
     <string name="settings_tab_updates">अपडेट्स</string>
     <string name="settings_tab_about">बारे में</string>
-    <string name="settings_tab_components">तृतीय-पक्ष घटक</string>
+    <string name="settings_tab_components">पैकेज प्रबंधन</string>
     <string name="settings_tab_others">अन्य</string>
     <string name="settings_tab_privacy">गोपनीयता</string>
     <string name="settings_personalize_theme">थीम और रंग</string>

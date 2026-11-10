@@ -20,4 +20,5 @@
     <string name="mods_external_compatible">Compatible only</string>
     <string name="mods_external_sort">Sort: %1$s</string>
     <string name="mods_external_author">by %1$s</string>
+    <string name="mods_filter_packages">Package Mods</string>
 </resources>

@@ -181,7 +181,7 @@
     <!-- Developer guide -->
     <string name="pkg_guide_open">Hướng dẫn cho nhà phát triển</string>
     <string name="pkg_guide_title">Hướng dẫn nhà phát triển LeviMC Mods</string>
-    <string name="pkg_guide_description">Nếu bạn muốn mod của mình xuất hiện trên trang LeviMC Mods, hãy phát hành nó dưới dạng gói lip có tệp lip.toml, như tài liệu của lip về việc tạo gói đã mô tả.</string>
+    <string name="pkg_guide_description">Nếu bạn muốn mod của mình xuất hiện trên trang LeviMC Mods, hãy phát hành nó kèm tệp lip.toml như mô tả trong tài liệu.</string>
     <string name="pkg_guide_manifest_hint">Hộp thoại này chỉ là phần tổng quan nhanh dành cho nhà phát triển. Tên trường, các mục bắt buộc, ví dụ và quy tắc kiểm tra được định nghĩa trong tài liệu chính thức.</string>
     <string name="pkg_guide_variant_hint">Launcher chỉ liệt kê một gói khi phiên bản mới nhất trong lip.toml của gói có một mục chạy ở phía client trên nền tảng của thiết bị này: side = \"client\" và platform = \"android-arm64\". Gói có tất cả các mục client dành cho nền tảng khác (chẳng hạn \"win-x64\") sẽ không được liệt kê. Launcher ưu tiên cài biến thể có tên \"client\", sau đó là biến thể mặc định \"\", rồi đến các biến thể khác theo thứ tự bảng chữ cái.</string>
     <string name="pkg_guide_android_hint">Các phiên bản cũ hơn cũng tuân theo quy tắc này: một phiên bản chỉ có thể cài đặt khi lip.toml của nó có mục client cho nền tảng của thiết bị này. Không thể cài đặt các mục dành cho nền tảng khác tại đây.</string>
@@ -396,10 +396,10 @@
     <string name="pkg_loader_recovered">Đã khôi phục không gian làm việc</string>
 
     <!-- package settings card (Settings, basic tab) -->
-    <string name="pkg_settings_title">Trình quản lý gói</string>
-    <string name="pkg_settings_desc">Trình quản lý gói tích hợp dùng để cài đặt và cập nhật mod. Hãy dọn bộ nhớ đệm nếu tải gói thất bại.</string>
+    <string name="pkg_settings_title">Xóa bộ nhớ đệm</string>
+    <string name="pkg_settings_desc">Xóa bộ nhớ đệm của trình quản lý gói nếu tải gói thất bại.</string>
     <string name="pkg_settings_proxy_title">Proxy GitHub</string>
-    <string name="pkg_settings_proxy_desc">Proxy GitHub được dùng khi tải gói. Lưu với trường trống để khôi phục mặc định.</string>
+    <string name="pkg_settings_proxy_desc">Proxy GitHub dùng khi tải gói. Để trống để khôi phục mặc định.</string>
     <string name="pkg_settings_proxy_hint">https://github.bibk.top</string>
     <string name="pkg_settings_proxy_preset_custom">Tùy chỉnh</string>
     <string name="pkg_settings_proxy_saved">Đã lưu proxy GitHub</string>
@@ -408,18 +408,15 @@
     <string name="pkg_settings_proxy_source_set">Do bạn đặt</string>
     <string name="pkg_settings_proxy_source_default_on">Mặc định tích hợp, được dùng vì bản sao (mirror) đang bật</string>
     <string name="pkg_settings_proxy_source_default_off">Mặc định tích hợp, không được dùng khi bản sao (mirror) đang tắt (kết nối trực tiếp tới GitHub)</string>
-    <string name="pkg_settings_mirror_title">Bản sao tải xuống (mirror)</string>
-    <string name="pkg_settings_mirror_desc">Tải các gói GitHub qua proxy. Chế độ Tự động sẽ bật ở Trung Quốc đại lục.</string>
-    <string name="pkg_settings_mirror_auto">Tự động (%1$s)</string>
-    <string name="pkg_settings_mirror_on">Bật</string>
-    <string name="pkg_settings_mirror_off">Tắt</string>
+    <string name="pkg_settings_mirror_title">Dùng nguồn nhân bản</string>
+    <string name="pkg_settings_mirror_desc">Dùng máy chủ nhân bản đặt tại Trung Quốc đại lục để tải gói. Mặc định bật cho người dùng ở Trung Quốc đại lục.</string>
     <string name="pkg_settings_scripts_title">Chạy script của gói</string>
     <string name="pkg_settings_scripts_desc">Hook chạy qua sh và không được hoàn tác nếu bước sau đó thất bại</string>
     <string name="pkg_settings_cache_size">Dung lượng bộ nhớ đệm: %1$s</string>
     <string name="pkg_settings_cache_size_computing">Dung lượng bộ nhớ đệm: đang tính…</string>
     <string name="pkg_settings_cache_clean">Dọn bộ nhớ đệm</string>
     <string name="pkg_settings_cache_cleaning">Đang dọn bộ nhớ đệm…</string>
-    <string name="pkg_settings_cache_cleaned">Đã dọn bộ nhớ đệm gói (giải phóng %1$s)</string>
+    <string name="pkg_settings_cache_cleaned">Đã xóa bộ nhớ đệm (giải phóng %1$s)</string>
     <string name="pkg_settings_catalog_title">Danh sách gói</string>
     <string name="pkg_settings_catalog_age">Đã cập nhật %1$s</string>
     <string name="pkg_settings_catalog_never">Chưa tải xuống</string>

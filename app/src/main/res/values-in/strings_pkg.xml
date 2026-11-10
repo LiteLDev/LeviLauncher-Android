@@ -181,7 +181,7 @@
     <!-- Developer guide -->
     <string name="pkg_guide_open">Panduan Pengembang</string>
     <string name="pkg_guide_title">Panduan Pengembang Mod LeviMC</string>
-    <string name="pkg_guide_description">Jika Anda ingin mod Anda muncul di halaman Mod LeviMC, terbitkan sebagai paket lip dengan lip.toml, seperti yang dijelaskan dalam dokumentasi lip tentang membuat paket.</string>
+    <string name="pkg_guide_description">Jika Anda ingin mod Anda muncul di halaman LeviMC Mods, terbitkan dengan lip.toml seperti dijelaskan dalam dokumentasi.</string>
     <string name="pkg_guide_manifest_hint">Dialog ini hanya ringkasan singkat untuk pengembang. Nama field, entri wajib, contoh, dan aturan validasi ditentukan dalam dokumentasi resmi.</string>
     <string name="pkg_guide_variant_hint">Launcher hanya menampilkan paket jika versi terbaru dalam lip.toml-nya memiliki entri yang berjalan di klien pada platform perangkat ini: side = \"client\" dan platform = \"android-arm64\". Paket yang semua entri kliennya untuk platform lain (seperti \"win-x64\") tidak ditampilkan. Launcher menginstal varian bernama \"client\" terlebih dahulu, lalu varian default \"\", lalu varian lain sesuai urutan abjad.</string>
     <string name="pkg_guide_android_hint">Versi lama mengikuti aturan yang sama: suatu versi hanya dapat diinstal jika lip.toml-nya memiliki entri klien untuk platform perangkat ini. Entri untuk platform lain tidak dapat diinstal di sini.</string>
@@ -396,10 +396,10 @@
     <string name="pkg_loader_recovered">Ruang kerja telah dipulihkan</string>
 
     <!-- package settings card (Settings, basic tab) -->
-    <string name="pkg_settings_title">Manajer paket</string>
-    <string name="pkg_settings_desc">Manajer paket bawaan untuk menginstal dan memperbarui mod. Bersihkan cache-nya jika unduhan paket gagal.</string>
+    <string name="pkg_settings_title">Bersihkan cache</string>
+    <string name="pkg_settings_desc">Bersihkan cache pengelola paket jika unduhan paket gagal.</string>
     <string name="pkg_settings_proxy_title">Proxy GitHub</string>
-    <string name="pkg_settings_proxy_desc">Proxy GitHub yang digunakan saat mengunduh paket. Simpan kolom kosong untuk mengembalikan ke default.</string>
+    <string name="pkg_settings_proxy_desc">Proxy GitHub yang digunakan saat mengunduh paket. Biarkan kosong untuk memulihkan bawaan.</string>
     <string name="pkg_settings_proxy_hint">https://github.bibk.top</string>
     <string name="pkg_settings_proxy_preset_custom">Kustom</string>
     <string name="pkg_settings_proxy_saved">Proxy GitHub disimpan</string>
@@ -408,18 +408,15 @@
     <string name="pkg_settings_proxy_source_set">Diatur oleh Anda</string>
     <string name="pkg_settings_proxy_source_default_on">Default bawaan, digunakan karena mirror aktif</string>
     <string name="pkg_settings_proxy_source_default_off">Default bawaan, tidak digunakan saat mirror nonaktif (GitHub digunakan secara langsung)</string>
-    <string name="pkg_settings_mirror_title">Mirror unduhan</string>
-    <string name="pkg_settings_mirror_desc">Unduh paket GitHub melalui proxy. Mode Otomatis mengaktifkannya di Tiongkok daratan.</string>
-    <string name="pkg_settings_mirror_auto">Otomatis (%1$s)</string>
-    <string name="pkg_settings_mirror_on">Aktif</string>
-    <string name="pkg_settings_mirror_off">Nonaktif</string>
+    <string name="pkg_settings_mirror_title">Gunakan sumber mirror</string>
+    <string name="pkg_settings_mirror_desc">Gunakan mirror yang dihosting di Tiongkok daratan untuk mengunduh paket. Aktif secara default untuk pengguna di Tiongkok daratan.</string>
     <string name="pkg_settings_scripts_title">Jalankan skrip paket</string>
     <string name="pkg_settings_scripts_desc">Hook dijalankan melalui sh dan tidak dibatalkan jika langkah berikutnya gagal</string>
     <string name="pkg_settings_cache_size">Ukuran cache: %1$s</string>
     <string name="pkg_settings_cache_size_computing">Ukuran cache: menghitung…</string>
     <string name="pkg_settings_cache_clean">Bersihkan Cache</string>
     <string name="pkg_settings_cache_cleaning">Membersihkan Cache…</string>
-    <string name="pkg_settings_cache_cleaned">Cache paket dibersihkan (%1$s dikosongkan)</string>
+    <string name="pkg_settings_cache_cleaned">Cache dibersihkan (%1$s dibebaskan)</string>
     <string name="pkg_settings_catalog_title">Daftar paket</string>
     <string name="pkg_settings_catalog_age">Diperbarui %1$s</string>
     <string name="pkg_settings_catalog_never">Belum diunduh</string>

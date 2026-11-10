@@ -182,7 +182,7 @@
     <!-- Developer guide -->
     <string name="pkg_guide_open">Geliştirici Kılavuzu</string>
     <string name="pkg_guide_title">LeviMC Modları Geliştirici Kılavuzu</string>
-    <string name="pkg_guide_description">Modunuzun LeviMC Modları sayfasında görünmesini istiyorsanız, lip belgelerindeki paket oluşturma bölümünde anlatıldığı gibi onu lip.toml içeren bir lip paketi olarak yayımlayın.</string>
+    <string name="pkg_guide_description">Modunuzun LeviMC Mods sayfasında görünmesini istiyorsanız, belgelerde açıklandığı gibi bir lip.toml ile yayınlayın.</string>
     <string name="pkg_guide_manifest_hint">Bu pencere yalnızca geliştiriciler için kısa bir özettir. Alan adları, zorunlu girdiler, örnekler ve doğrulama kuralları resmi belgelerde tanımlanmıştır.</string>
     <string name="pkg_guide_variant_hint">Başlatıcı bir paketi yalnızca lip.toml dosyasındaki en son sürümde bu cihazın platformunda istemci tarafında çalışan bir girdi varsa listeler: side = \"client\" ve platform = \"android-arm64\". İstemci girdilerinin tamamı başka platformlar (örneğin \"win-x64\") için olan paketler listelenmez. Başlatıcı önce \"client\" adlı varyantı, ardından varsayılan \"\" varyantını, sonra diğerlerini alfabetik sırayla yükler.</string>
     <string name="pkg_guide_android_hint">Eski sürümler de aynı kurala uyar: bir sürüm yalnızca lip.toml dosyasında bu cihazın platformu için bir istemci girdisi varsa yüklenebilir. Başka platformlara yönelik girdiler burada yüklenemez.</string>
@@ -405,10 +405,10 @@
     <string name="pkg_loader_recovered">Çalışma alanı kurtarıldı</string>
 
     <!-- package settings card (Settings, basic tab) -->
-    <string name="pkg_settings_title">Paket yöneticisi</string>
-    <string name="pkg_settings_desc">Modları yüklemek ve güncellemek için kullanılan yerleşik paket yöneticisi. Paket indirmeleri başarısız olursa önbelleğini temizleyin.</string>
+    <string name="pkg_settings_title">Önbelleği temizle</string>
+    <string name="pkg_settings_desc">Paket indirmeleri başarısız olursa paket yöneticisinin önbelleğini temizleyin.</string>
     <string name="pkg_settings_proxy_title">GitHub proxy</string>
-    <string name="pkg_settings_proxy_desc">Paketler indirilirken kullanılan GitHub proxy\'si. Varsayılana dönmek için alanı boş bırakıp kaydedin.</string>
+    <string name="pkg_settings_proxy_desc">Paketler indirilirken kullanılan GitHub proxy\'si. Varsayılana dönmek için boş bırakın.</string>
     <string name="pkg_settings_proxy_hint">https://github.bibk.top</string>
     <string name="pkg_settings_proxy_preset_custom">Özel</string>
     <string name="pkg_settings_proxy_saved">GitHub proxy\'si kaydedildi</string>
@@ -417,18 +417,15 @@
     <string name="pkg_settings_proxy_source_set">Sizin tarafınızdan ayarlandı</string>
     <string name="pkg_settings_proxy_source_default_on">Yerleşik varsayılan; yansı açık olduğu için kullanılıyor</string>
     <string name="pkg_settings_proxy_source_default_off">Yerleşik varsayılan; yansı kapalıyken kullanılmaz (GitHub doğrudan kullanılır)</string>
-    <string name="pkg_settings_mirror_title">İndirme yansısı</string>
-    <string name="pkg_settings_mirror_desc">GitHub paketlerini proxy üzerinden indir. Otomatik mod, Çin anakarasında bunu açar.</string>
-    <string name="pkg_settings_mirror_auto">Otomatik (%1$s)</string>
-    <string name="pkg_settings_mirror_on">Açık</string>
-    <string name="pkg_settings_mirror_off">Kapalı</string>
+    <string name="pkg_settings_mirror_title">Yansı kaynaklarını kullan</string>
+    <string name="pkg_settings_mirror_desc">Paket indirmeleri için Çin anakarasında barındırılan yansıları kullan. Çin anakarasındaki kullanıcılar için varsayılan olarak açıktır.</string>
     <string name="pkg_settings_scripts_title">Paket betiklerini çalıştır</string>
     <string name="pkg_settings_scripts_desc">Kancalar sh ile çalışır ve sonraki bir adım başarısız olursa geri alınmaz</string>
     <string name="pkg_settings_cache_size">Önbellek boyutu: %1$s</string>
     <string name="pkg_settings_cache_size_computing">Önbellek boyutu: hesaplanıyor…</string>
     <string name="pkg_settings_cache_clean">Önbelleği Temizle</string>
     <string name="pkg_settings_cache_cleaning">Önbellek Temizleniyor…</string>
-    <string name="pkg_settings_cache_cleaned">Paket önbelleği temizlendi (%1$s boşaltıldı)</string>
+    <string name="pkg_settings_cache_cleaned">Önbellek temizlendi (%1$s boşaltıldı)</string>
     <string name="pkg_settings_catalog_title">Paket listesi</string>
     <string name="pkg_settings_catalog_age">Güncellenme: %1$s</string>
     <string name="pkg_settings_catalog_never">Henüz indirilmedi</string>

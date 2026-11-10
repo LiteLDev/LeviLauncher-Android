@@ -153,7 +153,7 @@ public class ModsFullscreenActivity extends BaseActivity {
             filterTabs.setVertical(true);
         }
         filterTabs.setItems(getString(R.string.mods_filter_all), getString(R.string.mods_filter_normal),
-                getString(R.string.pkg_title_mods));
+                getString(R.string.mods_filter_packages));
         filterTabs.setSelectedIndex(TAB_ALL, false);
         filterTabs.setOnSegmentSelectedListener(i -> applyFilters());
 

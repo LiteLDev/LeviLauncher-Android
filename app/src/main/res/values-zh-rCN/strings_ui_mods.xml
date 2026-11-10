@@ -20,4 +20,5 @@
     <string name="mods_external_compatible">仅显示兼容</string>
     <string name="mods_external_sort">排序：%1$s</string>
     <string name="mods_external_author">作者 %1$s</string>
+    <string name="mods_filter_packages">包管理模组</string>
 </resources>

@@ -183,7 +183,7 @@
     <!-- Developer guide -->
     <string name="pkg_guide_open">Guide du développeur</string>
     <string name="pkg_guide_title">Guide du développeur des mods LeviMC</string>
-    <string name="pkg_guide_description">Si vous voulez que votre mod apparaisse sur la page Mods LeviMC, publiez-le sous forme de paquet lip avec un lip.toml, comme le décrit la documentation de lip sur la création de paquets.</string>
+    <string name="pkg_guide_description">Si vous souhaitez que votre mod apparaisse sur la page LeviMC Mods, publiez-le avec un lip.toml comme décrit dans la documentation.</string>
     <string name="pkg_guide_manifest_hint">Cette boîte de dialogue n\'est qu\'un aperçu rapide destiné aux développeurs. Les noms des champs, les entrées obligatoires, les exemples et les règles de validation sont définis dans la documentation officielle.</string>
     <string name="pkg_guide_variant_hint">Le lanceur ne répertorie un paquet que si la dernière version de son lip.toml contient une entrée qui s\'exécute côté client sur la plateforme de cet appareil : side = \"client\" et platform = \"android-arm64\". Un paquet dont toutes les entrées client visent d\'autres plateformes (comme \"win-x64\") n\'est pas répertorié. Le lanceur installe d\'abord la variante nommée \"client\", puis la variante par défaut \"\", puis les autres par ordre alphabétique.</string>
     <string name="pkg_guide_android_hint">Les anciennes versions suivent la même règle : une version n\'est installable que si son lip.toml contient une entrée client pour la plateforme de cet appareil. Les entrées destinées à d\'autres plateformes ne peuvent pas être installées ici.</string>
@@ -414,10 +414,10 @@
     <string name="pkg_loader_recovered">L\'espace de travail a été récupéré</string>
 
     <!-- package settings card (Settings, basic tab) -->
-    <string name="pkg_settings_title">Gestionnaire de paquets</string>
-    <string name="pkg_settings_desc">Gestionnaire de paquets intégré, utilisé pour installer et mettre à jour les mods. Videz son cache si les téléchargements de paquets échouent.</string>
+    <string name="pkg_settings_title">Nettoyer le cache</string>
+    <string name="pkg_settings_desc">Nettoyez le cache du gestionnaire de paquets si le téléchargement de paquets échoue.</string>
     <string name="pkg_settings_proxy_title">Proxy GitHub</string>
-    <string name="pkg_settings_proxy_desc">Proxy GitHub utilisé lors du téléchargement des paquets. Enregistrez un champ vide pour rétablir la valeur par défaut.</string>
+    <string name="pkg_settings_proxy_desc">Proxy GitHub utilisé pour télécharger les paquets. Laissez vide pour rétablir la valeur par défaut.</string>
     <string name="pkg_settings_proxy_hint">https://github.bibk.top</string>
     <string name="pkg_settings_proxy_preset_custom">Personnalisé</string>
     <string name="pkg_settings_proxy_saved">Proxy GitHub enregistré</string>
@@ -426,18 +426,15 @@
     <string name="pkg_settings_proxy_source_set">Défini par vous</string>
     <string name="pkg_settings_proxy_source_default_on">Valeur par défaut intégrée, utilisée car le miroir est activé</string>
     <string name="pkg_settings_proxy_source_default_off">Valeur par défaut intégrée, non utilisée tant que le miroir est désactivé (connexion directe à GitHub)</string>
-    <string name="pkg_settings_mirror_title">Miroir de téléchargement</string>
-    <string name="pkg_settings_mirror_desc">Télécharger les paquets GitHub via le proxy. Le mode automatique l\'active en Chine continentale.</string>
-    <string name="pkg_settings_mirror_auto">Auto (%1$s)</string>
-    <string name="pkg_settings_mirror_on">Activé</string>
-    <string name="pkg_settings_mirror_off">Désactivé</string>
+    <string name="pkg_settings_mirror_title">Utiliser des miroirs</string>
+    <string name="pkg_settings_mirror_desc">Utiliser les miroirs hébergés en Chine continentale pour télécharger les paquets. Activé par défaut pour les utilisateurs de Chine continentale.</string>
     <string name="pkg_settings_scripts_title">Exécuter les scripts des paquets</string>
     <string name="pkg_settings_scripts_desc">Les hooks s\'exécutent via sh et ne sont pas annulés si une étape ultérieure échoue</string>
     <string name="pkg_settings_cache_size">Taille du cache : %1$s</string>
     <string name="pkg_settings_cache_size_computing">Taille du cache : calcul…</string>
     <string name="pkg_settings_cache_clean">Vider le cache</string>
     <string name="pkg_settings_cache_cleaning">Nettoyage du cache…</string>
-    <string name="pkg_settings_cache_cleaned">Cache des paquets vidé (%1$s libérés)</string>
+    <string name="pkg_settings_cache_cleaned">Cache nettoyé (%1$s libérés)</string>
     <string name="pkg_settings_catalog_title">Liste des paquets</string>
     <string name="pkg_settings_catalog_age">Mise à jour : %1$s</string>
     <string name="pkg_settings_catalog_never">Pas encore téléchargée</string>

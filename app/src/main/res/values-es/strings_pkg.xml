@@ -182,7 +182,7 @@
     <!-- Developer guide -->
     <string name="pkg_guide_open">Guía para desarrolladores</string>
     <string name="pkg_guide_title">Guía para desarrolladores de Mods de LeviMC</string>
-    <string name="pkg_guide_description">Si quieres que tu mod aparezca en la página de Mods de LeviMC, publícalo como paquete de lip con un lip.toml, tal como se describe en la documentación de lip sobre la creación de paquetes.</string>
+    <string name="pkg_guide_description">Si quieres que tu mod aparezca en la página de Mods de LeviMC, publícalo con un lip.toml como se describe en la documentación.</string>
     <string name="pkg_guide_manifest_hint">Este diálogo es solo un resumen rápido para desarrolladores. Los nombres de los campos, las entradas obligatorias, los ejemplos y las reglas de validación se definen en la documentación oficial.</string>
     <string name="pkg_guide_variant_hint">El launcher solo muestra un paquete cuando la última versión de su lip.toml tiene una entrada que se ejecuta en el cliente en la plataforma de este dispositivo: side = \"client\" y platform = \"android-arm64\". Un paquete cuyas entradas de cliente sean todas para otras plataformas (como \"win-x64\") no se muestra. El launcher instala primero la variante llamada \"client\", luego la variante predeterminada \"\" y después las demás en orden alfabético.</string>
     <string name="pkg_guide_android_hint">Las versiones anteriores siguen la misma regla: una versión solo se puede instalar cuando su lip.toml tiene una entrada de cliente para la plataforma de este dispositivo. Las entradas para otras plataformas no se pueden instalar aquí.</string>
@@ -405,10 +405,10 @@
     <string name="pkg_loader_recovered">Se recuperó el espacio de trabajo</string>
 
     <!-- package settings card (Settings, basic tab) -->
-    <string name="pkg_settings_title">Gestor de paquetes</string>
-    <string name="pkg_settings_desc">Gestor de paquetes integrado para instalar y actualizar mods. Limpia su caché si fallan las descargas de paquetes.</string>
+    <string name="pkg_settings_title">Limpiar caché</string>
+    <string name="pkg_settings_desc">Limpia la caché del gestor de paquetes si fallan las descargas de paquetes.</string>
     <string name="pkg_settings_proxy_title">Proxy de GitHub</string>
-    <string name="pkg_settings_proxy_desc">Proxy de GitHub que se usa al descargar paquetes. Guarda el campo vacío para restablecer el valor predeterminado.</string>
+    <string name="pkg_settings_proxy_desc">Proxy de GitHub que se usa al descargar paquetes. Déjalo vacío para restaurar el valor predeterminado.</string>
     <string name="pkg_settings_proxy_hint">https://github.bibk.top</string>
     <string name="pkg_settings_proxy_preset_custom">Personalizado</string>
     <string name="pkg_settings_proxy_saved">Proxy de GitHub guardado</string>
@@ -417,18 +417,15 @@
     <string name="pkg_settings_proxy_source_set">Establecido por ti</string>
     <string name="pkg_settings_proxy_source_default_on">Valor predeterminado integrado, en uso porque el espejo está activado</string>
     <string name="pkg_settings_proxy_source_default_off">Valor predeterminado integrado, sin usar mientras el espejo esté desactivado (se usa GitHub directamente)</string>
-    <string name="pkg_settings_mirror_title">Espejo de descarga</string>
-    <string name="pkg_settings_mirror_desc">Descarga los paquetes de GitHub a través del proxy. El modo automático lo activa en China continental.</string>
-    <string name="pkg_settings_mirror_auto">Automático (%1$s)</string>
-    <string name="pkg_settings_mirror_on">Activado</string>
-    <string name="pkg_settings_mirror_off">Desactivado</string>
+    <string name="pkg_settings_mirror_title">Usar servidores espejo</string>
+    <string name="pkg_settings_mirror_desc">Usar servidores espejo alojados en China continental para descargar paquetes. Activado por defecto para usuarios de China continental.</string>
     <string name="pkg_settings_scripts_title">Ejecutar scripts de paquetes</string>
     <string name="pkg_settings_scripts_desc">Los hooks se ejecutan mediante sh y no se deshacen si falla un paso posterior</string>
     <string name="pkg_settings_cache_size">Tamaño de la caché: %1$s</string>
     <string name="pkg_settings_cache_size_computing">Tamaño de la caché: calculando…</string>
     <string name="pkg_settings_cache_clean">Limpiar caché</string>
     <string name="pkg_settings_cache_cleaning">Limpiando caché…</string>
-    <string name="pkg_settings_cache_cleaned">Caché de paquetes limpiada (%1$s liberados)</string>
+    <string name="pkg_settings_cache_cleaned">Caché limpiada (%1$s liberados)</string>
     <string name="pkg_settings_catalog_title">Lista de paquetes</string>
     <string name="pkg_settings_catalog_age">Actualizada: %1$s</string>
     <string name="pkg_settings_catalog_never">Aún no descargada</string>

@@ -180,7 +180,7 @@
     <!-- Developer guide -->
     <string name="pkg_guide_open">开发者指南</string>
     <string name="pkg_guide_title">LeviMC 模组开发者指南</string>
-    <string name="pkg_guide_description">如果你希望自己的模组出现在 LeviMC 模组页面中，请按照 lip 文档中“创建包”的说明，以带有 lip.toml 的 lip 包发布。</string>
+    <string name="pkg_guide_description">如果你希望自己的模组出现在 LeviMC 模组页面中，请按照文档在仓库中提供 lip.toml 并发布。</string>
     <string name="pkg_guide_manifest_hint">这个弹窗只提供面向开发者的快速说明。字段命名、必填项、示例与校验细则请以官方文档为准。</string>
     <string name="pkg_guide_variant_hint">只有当包最新版本的 lip.toml 中有在本设备平台的客户端上运行的条目（side = \"client\" 且 platform = \"android-arm64\"）时，启动器才会收录它。客户端条目全部面向其他平台（如 \"win-x64\"）的包不会被收录。启动器优先安装名为 \"client\" 的变体，其次是默认变体 \"\"，再按字母顺序选择其他变体。</string>
     <string name="pkg_guide_android_hint">旧版本同样如此：只有 lip.toml 中有本设备平台的客户端条目的版本才能安装。面向其他平台的条目无法在此安装。</string>
@@ -395,10 +395,10 @@
     <string name="pkg_loader_recovered">工作区已恢复</string>
 
     <!-- package settings card (Settings, basic tab) -->
-    <string name="pkg_settings_title">包管理器</string>
-    <string name="pkg_settings_desc">内置的包管理器，用于安装和更新模组。若软件包下载失败，可清理其缓存。</string>
+    <string name="pkg_settings_title">清理缓存</string>
+    <string name="pkg_settings_desc">若软件包下载失败，可清理包管理器的缓存。</string>
     <string name="pkg_settings_proxy_title">GitHub 代理</string>
-    <string name="pkg_settings_proxy_desc">下载软件包时使用的 GitHub 代理。留空并保存可恢复默认值。</string>
+    <string name="pkg_settings_proxy_desc">下载软件包时使用的 GitHub 代理，留空可恢复默认值。</string>
     <string name="pkg_settings_proxy_hint">https://gh-proxy.org/https://github.com</string>
     <string name="pkg_settings_proxy_preset_custom">自定义</string>
     <string name="pkg_settings_proxy_saved">GitHub 代理已保存</string>
@@ -407,18 +407,15 @@
     <string name="pkg_settings_proxy_source_set">由你设置</string>
     <string name="pkg_settings_proxy_source_default_on">内置默认值，因镜像已开启而使用</string>
     <string name="pkg_settings_proxy_source_default_off">内置默认值，镜像关闭时不使用（直接连接 GitHub）</string>
-    <string name="pkg_settings_mirror_title">下载镜像</string>
-    <string name="pkg_settings_mirror_desc">通过代理下载 GitHub 上的软件包。自动模式在中国大陆开启。</string>
-    <string name="pkg_settings_mirror_auto">自动（%1$s）</string>
-    <string name="pkg_settings_mirror_on">开启</string>
-    <string name="pkg_settings_mirror_off">关闭</string>
+    <string name="pkg_settings_mirror_title">使用镜像源</string>
+    <string name="pkg_settings_mirror_desc">为软件包下载优先使用中国大陆的镜像源。中国大陆用户默认开启。</string>
     <string name="pkg_settings_scripts_title">运行包脚本</string>
     <string name="pkg_settings_scripts_desc">钩子通过 sh 运行，后续步骤失败时不会撤销</string>
     <string name="pkg_settings_cache_size">缓存大小：%1$s</string>
     <string name="pkg_settings_cache_size_computing">缓存大小：正在计算…</string>
     <string name="pkg_settings_cache_clean">清理缓存</string>
     <string name="pkg_settings_cache_cleaning">正在清理缓存…</string>
-    <string name="pkg_settings_cache_cleaned">包缓存清理完成（释放了 %1$s）</string>
+    <string name="pkg_settings_cache_cleaned">缓存清理完成（释放了 %1$s）</string>
     <string name="pkg_settings_catalog_title">软件包列表</string>
     <string name="pkg_settings_catalog_age">更新于 %1$s</string>
     <string name="pkg_settings_catalog_never">尚未下载</string>

@@ -182,7 +182,7 @@
     <!-- Developer guide -->
     <string name="pkg_guide_open">डेवलपर गाइड</string>
     <string name="pkg_guide_title">LeviMC मॉड्स डेवलपर गाइड</string>
-    <string name="pkg_guide_description">यदि आप चाहते हैं कि आपका मॉड LeviMC मॉड्स पेज पर दिखाई दे, तो इसे lip.toml के साथ एक lip पैकेज के रूप में प्रकाशित करें, जैसा कि पैकेज बनाने पर lip दस्तावेज़ में बताया गया है।</string>
+    <string name="pkg_guide_description">यदि आप चाहते हैं कि आपका मॉड LeviMC Mods पेज पर दिखे, तो दस्तावेज़ में बताए अनुसार lip.toml के साथ उसे प्रकाशित करें।</string>
     <string name="pkg_guide_manifest_hint">यह डायलॉग डेवलपर्स के लिए केवल एक संक्षिप्त अवलोकन है। फ़ील्ड के नाम, आवश्यक प्रविष्टियाँ, उदाहरण और सत्यापन नियम आधिकारिक दस्तावेज़ में परिभाषित हैं।</string>
     <string name="pkg_guide_variant_hint">लॉन्चर किसी पैकेज को तभी सूचीबद्ध करता है जब उसके lip.toml के नवीनतम संस्करण में ऐसी प्रविष्टि हो जो इस डिवाइस के प्लेटफ़ॉर्म पर क्लाइंट पर चलती हो: side = \"client\" और platform = \"android-arm64\"। जिस पैकेज की सभी क्लाइंट प्रविष्टियाँ अन्य प्लेटफ़ॉर्म (जैसे \"win-x64\") के लिए हों, उसे सूचीबद्ध नहीं किया जाता। लॉन्चर पहले \"client\" नाम का वेरिएंट इंस्टॉल करता है, फिर डिफ़ॉल्ट वेरिएंट \"\", फिर बाकी वर्णानुक्रम में।</string>
     <string name="pkg_guide_android_hint">पुराने संस्करण भी इसी नियम का पालन करते हैं: कोई संस्करण तभी इंस्टॉल किया जा सकता है जब उसके lip.toml में इस डिवाइस के प्लेटफ़ॉर्म के लिए क्लाइंट प्रविष्टि हो। अन्य प्लेटफ़ॉर्म की प्रविष्टियाँ यहाँ इंस्टॉल नहीं की जा सकतीं।</string>
@@ -405,10 +405,10 @@
     <string name="pkg_loader_recovered">वर्कस्पेस पुनर्प्राप्त किया गया</string>
 
     <!-- package settings card (Settings, basic tab) -->
-    <string name="pkg_settings_title">पैकेज मैनेजर</string>
-    <string name="pkg_settings_desc">मॉड्स इंस्टॉल और अपडेट करने के लिए अंतर्निहित पैकेज मैनेजर। यदि पैकेज डाउनलोड विफल हों तो इसका कैश साफ़ करें।</string>
+    <string name="pkg_settings_title">कैश साफ़ करें</string>
+    <string name="pkg_settings_desc">पैकेज डाउनलोड विफल होने पर पैकेज मैनेजर का कैश साफ़ करें।</string>
     <string name="pkg_settings_proxy_title">GitHub प्रॉक्सी</string>
-    <string name="pkg_settings_proxy_desc">पैकेज डाउनलोड करते समय उपयोग की जाने वाली GitHub प्रॉक्सी। डिफ़ॉल्ट पुनर्स्थापित करने के लिए खाली फ़ील्ड सहेजें।</string>
+    <string name="pkg_settings_proxy_desc">पैकेज डाउनलोड करते समय उपयोग होने वाला GitHub प्रॉक्सी। डिफ़ॉल्ट बहाल करने के लिए खाली छोड़ें।</string>
     <string name="pkg_settings_proxy_hint">https://github.bibk.top</string>
     <string name="pkg_settings_proxy_preset_custom">कस्टम</string>
     <string name="pkg_settings_proxy_saved">GitHub प्रॉक्सी सहेजी गई</string>
@@ -417,18 +417,15 @@
     <string name="pkg_settings_proxy_source_set">आपके द्वारा सेट</string>
     <string name="pkg_settings_proxy_source_default_on">अंतर्निहित डिफ़ॉल्ट, उपयोग में है क्योंकि मिरर चालू है</string>
     <string name="pkg_settings_proxy_source_default_off">अंतर्निहित डिफ़ॉल्ट, मिरर बंद होने पर उपयोग नहीं होता (GitHub का सीधे उपयोग होता है)</string>
-    <string name="pkg_settings_mirror_title">डाउनलोड मिरर</string>
-    <string name="pkg_settings_mirror_desc">GitHub पैकेज प्रॉक्सी के माध्यम से डाउनलोड करें। स्वचालित मोड इसे मुख्यभूमि चीन में चालू करता है।</string>
-    <string name="pkg_settings_mirror_auto">स्वचालित (%1$s)</string>
-    <string name="pkg_settings_mirror_on">चालू</string>
-    <string name="pkg_settings_mirror_off">बंद</string>
+    <string name="pkg_settings_mirror_title">मिरर स्रोत उपयोग करें</string>
+    <string name="pkg_settings_mirror_desc">पैकेज डाउनलोड के लिए मुख्यभूमि चीन में होस्ट किए गए मिरर का उपयोग करें। मुख्यभूमि चीन के उपयोगकर्ताओं के लिए डिफ़ॉल्ट रूप से चालू।</string>
     <string name="pkg_settings_scripts_title">पैकेज स्क्रिप्ट चलाएँ</string>
     <string name="pkg_settings_scripts_desc">हुक sh के माध्यम से चलते हैं और बाद का कोई चरण विफल होने पर पूर्ववत नहीं होते</string>
     <string name="pkg_settings_cache_size">कैश आकार: %1$s</string>
     <string name="pkg_settings_cache_size_computing">कैश आकार: गणना हो रही है…</string>
     <string name="pkg_settings_cache_clean">कैश साफ़ करें</string>
     <string name="pkg_settings_cache_cleaning">कैश साफ़ हो रहा है…</string>
-    <string name="pkg_settings_cache_cleaned">पैकेज कैश साफ़ किया गया (%1$s खाली हुआ)</string>
+    <string name="pkg_settings_cache_cleaned">कैश साफ़ हो गया (%1$s खाली हुआ)</string>
     <string name="pkg_settings_catalog_title">पैकेज सूची</string>
     <string name="pkg_settings_catalog_age">अपडेट किया गया: %1$s</string>
     <string name="pkg_settings_catalog_never">अभी तक डाउनलोड नहीं हुआ</string>

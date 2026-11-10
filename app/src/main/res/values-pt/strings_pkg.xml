@@ -182,7 +182,7 @@
     <!-- Developer guide -->
     <string name="pkg_guide_open">Guia do Desenvolvedor</string>
     <string name="pkg_guide_title">Guia do Desenvolvedor de Mods LeviMC</string>
-    <string name="pkg_guide_description">Se você quer que seu mod apareça na página de Mods LeviMC, publique-o como um pacote lip com um lip.toml, conforme descrito na documentação do lip sobre criação de pacotes.</string>
+    <string name="pkg_guide_description">Se deseja que o seu mod apareça na página LeviMC Mods, publique-o com um lip.toml conforme descrito na documentação.</string>
     <string name="pkg_guide_manifest_hint">Esta janela é apenas um resumo rápido para desenvolvedores. Nomes de campos, entradas obrigatórias, exemplos e regras de validação são definidos na documentação oficial.</string>
     <string name="pkg_guide_variant_hint">O launcher lista um pacote apenas quando a versão mais recente no seu lip.toml tem uma entrada que roda no cliente na plataforma deste dispositivo: side = \"client\" e platform = \"android-arm64\". Um pacote cujas entradas de cliente são todas para outras plataformas (como \"win-x64\") não é listado. O launcher instala primeiro a variante chamada \"client\", depois a variante padrão \"\" e então as demais em ordem alfabética.</string>
     <string name="pkg_guide_android_hint">Versões antigas seguem a mesma regra: uma versão só pode ser instalada quando seu lip.toml tem uma entrada de cliente para a plataforma deste dispositivo. Entradas para outras plataformas não podem ser instaladas aqui.</string>
@@ -405,10 +405,10 @@
     <string name="pkg_loader_recovered">O espaço de trabalho foi recuperado</string>
 
     <!-- package settings card (Settings, basic tab) -->
-    <string name="pkg_settings_title">Gerenciador de pacotes</string>
-    <string name="pkg_settings_desc">Gerenciador de pacotes integrado usado para instalar e atualizar mods. Limpe o cache se os downloads de pacotes falharem.</string>
+    <string name="pkg_settings_title">Limpar cache</string>
+    <string name="pkg_settings_desc">Limpe a cache do gestor de pacotes se as transferências de pacotes falharem.</string>
     <string name="pkg_settings_proxy_title">Proxy do GitHub</string>
-    <string name="pkg_settings_proxy_desc">Proxy do GitHub usado ao baixar pacotes. Salve o campo vazio para restaurar o padrão.</string>
+    <string name="pkg_settings_proxy_desc">Proxy do GitHub usado ao transferir pacotes. Deixe vazio para restaurar o padrão.</string>
     <string name="pkg_settings_proxy_hint">https://github.bibk.top</string>
     <string name="pkg_settings_proxy_preset_custom">Personalizado</string>
     <string name="pkg_settings_proxy_saved">Proxy do GitHub salvo</string>
@@ -417,18 +417,15 @@
     <string name="pkg_settings_proxy_source_set">Definido por você</string>
     <string name="pkg_settings_proxy_source_default_on">Padrão integrado, usado porque o espelho está ativado</string>
     <string name="pkg_settings_proxy_source_default_off">Padrão integrado, não usado enquanto o espelho estiver desativado (o GitHub é acessado diretamente)</string>
-    <string name="pkg_settings_mirror_title">Espelho de download</string>
-    <string name="pkg_settings_mirror_desc">Baixar pacotes do GitHub pelo proxy. O modo automático o ativa na China continental.</string>
-    <string name="pkg_settings_mirror_auto">Automático (%1$s)</string>
-    <string name="pkg_settings_mirror_on">Ativado</string>
-    <string name="pkg_settings_mirror_off">Desativado</string>
+    <string name="pkg_settings_mirror_title">Usar espelhos</string>
+    <string name="pkg_settings_mirror_desc">Usar espelhos alojados na China continental para transferir pacotes. Ativado por predefinição para utilizadores da China continental.</string>
     <string name="pkg_settings_scripts_title">Executar scripts de pacotes</string>
     <string name="pkg_settings_scripts_desc">Os hooks são executados via sh e não são desfeitos se uma etapa posterior falhar</string>
     <string name="pkg_settings_cache_size">Tamanho do cache: %1$s</string>
     <string name="pkg_settings_cache_size_computing">Tamanho do cache: calculando…</string>
     <string name="pkg_settings_cache_clean">Limpar Cache</string>
     <string name="pkg_settings_cache_cleaning">Limpando Cache…</string>
-    <string name="pkg_settings_cache_cleaned">Cache de pacotes limpo (%1$s liberados)</string>
+    <string name="pkg_settings_cache_cleaned">Cache limpa (%1$s libertados)</string>
     <string name="pkg_settings_catalog_title">Lista de pacotes</string>
     <string name="pkg_settings_catalog_age">Atualizada em %1$s</string>
     <string name="pkg_settings_catalog_never">Ainda não baixada</string>

@@ -181,7 +181,7 @@
     <!-- Developer guide -->
     <string name="pkg_guide_open">開発者ガイド</string>
     <string name="pkg_guide_title">LeviMC モッド開発者ガイド</string>
-    <string name="pkg_guide_description">自作のモッドを LeviMC モッドページに掲載したい場合は、lip ドキュメントの「パッケージの作成」の説明に従い、lip.toml を含む lip パッケージとして公開してください。</string>
+    <string name="pkg_guide_description">自分の Mod を LeviMC Mods ページに掲載したい場合は、ドキュメントに従って lip.toml を用意して公開してください。</string>
     <string name="pkg_guide_manifest_hint">このダイアログは開発者向けの簡単な概要です。フィールド名、必須項目、例、検証ルールは公式ドキュメントで定義されています。</string>
     <string name="pkg_guide_variant_hint">ランチャーがパッケージを掲載するのは、lip.toml の最新バージョンに、このデバイスのプラットフォームのクライアントで動作するエントリー (side = \"client\" かつ platform = \"android-arm64\") がある場合のみです。クライアント向けエントリーがすべて他のプラットフォーム (\"win-x64\" など) 向けのパッケージは掲載されません。ランチャーは \"client\" という名前のバリアントを優先してインストールし、次にデフォルトのバリアント \"\"、その後は他のバリアントをアルファベット順にインストールします。</string>
     <string name="pkg_guide_android_hint">旧バージョンにも同じルールが適用されます: lip.toml にこのデバイスのプラットフォーム向けのクライアントエントリーがあるバージョンのみインストールできます。他のプラットフォーム向けのエントリーはここではインストールできません。</string>
@@ -396,10 +396,10 @@
     <string name="pkg_loader_recovered">ワークスペースを復旧しました</string>
 
     <!-- package settings card (Settings, basic tab) -->
-    <string name="pkg_settings_title">パッケージマネージャー</string>
-    <string name="pkg_settings_desc">モッドのインストールと更新に使用する内蔵パッケージマネージャーです。パッケージのダウンロードに失敗する場合は、キャッシュを消去してください。</string>
+    <string name="pkg_settings_title">キャッシュを削除</string>
+    <string name="pkg_settings_desc">パッケージのダウンロードに失敗する場合は、パッケージマネージャーのキャッシュを削除してください。</string>
     <string name="pkg_settings_proxy_title">GitHub プロキシ</string>
-    <string name="pkg_settings_proxy_desc">パッケージのダウンロード時に使用する GitHub プロキシです。空欄で保存するとデフォルトに戻ります。</string>
+    <string name="pkg_settings_proxy_desc">パッケージをダウンロードする際に使用する GitHub プロキシです。空欄にすると既定値に戻ります。</string>
     <string name="pkg_settings_proxy_hint">https://github.bibk.top</string>
     <string name="pkg_settings_proxy_preset_custom">カスタム</string>
     <string name="pkg_settings_proxy_saved">GitHub プロキシを保存しました</string>
@@ -408,18 +408,15 @@
     <string name="pkg_settings_proxy_source_set">ユーザー設定</string>
     <string name="pkg_settings_proxy_source_default_on">内蔵のデフォルト値 (ミラーが有効なため使用中)</string>
     <string name="pkg_settings_proxy_source_default_off">内蔵のデフォルト値 (ミラーが無効なため未使用、GitHub に直接接続)</string>
-    <string name="pkg_settings_mirror_title">ダウンロードミラー</string>
-    <string name="pkg_settings_mirror_desc">GitHub のパッケージをプロキシ経由でダウンロードします。自動の場合、中国本土で有効になります。</string>
-    <string name="pkg_settings_mirror_auto">自動 (%1$s)</string>
-    <string name="pkg_settings_mirror_on">オン</string>
-    <string name="pkg_settings_mirror_off">オフ</string>
+    <string name="pkg_settings_mirror_title">ミラーソースを使用</string>
+    <string name="pkg_settings_mirror_desc">パッケージのダウンロードで中国本土のミラーを優先します。中国本土のユーザーはデフォルトで有効です。</string>
     <string name="pkg_settings_scripts_title">パッケージスクリプトを実行</string>
     <string name="pkg_settings_scripts_desc">フックは sh で実行され、後続の手順が失敗しても元に戻されません</string>
     <string name="pkg_settings_cache_size">キャッシュサイズ: %1$s</string>
     <string name="pkg_settings_cache_size_computing">キャッシュサイズ: 計算中…</string>
     <string name="pkg_settings_cache_clean">キャッシュを消去</string>
     <string name="pkg_settings_cache_cleaning">キャッシュを消去中…</string>
-    <string name="pkg_settings_cache_cleaned">パッケージキャッシュを消去しました (%1$s 解放)</string>
+    <string name="pkg_settings_cache_cleaned">キャッシュを削除しました（%1$s 解放）</string>
     <string name="pkg_settings_catalog_title">パッケージリスト</string>
     <string name="pkg_settings_catalog_age">%1$s に更新</string>
     <string name="pkg_settings_catalog_never">未ダウンロード</string>

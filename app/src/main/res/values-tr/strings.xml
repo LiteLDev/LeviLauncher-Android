@@ -105,7 +105,7 @@
     <string name="settings_tab_personalize">Kişiselleştirme</string>
     <string name="settings_tab_updates">Güncellemeler</string>
     <string name="settings_tab_about">Hakkında</string>
-    <string name="settings_tab_components">Üçüncü taraf bileşenler</string>
+    <string name="settings_tab_components">Paket yönetimi</string>
     <string name="settings_tab_others">Diğer</string>
     <string name="settings_tab_privacy">Gizlilik</string>
     <string name="settings_personalize_theme">Tema ve renkler</string>

@@ -184,7 +184,7 @@
     <!-- Developer guide -->
     <string name="pkg_guide_open">Руководство разработчика</string>
     <string name="pkg_guide_title">Руководство разработчика модов LeviMC</string>
-    <string name="pkg_guide_description">Чтобы ваш мод появился на странице «Моды LeviMC», опубликуйте его как пакет lip с файлом lip.toml, как описано в документации lip о создании пакетов.</string>
+    <string name="pkg_guide_description">Чтобы ваш мод появился на странице «Моды LeviMC», опубликуйте его с файлом lip.toml, как описано в документации.</string>
     <string name="pkg_guide_manifest_hint">Это окно — лишь краткий обзор для разработчиков. Названия полей, обязательные элементы, примеры и правила проверки определены в официальной документации.</string>
     <string name="pkg_guide_variant_hint">Лаунчер показывает пакет, только если в lip.toml последней версии есть элемент, работающий на клиенте на платформе этого устройства: side = \"client\" и platform = \"android-arm64\". Пакет, все клиентские элементы которого предназначены для других платформ (например, \"win-x64\"), не показывается. Лаунчер сначала устанавливает вариант с именем \"client\", затем вариант по умолчанию \"\", затем остальные в алфавитном порядке.</string>
     <string name="pkg_guide_android_hint">Для старых версий действует то же правило: версию можно установить, только если в её lip.toml есть клиентский элемент для платформы этого устройства. Элементы для других платформ здесь установить нельзя.</string>
@@ -423,10 +423,10 @@
     <string name="pkg_loader_recovered">Рабочая область восстановлена</string>
 
     <!-- package settings card (Settings, basic tab) -->
-    <string name="pkg_settings_title">Менеджер пакетов</string>
-    <string name="pkg_settings_desc">Встроенный менеджер пакетов для установки и обновления модов. Если загрузка пакетов не удаётся, очистите его кэш.</string>
+    <string name="pkg_settings_title">Очистить кэш</string>
+    <string name="pkg_settings_desc">Очистите кэш менеджера пакетов, если загрузка пакетов не удаётся.</string>
     <string name="pkg_settings_proxy_title">Прокси GitHub</string>
-    <string name="pkg_settings_proxy_desc">Прокси GitHub, используемый при загрузке пакетов. Сохраните пустое поле, чтобы восстановить значение по умолчанию.</string>
+    <string name="pkg_settings_proxy_desc">Прокси GitHub, используемый при загрузке пакетов. Оставьте пустым, чтобы восстановить значение по умолчанию.</string>
     <string name="pkg_settings_proxy_hint">https://github.bibk.top</string>
     <string name="pkg_settings_proxy_preset_custom">Свой</string>
     <string name="pkg_settings_proxy_saved">Прокси GitHub сохранён</string>
@@ -435,18 +435,15 @@
     <string name="pkg_settings_proxy_source_set">Задан вами</string>
     <string name="pkg_settings_proxy_source_default_on">Встроенное значение по умолчанию, используется, так как зеркало включено</string>
     <string name="pkg_settings_proxy_source_default_off">Встроенное значение по умолчанию, не используется, пока зеркало выключено (GitHub используется напрямую)</string>
-    <string name="pkg_settings_mirror_title">Зеркало загрузки</string>
-    <string name="pkg_settings_mirror_desc">Загружать пакеты с GitHub через прокси. В автоматическом режиме включается в материковом Китае.</string>
-    <string name="pkg_settings_mirror_auto">Авто (%1$s)</string>
-    <string name="pkg_settings_mirror_on">Вкл.</string>
-    <string name="pkg_settings_mirror_off">Выкл.</string>
+    <string name="pkg_settings_mirror_title">Использовать зеркала</string>
+    <string name="pkg_settings_mirror_desc">Использовать зеркала, размещённые в материковом Китае, для загрузки пакетов. По умолчанию включено для пользователей из материкового Китая.</string>
     <string name="pkg_settings_scripts_title">Выполнять скрипты пакетов</string>
     <string name="pkg_settings_scripts_desc">Хуки выполняются через sh и не отменяются, если последующий шаг завершится ошибкой</string>
     <string name="pkg_settings_cache_size">Размер кэша: %1$s</string>
     <string name="pkg_settings_cache_size_computing">Размер кэша: вычисление…</string>
     <string name="pkg_settings_cache_clean">Очистить кэш</string>
     <string name="pkg_settings_cache_cleaning">Очистка кэша…</string>
-    <string name="pkg_settings_cache_cleaned">Кэш пакетов очищен (освобождено %1$s)</string>
+    <string name="pkg_settings_cache_cleaned">Кэш очищен (освобождено %1$s)</string>
     <string name="pkg_settings_catalog_title">Список пакетов</string>
     <string name="pkg_settings_catalog_age">Обновлено %1$s</string>
     <string name="pkg_settings_catalog_never">Ещё не загружен</string>

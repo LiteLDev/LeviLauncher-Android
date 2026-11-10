@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Package manager card of SettingsActivity (third-party components tab), driven by SettingsCard.
-     Ordered like LeviLauncher's (Windows) components tab: package manager + clean cache, then the
-     mirror switch, then the GitHub proxy; Android-only package rows sit with the package manager. -->
+<!-- Package manager card of SettingsActivity (Package Management tab), driven by SettingsCard.
+     Ordered like LeviLauncher for Windows: clear cache, use mirror sources, GitHub proxy; the
+     Android-only package list and package scripts rows follow. -->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/pkg_settings_card"
@@ -9,7 +9,7 @@
 
     <LinearLayout style="@style/settings_CardBody">
 
-        <!-- Package manager + clean cache -->
+        <!-- Clear cache -->
         <LinearLayout style="@style/settings_Row">
 
             <LinearLayout style="@style/settings_RowText">
@@ -45,53 +45,7 @@
 
         <View style="@style/settings_Divider" />
 
-        <!-- Catalogue -->
-        <LinearLayout style="@style/settings_Row">
-
-            <LinearLayout style="@style/settings_RowText">
-
-                <TextView
-                    style="@style/settings_RowTitle"
-                    android:text="@string/pkg_settings_catalog_title" />
-
-                <TextView
-                    android:id="@+id/pkg_settings_catalog_age"
-                    style="@style/settings_RowDesc"
-                    android:text="@string/pkg_checking" />
-            </LinearLayout>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/pkg_settings_catalog_refresh"
-                style="@style/Widget.Levi.Button.Secondary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/pkg_settings_catalog_refresh" />
-        </LinearLayout>
-
-        <View style="@style/settings_Divider" />
-
-        <!-- Package scripts -->
-        <LinearLayout style="@style/settings_Row">
-
-            <LinearLayout style="@style/settings_RowText">
-
-                <TextView
-                    style="@style/settings_RowTitle"
-                    android:text="@string/pkg_settings_scripts_title" />
-
-                <TextView
-                    style="@style/settings_RowDesc"
-                    android:text="@string/pkg_settings_scripts_desc" />
-            </LinearLayout>
-
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/pkg_settings_scripts_switch"
-                style="@style/settings_Switch" />
-        </LinearLayout>
-
-        <View style="@style/settings_Divider" />
-
-        <!-- Mirror -->
+        <!-- Use mirror sources: a switch, as on Windows (off/on; the default follows the region) -->
         <LinearLayout style="@style/settings_Row">
 
             <LinearLayout style="@style/settings_RowText">
@@ -105,27 +59,10 @@
                     android:text="@string/pkg_settings_mirror_desc" />
             </LinearLayout>
 
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-
-                <Spinner
-                    android:id="@+id/pkg_settings_mirror_spinner"
-                    style="@style/Widget.Levi.Input"
-                    android:layout_width="wrap_content"
-                    android:layout_height="44dp"
-                    android:minWidth="140dp"
-                    android:paddingEnd="36dp" />
-
-                <ImageView
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:layout_gravity="end|center_vertical"
-                    android:layout_marginEnd="12dp"
-                    android:importantForAccessibility="no"
-                    android:src="@drawable/ic_ui_expand_more"
-                    app:tint="@color/text_secondary" />
-            </FrameLayout>
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/pkg_settings_mirror_switch"
+                style="@style/settings_Switch"
+                android:contentDescription="@string/pkg_settings_mirror_title" />
         </LinearLayout>
 
         <View style="@style/settings_Divider" />
@@ -222,6 +159,53 @@
             android:textColor="@color/error"
             android:textSize="12sp"
             android:visibility="gone" />
+
+        <View style="@style/settings_Divider" />
+
+        <!-- Catalogue -->
+        <LinearLayout style="@style/settings_Row">
+
+            <LinearLayout style="@style/settings_RowText">
+
+                <TextView
+                    style="@style/settings_RowTitle"
+                    android:text="@string/pkg_settings_catalog_title" />
+
+                <TextView
+                    android:id="@+id/pkg_settings_catalog_age"
+                    style="@style/settings_RowDesc"
+                    android:text="@string/pkg_checking" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/pkg_settings_catalog_refresh"
+                style="@style/Widget.Levi.Button.Secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/pkg_settings_catalog_refresh" />
+        </LinearLayout>
+
+        <View style="@style/settings_Divider" />
+
+        <!-- Package scripts -->
+        <LinearLayout style="@style/settings_Row">
+
+            <LinearLayout style="@style/settings_RowText">
+
+                <TextView
+                    style="@style/settings_RowTitle"
+                    android:text="@string/pkg_settings_scripts_title" />
+
+                <TextView
+                    style="@style/settings_RowDesc"
+                    android:text="@string/pkg_settings_scripts_desc" />
+            </LinearLayout>
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/pkg_settings_scripts_switch"
+                style="@style/settings_Switch" />
+        </LinearLayout>
+
 
         <Space
             android:layout_width="match_parent"

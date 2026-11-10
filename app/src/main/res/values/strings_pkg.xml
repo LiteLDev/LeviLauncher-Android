@@ -183,7 +183,7 @@
     <!-- Developer guide -->
     <string name="pkg_guide_open">Developer Guide</string>
     <string name="pkg_guide_title">LeviMC Mods Developer Guide</string>
-    <string name="pkg_guide_description">If you want your mod to appear on the LeviMC Mods page, publish it as a lip package with a lip.toml, as the lip documentation on creating packages describes.</string>
+    <string name="pkg_guide_description">If you want your mod to appear on the LeviMC Mods page, publish it with a lip.toml as described in the documentation.</string>
     <string name="pkg_guide_manifest_hint">This dialog is only a quick overview for developers. Field names, required entries, examples and validation rules are defined in the official documentation.</string>
     <string name="pkg_guide_variant_hint">The launcher lists a package only when the latest version in its lip.toml has an entry that runs on the client on this device\'s platform: side = \"client\" and platform = \"android-arm64\". A package whose client entries are all for other platforms (such as \"win-x64\") is not listed. The launcher installs the variant named \"client\" first, then the default variant \"\", then the others in alphabetical order.</string>
     <string name="pkg_guide_android_hint">Older versions follow the same rule: a version is installable only when its lip.toml has a client entry for this device\'s platform. Entries for other platforms cannot be installed here.</string>
@@ -406,10 +406,10 @@
     <string name="pkg_loader_recovered">The workspace was recovered</string>
 
     <!-- package settings card (Settings, basic tab) -->
-    <string name="pkg_settings_title">Package manager</string>
-    <string name="pkg_settings_desc">Built-in package manager used to install and update mods. Clean its cache if package downloads fail.</string>
+    <string name="pkg_settings_title">Clear cache</string>
+    <string name="pkg_settings_desc">Clear the package manager\'s cache if package downloads fail.</string>
     <string name="pkg_settings_proxy_title">GitHub proxy</string>
-    <string name="pkg_settings_proxy_desc">GitHub proxy used when downloading packages. Save an empty field to restore the default.</string>
+    <string name="pkg_settings_proxy_desc">GitHub proxy used when downloading packages. Leave empty to restore the default.</string>
     <string name="pkg_settings_proxy_hint">https://gh-proxy.org/https://github.com</string>
     <string name="pkg_settings_proxy_preset_custom">Custom</string>
     <string name="pkg_settings_proxy_saved">GitHub proxy saved</string>
@@ -418,18 +418,15 @@
     <string name="pkg_settings_proxy_source_set">Set by you</string>
     <string name="pkg_settings_proxy_source_default_on">Built-in default, used because the mirror is on</string>
     <string name="pkg_settings_proxy_source_default_off">Built-in default, not used while the mirror is off (GitHub is used directly)</string>
-    <string name="pkg_settings_mirror_title">Download mirror</string>
-    <string name="pkg_settings_mirror_desc">Download GitHub packages through the proxy. Auto turns it on in mainland China.</string>
-    <string name="pkg_settings_mirror_auto">Auto (%1$s)</string>
-    <string name="pkg_settings_mirror_on">On</string>
-    <string name="pkg_settings_mirror_off">Off</string>
+    <string name="pkg_settings_mirror_title">Use mirror sources</string>
+    <string name="pkg_settings_mirror_desc">Use mirrors hosted in mainland China for package downloads. Enabled by default for users in mainland China.</string>
     <string name="pkg_settings_scripts_title">Run package scripts</string>
     <string name="pkg_settings_scripts_desc">Hooks run via sh and are not undone if a later step fails</string>
     <string name="pkg_settings_cache_size">Cache size: %1$s</string>
     <string name="pkg_settings_cache_size_computing">Cache size: calculating…</string>
     <string name="pkg_settings_cache_clean">Clean Cache</string>
     <string name="pkg_settings_cache_cleaning">Cleaning Cache…</string>
-    <string name="pkg_settings_cache_cleaned">Package cache cleaned (%1$s freed)</string>
+    <string name="pkg_settings_cache_cleaned">Cache cleaned (%1$s freed)</string>
     <string name="pkg_settings_catalog_title">Package list</string>
     <string name="pkg_settings_catalog_age">Updated %1$s</string>
     <string name="pkg_settings_catalog_never">Not downloaded yet</string>

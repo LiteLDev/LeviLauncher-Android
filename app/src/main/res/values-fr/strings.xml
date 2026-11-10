@@ -105,7 +105,7 @@
     <string name="settings_tab_personalize">Personnalisation</string>
     <string name="settings_tab_updates">Mises à jour</string>
     <string name="settings_tab_about">À propos</string>
-    <string name="settings_tab_components">Composants tiers</string>
+    <string name="settings_tab_components">Gestion des paquets</string>
     <string name="settings_tab_others">Autres</string>
     <string name="settings_tab_privacy">Confidentialité</string>
     <string name="settings_personalize_theme">Thème et couleurs</string>

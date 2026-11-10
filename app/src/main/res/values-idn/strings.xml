@@ -105,7 +105,7 @@
     <string name="settings_tab_personalize">Personalisasi</string>
     <string name="settings_tab_updates">Pembaruan</string>
     <string name="settings_tab_about">Tentang</string>
-    <string name="settings_tab_components">Komponen pihak ketiga</string>
+    <string name="settings_tab_components">Manajemen paket</string>
     <string name="settings_tab_others">Lainnya</string>
     <string name="settings_tab_privacy">Privasi</string>
     <string name="settings_personalize_theme">Tema dan warna</string>
