@@ -232,6 +232,23 @@
             tools:ignore="DiscouragedApi" />
 
         <activity
+            android:name=".ui.packages.PackagesActivity"
+            android:theme="@style/Base.Theme.FullScreen"
+            android:screenOrientation="sensorLandscape"
+            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan"
+            tools:ignore="DiscouragedApi" />
+
+        <activity
+            android:name=".ui.packages.PackageActivity"
+            android:theme="@style/Base.Theme.FullScreen"
+            android:screenOrientation="sensorLandscape"
+            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
+            android:exported="false"
+            tools:ignore="DiscouragedApi" />
+
+        <activity
             android:name=".ui.activities.ContentDetailsActivity"
             android:theme="@style/Base.Theme.FullScreen"
             android:screenOrientation="sensorLandscape"
@@ -309,6 +326,11 @@
                 <data android:pathPattern="/.*\\..*\\..*\\.levipack" />
                 <data android:pathPattern="/.*\\..*\\..*\\..*\\.levipack" />
                 <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\.levipack" />
+                <data android:pathPattern="/.*\\.mcmod" />
+                <data android:pathPattern="/.*\\..*\\.mcmod" />
+                <data android:pathPattern="/.*\\..*\\..*\\.mcmod" />
+                <data android:pathPattern="/.*\\..*\\..*\\..*\\.mcmod" />
+                <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\.mcmod" />
                 <data android:pathPattern="/.*\\.so" />
                 <data android:pathPattern="/.*\\..*\\.so" />
                 <data android:pathPattern="/.*\\..*\\..*\\.so" />
@@ -337,6 +359,7 @@
                 <data android:pathSuffix=".zip" />
                 <data android:pathSuffix=".levibackup" />
                 <data android:pathSuffix=".levipack" />
+                <data android:pathSuffix=".mcmod" />
                 <data android:pathSuffix=".so" />
                 <data android:pathSuffix=".mcworld" />
                 <data android:pathSuffix=".mcpack" />
@@ -368,6 +391,11 @@
                 <data android:pathPattern="/.*\\..*\\..*\\.levipack" />
                 <data android:pathPattern="/.*\\..*\\..*\\..*\\.levipack" />
                 <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\.levipack" />
+                <data android:pathPattern="/.*\\.mcmod" />
+                <data android:pathPattern="/.*\\..*\\.mcmod" />
+                <data android:pathPattern="/.*\\..*\\..*\\.mcmod" />
+                <data android:pathPattern="/.*\\..*\\..*\\..*\\.mcmod" />
+                <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\.mcmod" />
                 <data android:pathPattern="/.*\\.so" />
                 <data android:pathPattern="/.*\\..*\\.so" />
                 <data android:pathPattern="/.*\\..*\\..*\\.so" />
@@ -396,6 +424,7 @@
                 <data android:pathSuffix=".zip" />
                 <data android:pathSuffix=".levibackup" />
                 <data android:pathSuffix=".levipack" />
+                <data android:pathSuffix=".mcmod" />
                 <data android:pathSuffix=".so" />
                 <data android:pathSuffix=".mcworld" />
                 <data android:pathSuffix=".mcpack" />

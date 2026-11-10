@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Featured tag "visual": the "Map" sprite of levimc-kit (kit/assets/sprites.mjs, MIT, (c) LeviMC;
+     see assets/licenses/NOTICE-levimc-kit.txt). Generated, do not edit. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp"
+    android:height="16dp"
+    android:viewportWidth="16"
+    android:viewportHeight="16">
+    <path
+        android:fillColor="#4A3A22"
+        android:pathData="M1,1h14v1h-14zM1,2h1v1h-1zM14,2h1v1h-1zM1,3h1v1h-1zM14,3h1v1h-1zM1,4h1v1h-1zM14,4h1v1h-1zM1,5h1v1h-1zM14,5h1v1h-1zM1,6h1v1h-1zM14,6h1v1h-1zM1,7h1v1h-1zM14,7h1v1h-1zM1,8h1v1h-1zM14,8h1v1h-1zM1,9h1v1h-1zM14,9h1v1h-1zM1,10h1v1h-1zM14,10h1v1h-1zM1,11h1v1h-1zM14,11h1v1h-1zM1,12h1v1h-1zM14,12h1v1h-1zM1,13h1v1h-1zM14,13h1v1h-1zM1,14h14v1h-14z" />
+    <path
+        android:fillColor="#D9C690"
+        android:pathData="M2,2h12v1h-12zM2,3h1v1h-1zM13,3h1v1h-1zM2,4h1v1h-1zM13,4h1v1h-1zM2,5h1v1h-1zM13,5h1v1h-1zM2,6h1v1h-1zM13,6h1v1h-1zM2,7h1v1h-1zM13,7h1v1h-1zM2,8h1v1h-1zM13,8h1v1h-1zM2,9h1v1h-1zM13,9h1v1h-1zM2,10h1v1h-1zM13,10h1v1h-1zM2,11h1v1h-1zM13,11h1v1h-1zM2,12h1v1h-1zM13,12h1v1h-1zM2,13h12v1h-12z" />
+    <path
+        android:fillColor="#EFE3BD"
+        android:pathData="M3,3h2v1h-2zM8,3h2v1h-2zM3,4h1v1h-1zM8,4h2v1h-2zM3,5h1v1h-1zM7,5h2v1h-2zM12,5h1v1h-1zM3,6h2v1h-2zM6,6h2v1h-2zM11,6h1v1h-1zM3,7h3v1h-3zM9,7h2v1h-2zM3,8h2v1h-2zM9,8h1v1h-1zM3,9h1v1h-1zM8,9h2v1h-2zM12,9h1v1h-1zM3,10h1v1h-1zM6,10h4v1h-4zM11,10h2v1h-2zM5,11h2v1h-2zM8,11h1v1h-1zM12,11h1v1h-1zM5,12h2v1h-2zM9,12h1v1h-1zM11,12h2v1h-2z" />
+    <path
+        android:fillColor="#6AA84F"
+        android:pathData="M5,3h3v1h-3zM4,4h2v1h-2zM7,4h1v1h-1zM4,5h3v1h-3zM5,6h1v1h-1zM12,6h1v1h-1zM11,7h2v1h-2zM10,8h1v1h-1zM12,8h1v1h-1zM10,9h2v1h-2zM3,11h2v1h-2zM7,11h1v1h-1zM4,12h1v1h-1zM7,12h2v1h-2z" />
+    <path
+        android:fillColor="#6AA6D8"
+        android:pathData="M10,3h3v1h-3zM10,4h1v1h-1zM12,4h1v1h-1zM9,5h3v1h-3zM8,6h3v1h-3zM6,7h3v1h-3zM5,8h2v1h-2zM8,8h1v1h-1zM4,9h4v1h-4zM4,10h2v1h-2z" />
+    <path
+        android:fillColor="#4F8A3A"
+        android:pathData="M6,4h1v1h-1zM11,8h1v1h-1zM3,12h1v1h-1z" />
+    <path
+        android:fillColor="#3E6E8E"
+        android:pathData="M11,4h1v1h-1zM7,8h1v1h-1z" />
+    <path
+        android:fillColor="#C0392B"
+        android:pathData="M10,10h1v1h-1zM9,11h3v1h-3zM10,12h1v1h-1z" />
+</vector>

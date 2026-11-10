@@ -20,13 +20,19 @@ import com.bumptech.glide.request.RequestOptions;
 
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.mods.Mod;
-import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
+import org.levimc.launcher.core.mods.ModManager;
+import org.levimc.launcher.core.versions.GameVersion;
+import org.levimc.launcher.core.packages.engine.Cancel;
+import org.levimc.launcher.ui.packages.InstalledFragment;
+import org.levimc.launcher.ui.packages.PackageActions;
 import org.levimc.launcher.ui.views.MainViewModel;
 import org.levimc.launcher.ui.views.MainViewModelFactory;
 import org.levimc.launcher.ui.animation.DynamicAnim;
 import org.levimc.launcher.util.PersonalizationManager;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
+import java.util.List;
 
 public class ModDetailActivity extends BaseActivity {
 
@@ -49,6 +55,16 @@ public class ModDetailActivity extends BaseActivity {
     private View headerContainer;
     private View infoContainer;
     private View actionsContainer;
+    private TextView pkgChip;
+    private Button pkgUpdateButton;
+    private Button pkgPromoteButton;
+    private Button pkgOpenPackageButton;
+    /** The package owning this mod's folder, or null. */
+    private InstalledFragment.Model.Row pkgRow;
+    private final Cancel pkgCancel = new Cancel();
+    private int pkgRequest;
+    /** Set once a delete went through: the screen closes when the mod is gone. */
+    private boolean deleteRequested;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +115,31 @@ public class ModDetailActivity extends BaseActivity {
 
         applyPersonalization(heroContainer);
 
+        pkgChip = findViewById(R.id.mod_pkg_chip);
+        pkgUpdateButton = findViewById(R.id.pkg_update_button);
+        pkgPromoteButton = findViewById(R.id.pkg_promote_button);
+        pkgOpenPackageButton = findViewById(R.id.pkg_open_package_button);
+        pkgUpdateButton.setOnClickListener(v -> {
+            GameVersion version = ModManager.getInstance().getCurrentVersion();
+            if (pkgRow != null && version != null) {
+                PackageActions.update(this, version, pkgRow, pkgDone(false));
+            }
+        });
+        pkgPromoteButton.setOnClickListener(v -> {
+            GameVersion version = ModManager.getInstance().getCurrentVersion();
+            if (pkgRow != null && version != null) {
+                PackageActions.promote(this, version, pkgRow, pkgDone(false));
+            }
+        });
+        pkgOpenPackageButton.setOnClickListener(v -> {
+            if (pkgRow != null) {
+                PackageActions.openPackage(this, ModManager.getInstance().getCurrentVersion(), pkgRow);
+            }
+        });
+        DynamicAnim.applyPressScale(pkgUpdateButton);
+        DynamicAnim.applyPressScale(pkgPromoteButton);
+        DynamicAnim.applyPressScale(pkgOpenPackageButton);
+
         Button deleteButton = findViewById(R.id.delete_mod_button);
         deleteButton.setOnClickListener(v -> confirmDeleteMod());
         DynamicAnim.applyPressScale(deleteButton);
@@ -124,13 +165,20 @@ public class ModDetailActivity extends BaseActivity {
         if (viewModel != null) {
             viewModel.getModsLiveData().observe(this, mods -> {
                 if (mods != null) {
+                    boolean found = false;
                     for (Mod mod : mods) {
                         if (mod.getId().equals(modFilename)) {
                             currentMod = mod;
                             updateModUI(mod);
+                            found = true;
                             break;
                         }
                     }
+                    if (!found && deleteRequested) {
+                        finish();
+                        return;
+                    }
+                    loadPkgState(mods);
                 }
             });
             
@@ -271,19 +319,76 @@ public class ModDetailActivity extends BaseActivity {
         // 不对 mod 名称做入场动画，保持静态
     }
 
+    /**
+     * Deletes the mod: a folder a package owns is removed by
+     * uninstalling the package (or refused when the package is only a
+     * dependency); PackageActions asks first. The screen closes once the
+     * mod is gone from the list.
+     */
     private void confirmDeleteMod() {
-        if (currentMod != null) {
-            new CustomAlertDialog(this)
-                    .setTitleText(getString(R.string.dialog_title_delete_mod))
-                    .setMessage(getString(R.string.dialog_message_delete_mod))
-                    .setPositiveButton(getString(R.string.dialog_positive_delete), v -> {
-                        viewModel.removeMod(currentMod);
-                        Toast.makeText(this, R.string.delete_mod, Toast.LENGTH_SHORT).show();
-                        finish();
-                    })
-                    .setNegativeButton(getString(R.string.dialog_negative_cancel), null)
-                    .show();
+        GameVersion version = ModManager.getInstance().getCurrentVersion();
+        if (currentMod == null || version == null) {
+            return;
         }
+        PackageActions.deleteModFolder(this, version, currentMod, pkgDone(true));
+    }
+
+    /**
+     * After a package action: reloads the mods (after a delete the screen closes
+     * once the mod is gone). Holds the activity weakly, since the action's
+     * task may outlive it.
+     */
+    private PackageActions.Done pkgDone(boolean delete) {
+        WeakReference<ModDetailActivity> self = new WeakReference<>(this);
+        return changed -> {
+            ModDetailActivity a = self.get();
+            if (a == null || !changed || a.isFinishing() || a.isDestroyed()) {
+                return;
+            }
+            if (delete) {
+                a.deleteRequested = true;
+            }
+            a.viewModel.reloadMods();
+        };
+    }
+
+    /** Reads which package owns this mod's folder, then shows the chip and the package actions. */
+    private void loadPkgState(List<Mod> mods) {
+        int request = ++pkgRequest;
+        InstalledFragment.Loader.loadForMods(pkgCancel, ModManager.getInstance().getCurrentVersion(), mods, rows -> {
+            if (request != pkgRequest || isFinishing() || isDestroyed()) {
+                return;
+            }
+            pkgRow = modFilenameArg == null ? null : InstalledFragment.Model.ownerOf(rows, modFilenameArg);
+            renderPackage();
+        });
+    }
+
+    private void renderPackage() {
+        InstalledFragment.Model.Row row = pkgRow;
+        if (row == null) {
+            pkgChip.setVisibility(View.GONE);
+            pkgUpdateButton.setVisibility(View.GONE);
+            pkgPromoteButton.setVisibility(View.GONE);
+            pkgOpenPackageButton.setVisibility(View.GONE);
+            return;
+        }
+        String text = getString(R.string.pkg_mod_managed, row.pkg.identity, row.pkg.version);
+        if (!row.explicit()) {
+            text += " · " + getString(R.string.pkg_installed_dependency);
+        }
+        pkgChip.setText(text);
+        pkgChip.setVisibility(View.VISIBLE);
+        pkgUpdateButton.setVisibility(row.canUpdate() ? View.VISIBLE : View.GONE);
+        pkgUpdateButton.setText(getString(R.string.pkg_installed_update_available, row.targetVersion));
+        pkgPromoteButton.setVisibility(!row.explicit() && !row.leviLamina ? View.VISIBLE : View.GONE);
+        pkgOpenPackageButton.setVisibility(row.hasPackagePage() ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        pkgCancel.cancel();
+        super.onDestroy();
     }
 
     // Exit animation is now handled uniformly in BaseActivity.finish()

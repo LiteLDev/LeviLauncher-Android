@@ -189,7 +189,7 @@
     <string name="toast_delete_failed">Ошибка удаления: %1$s</string>
     <string name="error_delete_builtin_version">Нельзя удалить встроенную версию</string>
     <string name="invalid_mod_file">Ошибка</string>
-    <string name="invalid_mod_file_reason">Допускаются только файлы .so, ZIP-пакеты модов или пакеты модов .levipack. Выбранный файл не является допустимым пакетом нативного мода.</string>
+    <string name="invalid_mod_file_reason">Допускаются только файлы .so, ZIP-пакеты модов или пакеты модов .levipack/.mcmod. Выбранный файл не является допустимым пакетом нативного мода.</string>
     <string name="invalid_zip_mod_package_title">Недопустимый ZIP-пакет мода</string>
     <string name="invalid_zip_mod_package_message">ZIP-пакет мода должен содержать manifest.json и файл .so.</string>
     <string name="error_versions">Ошибочные версии</string>
@@ -205,6 +205,7 @@
     <string name="instance_tab_general">Общие</string>
     <string name="instance_tab_launch_options">Параметры запуска</string>
     <string name="instance_tab_management">Управление</string>
+    <string name="instance_tab_loader">Загрузчик</string>
     <string name="instance_new_name">Новое имя</string>
     <string name="instance_rename_hint">Переименовывается только папка. Версия и тип игры не изменяются.</string>
     <string name="instance_custom_icon">Пользовательский значок (требуется квадрат)</string>

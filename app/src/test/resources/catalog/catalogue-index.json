@@ -1,0 +1,7 @@
+{"url":"https://catalogue.test/mods/","sort":"relevance","mods":[
+  {"id":"github.com/MarmieQi/LHolo","side":["client"],"platform":["android-arm64","win-x64"]},
+  {"id":"github.com/LiteLDev/LegacyMoney","side":["server","client"],"platform":["Android-ARM64","win-x64"]},
+  {"id":"github.com/ShrBox/BackupHelper","side":["server"],"platform":["android-arm64","win-x64"]},
+  {"id":"github.com/example/AndroidMod","side":["client"],"platform":["win-x64"]},
+  {"id":"github.com/LiteLDev/LegacyScriptEngine","side":["client"],"platform":["android-arm64"]},
+  {"id":"github.com/Broken/Detail","side":["client"],"platform":["android-arm64"]}]}

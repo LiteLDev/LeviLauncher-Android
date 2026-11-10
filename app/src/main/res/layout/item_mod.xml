@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -47,20 +48,61 @@
             android:textColor="@color/text_secondary"
             android:visibility="gone"/>
 
-        <TextView
-            android:id="@+id/mod_config_badge"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:background="@drawable/bg_mod_page_badge"
-            android:fontFamily="@font/misans"
-            android:paddingHorizontal="7dp"
-            android:paddingVertical="2dp"
-            android:text="@string/mod_config_badge"
-            android:textColor="@color/primary"
-            android:textSize="10sp"
-            android:textStyle="bold"
-            android:visibility="gone" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/mod_config_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/bg_mod_page_badge"
+                android:fontFamily="@font/misans"
+                android:paddingHorizontal="7dp"
+                android:paddingVertical="2dp"
+                android:text="@string/mod_config_badge"
+                android:textColor="@color/primary"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@+id/mod_pkg_badge"
+                android:layout_width="26dp"
+                android:layout_height="17dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/bg_mod_page_badge"
+                android:paddingHorizontal="7dp"
+                android:paddingVertical="2dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_pkg_package"
+                android:contentDescription="@string/pkg_mod_badge"
+                android:tooltipText="@string/pkg_mod_badge"
+                app:tint="@color/primary"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/mod_pkg_update"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/bg_pkg_status_chip"
+                android:backgroundTint="@color/pkg_status_success"
+                android:ellipsize="end"
+                android:fontFamily="@font/misans"
+                android:maxLines="1"
+                android:paddingHorizontal="7dp"
+                android:paddingVertical="2dp"
+                android:textColor="@color/on_primary"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout

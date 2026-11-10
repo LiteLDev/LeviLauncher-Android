@@ -189,7 +189,7 @@
     <string name="toast_delete_failed">Penghapusan gagal: %1$s</string>
     <string name="error_delete_builtin_version">Tidak dapat menghapus versi bawaan</string>
     <string name="invalid_mod_file">Gagal</string>
-    <string name="invalid_mod_file_reason">Hanya file .so, paket mod .zip, atau paket mod .levipack yang diizinkan. File yang dipilih bukan paket impor mod native yang valid.</string>
+    <string name="invalid_mod_file_reason">Hanya file .so, paket mod .zip, atau paket mod .levipack/.mcmod yang diizinkan. File yang dipilih bukan paket impor mod native yang valid.</string>
     <string name="invalid_zip_mod_package_title">Paket Mod ZIP Tidak Valid</string>
     <string name="invalid_zip_mod_package_message">Paket mod ZIP harus berisi manifest.json dan file .so.</string>
     <string name="error_versions">Versi Yang Rusak</string>
@@ -205,6 +205,7 @@
     <string name="instance_tab_general">Umum</string>
     <string name="instance_tab_launch_options">Opsi Peluncuran</string>
     <string name="instance_tab_management">Manajemen</string>
+    <string name="instance_tab_loader">Pemuat</string>
     <string name="instance_new_name">Nama Baru</string>
     <string name="instance_rename_hint">Hanya mengganti nama folder. Versi dan jenis game tidak terpengaruh.</string>
     <string name="instance_custom_icon">Ikon Kustom (harus persegi)</string>

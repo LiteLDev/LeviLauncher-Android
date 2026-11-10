@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Featured tag "technology": the "Torch" sprite of levimc-kit (kit/assets/sprites.mjs, MIT, (c) LeviMC;
+     see assets/licenses/NOTICE-levimc-kit.txt). Generated, do not edit. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp"
+    android:height="16dp"
+    android:viewportWidth="16"
+    android:viewportHeight="16">
+    <path
+        android:fillColor="#2A1A0C"
+        android:pathData="M7,1h2v1h-2zM6,2h1v1h-1zM9,2h1v1h-1zM5,3h1v1h-1zM10,3h1v1h-1zM5,4h1v1h-1zM10,4h1v1h-1zM5,5h1v1h-1zM10,5h1v1h-1zM6,6h1v1h-1zM9,6h1v1h-1zM6,7h1v1h-1zM9,7h1v1h-1zM6,8h1v1h-1zM9,8h1v1h-1zM6,9h1v1h-1zM9,9h1v1h-1zM6,10h1v1h-1zM9,10h1v1h-1zM6,11h1v1h-1zM9,11h1v1h-1zM6,12h1v1h-1zM9,12h1v1h-1zM6,13h1v1h-1zM9,13h1v1h-1zM6,14h4v1h-4z" />
+    <path
+        android:fillColor="#FFF6B0"
+        android:pathData="M7,2h2v1h-2zM6,3h1v1h-1zM9,3h1v1h-1zM9,4h1v1h-1z" />
+    <path
+        android:fillColor="#FFD84A"
+        android:pathData="M7,3h2v1h-2zM6,4h1v1h-1z" />
+    <path
+        android:fillColor="#F08A2B"
+        android:pathData="M7,4h2v1h-2zM6,5h1v1h-1zM9,5h1v1h-1z" />
+    <path
+        android:fillColor="#D2501B"
+        android:pathData="M7,5h2v1h-2z" />
+    <path
+        android:fillColor="#B07A3F"
+        android:pathData="M7,6h1v1h-1zM7,7h1v1h-1zM7,8h1v1h-1zM7,9h1v1h-1zM7,10h1v1h-1zM7,11h1v1h-1zM7,12h1v1h-1zM7,13h1v1h-1z" />
+    <path
+        android:fillColor="#6B4A26"
+        android:pathData="M8,6h1v1h-1zM8,7h1v1h-1zM8,8h1v1h-1zM8,9h1v1h-1zM8,10h1v1h-1zM8,11h1v1h-1zM8,12h1v1h-1zM8,13h1v1h-1z" />
+</vector>

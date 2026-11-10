@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Featured tag "management": the "Sites" sprite of levimc-kit (kit/assets/sprites.mjs, MIT, (c) LeviMC;
+     see assets/licenses/NOTICE-levimc-kit.txt). Generated, do not edit. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp"
+    android:height="16dp"
+    android:viewportWidth="16"
+    android:viewportHeight="16">
+    <path
+        android:fillColor="?attr/colorOnSurface"
+        android:pathData="M2,2h4v1h-4zM10,2h4v1h-4zM2,3h4v1h-4zM10,3h4v1h-4zM2,4h4v1h-4zM10,4h4v1h-4zM2,5h4v1h-4zM10,5h4v1h-4zM2,10h4v1h-4zM10,10h4v1h-4zM2,11h4v1h-4zM10,11h4v1h-4zM2,12h4v1h-4zM10,12h4v1h-4zM2,13h4v1h-4zM10,13h4v1h-4z" />
+</vector>

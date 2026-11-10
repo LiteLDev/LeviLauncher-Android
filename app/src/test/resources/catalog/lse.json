@@ -1,0 +1,13 @@
+{
+  "id": "github.com/LiteLDev/LegacyScriptEngine", "name": "LegacyScriptEngine", "owner": "LiteLDev", "stars": "120",
+  "description": "A plugin engine for running LLSE plugins", "tags": ["platform:levilamina", "lse", "quickjs"],
+  "license": "GPL-3.0", "side": ["server", "client"], "platform": ["android-arm64", "win-x64"], "gameVersions": ["1.26.60"],
+  "versions": [
+    {"version": "0.9.0", "variants": {
+      "": [{"side": "server", "platform": "win-x64", "deps": {"github.com/LiteLDev/LeviLamina": ">=26.60.0 <26.61.0"}}],
+      "client": [{"side": "client", "platform": "android-arm64", "deps": {"github.com/LiteLDev/LegacyScriptEngine#client_lua": "0.9.0", "github.com/LiteLDev/LegacyScriptEngine#client_quickjs": "0.9.0"}}],
+      "client_lua": [{"side": "client", "platform": "android-arm64", "deps": {"github.com/LiteLDev/LeviLamina#client": ">=26.60.0 <26.61.0"}}],
+      "client_quickjs": [{"side": "client", "platform": "android-arm64", "deps": {"github.com/LiteLDev/LeviLamina#client": ">=26.60.0 <26.61.0"}}]
+    }}
+  ]
+}

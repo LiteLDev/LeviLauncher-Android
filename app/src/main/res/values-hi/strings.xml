@@ -189,7 +189,7 @@
     <string name="toast_delete_failed">हटाना विफल: %1$s</string>
     <string name="error_delete_builtin_version">अंतर्निहित संस्करण को हटाया नहीं जा सकता</string>
     <string name="invalid_mod_file">विफल</string>
-    <string name="invalid_mod_file_reason">केवल .so फ़ाइलें, .zip मॉड पैकेज या .levipack मॉड पैकेज की अनुमति है। चयनित फ़ाइल एक मान्य देशी मॉड आयात पैकेज नहीं है।</string>
+    <string name="invalid_mod_file_reason">केवल .so फ़ाइलें, .zip मॉड पैकेज या .levipack/.mcmod मॉड पैकेज की अनुमति है। चयनित फ़ाइल एक मान्य देशी मॉड आयात पैकेज नहीं है।</string>
     <string name="invalid_zip_mod_package_title">अमान्य ZIP मॉड पैकेज</string>
     <string name="invalid_zip_mod_package_message">ZIP मॉड पैकेज में manifest.json और एक .so फ़ाइल होनी चाहिए।</string>
     <string name="error_versions">त्रुटि वाले संस्करण</string>
@@ -205,6 +205,7 @@
     <string name="instance_tab_general">सामान्य</string>
     <string name="instance_tab_launch_options">लॉन्च विकल्प</string>
     <string name="instance_tab_management">प्रबंधन</string>
+    <string name="instance_tab_loader">लोडर</string>
     <string name="instance_new_name">नया नाम</string>
     <string name="instance_rename_hint">केवल फ़ोल्डर का नाम बदलें। गेम संस्करण और प्रकार अप्रभावित रहेंगे।</string>
     <string name="instance_custom_icon">कस्टम आइकन (वर्ग आवश्यक)</string>

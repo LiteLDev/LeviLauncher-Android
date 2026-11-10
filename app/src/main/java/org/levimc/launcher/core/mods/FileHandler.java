@@ -15,6 +15,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.versions.GameVersion;
@@ -37,6 +38,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -51,6 +53,9 @@ public class FileHandler {
     private static final String DEFAULT_MOD_ICON = "";
     private static final String DEFAULT_MOD_VERSION = "1.0.0";
     private static final String FALLBACK_ZIP_FILE_NAME = "imported_mod.zip";
+    private static final String MCMOD_EXTENSION = ".mcmod";
+    /** A mod folder name, as lip requires of the "name" in an mcmod asset's manifest.json. */
+    private static final Pattern MOD_NAME = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._-]*");
     private static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .disableHtmlEscaping()
@@ -129,8 +134,16 @@ public class FileHandler {
             List<Uri> packagedUris = new ArrayList<>();
             List<Uri> bareUris = new ArrayList<>();
             List<String> invalidZipNames = new ArrayList<>();
+            List<String> invalidMcmods = new ArrayList<>();
             for (Uri uri : supportedUris) {
                 String fileName = resolveImportFileName(uri);
+                if (isMcmodFile(fileName)) {
+                    McmodCheck check = checkMcmod(uri);
+                    if (check.problem != null) {
+                        invalidMcmods.add(fileName + ": " + check.problem);
+                        continue;
+                    }
+                }
                 if (isZipModPackageFile(uri, fileName) && !isValidZipModPackage(uri)) {
                     invalidZipNames.add(fileName);
                     continue;
@@ -163,10 +176,14 @@ public class FileHandler {
                     }
                 };
 
+                Runnable afterMcmods = invalidMcmods.isEmpty() ? showImportDialogs
+                        : () -> showInvalidPackageDialog(R.string.invalid_mcmod_package_title,
+                                R.string.invalid_mcmod_package_message, invalidMcmods, showImportDialogs);
                 if (!invalidZipNames.isEmpty()) {
-                    showInvalidZipPackageDialog(invalidZipNames, showImportDialogs);
+                    showInvalidPackageDialog(R.string.invalid_zip_mod_package_title,
+                            R.string.invalid_zip_mod_package_message, invalidZipNames, afterMcmods);
                 } else {
-                    showImportDialogs.run();
+                    afterMcmods.run();
                 }
             });
         }).start();
@@ -191,6 +208,13 @@ public class FileHandler {
         new Thread(() -> {
             for (Uri uri : supportedUris) {
                 String fileName = resolveImportFileName(uri);
+                if (isMcmodFile(fileName)) {
+                    McmodCheck check = checkMcmod(uri);
+                    if (check.problem != null) {
+                        postError(callback, fileName + ": " + check.problem);
+                        return;
+                    }
+                }
                 if (isZipModPackageFile(uri, fileName) && !isValidZipModPackage(uri)) {
                     postError(callback, context.getString(R.string.invalid_zip_mod_package_message));
                     return;
@@ -219,20 +243,139 @@ public class FileHandler {
     }
 
     private boolean isZipModPackageFile(Uri uri, String fileName) {
+        // A .mcmod is a zip too, but it has a format of its own (see checkMcmod).
+        if (isMcmodFile(fileName)) {
+            return false;
+        }
         return isZipModPackageFile(fileName) || isZipMimeType(uri) || hasZipHeader(uri);
     }
 
-    private void showInvalidZipPackageDialog(List<String> invalidZipNames, Runnable afterDismiss) {
-        StringBuilder message = new StringBuilder(context.getString(R.string.invalid_zip_mod_package_message));
-        if (!invalidZipNames.isEmpty()) {
+    static boolean isMcmodFile(String fileName) {
+        return fileName != null && fileName.toLowerCase(Locale.ROOT).endsWith(MCMOD_EXTENSION);
+    }
+
+    /** What checking a .mcmod found: its mod folder name, or why it cannot be installed. */
+    static final class McmodCheck {
+        final String modName;
+        final String entry;
+        final JsonObject manifest;
+        final String problem;
+
+        private McmodCheck(String modName, String entry, JsonObject manifest, String problem) {
+            this.modName = modName;
+            this.entry = entry;
+            this.manifest = manifest;
+            this.problem = problem;
+        }
+
+        static McmodCheck invalid(String problem) {
+            return new McmodCheck(null, null, null, problem);
+        }
+    }
+
+    private McmodCheck checkMcmod(Uri uri) {
+        try (InputStream in = context.getContentResolver().openInputStream(uri)) {
+            if (in == null) {
+                return McmodCheck.invalid("cannot be opened");
+            }
+            return checkMcmod(in);
+        } catch (IOException e) {
+            Log.w(TAG, "Cannot read .mcmod", e);
+            return McmodCheck.invalid("cannot be read: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Checks a .mcmod: a zip of exactly what goes into {@code mods/<id>/}, so its manifest.json is at the
+     * root and {@code <id>} is the manifest's "name" (as lip installs an mcmod asset). Its files are
+     * installed unchanged, so the manifest must already be one the launcher loads.
+     */
+    static McmodCheck checkMcmod(InputStream archive) throws IOException {
+        Set<String> files = new HashSet<>();
+        byte[] manifestBytes = null;
+        try (ZipInputStream zis = new ZipInputStream(archive)) {
+            ZipEntry entry;
+            while ((entry = zis.getNextEntry()) != null) {
+                String raw = entry.getName().replace('\\', '/');
+                String name = raw.endsWith("/") ? raw.substring(0, raw.length() - 1) : raw;
+                if (name.equals("__MACOSX") || name.startsWith("__MACOSX/")) {
+                    continue;
+                }
+                if (normalizeEntryPath(name) == null) {
+                    return McmodCheck.invalid("it has an unsafe path '" + raw + "'");
+                }
+                if (entry.isDirectory()) {
+                    continue;
+                }
+                files.add(name);
+                if (name.equals(MANIFEST_FILE_NAME)) {
+                    manifestBytes = readAll(zis);
+                }
+            }
+        } catch (IllegalArgumentException e) {
+            return McmodCheck.invalid("it is not a valid zip archive");
+        }
+        if (files.isEmpty()) {
+            return McmodCheck.invalid("it is not a zip archive or is empty");
+        }
+        if (manifestBytes == null) {
+            return McmodCheck.invalid("there is no manifest.json at the root of the archive");
+        }
+
+        JsonObject manifest;
+        try {
+            JsonElement parsed = JsonParser.parseString(new String(manifestBytes, StandardCharsets.UTF_8));
+            manifest = parsed != null && parsed.isJsonObject() ? parsed.getAsJsonObject() : null;
+        } catch (RuntimeException e) {
+            manifest = null;
+        }
+        if (manifest == null) {
+            return McmodCheck.invalid("its manifest.json is not a JSON object");
+        }
+
+        String modName = jsonString(manifest, "name");
+        if (modName == null || !MOD_NAME.matcher(modName).matches()) {
+            return McmodCheck.invalid("the \"name\" of its manifest.json must be a folder name "
+                    + "(letters, digits, '.', '_' or '-', starting with a letter or digit)");
+        }
+        if (!PRELOAD_NATIVE_TYPE.equals(jsonString(manifest, "type"))) {
+            return McmodCheck.invalid("the \"type\" of its manifest.json must be \"" + PRELOAD_NATIVE_TYPE + "\"");
+        }
+        String entry = normalizeEntryPath(jsonString(manifest, "entry"));
+        if (entry == null || !entry.endsWith(".so") || !files.contains(entry)) {
+            return McmodCheck.invalid("the \"entry\" of its manifest.json must name a .so file in the archive"
+                    + " (an Android build of the mod)");
+        }
+        return new McmodCheck(modName, entry, manifest, null);
+    }
+
+    private static String jsonString(JsonObject object, String key) {
+        JsonElement value = object.get(key);
+        return value != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isString()
+                ? value.getAsString() : null;
+    }
+
+    private static byte[] readAll(InputStream in) throws IOException {
+        java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+        byte[] buffer = new byte[BUFFER_SIZE];
+        int read;
+        while ((read = in.read(buffer)) > 0) {
+            out.write(buffer, 0, read);
+        }
+        return out.toByteArray();
+    }
+
+    private void showInvalidPackageDialog(int titleRes, int messageRes, List<String> invalidNames, Runnable afterDismiss) {
+        StringBuilder message = new StringBuilder(context.getString(messageRes));
+        if (!invalidNames.isEmpty()) {
             message.append("\n\n");
-            for (String fileName : invalidZipNames) {
+            for (String fileName : invalidNames) {
                 message.append("- ").append(fileName).append('\n');
             }
         }
 
         new CustomAlertDialog(context)
-                .setTitleText(context.getString(R.string.invalid_zip_mod_package_title))
+                .setTitleText(context.getString(titleRes))
                 .setMessage(message.toString().trim())
                 .setUseBorderedBackground(true)
                 .setBlurBackground(true)
@@ -470,6 +613,11 @@ public class FileHandler {
                     preparedImport = prepareImport(
                             uri, fileName, overrideName, overrideType, overrideVersion,
                             overrideAuthor, overrideMinecraftVersions);
+                    String refusal = ModManager.packageRefusal(targetDir, preparedImport.targetId);
+                    if (refusal != null) {
+                        throw new IOException(context.getString(
+                                R.string.mod_import_refused_by_packages, preparedImport.targetId, refusal));
+                    }
                     File destinationDir = new File(targetDir, preparedImport.targetId);
                     if (destinationDir.exists() && !confirmOverwrite(preparedImport.targetId)) {
                         lastError = context.getString(R.string.user_cancelled);
@@ -522,6 +670,9 @@ public class FileHandler {
         if (lowerName.endsWith(".so")) {
             return prepareSoImport(uri, fileName, overrideName, overrideType, overrideVersion,
                     overrideAuthor, overrideMinecraftVersions);
+        }
+        if (isMcmodFile(fileName)) {
+            return prepareMcmodImport(uri);
         }
         if (isZipModPackageFile(uri, fileName)) {
             return prepareZipImport(
@@ -602,6 +753,32 @@ public class FileHandler {
         String rootName = modRoot.equals(stagingRoot) ? stripExtension(fileName) : modRoot.getName();
         String targetId = buildTargetId(displayName, rootName);
         return new PreparedImport(targetId, entryPath, overwriteFiles, overwriteFolders, modRoot, stagingRoot);
+    }
+
+    /** A .mcmod goes to {@code mods/<manifest name>/} exactly as archived (no metadata overrides). */
+    private PreparedImport prepareMcmodImport(Uri uri) throws IOException {
+        File tempZip = new File(context.getCacheDir(), "mod_mcmod_" + System.currentTimeMillis() + ".zip");
+        File stagingRoot = createTempDirectory("mod_import_mcmod");
+        try {
+            copyUriToFile(uri, tempZip);
+            McmodCheck check;
+            try (InputStream in = new FileInputStream(tempZip)) {
+                check = checkMcmod(in); // again: the source may have changed since the first check
+            }
+            if (check.problem != null) {
+                throw new IOException("Invalid .mcmod: " + check.problem);
+            }
+            extractZip(tempZip, stagingRoot);
+            deleteRecursively(new File(stagingRoot, "__MACOSX"));
+            return new PreparedImport(check.modName, check.entry, parseOverwriteFiles(check.manifest),
+                    parseOverwriteFolders(check.manifest), stagingRoot, stagingRoot);
+        } catch (IOException | RuntimeException e) {
+            deleteRecursively(stagingRoot);
+            throw e;
+        } finally {
+            //noinspection ResultOfMethodCallIgnored
+            tempZip.delete();
+        }
     }
 
     private JsonObject readManifest(File modRoot) throws IOException {
@@ -1326,7 +1503,7 @@ public class FileHandler {
         }
 
         String lowerName = fileName.toLowerCase(Locale.ROOT);
-        return lowerName.endsWith(".so") || isZipModPackageFile(uri, fileName);
+        return lowerName.endsWith(".so") || isMcmodFile(fileName) || isZipModPackageFile(uri, fileName);
     }
 
     private String getStringProperty(JsonObject object, String key) {
@@ -1352,7 +1529,7 @@ public class FileHandler {
             return false;
         }
 
-        return fileName.toLowerCase(Locale.ROOT).endsWith(".so");
+        return fileName.toLowerCase(Locale.ROOT).endsWith(".so") || isMcmodFile(fileName);
     }
 
     private boolean isZipMimeType(Uri uri) {

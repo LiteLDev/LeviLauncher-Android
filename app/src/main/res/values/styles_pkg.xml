@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Styles of the package screens (PackagesActivity, PackageActivity, InstallDialog). -->
+<resources>
+    <style name="PkgFilterLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">3dp</item>
+        <item name="android:fontFamily">@font/misans</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+
+    <style name="PkgFilterSpinner">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">34dp</item>
+        <item name="android:background">@drawable/bg_spinner</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingBottom">2dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:popupBackground">@drawable/bg_popup_menu_rounded</item>
+    </style>
+
+    <style name="PkgChip">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/bg_pkg_status_chip</item>
+        <item name="android:backgroundTint">@color/surface_variant</item>
+        <item name="android:fontFamily">@font/misans</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:paddingBottom">2dp</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+
+    <style name="PkgFieldLabel">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">0.42</item>
+        <item name="android:fontFamily">@font/misans</item>
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="PkgFieldValue">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">0.58</item>
+        <item name="android:fontFamily">@font/misans</item>
+        <item name="android:textColor">@color/on_surface</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+</resources>

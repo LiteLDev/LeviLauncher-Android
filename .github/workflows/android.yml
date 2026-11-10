@@ -180,6 +180,10 @@ jobs:
         if: env.HAS_GOOGLE_SERVICES == 'false'
         run: ./gradlew :app:compileDebugKotlin :app:compileDebugJavaWithJavac
 
+      - name: App Unit Tests
+        if: env.HAS_GOOGLE_SERVICES == 'true'
+        run: ./gradlew :app:testDebugUnitTest
+
       - name: Upload Debug APK
         if: env.HAS_GOOGLE_SERVICES == 'true'
         uses: actions/upload-artifact@v4.6.2

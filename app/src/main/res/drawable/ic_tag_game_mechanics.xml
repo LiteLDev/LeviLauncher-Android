@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Featured tag "game-mechanics": the "Diamond" sprite of levimc-kit (kit/assets/sprites.mjs, MIT, (c) LeviMC;
+     see assets/licenses/NOTICE-levimc-kit.txt). Generated, do not edit. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="16dp"
+    android:height="16dp"
+    android:viewportWidth="16"
+    android:viewportHeight="16">
+    <path
+        android:fillColor="#0B3B40"
+        android:pathData="M4,2h8v1h-8zM3,3h1v1h-1zM12,3h1v1h-1zM2,4h1v1h-1zM13,4h1v1h-1zM1,5h14v1h-14zM1,6h1v1h-1zM14,6h1v1h-1zM2,7h1v1h-1zM13,7h1v1h-1zM3,8h1v1h-1zM13,8h1v1h-1zM3,9h2v1h-2zM12,9h1v1h-1zM4,10h2v1h-2zM12,10h1v1h-1zM5,11h2v1h-2zM11,11h1v1h-1zM6,12h2v1h-2zM10,12h1v1h-1zM7,13h3v1h-3zM8,14h1v1h-1z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M4,3h1v1h-1zM3,4h1v1h-1z" />
+    <path
+        android:fillColor="#B8FBFF"
+        android:pathData="M5,3h3v1h-3zM4,4h2v1h-2zM2,6h2v1h-2zM3,7h1v1h-1zM4,8h1v1h-1z" />
+    <path
+        android:fillColor="#5DE0E6"
+        android:pathData="M8,3h3v1h-3zM6,4h6v1h-6zM4,6h7v1h-7zM4,7h7v1h-7zM5,8h6v1h-6zM5,9h5v1h-5zM6,10h4v1h-4zM7,11h2v1h-2zM8,12h1v1h-1z" />
+    <path
+        android:fillColor="#2AA7B0"
+        android:pathData="M11,3h1v1h-1zM12,4h1v1h-1zM11,6h2v1h-2zM11,7h1v1h-1zM11,8h1v1h-1zM10,9h1v1h-1zM10,10h1v1h-1zM9,11h1v1h-1zM9,12h1v1h-1z" />
+    <path
+        android:fillColor="#1B7D86"
+        android:pathData="M13,6h1v1h-1zM12,7h1v1h-1zM12,8h1v1h-1zM11,9h1v1h-1zM11,10h1v1h-1zM10,11h1v1h-1z" />
+</vector>

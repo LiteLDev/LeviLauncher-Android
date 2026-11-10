@@ -1,0 +1,5 @@
+{
+  "id": "github.com/ShrBox/BackupHelper", "name": "BackupHelper", "owner": "ShrBox", "stars": 3,
+  "side": ["server"], "platform": ["win-x64"],
+  "versions": [{"version": "1.0.0", "variants": {"": [{"side": "server", "platform": "win-x64", "deps": {"github.com/LiteLDev/LeviLamina": "1.x"}}]}}]
+}

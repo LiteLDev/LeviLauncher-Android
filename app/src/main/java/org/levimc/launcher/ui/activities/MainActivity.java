@@ -600,9 +600,19 @@ import okhttp3.OkHttpClient;
             if (binding.minecraftTitleText != null) {
                 pm.applySolidAccentText(binding.minecraftTitleText, accent);
             }
+            binding.loaderChip.setTextColor(accent);
         }
 
         viewModel.getModsLiveData().observe(this, this::updateModsUI);
+        // An instance with LeviLamina installed shows it by the title (it is not listed among the mods).
+        binding.loaderChip.setOnClickListener(v -> org.levimc.launcher.ui.packages.PackageActions.openLoaderSettings(
+                this, versionManager != null ? versionManager.getSelectedVersion() : null));
+        viewModel.getLoaderLiveData().observe(this, llVersion -> {
+            boolean shown = llVersion != null;
+            binding.loaderChip.setVisibility(shown ? View.VISIBLE : View.GONE);
+            binding.loaderChip.setContentDescription(shown
+                    ? getString(R.string.pkg_loader_name) + " " + llVersion : null);
+        });
     }
 
     private void updateViewModelVersion() {
@@ -789,6 +799,8 @@ import okhttp3.OkHttpClient;
 
     private void initMiscellaneousSection() {
         binding.miscCurseforgeRow.setOnClickListener(v -> startActivity(new Intent(this, CurseForgeActivity.class)));
+        binding.miscPkgRow.setOnClickListener(v -> startActivity(org.levimc.launcher.ui.packages.PackagesActivity.intent(
+                this, versionManager != null ? versionManager.getSelectedVersion() : null, null)));
         binding.miscAccountsRow.setOnClickListener(v -> startActivity(new Intent(this, AccountsActivity.class)));
         binding.miscQuickLaunchRow.setOnClickListener(v -> startActivity(new Intent(this, QuickLaunchActivity.class)));
     }

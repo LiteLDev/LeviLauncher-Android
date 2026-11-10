@@ -10,6 +10,10 @@ public class FeatureSettings {
     private boolean logcatOverlayEnabled = false;
     private Boolean crashUploadEnabled = true;
     private boolean discordRichPresenceEnabled = true;
+    /** Package mirror mode: "on" or "off"; null means auto (region detection). */
+    private String pkgMirrorMode;
+    /** Whether packages' hook scripts run; null means true. */
+    private Boolean pkgRunScripts = true;
 
     public enum StorageType {
         INTERNAL,
@@ -52,6 +56,11 @@ public class FeatureSettings {
     public boolean isDiscordRichPresenceEnabled() { return discordRichPresenceEnabled; }
     public void setDiscordRichPresenceEnabled(boolean enabled) { this.discordRichPresenceEnabled = enabled; autoSave(); }
 
+    public String getPkgMirrorMode() { return pkgMirrorMode; }
+    public void setPkgMirrorMode(String mode) { this.pkgMirrorMode = mode; autoSave(); }
+
+    public boolean isPkgRunScripts() { return pkgRunScripts == null || pkgRunScripts; }
+    public void setPkgRunScripts(boolean enabled) { this.pkgRunScripts = enabled; autoSave(); }
 
     private void autoSave() {
         if (appContext != null) {

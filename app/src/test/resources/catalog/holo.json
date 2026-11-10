@@ -1,0 +1,19 @@
+{
+  "id": "github.com/MarmieQi/LHolo", "name": "LHolo", "description": "Schematic mod", "owner": "MarmieQi",
+  "logo": "https://example.com/icon.png", "repository": "https://github.com/MarmieQi/LHolo",
+  "stars": 30, "updated": "2026-11-04T10:02:50Z", "created": "2025-03-01T00:00:00Z",
+  "tags": ["platform:levilamina", "type:mod", "hud", "schematic"], "license": "GPL-3.0",
+  "side": ["client"], "platform": ["android-arm64", "win-x64"], "gameVersions": ["1.26.60", "1.26.51"],
+  "latest": {"variant": "client", "version": "26.60.0", "install": "lip install github.com/MarmieQi/LHolo#client@26.60.0"},
+  "versions": [
+    {"version": "26.61.0-beta.1", "variants": {"client": [
+      {"side": "client", "platform": "android-arm64", "deps": {"github.com/LiteLDev/LeviLamina#client": "26.61.*"}},
+      {"side": "client", "platform": "win-x64", "deps": {"github.com/LiteLDev/LeviLamina#client": "26.61.*"}}]}},
+    {"version": "26.60.0", "variants": {"client": [
+      {"side": "client", "platform": "android-arm64", "deps": {"github.com/LiteLDev/LeviLamina#client": "26.60.*"}},
+      {"side": "client", "platform": "win-x64", "deps": {"github.com/LiteLDev/LeviLamina#client": "26.60.*"}}]}},
+    {"version": "26.51.10", "variants": {"client": [
+      {"side": "client", "platform": "android-arm64", "deps": {"github.com/LiteLDev/LeviLamina#client": "26.51.*"}}]}}
+  ],
+  "readmes": [{"file": "README.md", "lang": "en", "text": "# LHolo"}]
+}

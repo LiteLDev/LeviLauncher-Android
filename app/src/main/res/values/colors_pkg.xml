@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Colors of the package task console. values-night/colors_pkg.xml has the dark variants. -->
+<resources>
+    <color name="pkg_status_success">#2E7D32</color>
+    <color name="pkg_log_warning">#BF360C</color>
+    <color name="pkg_log_success">#2E7D32</color>
+    <color name="pkg_log_panel">#0F000000</color>
+    <color name="pkg_error_notice">#1AF44336</color>
+    <color name="pkg_status_neutral">#757575</color>
+</resources>

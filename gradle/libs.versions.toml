@@ -36,6 +36,7 @@ preference-ktx = "1.2.1"
 roomRuntime = "2.8.4"
 simpleXml = "2.7.1"
 billing = "8.3.0"
+commonmark = "0.24.0"
 sqliteFramework = "2.6.2"
 dynamicanimation = "1.1.0"
 xcrash = "3.1.2"
@@ -88,6 +89,10 @@ simple-xml = { group = "org.simpleframework", name = "simple-xml", version.ref =
 billing = { group = "com.android.billingclient", name = "billing", version.ref = "billing" }
 androidx-dynamicanimation = { module = "androidx.dynamicanimation:dynamicanimation", version.ref = "dynamicanimation" }
 xcrash = { module = "com.github.RadiantByte:xCrash", version.ref = "xcrash" }
+commonmark = { module = "org.commonmark:commonmark", version.ref = "commonmark" }
+commonmark-ext-gfm-tables = { module = "org.commonmark:commonmark-ext-gfm-tables", version.ref = "commonmark" }
+commonmark-ext-gfm-strikethrough = { module = "org.commonmark:commonmark-ext-gfm-strikethrough", version.ref = "commonmark" }
+commonmark-ext-autolink = { module = "org.commonmark:commonmark-ext-autolink", version.ref = "commonmark" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

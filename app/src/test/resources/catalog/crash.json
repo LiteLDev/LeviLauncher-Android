@@ -1,0 +1,5 @@
+{
+  "id": "github.com/LiteLDev/CrashLogger", "name": "CrashLogger", "owner": "LiteLDev", "stars": 99,
+  "side": ["client"], "platform": ["android-arm64"],
+  "versions": [{"version": "1.4.0", "variants": {"client": [{"side": "client", "platform": "android-arm64", "deps": {}}]}}]
+}

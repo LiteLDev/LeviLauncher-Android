@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- PackageActivity : header on the left, Details / Versions tabs on the right. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <LinearLayout
+        android:id="@+id/pkg_pkg_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="10dp"
+        android:visibility="gone">
+
+        <ScrollView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.38"
+            android:fillViewport="true"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/pkg_pkg_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_cf_item"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/pkg_pkg_avatar"
+                        android:layout_width="64dp"
+                        android:layout_height="64dp"
+                        android:background="@drawable/bg_cf_icon"
+                        android:clipToOutline="true"
+                        android:importantForAccessibility="no"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_minecraft_cube" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/pkg_pkg_title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/misans"
+                            android:maxLines="3"
+                            android:textColor="@color/on_surface"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            tools:text="LHolo" />
+
+                        <TextView
+                            android:id="@+id/pkg_pkg_byline"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:background="?attr/selectableItemBackground"
+                            android:ellipsize="end"
+                            android:fontFamily="@font/misans"
+                            android:maxLines="1"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp"
+                            tools:text="by LiteLDev" />
+
+                        <TextView
+                            android:id="@+id/pkg_pkg_more_by_owner"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:background="?attr/selectableItemBackground"
+                            android:ellipsize="end"
+                            android:fontFamily="@font/misans"
+                            android:maxLines="1"
+                            android:textSize="12sp"
+                            android:visibility="gone"
+                            tools:text="More by LiteLDev"
+                            tools:visibility="visible" />
+
+                        <TextView
+                            android:id="@+id/pkg_pkg_meta_line"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:fontFamily="@font/misans"
+                            android:maxLines="2"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="11sp"
+                            tools:text="Nov 8, 2026 · ★ 23 · Copyleft (GPL-3.0)" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/pkg_pkg_availability"
+                    style="@style/PkgChip"
+                    android:layout_marginTop="10dp"
+                    android:textStyle="bold" />
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/pkg_pkg_tag_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:chipSpacingHorizontal="4dp"
+                    app:chipSpacingVertical="4dp" />
+
+                <TextView
+                    android:id="@+id/pkg_pkg_identifier"
+                    style="@style/PkgChip"
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="monospace"
+                    android:maxLines="2"
+                    android:textIsSelectable="false" />
+
+                <TextView
+                    android:id="@+id/pkg_pkg_description_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/misans"
+                    android:lineSpacingExtra="2dp"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/pkg_pkg_btn_install"
+                    android:layout_width="match_parent"
+                    android:layout_height="42dp"
+                    android:layout_marginTop="14dp"
+                    android:backgroundTint="@color/primary"
+                    android:fontFamily="@font/misans"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:text="@string/pkg_install"
+                    android:textAllCaps="false"
+                    android:textColor="@color/on_primary"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="11dp"
+                    app:icon="@drawable/ic_download"
+                    app:iconGravity="textStart"
+                    app:iconPadding="6dp"
+                    app:iconSize="17dp"
+                    app:iconTint="@color/on_primary" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/pkg_pkg_btn_project"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="38dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/misans"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="@string/pkg_project_page"
+                        android:textAllCaps="false"
+                        android:textColor="@color/on_surface"
+                        android:textSize="12sp"
+                        app:cornerRadius="11dp"
+                        app:icon="@drawable/ic_internet"
+                        app:iconPadding="5dp"
+                        app:iconSize="15dp"
+                        app:iconTint="@color/on_surface"
+                        app:strokeColor="@color/divider" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/pkg_pkg_btn_share"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="38dp"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/misans"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:text="@string/pkg_share"
+                        android:textAllCaps="false"
+                        android:textColor="@color/on_surface"
+                        android:textSize="12sp"
+                        app:cornerRadius="11dp"
+                        app:icon="@drawable/ic_export"
+                        app:iconPadding="5dp"
+                        app:iconSize="15dp"
+                        app:iconTint="@color/on_surface"
+                        app:strokeColor="@color/divider" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="12dp"
+            android:layout_weight="0.62"
+            android:background="@drawable/bg_cf_item"
+            android:orientation="vertical"
+            android:padding="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/pkg_pkg_tab_details"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:background="@drawable/bg_tab_selected"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:fontFamily="@font/misans"
+                    android:gravity="center"
+                    android:paddingHorizontal="16dp"
+                    android:text="@string/pkg_tab_details"
+                    android:textColor="@color/on_primary"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/pkg_pkg_tab_versions"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_tab_unselected"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:fontFamily="@font/misans"
+                    android:gravity="center"
+                    android:paddingHorizontal="16dp"
+                    android:text="@string/pkg_tab_versions"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:id="@+id/pkg_pkg_details"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1">
+
+                <view class="org.levimc.launcher.ui.packages.PackageActivity$ReadmeView"
+                    android:id="@+id/pkg_pkg_readme"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent" />
+
+                <TextView
+                    android:id="@+id/pkg_pkg_readme_empty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:fontFamily="@font/misans"
+                    android:gravity="center"
+                    android:padding="24dp"
+                    android:text="@string/pkg_no_description"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
+
+                <ProgressBar
+                    android:id="@+id/pkg_pkg_readme_loading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:id="@+id/pkg_pkg_versions"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:id="@+id/pkg_pkg_variant_row"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <TextView
+                        style="@style/PkgFilterLabel"
+                        android:text="@string/pkg_variant_label" />
+
+                    <Spinner
+                        android:id="@+id/pkg_pkg_variant_spinner"
+                        style="@style/PkgFilterSpinner"
+                        android:layout_width="260dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:fontFamily="@font/misans"
+                        android:text="@string/pkg_variant_hint"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="10sp" />
+                </LinearLayout>
+
+                <HorizontalScrollView
+                    android:id="@+id/pkg_pkg_game_scroll"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none">
+
+                    <RadioGroup
+                        android:id="@+id/pkg_pkg_game_chips"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+
+                <TextView
+                    android:id="@+id/pkg_pkg_no_instances"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:fontFamily="@font/misans"
+                    android:text="@string/pkg_install_no_instances"
+                    android:textColor="@color/pkg_log_warning"
+                    android:textSize="11sp"
+                    android:visibility="gone" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/pkg_pkg_version_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_weight="1"
+                    android:clipToPadding="false"
+                    android:paddingBottom="8dp"
+                    android:scrollbars="vertical" />
+
+                <TextView
+                    android:id="@+id/pkg_pkg_versions_empty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/misans"
+                    android:gravity="center"
+                    android:padding="24dp"
+                    android:text="@string/pkg_no_results"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/pkg_pkg_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
+    <LinearLayout
+        android:id="@+id/pkg_pkg_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_cf_item"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/pkg_pkg_error_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/misans"
+            android:gravity="center"
+            android:maxWidth="420dp"
+            android:textColor="@color/error"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/pkg_pkg_btn_retry"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:backgroundTint="@color/primary"
+                android:fontFamily="@font/misans"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="@string/pkg_retry"
+                android:textAllCaps="false"
+                android:textColor="@color/on_primary"
+                android:textSize="12sp"
+                app:cornerRadius="11dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/pkg_pkg_btn_back"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:fontFamily="@font/misans"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="@string/pkg_back"
+                android:textAllCaps="false"
+                android:textColor="@color/on_surface"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

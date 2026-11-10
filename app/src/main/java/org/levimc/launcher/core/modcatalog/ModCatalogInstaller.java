@@ -157,6 +157,7 @@ public final class ModCatalogInstaller {
         if (value == null) return null;
         String lower = value.toLowerCase(Locale.ROOT);
         if (lower.endsWith(".levipack")) return ".levipack";
+        if (lower.endsWith(".mcmod")) return ".mcmod";
         if (lower.endsWith(".zip")) return ".zip";
         if (lower.endsWith(".so")) return ".so";
         return null;

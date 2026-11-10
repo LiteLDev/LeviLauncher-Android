@@ -189,7 +189,7 @@
     <string name="toast_delete_failed">Silme başarısız: %1$s</string>
     <string name="error_delete_builtin_version">Yerleşik sürüm silinemiyor</string>
     <string name="invalid_mod_file">Başarısız</string>
-    <string name="invalid_mod_file_reason">Yalnızca .so dosyalarına, .zip mod paketlerine veya .levipack mod paketlerine izin verilmektedir. Seçilen dosya geçerli bir yerel mod içe aktarma paketi değil.</string>
+    <string name="invalid_mod_file_reason">Yalnızca .so dosyalarına, .zip mod paketlerine veya .levipack/.mcmod mod paketlerine izin verilmektedir. Seçilen dosya geçerli bir yerel mod içe aktarma paketi değil.</string>
     <string name="invalid_zip_mod_package_title">Geçersiz ZIP Mod Paketi</string>
     <string name="invalid_zip_mod_package_message">ZIP mod paketi manifest.json ve bir .so dosyası içermelidir.</string>
     <string name="error_versions">Hatalı Sürümler</string>
@@ -205,6 +205,7 @@
     <string name="instance_tab_general">Genel</string>
     <string name="instance_tab_launch_options">Başlatma Seçenekleri</string>
     <string name="instance_tab_management">Yönetim</string>
+    <string name="instance_tab_loader">Yükleyici</string>
     <string name="instance_new_name">Yeni Ad</string>
     <string name="instance_rename_hint">Yalnızca klasörü yeniden adlandırır. Oyun sürümü ve türü etkilenmez.</string>
     <string name="instance_custom_icon">Özel Simge (kare gerekli)</string>

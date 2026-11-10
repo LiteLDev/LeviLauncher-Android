@@ -12,6 +12,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
+import org.levimc.launcher.core.packages.InstalledPackages;
+import org.levimc.launcher.core.packages.PackageService;
 import org.levimc.launcher.core.versions.GameVersion;
 import org.levimc.launcher.core.mods.config.ModConfigManager;
 
@@ -201,6 +203,81 @@ public class ModManager {
         return currentVersion;
     }
 
+    /**
+     * The manager of version's mods: the app's manager when it is bound to
+     * that instance (same mods directory), else a detached manager of that
+     * instance (no file observer; its change notifications reach nobody
+     * else). Screens that work on another instance than the launcher's
+     * selected one (the Installed tab of LeviMC Mods) read and toggle its mods
+     * through it without rebinding the app's manager. There is one detached manager
+     * per mods directory, so concurrent callers (switch toggles, list
+     * reloads, load-order fixes on worker threads) are serialized by its
+     * lock instead of overwriting each other's mods_config.json; each call
+     * reads that file again to see later changes. Blocking (reads the
+     * config): call it off the main thread.
+     */
+    public static ModManager forVersion(GameVersion version) {
+        ModManager app = getInstance();
+        synchronized (app) {
+            GameVersion cur = app.currentVersion;
+            if (cur == version || cur != null && version != null && cur.modsDir != null && version.modsDir != null
+                    && cur.modsDir.getAbsoluteFile().equals(version.modsDir.getAbsoluteFile())) {
+                return app;
+            }
+        }
+        ModManager detached;
+        if (version == null || version.modsDir == null) {
+            detached = new ModManager();
+        } else {
+            String key = version.modsDir.getAbsolutePath();
+            synchronized (DETACHED) {
+                detached = DETACHED.get(key);
+                if (detached == null) {
+                    detached = new ModManager();
+                    DETACHED.put(key, detached);
+                }
+            }
+        }
+        detached.bindDetached(version);
+        return detached;
+    }
+
+    /** The {@link #forVersion} managers of instances the app's manager is not bound to, by mods directory; the last few. */
+    private static final Map<String, ModManager> DETACHED = new java.util.LinkedHashMap<String, ModManager>(8, 0.75f, true) {
+        @Override
+        protected boolean removeEldestEntry(Map.Entry<String, ModManager> eldest) {
+            return size() > 4;
+        }
+    };
+
+    /** The mods_config.json time of the last {@link #bindDetached} read; another time means another writer. */
+    private long detachedConfigTime = -1;
+
+    /** Whether this is the app's manager (bound by setCurrentVersion), not a {@link #forVersion} copy. */
+    public boolean isAppManager() {
+        return this == instance;
+    }
+
+    private synchronized void bindDetached(GameVersion version) {
+        if (version != null && version == currentVersion && configFile != null && configFile.lastModified() == detachedConfigTime) {
+            return;
+        }
+        currentVersion = version;
+        invalidateDescriptorCache();
+        if (version != null && version.modsDir != null && version.modsDir.isDirectory()) {
+            modsDir = version.modsDir;
+            configFile = new File(modsDir, "mods_config.json");
+            loadConfig();
+            reconcileModsState();
+            detachedConfigTime = configFile.lastModified();
+        } else {
+            modsDir = null;
+            configFile = null;
+            enabledMap.clear();
+            modOrder.clear();
+        }
+    }
+
     public synchronized List<Mod> getMods() {
         if (modsDir == null) return new ArrayList<>();
 
@@ -302,6 +379,7 @@ public class ModManager {
             }
             gson.toJson(configList, writer);
         } catch (Exception ignored) {}
+        if (detachedConfigTime >= 0) detachedConfigTime = configFile.lastModified();
     }
 
     private void initFileObserver() {
@@ -326,8 +404,19 @@ public class ModManager {
         }
     }
 
-    public synchronized void deleteMod(String modId) {
-        if (modsDir == null) return;
+    /**
+     * Deletes the mod folder modId. A folder a package owns is refused (returns false): it is removed by
+     * uninstalling its package ({@code InstalledPackages.removeFolder}). Also refused when the package
+     * state cannot be read, since ownership cannot be told then.
+     */
+    public synchronized boolean deleteMod(String modId) {
+        if (modsDir == null) return false;
+
+        String pkgRefusal = pkgDeleteRefusal(modId);
+        if (pkgRefusal != null) {
+            Log.w(TAG, "Not deleting mod " + modId + ": " + pkgRefusal);
+            return false;
+        }
 
         File modDirectory = new File(modsDir, modId);
         boolean deleted = modDirectory.isDirectory() && deleteRecursively(modDirectory);
@@ -338,6 +427,36 @@ public class ModManager {
             modOrder.remove(modId);
             saveConfig();
             notifyModsChanged();
+        }
+        return deleted;
+    }
+
+    /** Why the package manager forbids deleting mod folder modId, or null when it does not. */
+    private String pkgDeleteRefusal(String modId) {
+        return packageRefusal(modsDir, modId);
+    }
+
+    /**
+     * Why the package manager forbids changing mod folder {@code modId} of {@code modsDir}
+     * (deleting it, or importing files into it), or null when it does not.
+     */
+    public static String packageRefusal(File modsDir, String modId) {
+        File workspace = modsDir.getParentFile();
+        if (workspace == null) {
+            return null;
+        }
+        // While a package operation runs (or an interrupted one awaits recovery)
+        // the state file does not list the folders it is placing yet.
+        String busy = PackageService.get().busyReason(workspace);
+        if (busy != null) {
+            return busy;
+        }
+        try {
+            InstalledPackages ws = InstalledPackages.read(workspace);
+            InstalledPackages.Pkg owner = ws.ownerOf(modId);
+            return owner == null ? null : "it belongs to the package " + owner.identity;
+        } catch (PackageService.Failure e) {
+            return "the package state cannot be read: " + PackageService.message(e);
         }
     }
 
@@ -416,9 +535,28 @@ public class ModManager {
             return false;
         }
 
+        // A loose library a package placed is the package's file. While a package
+        // operation runs, the state does not list the files it is placing.
+        String pkgBusy = PackageService.get().busyReason(modsDir.getParentFile());
+        if (pkgBusy != null) {
+            Log.i(TAG, "Not migrating loose mod libraries now: " + pkgBusy);
+            return false;
+        }
+        InstalledPackages pkgWorkspace;
+        try {
+            pkgWorkspace = InstalledPackages.read(modsDir.getParentFile());
+        } catch (PackageService.Failure e) {
+            Log.w(TAG, "Not migrating loose mod libraries: the package state cannot be read: "
+                    + PackageService.message(e));
+            return false;
+        }
+
         boolean changed = false;
         Arrays.sort(looseLibraries, Comparator.comparing(File::getName, String.CASE_INSENSITIVE_ORDER));
         for (File looseLibrary : looseLibraries) {
+            if (pkgWorkspace.ownsFile(modsDir.getName() + "/" + looseLibrary.getName())) {
+                continue;
+            }
             try {
                 changed |= migrateLooseSoMod(looseLibrary);
             } catch (Exception e) {
