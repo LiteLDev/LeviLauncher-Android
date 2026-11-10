@@ -11,6 +11,8 @@ public final class ModCatalog {
     @SerializedName("schema_version")
     public int schemaVersion;
     public List<CatalogMod> mods = new ArrayList<>();
+    /** The GitHub proxy when the catalogue was loaded (for its GitHub-hosted icons); null for none. */
+    public transient String githubProxy;
 
     public static final class CatalogMod {
         public String id;
