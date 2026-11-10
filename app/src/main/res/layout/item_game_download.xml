@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- One row of the version table (版本 / 类型 / 状态 / 操作). Column widths match the table header in
-     activity_game_download.xml. Download progress and errors show inline under the row. -->
+<!-- One row of the version table (版本 / 类型 / 状态 / 操作), shared by activity_game_download.xml
+     (two-pane: Version + Actions, chips in the Version cell) and activity_game_download_stacked.xml
+     (all four columns); GameDownloadActivity adapts it. Download progress and errors show inline under the row. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -89,11 +90,22 @@
                         android:ellipsize="end"
                         android:maxLines="1"
                         android:textAppearance="@style/TextAppearance.Levi.Caption" />
+
+                    <!-- Two-pane only: the type and state chips, moved here from their columns -->
+                    <LinearLayout
+                        android:id="@+id/game_release_chips"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:visibility="gone" />
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Type -->
+            <!-- Type (stacked layout only; two-pane moves the chip into game_release_chips) -->
             <FrameLayout
+                android:id="@+id/game_release_type_col"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.4">
@@ -104,8 +116,9 @@
                     android:layout_gravity="start|center_vertical" />
             </FrameLayout>
 
-            <!-- Status -->
+            <!-- Status (stacked layout only, like Type) -->
             <FrameLayout
+                android:id="@+id/game_release_state_col"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.4">
@@ -116,8 +129,9 @@
                     android:layout_gravity="start|center_vertical" />
             </FrameLayout>
 
-            <!-- Actions -->
+            <!-- Actions: 200dp in the stacked layout (matches its header), wrap_content in two-pane -->
             <LinearLayout
+                android:id="@+id/game_release_actions"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:gravity="end|center_vertical"

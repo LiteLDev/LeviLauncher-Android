@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Two-pane pages: width of the left panel (title, actions, search, filters or tabs);
+         288dp from 840dp wide (values-w840dp), so small landscape phones keep room for the list. -->
+    <dimen name="levi_side_panel_width">240dp</dimen>
+    <!-- Gap between the two panes and between stacked cards. -->
+    <dimen name="levi_pane_gap">12dp</dimen>
+</resources>

@@ -1,42 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Two panes: left = title, filter, search, sort and the import/backup actions;
+     right = the instance card grid at full height. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:baselineAligned="false"
+    android:orientation="horizontal"
     android:padding="16dp">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/instances_header_card"
         style="@style/Widget.Levi.Card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_width="@dimen/levi_side_panel_width"
+        android:layout_height="match_parent">
 
-        <LinearLayout
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="18dp">
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:overScrollMode="never"
+            android:scrollbars="none">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:id="@+id/instances_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/nav_instances"
+                    android:textAppearance="@style/TextAppearance.Levi.PageTitle"
+                    android:textSize="24sp" />
 
                 <org.levimc.launcher.ui.widget.SegmentedControl
                     android:id="@+id/filter_segmented"
-                    android:layout_width="180dp"
-                    android:layout_height="wrap_content" />
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp" />
 
                 <EditText
                     android:id="@+id/search_input"
                     style="@style/Widget.Levi.Input"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:layout_weight="1"
-                    android:layout_marginStart="12dp"
-                    android:minWidth="160dp"
+                    android:layout_marginTop="12dp"
                     android:background="@drawable/instances_bg_search"
                     android:drawableStart="@drawable/ic_ui_search"
                     android:hint="@string/search_instances_hint"
@@ -47,79 +58,64 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/sort_button"
                     style="@style/Widget.Levi.Button.Secondary"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    android:layout_marginStart="12dp"
+                    android:layout_marginTop="12dp"
                     android:text="@string/sort_version_newest"
                     app:cornerRadius="12dp"
                     app:icon="@drawable/ic_ui_sort" />
-            </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="14dp"
-                android:background="@color/divider" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="14dp"
+                    android:background="@color/divider" />
 
-            <!-- Scrolls when the labels do not fit (long translations, small phones). -->
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:fillViewport="true"
-                android:overScrollMode="never"
-                android:scrollbars="none">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_import_apk"
+                    style="@style/Widget.Levi.Button.Primary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="@string/import_apk"
+                    app:icon="@drawable/ic_ui_add" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_batch_backup"
                     style="@style/Widget.Levi.Button.Secondary"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:text="@string/instance_batch_backup_button"
                     app:icon="@drawable/ic_ui_download" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_import_backup"
                     style="@style/Widget.Levi.Button.Secondary"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="8dp"
                     android:text="@string/instance_import_backup_button"
                     app:icon="@drawable/ic_ui_upload" />
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="1dp"
-                    android:layout_weight="1" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_import_apk"
-                    style="@style/Widget.Levi.Button.Primary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:text="@string/import_apk"
-                    app:icon="@drawable/ic_ui_add" />
             </LinearLayout>
-            </HorizontalScrollView>
-        </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
     </com.google.android.material.card.MaterialCardView>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/instances_recycler"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/instances_list_card"
+        style="@style/Widget.Levi.Card"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
         android:layout_weight="1"
-        android:layout_marginTop="12dp"
-        android:clipToPadding="false"
-        android:overScrollMode="never"
-        android:paddingTop="2dp"
-        android:paddingBottom="8dp" />
+        android:layout_marginStart="@dimen/levi_pane_gap">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/instances_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            android:padding="12dp" />
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>

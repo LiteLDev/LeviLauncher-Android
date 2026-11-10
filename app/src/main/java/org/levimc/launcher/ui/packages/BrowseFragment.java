@@ -55,6 +55,7 @@ import org.levimc.launcher.ui.widget.CatalogSelect;
 import org.levimc.launcher.ui.widget.UiKit;
 import org.levimc.launcher.util.PersonalizationManager;
 import org.levimc.launcher.util.UIHelper;
+import org.levimc.launcher.util.UiSettings;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -115,7 +116,8 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_pkg_browse, container, false);
+        return inflater.inflate(UiSettings.useTwoPane(requireContext())
+                ? R.layout.fragment_pkg_browse : R.layout.fragment_pkg_browse_stacked, container, false);
     }
 
     @Override

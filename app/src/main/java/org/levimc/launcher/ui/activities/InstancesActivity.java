@@ -44,6 +44,7 @@ import org.levimc.launcher.ui.widget.UiKit;
 import org.levimc.launcher.util.InstanceBackupManager;
 import org.levimc.launcher.util.InstanceShortcutManager;
 import org.levimc.launcher.util.StorageAccess;
+import org.levimc.launcher.util.UiSettings;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -88,11 +89,13 @@ public class InstancesActivity extends BaseActivity {
     private ActivityResultLauncher<Intent> backupImportResultLauncher;
     private ActivityResultLauncher<Intent> instanceSettingsLauncher;
     private boolean firstResume = true;
+    private boolean twoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_instances);
+        twoPane = UiSettings.useTwoPane(this);
+        setContentView(twoPane ? R.layout.activity_instances : R.layout.activity_instances_stacked);
         setupNavBar();
 
         versionManager = VersionManager.get(this);
@@ -152,12 +155,21 @@ public class InstancesActivity extends BaseActivity {
         sortButton = findViewById(R.id.sort_button);
         searchInput = findViewById(R.id.search_input);
 
-        int spanCount = calculateSpanCount();
-        GridLayoutManager layoutManager = new GridLayoutManager(this, spanCount);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, 1);
         recyclerView.setLayoutManager(layoutManager);
+        // The column count follows the grid's own width (the right pane in two-pane mode), not the screen's.
+        recyclerView.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
+            int span = calculateSpanCount(r - l - v.getPaddingLeft() - v.getPaddingRight());
+            if (span != layoutManager.getSpanCount()) {
+                v.post(() -> {
+                    layoutManager.setSpanCount(span);
+                    recyclerView.invalidateItemDecorations();
+                });
+            }
+        });
 
         int spacing = (int) (10 * getResources().getDisplayMetrics().density);
-        recyclerView.addItemDecoration(new GridSpacingDecoration(spanCount, spacing));
+        recyclerView.addItemDecoration(new GridSpacingDecoration(spacing));
 
         loadVersions();
 
@@ -200,12 +212,10 @@ public class InstancesActivity extends BaseActivity {
         handleBackupOpenIntent(intent);
     }
 
-    private int calculateSpanCount() {
-        float displayWidth = getResources().getDisplayMetrics().widthPixels / getResources().getDisplayMetrics().density;
+    private int calculateSpanCount(int widthPx) {
+        float width = widthPx / getResources().getDisplayMetrics().density;
         float cardMinWidth = 240f;
-        float padding = 40f;
-        int count = (int) ((displayWidth - padding) / cardMinWidth);
-        return Math.max(2, count);
+        return Math.max(twoPane ? 1 : 2, (int) (width / cardMinWidth));
     }
 
     private void loadVersions() {
@@ -772,18 +782,19 @@ public class InstancesActivity extends BaseActivity {
     }
 
     private static class GridSpacingDecoration extends RecyclerView.ItemDecoration {
-        private final int spanCount;
         private final int spacing;
 
-        GridSpacingDecoration(int spanCount, int spacing) {
-            this.spanCount = spanCount;
+        GridSpacingDecoration(int spacing) {
             this.spacing = spacing;
         }
 
         @Override
         public void getItemOffsets(@NonNull Rect outRect, @NonNull View view,
                                    @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+            RecyclerView.LayoutManager lm = parent.getLayoutManager();
+            int spanCount = lm instanceof GridLayoutManager ? ((GridLayoutManager) lm).getSpanCount() : 1;
             int position = parent.getChildAdapterPosition(view);
+            if (position == RecyclerView.NO_POSITION) return;
             int column = position % spanCount;
             outRect.left = spacing - column * spacing / spanCount;
             outRect.right = (column + 1) * spacing / spanCount;

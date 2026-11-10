@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Start of the LeviMC mods header row, shared by both tabs: title with the current instance under it, then the
+     Browse / Installed segmented control. PackagesActivity.bindHeader wires it. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/pkg_header_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:text="@string/pkg_title_mods"
+            android:textAppearance="@style/TextAppearance.Levi.PageTitle" />
+
+        <!-- Read-only: packages install into the global current instance (chosen on the home page). -->
+        <TextView
+            android:id="@+id/pkg_header_target"
+            style="@style/Widget.Levi.Tag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:ellipsize="end"
+            android:maxWidth="200dp"
+            android:textStyle="normal" />
+    </LinearLayout>
+
+    <org.levimc.launcher.ui.widget.SegmentedControl
+        android:id="@+id/pkg_header_tabs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="14dp" />
+</LinearLayout>

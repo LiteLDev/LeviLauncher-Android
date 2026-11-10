@@ -39,6 +39,8 @@
     <string name="settings_ui_base_opacity">Base Opacity</string>
     <string name="settings_ui_navbar">Use Top Navigation Bar</string>
     <string name="settings_ui_navbar_desc">Enable to use the top navigation bar instead of the default vertical sidebar</string>
+    <string name="settings_ui_two_pane">Two-pane pages</string>
+    <string name="settings_ui_two_pane_desc">Title, search and filters on the left, the list at full height on the right. Off: the header on top, as on Windows</string>
     <string name="settings_ui_disable_animations">Disable Animations</string>
     <string name="settings_ui_disable_animations_desc">Turn off interface transition animations to improve performance</string>
     <string name="settings_ui_bg_image">Background Image</string>

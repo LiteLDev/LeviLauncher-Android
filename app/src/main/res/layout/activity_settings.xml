@@ -1,102 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Settings, aligned with LeviLauncher for Windows: header card (title, search, tabs) and the
-     selected tab's settings in cards with divider-separated rows. Rows carry the tag "settings_row"
-     (from @style/settings_Row) so the search box can find them. -->
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Settings, aligned with LeviLauncher for Windows, as a two-pane layout for landscape phones:
+     left panel (title, search, vertical tab list), right pane = the selected tab's settings in cards
+     with divider-separated rows. Rows carry the tag "settings_row" (from @style/settings_Row) so the
+     search box can find them. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/settings_scroll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:scrollbars="none">
+    android:orientation="horizontal"
+    android:padding="16dp">
 
-    <LinearLayout
-        android:id="@+id/settings_scroll_content"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+    <!-- Left panel -->
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.Levi.Card"
+        android:layout_width="@dimen/levi_side_panel_width"
+        android:layout_height="match_parent">
 
-        <!-- Header card -->
-        <com.google.android.material.card.MaterialCardView style="@style/settings_Card">
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:overScrollMode="never"
+            android:scrollbars="none">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="18dp">
+                android:padding="16dp">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/settings_title"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:text="@string/settings_title"
+                    android:textAppearance="@style/TextAppearance.Levi.PageTitle"
+                    android:textSize="24sp" />
 
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/settings_ui_subtitle"
+                    android:textAppearance="@style/TextAppearance.Levi.PageSubtitle" />
 
-                        <TextView
-                            android:id="@+id/settings_title"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/settings_title"
-                            android:textAppearance="@style/TextAppearance.Levi.PageTitle" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="@string/settings_ui_subtitle"
-                            android:textAppearance="@style/TextAppearance.Levi.PageSubtitle" />
-                    </LinearLayout>
-
-                    <EditText
-                        android:id="@+id/settings_search"
-                        style="@style/Widget.Levi.Input"
-                        android:layout_width="240dp"
-                        android:layout_height="44dp"
-                        android:drawableStart="@drawable/ic_ui_search"
-                        android:hint="@string/settings_ui_search_hint"
-                        android:imeOptions="actionSearch|flagNoExtractUi"
-                        android:importantForAutofill="no"
-                        android:inputType="text" />
-                </LinearLayout>
+                <EditText
+                    android:id="@+id/settings_search"
+                    style="@style/Widget.Levi.Input"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="12dp"
+                    android:drawableStart="@drawable/ic_ui_search"
+                    android:hint="@string/settings_ui_search_hint"
+                    android:imeOptions="actionSearch|flagNoExtractUi"
+                    android:importantForAutofill="no"
+                    android:inputType="text" />
 
                 <TextView
                     android:id="@+id/settings_search_empty"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="end"
                     android:layout_marginTop="6dp"
                     android:text="@string/settings_ui_search_none"
                     android:textAppearance="@style/TextAppearance.Levi.Caption"
                     android:visibility="gone" />
 
-                <HorizontalScrollView
+                <!-- Tabs, stacked (setVertical(true) in SettingsActivity) -->
+                <org.levimc.launcher.ui.widget.SegmentedControl
+                    android:id="@+id/settings_tabs"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:fillViewport="true"
-                    android:overScrollMode="never"
-                    android:scrollbars="none">
-
-                    <org.levimc.launcher.ui.widget.SegmentedControl
-                        android:id="@+id/settings_tabs"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </HorizontalScrollView>
+                    android:layout_marginTop="12dp" />
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        </androidx.core.widget.NestedScrollView>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Right pane: the selected section -->
+    <ScrollView
+        android:id="@+id/settings_scroll"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/levi_pane_gap"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+    <LinearLayout
+        android:id="@+id/settings_scroll_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <FrameLayout
             android:id="@+id/settings_content"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp">
+            android:layout_height="wrap_content">
 
             <!-- ============================== Basic ============================== -->
             <LinearLayout
@@ -261,17 +258,18 @@
                                     style="@style/settings_RowDesc"
                                     android:text="@string/settings_ui_theme_mode_desc" />
 
+                                <!-- Five modes in the narrow right pane: compact segments that wrap their
+                                     labels (SettingsActivity); longer translations scroll sideways. -->
                                 <HorizontalScrollView
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="12dp"
-                                    android:fillViewport="true"
                                     android:overScrollMode="never"
                                     android:scrollbars="none">
 
                                     <org.levimc.launcher.ui.widget.SegmentedControl
                                         android:id="@+id/theme_mode_tabs"
-                                        android:layout_width="match_parent"
+                                        android:layout_width="wrap_content"
                                         android:layout_height="wrap_content" />
                                 </HorizontalScrollView>
 
@@ -745,6 +743,26 @@
 
                                     <TextView
                                         style="@style/settings_RowTitle"
+                                        android:text="@string/settings_ui_two_pane" />
+
+                                    <TextView
+                                        style="@style/settings_RowDesc"
+                                        android:text="@string/settings_ui_two_pane_desc" />
+                                </LinearLayout>
+
+                                <com.google.android.material.switchmaterial.SwitchMaterial
+                                    android:id="@+id/switch_two_pane"
+                                    style="@style/settings_Switch" />
+                            </LinearLayout>
+
+                            <View style="@style/settings_Divider" />
+
+                            <LinearLayout style="@style/settings_Row">
+
+                                <LinearLayout style="@style/settings_RowText">
+
+                                    <TextView
+                                        style="@style/settings_RowTitle"
                                         android:text="@string/settings_ui_disable_animations" />
 
                                     <TextView
@@ -910,7 +928,7 @@
 
                                         <org.levimc.launcher.ui.widget.SegmentedControl
                                             android:id="@+id/bg_play_order"
-                                            android:layout_width="220dp"
+                                            android:layout_width="wrap_content"
                                             android:layout_height="wrap_content" />
                                     </LinearLayout>
                                 </LinearLayout>
@@ -936,7 +954,7 @@
                                         android:drawableEnd="@drawable/ic_ui_expand_more"
                                         android:focusable="true"
                                         android:gravity="center_vertical"
-                                        android:minWidth="180dp" />
+                                        android:minWidth="140dp" />
                                 </LinearLayout>
 
                                 <View style="@style/settings_Divider" />
@@ -1391,4 +1409,5 @@
             </LinearLayout>
         </FrameLayout>
     </LinearLayout>
-</ScrollView>
+    </ScrollView>
+</LinearLayout>

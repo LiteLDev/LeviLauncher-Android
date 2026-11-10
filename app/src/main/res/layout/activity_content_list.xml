@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Two-pane layout: title, actions, search, sort and info on the left; the item list takes the full height on the right. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:padding="16dp">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        app:elevation="0dp">
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/header_card"
+        style="@style/Widget.Levi.Card"
+        android:layout_width="@dimen/levi_side_panel_width"
+        android:layout_height="match_parent">
 
-        <!-- Header card (scrolls away with the list so the list keeps room on short landscape screens). -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/header_card"
-            style="@style/Widget.Levi.Card"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="4dp"
-            app:layout_scrollFlags="scroll|enterAlways|snap">
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:overScrollMode="never"
+            android:scrollbars="none">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -27,12 +26,14 @@
                 android:orientation="vertical"
                 android:padding="18dp">
 
-                <FrameLayout
+                <!-- Normal mode: title + count, type action, icon actions. -->
+                <LinearLayout
+                    android:id="@+id/normal_toolbar"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
                     <LinearLayout
-                        android:id="@+id/normal_toolbar"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
@@ -46,7 +47,8 @@
                             android:ellipsize="end"
                             android:maxLines="1"
                             android:text="@string/content_ui_worlds_title"
-                            android:textAppearance="@style/TextAppearance.Levi.PageTitle" />
+                            android:textAppearance="@style/TextAppearance.Levi.PageTitle"
+                            android:textSize="24sp" />
 
                         <TextView
                             android:id="@+id/item_count_text"
@@ -59,26 +61,29 @@
                             android:text="0"
                             android:textColor="@color/text_primary"
                             android:textSize="12sp" />
+                    </LinearLayout>
 
-                        <Space
-                            android:layout_width="0dp"
-                            android:layout_height="1dp"
-                            android:layout_weight="1" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/custom_flat_button"
+                        style="@style/Widget.Levi.Button.Secondary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="@string/custom_flat_world"
+                        android:visibility="gone"
+                        app:icon="@drawable/ic_ui_add" />
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/custom_flat_button"
-                            style="@style/Widget.Levi.Button.Secondary"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="@string/custom_flat_world"
-                            android:visibility="gone"
-                            app:icon="@drawable/ic_ui_add" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/select_button"
                             style="@style/Widget.Levi.Button.Icon"
-                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
                             android:contentDescription="@string/content_ui_multi_select"
                             android:tooltipText="@string/content_ui_multi_select"
                             android:visibility="gone"
@@ -87,20 +92,26 @@
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/refresh_button"
                             style="@style/Widget.Levi.Button.Icon"
-                            android:layout_marginStart="8dp"
                             android:contentDescription="@string/content_ui_refresh"
                             android:tooltipText="@string/content_ui_refresh"
                             app:icon="@drawable/ic_ui_refresh" />
                     </LinearLayout>
+                </LinearLayout>
+
+                <!-- Selection mode: replaces the normal toolbar, actions stacked full width. -->
+                <LinearLayout
+                    android:id="@+id/selection_toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
                     <LinearLayout
-                        android:id="@+id/selection_toolbar"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:minHeight="40dp"
-                        android:orientation="horizontal"
-                        android:visibility="gone">
+                        android:orientation="horizontal">
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/selection_cancel_button"
@@ -119,97 +130,89 @@
                             android:maxLines="1"
                             android:text="@string/selected_count_zero"
                             android:textAppearance="@style/TextAppearance.Levi.SectionTitle" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/select_all_button"
-                            style="@style/Widget.Levi.Button.Secondary"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/select_all"
-                            app:icon="@drawable/ic_ui_select" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/batch_export_button"
-                            style="@style/Widget.Levi.Button.Secondary"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="@string/export"
-                            app:icon="@drawable/ic_ui_download" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/batch_transfer_button"
-                            style="@style/Widget.Levi.Button.Secondary"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="@string/transfer"
-                            app:icon="@drawable/ic_ui_storage" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/batch_delete_button"
-                            style="@style/Widget.Levi.Button.Danger"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="@string/delete"
-                            app:icon="@drawable/ic_ui_delete" />
                     </LinearLayout>
-                </FrameLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/select_all_button"
+                        style="@style/Widget.Levi.Button.Secondary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="@string/select_all"
+                        app:icon="@drawable/ic_ui_select" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/batch_export_button"
+                        style="@style/Widget.Levi.Button.Secondary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/export"
+                        app:icon="@drawable/ic_ui_download" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/batch_transfer_button"
+                        style="@style/Widget.Levi.Button.Secondary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/transfer"
+                        app:icon="@drawable/ic_ui_storage" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/batch_delete_button"
+                        style="@style/Widget.Levi.Button.Danger"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/delete"
+                        app:icon="@drawable/ic_ui_delete" />
+                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/search_row"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="vertical">
 
                     <EditText
                         android:id="@+id/search_edit_text"
                         style="@style/Widget.Levi.Input"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="44dp"
-                        android:layout_weight="1"
                         android:drawableStart="@drawable/ic_ui_filter"
                         android:hint="@string/search_hint"
                         android:imeOptions="actionSearch"
                         android:importantForAutofill="no"
-                        android:inputType="text"
-                        android:maxWidth="420dp" />
-
-                    <Space
-                        android:id="@+id/search_spacer"
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="0.6" />
+                        android:inputType="text" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/sort_button"
                         style="@style/Widget.Levi.Button.Secondary"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="44dp"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginTop="12dp"
                         android:text="@string/content_ui_sort_name"
                         app:icon="@drawable/ic_ui_sort" />
                 </LinearLayout>
 
-                <HorizontalScrollView
-                    android:layout_width="wrap_content"
+                <!-- Info strip: label/value rows. -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:background="@drawable/bg_ui_strip"
-                    android:overScrollMode="never"
-                    android:scrollbars="none">
+                    android:orientation="vertical"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp">
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
-                        android:minHeight="40dp"
-                        android:orientation="horizontal"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="4dp">
+                        android:minHeight="36dp"
+                        android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -217,18 +220,34 @@
                             android:text="@string/current_instance"
                             android:textAppearance="@style/TextAppearance.Levi.StripLabel" />
 
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_weight="1"
+                            android:minWidth="8dp" />
+
                         <TextView
                             android:id="@+id/strip_instance_value"
                             style="@style/Widget.Levi.StripValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="6dp" />
+                            android:layout_marginStart="8dp"
+                            android:ellipsize="end"
+                            android:maxWidth="170dp"
+                            android:maxLines="1" />
+                    </LinearLayout>
 
-                        <View
-                            android:layout_width="1dp"
-                            android:layout_height="14dp"
-                            android:layout_marginHorizontal="10dp"
-                            android:background="@color/ui_border" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/ui_border" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:minHeight="36dp"
+                        android:orientation="horizontal">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -236,32 +255,44 @@
                             android:text="@string/content_ui_storage"
                             android:textAppearance="@style/TextAppearance.Levi.StripLabel" />
 
+                        <Space
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_weight="1"
+                            android:minWidth="8dp" />
+
                         <TextView
                             android:id="@+id/strip_storage_value"
                             style="@style/Widget.Levi.StripValue"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="6dp" />
+                            android:layout_marginStart="8dp"
+                            android:ellipsize="end"
+                            android:maxWidth="170dp"
+                            android:maxLines="1" />
                     </LinearLayout>
-                </HorizontalScrollView>
+                </LinearLayout>
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-    </com.google.android.material.appbar.AppBarLayout>
+        </androidx.core.widget.NestedScrollView>
+    </com.google.android.material.card.MaterialCardView>
 
+    <!-- Items are cards with a 6dp margin; the negative margins line their edges up with the left panel
+         and keep a 12dp gap between the panes and between the items. -->
     <FrameLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="-6dp"
+        android:layout_marginEnd="-6dp"
+        android:layout_marginBottom="-6dp"
+        android:layout_weight="1">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/content_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:overScrollMode="never"
-            android:paddingHorizontal="10dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="16dp" />
+            android:overScrollMode="never" />
 
         <LinearLayout
             android:id="@+id/empty_state"
@@ -287,6 +318,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:fontFamily="@font/misans"
+                android:gravity="center"
                 android:textColor="@color/text_secondary"
                 android:textSize="15sp"
                 android:textStyle="bold" />
@@ -316,4 +348,4 @@
                 android:indeterminate="true" />
         </FrameLayout>
     </FrameLayout>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

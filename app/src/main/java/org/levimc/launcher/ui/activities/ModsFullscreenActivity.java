@@ -43,6 +43,7 @@ import org.levimc.launcher.util.StorageAccess;
 import org.levimc.launcher.ui.widget.SegmentedControl;
 import org.levimc.launcher.ui.widget.UiKit;
 import org.levimc.launcher.util.PersonalizationManager;
+import org.levimc.launcher.util.UiSettings;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -85,7 +86,8 @@ public class ModsFullscreenActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_mods_fullscreen);
+        setContentView(UiSettings.useTwoPane(this)
+                ? R.layout.activity_mods_fullscreen : R.layout.activity_mods_fullscreen_stacked);
 
         View root = findViewById(android.R.id.content);
         if (root != null) {
@@ -147,6 +149,9 @@ public class ModsFullscreenActivity extends BaseActivity {
         onlyEnabledCheck.setOnCheckedChangeListener((b, checked) -> applyFilters());
 
         filterTabs = findViewById(R.id.mods_filter_tabs);
+        if (UiSettings.useTwoPane(this)) {
+            filterTabs.setVertical(true);
+        }
         filterTabs.setItems(getString(R.string.mods_filter_all), getString(R.string.mods_filter_normal),
                 getString(R.string.pkg_title_mods));
         filterTabs.setSelectedIndex(TAB_ALL, false);
@@ -329,6 +334,8 @@ public class ModsFullscreenActivity extends BaseActivity {
             }
         });
         
+        // Only the stacked layout scrolls the whole page (the list does not scroll itself), so dragging
+        // a row near the edge has to scroll the page; null in the two-pane layout.
         NestedScrollView nestedScrollView = findViewById(R.id.nested_scroll_view);
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.LEFT) {
             private long lastScrollTime = 0;

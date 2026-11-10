@@ -30,6 +30,7 @@ public final class UiSettings {
     private static final String PREFS = "ui_prefs";
     private static final String KEY_LAYOUT_MODE = "layout_mode";
     private static final String KEY_DISABLE_ANIMATIONS = "disable_animations";
+    private static final String KEY_TWO_PANE = "two_pane_pages";
 
     private static final AtomicInteger sLayoutGeneration = new AtomicInteger();
     private static volatile boolean sAnimationsDisabled;
@@ -62,6 +63,21 @@ public final class UiSettings {
         String value = LAYOUT_NAVBAR.equals(mode) ? LAYOUT_NAVBAR : LAYOUT_SIDEBAR;
         if (value.equals(getLayoutMode(context))) return;
         prefs(context).edit().putString(KEY_LAYOUT_MODE, value).apply();
+        sLayoutGeneration.incrementAndGet();
+    }
+
+    /**
+     * Two-pane pages (Android only): on landscape phones the title, actions, search and filters sit in
+     * a left panel and the list takes the full height on the right. Off: the Windows layout with the
+     * header card on top.
+     */
+    public static boolean useTwoPane(Context context) {
+        return prefs(context).getBoolean(KEY_TWO_PANE, true);
+    }
+
+    public static void setTwoPane(Context context, boolean twoPane) {
+        if (twoPane == useTwoPane(context)) return;
+        prefs(context).edit().putBoolean(KEY_TWO_PANE, twoPane).apply();
         sLayoutGeneration.incrementAndGet();
     }
 

@@ -39,6 +39,7 @@ public class SegmentedControl extends LinearLayout {
     private final List<TextView> segments = new ArrayList<>();
     private int selected = -1;
     private boolean equalWidth = true;
+    private boolean vertical;
     private float textSizeSp = 14f;
     @Nullable
     private Typeface baseTypeface;
@@ -65,6 +66,21 @@ public class SegmentedControl extends LinearLayout {
         for (TextView t : segments) t.setLayoutParams(segmentParams());
     }
 
+    /**
+     * Vertical: segments are stacked full width with left-aligned labels, for tab lists in the left
+     * panel of two-pane pages (landscape phones are too short for a header plus horizontal tabs).
+     */
+    public void setVertical(boolean vertical) {
+        this.vertical = vertical;
+        setOrientation(vertical ? VERTICAL : HORIZONTAL);
+        setGravity(vertical ? Gravity.NO_GRAVITY : Gravity.CENTER_VERTICAL);
+        for (TextView t : segments) {
+            t.setGravity(vertical ? Gravity.CENTER_VERTICAL | Gravity.START : Gravity.CENTER);
+            t.setMinHeight(dp(vertical ? 44 : 40));
+            t.setLayoutParams(segmentParams());
+        }
+    }
+
     public void setTextSizeSp(float sp) {
         textSizeSp = sp;
         for (TextView t : segments) t.setTextSize(TypedValue.COMPLEX_UNIT_SP, sp);
@@ -81,12 +97,13 @@ public class SegmentedControl extends LinearLayout {
     public int addSegment(CharSequence label, int iconRes) {
         TextView t = new TextView(getContext());
         t.setText(label);
-        t.setGravity(Gravity.CENTER);
+        t.setGravity(vertical ? Gravity.CENTER_VERTICAL | Gravity.START : Gravity.CENTER);
         t.setSingleLine(true);
+        t.setEllipsize(android.text.TextUtils.TruncateAt.END);
         t.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSp);
         if (baseTypeface == null) baseTypeface = ResourcesCompat.getFont(getContext(), R.font.misans);
         t.setTypeface(baseTypeface);
-        t.setMinHeight(dp(40));
+        t.setMinHeight(dp(vertical ? 44 : 40));
         t.setPadding(dp(14), 0, dp(14), 0);
         if (iconRes != 0) {
             Drawable d = ContextCompat.getDrawable(getContext(), iconRes);
@@ -107,6 +124,7 @@ public class SegmentedControl extends LinearLayout {
     }
 
     private LayoutParams segmentParams() {
+        if (vertical) return new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         return equalWidth
                 ? new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f)
                 : new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);

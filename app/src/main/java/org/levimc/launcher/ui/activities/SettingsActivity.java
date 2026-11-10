@@ -114,6 +114,7 @@ public class SettingsActivity extends BaseActivity {
     private ScrollView scrollView;
     private LinearLayout scrollContent;
     private SegmentedControl settingsTabs;
+    private boolean twoPane;
     private View[] sections;
     private MaterialButton[] personalizeNavs;
     private View[] personalizeGroups;
@@ -154,7 +155,8 @@ public class SettingsActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
+        twoPane = UiSettings.useTwoPane(this);
+        setContentView(twoPane ? R.layout.activity_settings : R.layout.activity_settings_stacked);
 
         DynamicAnim.applyPressScaleRecursively(findViewById(android.R.id.content));
         setActiveNavTab(R.id.nav_tab_settings);
@@ -247,6 +249,7 @@ public class SettingsActivity extends BaseActivity {
         scrollView = findViewById(R.id.settings_scroll);
         scrollContent = findViewById(R.id.settings_scroll_content);
         settingsTabs = findViewById(R.id.settings_tabs);
+        if (twoPane) settingsTabs.setVertical(true);
         settingsTabs.setItems(
                 getString(R.string.settings_tab_basic),
                 getString(R.string.settings_tab_personalize),
@@ -255,7 +258,11 @@ public class SettingsActivity extends BaseActivity {
                 getString(R.string.settings_tab_privacy),
                 getString(R.string.settings_ui_tab_updates),
                 getString(R.string.settings_tab_about));
-        settingsTabs.setOnSegmentSelectedListener(index -> selectTab(index, true));
+        settingsTabs.setOnSegmentSelectedListener(index -> {
+            selectTab(index, true);
+            // The right pane keeps its scroll position across sections; start each one at the top.
+            if (twoPane) scrollView.scrollTo(0, 0);
+        });
 
         sections = new View[]{
                 findViewById(R.id.section_basic),
@@ -556,6 +563,15 @@ public class SettingsActivity extends BaseActivity {
         themeModeTabs.addSegment(getString(R.string.settings_ui_mode_schedule), R.drawable.ic_ui_schedule);
         themeModeTabs.addSegment(getString(R.string.settings_ui_mode_sun), R.drawable.ic_ui_sunrise);
         themeModeTabs.addSegment(getString(R.string.settings_ui_mode_system), R.drawable.ic_ui_monitor);
+        if (twoPane) {
+            // Five equal segments do not fit the narrow right pane: compact segments sized to their labels.
+            themeModeTabs.setEqualWidth(false);
+            themeModeTabs.setTextSizeSp(13f);
+            int pad = Math.round(10 * getResources().getDisplayMetrics().density);
+            for (int i = 0; i < themeModeTabs.getSegmentCount(); i++) {
+                themeModeTabs.getSegment(i).setPadding(pad, 0, pad, 0);
+            }
+        }
         int mode = themeManager.getCurrentMode();
         themeModeTabs.setSelectedIndex(themeModeIndex(mode), false);
         themeModeTabs.setOnSegmentSelectedListener(index -> {
@@ -876,6 +892,13 @@ public class SettingsActivity extends BaseActivity {
         navbar.setChecked(UiSettings.useTopNavbar(this));
         navbar.setOnCheckedChangeListener((btn, checked) -> {
             UiSettings.setLayoutMode(this, checked ? UiSettings.LAYOUT_NAVBAR : UiSettings.LAYOUT_SIDEBAR);
+            recreate();
+        });
+
+        SwitchMaterial twoPaneSwitch = findViewById(R.id.switch_two_pane);
+        twoPaneSwitch.setChecked(twoPane);
+        twoPaneSwitch.setOnCheckedChangeListener((btn, checked) -> {
+            UiSettings.setTwoPane(this, checked);
             recreate();
         });
 

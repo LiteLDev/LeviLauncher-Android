@@ -39,6 +39,8 @@
     <string name="settings_ui_base_opacity">底色不透明度</string>
     <string name="settings_ui_navbar">使用顶部导航栏</string>
     <string name="settings_ui_navbar_desc">开启后使用顶部导航栏代替默认的垂直侧边栏</string>
+    <string name="settings_ui_two_pane">横屏双栏布局</string>
+    <string name="settings_ui_two_pane_desc">标题、搜索和筛选放在左侧，列表在右侧整高显示。关闭后与 Windows 一致，放在页面顶部</string>
     <string name="settings_ui_disable_animations">禁用动画</string>
     <string name="settings_ui_disable_animations_desc">关闭界面过渡动画以提升性能</string>
     <string name="settings_ui_bg_image">背景图片</string>

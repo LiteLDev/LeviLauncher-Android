@@ -43,6 +43,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:minWidth="64dp"
             android:orientation="vertical"
             android:paddingEnd="8dp">
 
@@ -130,7 +131,7 @@
 
         <TextView
             android:id="@+id/mod_version"
-            android:layout_width="140dp"
+            android:layout_width="@dimen/mods_col_version_width"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:ellipsize="end"

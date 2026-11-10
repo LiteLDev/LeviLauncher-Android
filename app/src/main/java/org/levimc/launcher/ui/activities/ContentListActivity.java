@@ -11,6 +11,9 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -25,6 +28,7 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.levimc.launcher.R;
@@ -37,7 +41,6 @@ import org.levimc.launcher.core.content.WorldItem;
 import org.levimc.launcher.core.content.WorldManager;
 import org.levimc.launcher.core.versions.GameVersion;
 import org.levimc.launcher.core.versions.VersionManager;
-import org.levimc.launcher.databinding.ActivityContentListBinding;
 import org.levimc.launcher.settings.FeatureSettings;
 import org.levimc.launcher.ui.adapter.ResourcePacksAdapter;
 import org.levimc.launcher.ui.adapter.StructuresAdapter;
@@ -45,6 +48,7 @@ import org.levimc.launcher.ui.adapter.WorldsAdapter;
 import org.levimc.launcher.ui.animation.DynamicAnim;
 import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
 import org.levimc.launcher.util.LauncherStorage;
+import org.levimc.launcher.util.UiSettings;
 
 import android.provider.MediaStore;
 import android.provider.DocumentsContract;
@@ -77,7 +81,7 @@ public class ContentListActivity extends BaseActivity {
     private static final int SORT_NAME = 0;
     private static final int SORT_TIME = 1;
 
-    private ActivityContentListBinding binding;
+    private ContentListViews binding;
     private ContentManager contentManager;
     private VersionManager versionManager;
     private int contentType;
@@ -130,8 +134,13 @@ public class ContentListActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityContentListBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+        // Personalization: two-pane (side panel + list) or the Windows-style stacked layout (header card on top).
+        // Both variants share the view ids below, so one code path drives either.
+        View root = getLayoutInflater().inflate(UiSettings.useTwoPane(this)
+                ? R.layout.activity_content_list
+                : R.layout.activity_content_list_stacked, null);
+        binding = new ContentListViews(root);
+        setContentView(root);
 
         DynamicAnim.applyPressScaleRecursively(binding.getRoot());
 
@@ -1708,6 +1717,67 @@ public class ContentListActivity extends BaseActivity {
         super.onDestroy();
         if (structureExtractor != null) {
             structureExtractor.shutdown();
+        }
+    }
+
+    /** Views shared by activity_content_list (two-pane) and activity_content_list_stacked. */
+    private static final class ContentListViews {
+        final View root;
+        final LinearLayout normalToolbar;
+        final TextView titleText;
+        final TextView itemCountText;
+        final MaterialButton customFlatButton;
+        final MaterialButton selectButton;
+        final MaterialButton refreshButton;
+        final LinearLayout selectionToolbar;
+        final MaterialButton selectionCancelButton;
+        final TextView selectionCountText;
+        final MaterialButton selectAllButton;
+        final MaterialButton batchExportButton;
+        final MaterialButton batchTransferButton;
+        final MaterialButton batchDeleteButton;
+        final LinearLayout searchRow;
+        final EditText searchEditText;
+        final MaterialButton sortButton;
+        final TextView stripInstanceValue;
+        final TextView stripStorageValue;
+        final RecyclerView contentRecyclerView;
+        final LinearLayout emptyState;
+        final ImageView emptyStateIcon;
+        final TextView emptyStateTitle;
+        final TextView emptyStateMessage;
+        final FrameLayout loadingOverlay;
+
+        ContentListViews(View a) {
+            root = a;
+            normalToolbar = a.findViewById(R.id.normal_toolbar);
+            titleText = a.findViewById(R.id.title_text);
+            itemCountText = a.findViewById(R.id.item_count_text);
+            customFlatButton = a.findViewById(R.id.custom_flat_button);
+            selectButton = a.findViewById(R.id.select_button);
+            refreshButton = a.findViewById(R.id.refresh_button);
+            selectionToolbar = a.findViewById(R.id.selection_toolbar);
+            selectionCancelButton = a.findViewById(R.id.selection_cancel_button);
+            selectionCountText = a.findViewById(R.id.selection_count_text);
+            selectAllButton = a.findViewById(R.id.select_all_button);
+            batchExportButton = a.findViewById(R.id.batch_export_button);
+            batchTransferButton = a.findViewById(R.id.batch_transfer_button);
+            batchDeleteButton = a.findViewById(R.id.batch_delete_button);
+            searchRow = a.findViewById(R.id.search_row);
+            searchEditText = a.findViewById(R.id.search_edit_text);
+            sortButton = a.findViewById(R.id.sort_button);
+            stripInstanceValue = a.findViewById(R.id.strip_instance_value);
+            stripStorageValue = a.findViewById(R.id.strip_storage_value);
+            contentRecyclerView = a.findViewById(R.id.content_recycler_view);
+            emptyState = a.findViewById(R.id.empty_state);
+            emptyStateIcon = a.findViewById(R.id.empty_state_icon);
+            emptyStateTitle = a.findViewById(R.id.empty_state_title);
+            emptyStateMessage = a.findViewById(R.id.empty_state_message);
+            loadingOverlay = a.findViewById(R.id.loading_overlay);
+        }
+
+        View getRoot() {
+            return root;
         }
     }
 }

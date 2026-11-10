@@ -1,434 +1,254 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Two panes: left = title, instance info, auto-save status and the tabs (vertical);
+     right = the selected tab's cards, scrolling. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:baselineAligned="false"
+    android:orientation="horizontal"
+    android:padding="16dp">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/instance_settings_header"
+        style="@style/Widget.Levi.Card"
+        android:layout_width="@dimen/levi_side_panel_width"
+        android:layout_height="match_parent">
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:overScrollMode="never"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:id="@+id/instance_settings_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/instance_settings_title"
+                    android:textAppearance="@style/TextAppearance.Levi.PageTitle"
+                    android:textSize="24sp" />
+
+                <TextView
+                    android:id="@+id/instance_version_tag"
+                    style="@style/Widget.Levi.StripValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp" />
+
+                <TextView
+                    android:id="@+id/instance_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="2"
+                    android:textAppearance="@style/TextAppearance.Levi.PageSubtitle" />
+
+                <TextView
+                    android:id="@+id/instance_status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:maxLines="1"
+                    android:textAppearance="@style/TextAppearance.Levi.PageSubtitle" />
+
+                <LinearLayout
+                    android:id="@+id/instance_auto_save_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/instance_auto_save_icon"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/instances_ic_check_box"
+                        app:tint="@color/primary" />
+
+                    <TextView
+                        android:id="@+id/instance_auto_save_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:fontFamily="@font/misans"
+                        android:text="@string/instances_ui_auto_saved"
+                        android:textColor="@color/accent_text"
+                        android:textSize="13sp" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="14dp"
+                    android:background="@color/divider" />
+
+                <org.levimc.launcher.ui.widget.SegmentedControl
+                    android:id="@+id/instance_tabs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </com.google.android.material.card.MaterialCardView>
 
     <ScrollView
         android:id="@+id/instance_settings_scroll"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_marginStart="@dimen/levi_pane_gap"
         android:fillViewport="true"
+        android:overScrollMode="never"
         android:scrollbars="none">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_height="wrap_content">
 
-            <!-- Header: title, instance info, auto-save status, tabs -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/instance_settings_header"
-                style="@style/Widget.Levi.Card"
+            <!-- 基础设置 -->
+            <LinearLayout
+                android:id="@+id/section_general"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="visible">
 
-                <LinearLayout
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.Levi.Card"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="18dp">
+                    android:layout_height="wrap_content">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="vertical"
+                        android:padding="18dp">
 
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:id="@+id/instance_settings_title"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/instance_settings_title"
-                                android:textAppearance="@style/TextAppearance.Levi.PageTitle" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
-
-                                <TextView
-                                    android:id="@+id/instance_version_tag"
-                                    style="@style/Widget.Levi.StripValue"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content" />
-
-                                <TextView
-                                    android:id="@+id/instance_info"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:layout_marginStart="8dp"
-                                    android:ellipsize="end"
-                                    android:maxLines="1"
-                                    android:textAppearance="@style/TextAppearance.Levi.PageSubtitle" />
-                            </LinearLayout>
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/instance_auto_save_status"
+                        <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:layout_marginTop="4dp"
+                            android:text="@string/instance_new_name"
+                            android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
+                            android:textSize="14sp" />
+
+                        <EditText
+                            android:id="@+id/edit_instance_name"
+                            style="@style/Widget.Levi.Input"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/instances_bg_search"
+                            android:paddingStart="14dp"
+                            android:paddingEnd="14dp"
+                            android:importantForAutofill="no"
+                            android:inputType="text" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/instance_rename_hint"
+                            android:textAppearance="@style/TextAppearance.Levi.Caption" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="18dp"
+                            android:text="@string/instance_custom_icon"
+                            android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
+                            android:textSize="14sp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
                             android:gravity="center_vertical"
                             android:orientation="horizontal">
 
-                            <ImageView
-                                android:id="@+id/instance_auto_save_icon"
-                                android:layout_width="16dp"
-                                android:layout_height="16dp"
-                                android:importantForAccessibility="no"
-                                android:src="@drawable/instances_ic_check_box"
-                                app:tint="@color/primary" />
+                            <FrameLayout
+                                android:id="@+id/btn_choose_shortcut_icon"
+                                android:layout_width="46dp"
+                                android:layout_height="46dp"
+                                android:background="@drawable/instances_bg_icon_slot"
+                                android:clickable="true"
+                                android:contentDescription="@string/instance_shortcut_choose_icon"
+                                android:focusable="true"
+                                android:foreground="?android:attr/selectableItemBackground">
 
-                            <TextView
-                                android:id="@+id/instance_auto_save_text"
+                                <ImageView
+                                    android:id="@+id/instance_icon_placeholder"
+                                    android:layout_width="22dp"
+                                    android:layout_height="22dp"
+                                    android:layout_gravity="center"
+                                    android:importantForAccessibility="no"
+                                    android:src="@drawable/ic_ui_add"
+                                    app:tint="@color/text_secondary" />
+
+                                <ImageView
+                                    android:id="@+id/shortcut_icon_preview"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:contentDescription="@string/instance_shortcut_icon"
+                                    android:scaleType="centerCrop"
+                                    android:visibility="gone" />
+                            </FrameLayout>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_reset_shortcut_icon"
+                                style="@style/Widget.Levi.Button.Danger"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="6dp"
-                                android:fontFamily="@font/misans"
-                                android:text="@string/instances_ui_auto_saved"
-                                android:textColor="@color/accent_text"
-                                android:textSize="13sp" />
+                                android:layout_marginStart="12dp"
+                                android:text="@string/instance_clear_icon" />
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="12dp"
+                                android:text="@string/instances_ui_icon_hint"
+                                android:textAppearance="@style/TextAppearance.Levi.Caption" />
                         </LinearLayout>
                     </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
 
-                    <org.levimc.launcher.ui.widget.SegmentedControl
-                        android:id="@+id/instance_tabs"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <FrameLayout
+            <!-- 启动选项 -->
+            <LinearLayout
+                android:id="@+id/section_launch_options"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp">
+                android:orientation="vertical"
+                android:visibility="gone">
 
-                <!-- 基础设置 -->
-                <LinearLayout
-                    android:id="@+id/section_general"
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.Levi.Card"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="visible">
+                    android:layout_height="wrap_content">
 
-                    <com.google.android.material.card.MaterialCardView
-                        style="@style/Widget.Levi.Card"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="18dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/instance_new_name"
-                                android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
-                                android:textSize="14sp" />
-
-                            <EditText
-                                android:id="@+id/edit_instance_name"
-                                style="@style/Widget.Levi.Input"
-                                android:layout_width="match_parent"
-                                android:layout_height="48dp"
-                                android:layout_marginTop="10dp"
-                                android:background="@drawable/instances_bg_search"
-                                android:paddingStart="14dp"
-                                android:paddingEnd="14dp"
-                                android:importantForAutofill="no"
-                                android:inputType="text" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="@string/instance_rename_hint"
-                                android:textAppearance="@style/TextAppearance.Levi.Caption" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="18dp"
-                                android:text="@string/instance_custom_icon"
-                                android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
-                                android:textSize="14sp" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="10dp"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
-
-                                <FrameLayout
-                                    android:id="@+id/btn_choose_shortcut_icon"
-                                    android:layout_width="46dp"
-                                    android:layout_height="46dp"
-                                    android:background="@drawable/instances_bg_icon_slot"
-                                    android:clickable="true"
-                                    android:contentDescription="@string/instance_shortcut_choose_icon"
-                                    android:focusable="true"
-                                    android:foreground="?android:attr/selectableItemBackground">
-
-                                    <ImageView
-                                        android:id="@+id/instance_icon_placeholder"
-                                        android:layout_width="22dp"
-                                        android:layout_height="22dp"
-                                        android:layout_gravity="center"
-                                        android:importantForAccessibility="no"
-                                        android:src="@drawable/ic_ui_add"
-                                        app:tint="@color/text_secondary" />
-
-                                    <ImageView
-                                        android:id="@+id/shortcut_icon_preview"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:contentDescription="@string/instance_shortcut_icon"
-                                        android:scaleType="centerCrop"
-                                        android:visibility="gone" />
-                                </FrameLayout>
-
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btn_reset_shortcut_icon"
-                                    style="@style/Widget.Levi.Button.Danger"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="12dp"
-                                    android:text="@string/instance_clear_icon" />
-
-                                <TextView
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:layout_marginStart="12dp"
-                                    android:text="@string/instances_ui_icon_hint"
-                                    android:textAppearance="@style/TextAppearance.Levi.Caption" />
-                            </LinearLayout>
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-                </LinearLayout>
-
-                <!-- 启动选项 -->
-                <LinearLayout
-                    android:id="@+id/section_launch_options"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <com.google.android.material.card.MaterialCardView
-                        style="@style/Widget.Levi.Card"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="18dp">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:minHeight="52dp"
-                                android:orientation="horizontal">
-
-                                <LinearLayout
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:orientation="vertical">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="@string/version_isolation"
-                                        android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
-                                        android:textSize="14sp" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginTop="2dp"
-                                        android:text="@string/instance_isolation_desc"
-                                        android:textAppearance="@style/TextAppearance.Levi.Caption" />
-                                </LinearLayout>
-
-                                <com.google.android.material.switchmaterial.SwitchMaterial
-                                    android:id="@+id/switch_version_isolation"
-                                    style="@style/Widget.Levi.Switch"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="12dp" />
-                            </LinearLayout>
-
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="1dp"
-                                android:layout_marginTop="12dp"
-                                android:layout_marginBottom="12dp"
-                                android:background="@color/divider" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:minHeight="52dp"
-                                android:orientation="horizontal">
-
-                                <LinearLayout
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:orientation="vertical">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="@string/launch_vertically"
-                                        android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
-                                        android:textSize="14sp" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginTop="2dp"
-                                        android:text="@string/launch_vertically_desc"
-                                        android:textAppearance="@style/TextAppearance.Levi.Caption" />
-                                </LinearLayout>
-
-                                <com.google.android.material.switchmaterial.SwitchMaterial
-                                    android:id="@+id/switch_launch_vertically"
-                                    style="@style/Widget.Levi.Switch"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="12dp" />
-                            </LinearLayout>
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <com.google.android.material.card.MaterialCardView
-                        style="@style/Widget.Levi.Card"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="18dp">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/instance_shortcut_title"
-                                android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:text="@string/instance_shortcut_desc"
-                                android:textAppearance="@style/TextAppearance.Levi.Caption" />
-
-                            <LinearLayout
-                                android:id="@+id/shortcut_config"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="14dp"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/instance_shortcut_name"
-                                    android:textAppearance="@style/TextAppearance.Levi.FieldLabel" />
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="6dp"
-                                    android:gravity="center_vertical"
-                                    android:orientation="horizontal">
-
-                                    <EditText
-                                        android:id="@+id/edit_shortcut_name"
-                                        style="@style/Widget.Levi.Input"
-                                        android:layout_width="0dp"
-                                        android:layout_height="48dp"
-                                        android:layout_weight="1"
-                                        android:background="@drawable/instances_bg_search"
-                                        android:paddingStart="14dp"
-                                        android:paddingEnd="14dp"
-                                        android:importantForAutofill="no"
-                                        android:inputType="text" />
-
-                                    <com.google.android.material.button.MaterialButton
-                                        android:id="@+id/btn_add_instance_shortcut"
-                                        style="@style/Widget.Levi.Button.Primary"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="12dp"
-                                        android:text="@string/instance_shortcut_add_button"
-                                        app:icon="@drawable/ic_ui_add" />
-                                </LinearLayout>
-                            </LinearLayout>
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-                </LinearLayout>
-
-                <!-- 加载器 -->
-                <LinearLayout
-                    android:id="@+id/section_loader"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <include
-                        layout="@layout/view_pkg_loader_card"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-
-                <!-- 管理 -->
-                <LinearLayout
-                    android:id="@+id/section_management"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <com.google.android.material.card.MaterialCardView
-                        style="@style/Widget.Levi.Card"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:orientation="vertical"
+                        android:padding="18dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:padding="18dp">
+                            android:minHeight="52dp"
+                            android:orientation="horizontal">
 
                             <LinearLayout
                                 android:layout_width="0dp"
@@ -439,7 +259,7 @@
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="@string/instance_backup_title"
+                                    android:text="@string/version_isolation"
                                     android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
                                     android:textSize="14sp" />
 
@@ -447,105 +267,283 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="2dp"
-                                    android:text="@string/instance_backup_desc"
+                                    android:text="@string/instance_isolation_desc"
                                     android:textAppearance="@style/TextAppearance.Levi.Caption" />
                             </LinearLayout>
 
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_backup_instance"
-                                style="@style/Widget.Levi.Button.Secondary"
+                            <com.google.android.material.switchmaterial.SwitchMaterial
+                                android:id="@+id/switch_version_isolation"
+                                style="@style/Widget.Levi.Switch"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="12dp"
-                                android:text="@string/instance_backup_button"
-                                app:icon="@drawable/ic_ui_download" />
+                                android:layout_marginStart="12dp" />
                         </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
 
-                    <com.google.android.material.card.MaterialCardView
-                        style="@style/Widget.Levi.Card"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp">
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="12dp"
+                            android:layout_marginBottom="12dp"
+                            android:background="@color/divider" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="18dp">
+                            android:gravity="center_vertical"
+                            android:minHeight="52dp"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/launch_vertically"
+                                    android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
+                                    android:textSize="14sp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:text="@string/launch_vertically_desc"
+                                    android:textAppearance="@style/TextAppearance.Levi.Caption" />
+                            </LinearLayout>
+
+                            <com.google.android.material.switchmaterial.SwitchMaterial
+                                android:id="@+id/switch_launch_vertically"
+                                style="@style/Widget.Levi.Switch"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.Levi.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="18dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/instance_shortcut_title"
+                            android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/instance_shortcut_desc"
+                            android:textAppearance="@style/TextAppearance.Levi.Caption" />
+
+                        <LinearLayout
+                            android:id="@+id/shortcut_config"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="14dp"
+                            android:orientation="vertical">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/instance_danger_zone"
+                                android:text="@string/instance_shortcut_name"
+                                android:textAppearance="@style/TextAppearance.Levi.FieldLabel" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <EditText
+                                    android:id="@+id/edit_shortcut_name"
+                                    style="@style/Widget.Levi.Input"
+                                    android:layout_width="0dp"
+                                    android:layout_height="48dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/instances_bg_search"
+                                    android:paddingStart="14dp"
+                                    android:paddingEnd="14dp"
+                                    android:importantForAutofill="no"
+                                    android:inputType="text" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_add_instance_shortcut"
+                                    style="@style/Widget.Levi.Button.Primary"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="12dp"
+                                    android:text="@string/instance_shortcut_add_button"
+                                    app:icon="@drawable/ic_ui_add" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- 加载器 -->
+            <LinearLayout
+                android:id="@+id/section_loader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <include
+                    layout="@layout/view_pkg_loader_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <!-- 管理 -->
+            <LinearLayout
+                android:id="@+id/section_management"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.Levi.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="18dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/instance_backup_title"
                                 android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
-                                android:textColor="@color/ui_danger"
                                 android:textSize="14sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:text="@string/instance_danger_zone_desc"
+                                android:text="@string/instance_backup_desc"
                                 android:textAppearance="@style/TextAppearance.Levi.Caption" />
+                        </LinearLayout>
 
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="1dp"
-                                android:layout_marginTop="14dp"
-                                android:layout_marginBottom="14dp"
-                                android:background="@color/divider" />
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btn_backup_instance"
+                            style="@style/Widget.Levi.Button.Secondary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="12dp"
+                            android:text="@string/instance_backup_button"
+                            app:icon="@drawable/ic_ui_download" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.Levi.Card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="18dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/instance_danger_zone"
+                            android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
+                            android:textColor="@color/ui_danger"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/instance_danger_zone_desc"
+                            android:textAppearance="@style/TextAppearance.Levi.Caption" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="14dp"
+                            android:layout_marginBottom="14dp"
+                            android:background="@color/divider" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
 
                             <LinearLayout
-                                android:layout_width="match_parent"
+                                android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
+                                android:layout_weight="1"
+                                android:orientation="vertical">
 
-                                <LinearLayout
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:orientation="vertical">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="@string/delete"
-                                        android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
-                                        android:textSize="14sp" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginTop="2dp"
-                                        android:text="@string/instance_delete_desc"
-                                        android:textAppearance="@style/TextAppearance.Levi.Caption" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginTop="2dp"
-                                        android:text="@string/instance_delete_warning"
-                                        android:textAppearance="@style/TextAppearance.Levi.Caption"
-                                        android:textColor="@color/ui_danger" />
-                                </LinearLayout>
-
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/btn_delete_instance"
-                                    style="@style/Widget.Levi.Button.Danger"
+                                <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginStart="12dp"
                                     android:text="@string/delete"
-                                    app:icon="@drawable/ic_ui_delete" />
+                                    android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
+                                    android:textSize="14sp" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:text="@string/instance_delete_desc"
+                                    android:textAppearance="@style/TextAppearance.Levi.Caption" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:text="@string/instance_delete_warning"
+                                    android:textAppearance="@style/TextAppearance.Levi.Caption"
+                                    android:textColor="@color/ui_danger" />
                             </LinearLayout>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btn_delete_instance"
+                                style="@style/Widget.Levi.Button.Danger"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:text="@string/delete"
+                                app:icon="@drawable/ic_ui_delete" />
                         </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-                </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
 
-            </FrameLayout>
-
-        </LinearLayout>
+        </FrameLayout>
     </ScrollView>
 </LinearLayout>
