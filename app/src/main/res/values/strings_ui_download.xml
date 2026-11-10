@@ -6,4 +6,5 @@
     <string name="download_ui_col_type">Type</string>
     <string name="download_ui_col_status">Status</string>
     <string name="download_ui_col_actions">Actions</string>
+    <string name="download_ui_no_version_for_device">Google Play has no Minecraft version for this device. This happens on emulators and on devices Minecraft does not support. You can still use Download by version code or Install from file.</string>
 </resources>

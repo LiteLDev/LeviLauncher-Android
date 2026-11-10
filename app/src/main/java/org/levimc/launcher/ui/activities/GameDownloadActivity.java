@@ -331,7 +331,10 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
                 allReleases.addAll(releases);
                 if (finalDetails != null) {
                     latestVersionCode = finalDetails.versionCode;
-                    setStatus(null);
+                    // Play lists the app but offers no build for this device profile (e.g. an emulator):
+                    // say so instead of leaving the list silently empty.
+                    setStatus(finalDetails.versionCode > 0 ? null
+                            : getString(R.string.download_ui_no_version_for_device));
                     updatePreviewSwitch(finalDetails);
                 } else {
                     setStatus(describe(finalError));
@@ -421,9 +424,16 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
             emptyText.setText(R.string.game_download_empty_signed_out);
             emptyAction.setVisibility(View.VISIBLE);
         } else {
-            emptyText.setText(allReleases.isEmpty()
-                    ? R.string.game_download_empty_signed_in
-                    : R.string.game_download_empty_filtered);
+            CharSequence problem = status != null && status.getVisibility() == View.VISIBLE ? status.getText() : null;
+            if (allReleases.isEmpty() && !TextUtils.isEmpty(problem)) {
+                // The status line sits at the bottom of the side panel; with an empty list the reason
+                // belongs where the user looks, in the list area.
+                emptyText.setText(problem);
+            } else {
+                emptyText.setText(allReleases.isEmpty()
+                        ? R.string.game_download_empty_signed_in
+                        : R.string.game_download_empty_filtered);
+            }
             emptyAction.setVisibility(View.GONE);
         }
     }
@@ -431,6 +441,7 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
     private void setStatus(String text) {
         status.setVisibility(TextUtils.isEmpty(text) ? View.GONE : View.VISIBLE);
         status.setText(text);
+        updateEmptyState();
     }
 
     private String describe(PlayException error) {

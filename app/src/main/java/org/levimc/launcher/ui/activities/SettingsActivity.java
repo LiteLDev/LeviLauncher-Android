@@ -558,19 +558,27 @@ public class SettingsActivity extends BaseActivity {
 
     private void setupThemeSection() {
         themeModeTabs = findViewById(R.id.theme_mode_tabs);
-        themeModeTabs.addSegment(getString(R.string.settings_ui_mode_light), R.drawable.ic_sun);
-        themeModeTabs.addSegment(getString(R.string.settings_ui_mode_dark), R.drawable.ic_moon);
-        themeModeTabs.addSegment(getString(R.string.settings_ui_mode_schedule), R.drawable.ic_ui_schedule);
-        themeModeTabs.addSegment(getString(R.string.settings_ui_mode_sun), R.drawable.ic_ui_sunrise);
-        themeModeTabs.addSegment(getString(R.string.settings_ui_mode_system), R.drawable.ic_ui_monitor);
+        // In the narrow right pane of the two-pane layout the five labels only fit without their icons:
+        // there the control fills the row with equal, compact segments instead of scrolling sideways.
+        boolean icons = !twoPane;
+        themeModeTabs.addSegment(getString(R.string.settings_ui_mode_light), icons ? R.drawable.ic_sun : 0);
+        themeModeTabs.addSegment(getString(R.string.settings_ui_mode_dark), icons ? R.drawable.ic_moon : 0);
+        themeModeTabs.addSegment(getString(R.string.settings_ui_mode_schedule), icons ? R.drawable.ic_ui_schedule : 0);
+        themeModeTabs.addSegment(getString(R.string.settings_ui_mode_sun), icons ? R.drawable.ic_ui_sunrise : 0);
+        themeModeTabs.addSegment(getString(R.string.settings_ui_mode_system), icons ? R.drawable.ic_ui_monitor : 0);
         if (twoPane) {
-            // Five equal segments do not fit the narrow right pane: compact segments sized to their labels.
-            themeModeTabs.setEqualWidth(false);
+            themeModeTabs.setEqualWidth(true);
             themeModeTabs.setTextSizeSp(13f);
-            int pad = Math.round(10 * getResources().getDisplayMetrics().density);
+            int pad = Math.round(6 * getResources().getDisplayMetrics().density);
             for (int i = 0; i < themeModeTabs.getSegmentCount(); i++) {
                 themeModeTabs.getSegment(i).setPadding(pad, 0, pad, 0);
             }
+            if (themeModeTabs.getParent() instanceof android.widget.HorizontalScrollView) {
+                ((android.widget.HorizontalScrollView) themeModeTabs.getParent()).setFillViewport(true);
+            }
+            android.view.ViewGroup.LayoutParams lp = themeModeTabs.getLayoutParams();
+            lp.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+            themeModeTabs.setLayoutParams(lp);
         }
         int mode = themeManager.getCurrentMode();
         themeModeTabs.setSelectedIndex(themeModeIndex(mode), false);

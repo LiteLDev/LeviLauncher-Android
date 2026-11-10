@@ -6,4 +6,5 @@
     <string name="download_ui_col_type">类型</string>
     <string name="download_ui_col_status">状态</string>
     <string name="download_ui_col_actions">操作</string>
+    <string name="download_ui_no_version_for_device">Google Play 没有为这台设备提供 Minecraft 版本（模拟器或不受支持的设备会出现这种情况）。仍可使用「按版本号下载」或「本地安装」。</string>
 </resources>
