@@ -102,10 +102,19 @@
             android:layout_width="64dp"
             android:layout_height="match_parent">
 
+            <!-- Scrolls only when an item had to move below the front camera and space ran out. -->
+            <ScrollView
+                android:id="@+id/nav_rail_scroll"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fillViewport="true"
+                android:overScrollMode="never"
+                android:scrollbars="none">
+
             <LinearLayout
                 android:id="@+id/nav_rail_items"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
                 android:orientation="vertical"
                 android:paddingTop="8dp"
@@ -117,6 +126,13 @@
                     android:contentDescription="@string/nav_launch"
                     android:drawableTop="@drawable/ic_nav_launch"
                     android:tooltipText="@string/nav_launch" />
+
+                <TextView
+                    android:id="@+id/nav_tab_download"
+                    style="@style/Widget.Levi.RailItem"
+                    android:contentDescription="@string/nav_download"
+                    android:drawableTop="@drawable/ic_nav_download"
+                    android:tooltipText="@string/nav_download" />
 
                 <TextView
                     android:id="@+id/nav_tab_instances"
@@ -155,6 +171,7 @@
                     android:tooltipText="@string/nav_toggle_theme"
                     app:tint="@color/ui_muted" />
             </LinearLayout>
+            </ScrollView>
 
             <View
                 android:id="@+id/nav_rail_indicator"

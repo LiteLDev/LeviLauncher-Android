@@ -74,6 +74,12 @@
                     android:text="@string/nav_launch" />
 
                 <TextView
+                    android:id="@+id/nav_tab_download"
+                    style="@style/Widget.Levi.NavbarItem"
+                    android:drawableStart="@drawable/ic_nav_download"
+                    android:text="@string/nav_download" />
+
+                <TextView
                     android:id="@+id/nav_tab_instances"
                     style="@style/Widget.Levi.NavbarItem"
                     android:drawableStart="@drawable/ic_nav_instances"

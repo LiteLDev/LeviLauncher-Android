@@ -865,6 +865,7 @@
 
     <!-- Navigation Bar -->
     <string name="nav_launch">起動</string>
+    <string name="nav_download">ダウンロード</string>
     <string name="nav_import">インポート</string>
     <string name="nav_instances">インスタンス</string>
     <string name="nav_about">アプリについて</string>

@@ -865,6 +865,7 @@
 
     <!-- Navigation Bar -->
     <string name="nav_launch">Launch</string>
+    <string name="nav_download">Download</string>
     <string name="nav_import">Import</string>
     <string name="nav_instances">Instances</string>
     <string name="nav_about">About</string>

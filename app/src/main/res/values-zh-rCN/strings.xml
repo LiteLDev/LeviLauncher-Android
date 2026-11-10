@@ -865,6 +865,7 @@
 
     <!-- Navigation Bar -->
     <string name="nav_launch">启动</string>
+    <string name="nav_download">下载</string>
     <string name="nav_import">导入</string>
     <string name="nav_instances">实例列表</string>
     <string name="nav_about">关于</string>

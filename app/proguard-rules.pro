@@ -96,3 +96,18 @@
 -dontwarn io.netty.**
 -dontwarn net.lenni0451.commons.httpclient.executor.HttpClientExecutor
 -dontwarn lombok.Generated
+
+-keep class org.levimc.launcher.core.play.PlayAccountStore$Account {
+    !static !transient <fields>;
+    <init>();
+}
+
+-keep class org.levimc.launcher.core.play.GameRelease {
+    !static !transient <fields>;
+    <init>();
+}
+
+-keep class org.levimc.launcher.core.play.GameDownloads$Downloaded {
+    !static !transient <fields>;
+    <init>();
+}

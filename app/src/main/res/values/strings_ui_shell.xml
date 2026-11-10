@@ -6,6 +6,7 @@
     <string name="nav_account">Account</string>
     <string name="nav_sign_in_account">Sign in to a Microsoft account</string>
     <string name="crumb_home">Home</string>
+    <string name="crumb_download">Download</string>
     <string name="crumb_instances">Instances</string>
     <string name="crumb_instance_settings">Instance settings</string>
     <string name="crumb_content">Content management</string>

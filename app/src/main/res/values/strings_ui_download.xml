@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="download_ui_search_hint">Search by version…</string>
+    <string name="download_ui_filter_all">All</string>
+    <string name="download_ui_col_version">Version</string>
+    <string name="download_ui_col_type">Type</string>
+    <string name="download_ui_col_status">Status</string>
+    <string name="download_ui_col_actions">Actions</string>
+</resources>

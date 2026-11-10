@@ -169,7 +169,7 @@ public class BaseActivity extends AppCompatActivity {
     private void wrapWithNavBar(View contentView) {
         if (shouldSkipNavBar()) {
             super.setContentView(contentView);
-            if (avoidsCutoutWithoutShell()) applyCutoutInsets(contentView);
+            if (avoidsCutoutWithoutShell()) org.levimc.launcher.ui.widget.CutoutAvoider.attachToPage(contentView);
             applyPersonalization();
             return;
         }
@@ -187,7 +187,7 @@ public class BaseActivity extends AppCompatActivity {
         }
 
         super.setContentView(shell);
-        applyCutoutInsets(shell);
+        org.levimc.launcher.ui.widget.CutoutAvoider.attachToShell(shell, this::placeRailIndicator);
         navBarInjected = true;
         setupBaseNavBar();
 
@@ -200,39 +200,6 @@ public class BaseActivity extends AppCompatActivity {
                 DynamicAnim.springTranslationYTo(contentView, 0f).start();
             });
         }
-    }
-
-    /**
-     * Keeps the navigation and the page clear of the front camera cutout. The shell is padded by the
-     * cutout's safe insets (in landscape only the side with the camera gets a margin); the shell's own
-     * background and the wallpaper still fill the screen. Recomputed whenever the insets change, e.g.
-     * after rotating to the other landscape side.
-     */
-    private void applyCutoutInsets(View shell) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
-        View bar = shell.findViewById(R.id.nav_bar_root);
-        View content = shell.findViewById(R.id.shell_content);
-        boolean splitPadding = UiSettings.useTopNavbar(this) && bar != null && content != null;
-        int barStart = bar != null ? bar.getPaddingLeft() : 0;
-        int barEnd = bar != null ? bar.getPaddingRight() : 0;
-        int p0l = shell.getPaddingLeft(), p0t = shell.getPaddingTop();
-        int p0r = shell.getPaddingRight(), p0b = shell.getPaddingBottom();
-        shell.setOnApplyWindowInsetsListener((v, insets) -> {
-            android.view.DisplayCutout cutout = insets.getDisplayCutout();
-            int l = cutout != null ? cutout.getSafeInsetLeft() : 0;
-            int t = cutout != null ? cutout.getSafeInsetTop() : 0;
-            int r = cutout != null ? cutout.getSafeInsetRight() : 0;
-            int b = cutout != null ? cutout.getSafeInsetBottom() : 0;
-            if (splitPadding) {
-                // Top navbar: the bar's background still spans the screen, its items and the page move in.
-                bar.setPadding(barStart + l, t, barEnd + r, 0);
-                content.setPadding(l, 0, r, b);
-            } else {
-                v.setPadding(p0l + l, p0t + t, p0r + r, p0b + b);
-            }
-            return insets;
-        });
-        shell.requestApplyInsets();
     }
 
     private void applyPersonalization() {
@@ -250,7 +217,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     private static final int[] NAV_TAB_IDS = {
-            R.id.nav_tab_launch, R.id.nav_tab_instances,
+            R.id.nav_tab_launch, R.id.nav_tab_download, R.id.nav_tab_instances,
             R.id.nav_tab_about, R.id.nav_tab_settings
     };
 
@@ -335,9 +302,15 @@ public class BaseActivity extends AppCompatActivity {
         }
 
         bindNavTab(R.id.nav_tab_launch, MainActivity.class);
+        bindNavTab(R.id.nav_tab_download, GameDownloadActivity.class);
         bindNavTab(R.id.nav_tab_instances, InstancesActivity.class);
         bindNavTab(R.id.nav_tab_about, AboutActivity.class);
         bindNavTab(R.id.nav_tab_settings, SettingsActivity.class);
+
+        View railScroll = findViewById(R.id.nav_rail_scroll);
+        if (railScroll != null) {
+            railScroll.setOnScrollChangeListener((v, x, y, oldX, oldY) -> placeRailIndicator());
+        }
 
         refreshBreadcrumbs();
         refreshNavAccountUI();
@@ -492,8 +465,14 @@ public class BaseActivity extends AppCompatActivity {
         }
         indicator.setBackgroundTintList(ColorStateList.valueOf(new PersonalizationManager(this).getAccentColor(
                 new PersonalizationManager(this).isDarkMode(this))));
+        View rail = findViewById(R.id.nav_rail);
         tab.post(() -> {
-            float y = tab.getTop() + ((View) tab.getParent()).getTop() + (tab.getHeight() - indicator.getHeight()) / 2f;
+            // Window coordinates: the rail scrolls and items may be moved away from the camera.
+            int[] tabLoc = new int[2];
+            int[] railLoc = new int[2];
+            tab.getLocationInWindow(tabLoc);
+            (rail != null ? rail : (View) indicator.getParent()).getLocationInWindow(railLoc);
+            float y = tabLoc[1] - railLoc[1] + (tab.getHeight() - indicator.getHeight()) / 2f;
             indicator.setTranslationY(y);
             indicator.setVisibility(View.VISIBLE);
         });

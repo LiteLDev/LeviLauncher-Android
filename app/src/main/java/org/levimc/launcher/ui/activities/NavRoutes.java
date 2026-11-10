@@ -37,6 +37,7 @@ final class NavRoutes {
 
     static {
         put(MainActivity.class, R.string.crumb_home, null, true);
+        put(GameDownloadActivity.class, R.string.crumb_download, MainActivity.class, true);
         put(InstancesActivity.class, R.string.crumb_instances, MainActivity.class, true);
         put(InstanceSettingsActivity.class, R.string.crumb_instance_settings, InstancesActivity.class, false);
         put(ContentManagementActivity.class, R.string.crumb_content, MainActivity.class, true);

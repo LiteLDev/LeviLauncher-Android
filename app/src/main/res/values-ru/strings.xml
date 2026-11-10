@@ -873,6 +873,7 @@
 
     <!-- Navigation Bar -->
     <string name="nav_launch">Запуск</string>
+    <string name="nav_download">Загрузка</string>
     <string name="nav_import">Импорт</string>
     <string name="nav_instances">Экземпляры</string>
     <string name="nav_about">О приложении</string>
