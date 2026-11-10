@@ -105,6 +105,12 @@
     <string name="settings_tab_personalize">个性化</string>
     <string name="settings_tab_updates">更新</string>
     <string name="settings_tab_about">关于</string>
+    <string name="settings_tab_components">第三方组件</string>
+    <string name="settings_tab_others">其他设置</string>
+    <string name="settings_tab_privacy">隐私</string>
+    <string name="settings_personalize_theme">主题与配色</string>
+    <string name="settings_personalize_wallpaper">壁纸</string>
+    <string name="settings_current_version">当前版本</string>
     <string name="settings_theme_desc">选择应用主题</string>
 
 
@@ -598,6 +604,8 @@
     <!-- Crash & Diagnostics -->
     <string name="crash_title">应用发生崩溃</string>
     <string name="crash_upload">上传崩溃报告</string>
+    <string name="discord_rich_presence">Discord 游戏状态</string>
+    <string name="discord_rich_presence_desc">在 Discord 上显示启动器动态、Minecraft 版本和已游玩时长</string>
     <string name="crash_details_title">崩溃详情</string>
     <string name="crash_back_to_main">返回主页面</string>
     <string name="crash_share_log">分享日志</string>
@@ -651,6 +659,7 @@
     <string name="inbuilt_mod_camera_desc">切换相机视角</string>
     <string name="inbuilt_mod_hud">隐藏界面</string>
     <string name="inbuilt_mod_hud_desc">隐藏快捷栏和 UI</string>
+    <string name="mod_config_hide_launcher_hud">同时隐藏启动器 HUD 和悬浮按钮</string>
     <string name="inbuilt_mod_autosprint">自动疾跑</string>
     <string name="inbuilt_mod_autosprint_desc">切换疾跑开启/关闭</string>
     <string name="inbuilt_mod_chick_pet">小鸡宠物</string>
@@ -725,6 +734,10 @@
     <string name="mod_menu_appearance">外观</string>
     <string name="mod_menu_pause_menu_only">仅暂停菜单显示</string>
     <string name="mod_menu_pause_menu_only_desc">只在暂停界面显示模组菜单</string>
+    <string name="mod_menu_keybind">模组菜单快捷键</string>
+    <string name="mod_menu_keybind_desc">点击以更改键盘快捷键</string>
+    <string name="mod_menu_keybind_reset">重置为 M</string>
+    <string name="mod_menu_keybind_unbound">未绑定</string>
     <string name="mod_menu_default_percent" formatted="false">100%</string>
     <string name="mod_menu_percent_value">%1$d%%</string>
     <string name="mod_menu_settings_coming">设置即将推出</string>
@@ -1085,4 +1098,17 @@
     <string name="batch_transferring">正在传输 %1$d/%2$d…</string>
     <string name="batch_result">%1$d 个已完成，%2$d 个失败</string>
     <string name="choose_export_folder">选择导出文件夹</string>
+    <string name="mod_config_activation_keybind">激活快捷键</string>
+    <string name="mod_config_edit_controls">编辑控件</string>
+    <string name="mod_config_display_size_dp">显示大小 (dp)</string>
+    <string name="mod_config_clear_keybind">清除快捷键</string>
+    <string name="bg_media_title">背景</string>
+    <string name="bg_media_desc">选择一张图片或 GIF</string>
+    <string name="bg_media_select">选择背景</string>
+    <string name="bg_media_none">未选择背景</string>
+    <string name="bg_media_importing">正在导入背景…</string>
+    <string name="bg_media_import_failed">无法加载此背景，请选择受支持的图片或 GIF。</string>
+    <string name="bg_media_blur_unavailable">需要 Android 12+</string>
+    <string name="screenshot_saved">截图已保存</string>
+    <string name="backup_select_downloads">请选择“下载”文件夹，以便将备份保存到 Downloads/LeviLauncher/Backups。</string>
 </resources>

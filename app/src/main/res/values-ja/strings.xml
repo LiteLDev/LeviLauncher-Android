@@ -105,6 +105,12 @@
     <string name="settings_tab_personalize">カスタマイズ</string>
     <string name="settings_tab_updates">アップデート</string>
     <string name="settings_tab_about">アプリについて</string>
+    <string name="settings_tab_components">サードパーティ製コンポーネント</string>
+    <string name="settings_tab_others">その他</string>
+    <string name="settings_tab_privacy">プライバシー</string>
+    <string name="settings_personalize_theme">テーマと配色</string>
+    <string name="settings_personalize_wallpaper">壁紙</string>
+    <string name="settings_current_version">現在のバージョン</string>
     <string name="settings_theme_desc">アプリのテーマを選択</string>
 
 
@@ -192,6 +198,9 @@
     <string name="invalid_mod_file_reason">.so ファイル、.zip モッドパッケージ、または .levipack/.mcmod モッドパッケージのみ許可されています。</string>
     <string name="invalid_zip_mod_package_title">無効な ZIP モッドパッケージ</string>
     <string name="invalid_zip_mod_package_message">ZIP モッドパッケージには manifest.json と .so ファイルが含まれている必要があります。</string>
+    <string name="invalid_mcmod_package_title">無効な .mcmod パッケージ</string>
+    <string name="invalid_mcmod_package_message">.mcmod の中身は mods/&lt;name&gt;/ の内容そのものです: ルートに manifest.json があり、\"name\" がフォルダー名、\"type\" が \"preload-native\"、\"entry\" がパッケージ内の .so ファイルを指している必要があります。</string>
+    <string name="mod_import_refused_by_packages">mods/%1$s にインポートできません: %2$s。代わりにパッケージマネージャーで更新または削除してください。</string>
     <string name="error_versions">エラーバージョン</string>
 
     <string name="dialog_title_delete_mod">モッドの削除</string>
@@ -595,6 +604,8 @@
     <!-- Crash & Diagnostics -->
     <string name="crash_title">アプリがクラッシュしました</string>
     <string name="crash_upload">クラッシュレポートをアップロード</string>
+    <string name="discord_rich_presence">Discord Rich Presence</string>
+    <string name="discord_rich_presence_desc">ランチャーのアクティビティ、Minecraft のバージョン、経過時間を Discord に表示します</string>
     <string name="crash_details_title">クラッシュの詳細</string>
     <string name="crash_back_to_main">ホームに戻る</string>
     <string name="crash_share_log">ログを共有</string>
@@ -648,6 +659,7 @@
     <string name="inbuilt_mod_camera_desc">カメラの視点を切り替える</string>
     <string name="inbuilt_mod_hud">HUD を隠す</string>
     <string name="inbuilt_mod_hud_desc">ホットバーと UI を非表示にする</string>
+    <string name="mod_config_hide_launcher_hud">ランチャーの HUD とオーバーレイボタンも非表示にする</string>
     <string name="inbuilt_mod_autosprint">オートスプリント</string>
     <string name="inbuilt_mod_autosprint_desc">スプリントのオン/オフを切り替える</string>
     <string name="inbuilt_mod_chick_pet">ひよこペット</string>
@@ -722,6 +734,10 @@
     <string name="mod_menu_appearance">外観</string>
     <string name="mod_menu_pause_menu_only">ポーズメニューのみ</string>
     <string name="mod_menu_pause_menu_only_desc">ポーズ画面でのみModメニューを表示</string>
+    <string name="mod_menu_keybind">モッドメニューのキー割り当て</string>
+    <string name="mod_menu_keybind_desc">押してキーボードショートカットを変更</string>
+    <string name="mod_menu_keybind_reset">M にリセット</string>
+    <string name="mod_menu_keybind_unbound">未割り当て</string>
     <string name="mod_menu_default_percent" formatted="false">100%</string>
     <string name="mod_menu_percent_value">%1$d%%</string>
     <string name="mod_menu_settings_coming">設定は近日追加予定</string>
@@ -1082,4 +1098,17 @@
     <string name="batch_transferring">%2$d 件中 %1$d 件を転送中…</string>
     <string name="batch_result">%1$d 件完了、%2$d 件失敗</string>
     <string name="choose_export_folder">エクスポート先フォルダーを選択</string>
+    <string name="mod_config_activation_keybind">有効化のキー割り当て</string>
+    <string name="mod_config_edit_controls">操作ボタンを編集</string>
+    <string name="mod_config_display_size_dp">表示サイズ (dp)</string>
+    <string name="mod_config_clear_keybind">キー割り当てを解除</string>
+    <string name="bg_media_title">背景</string>
+    <string name="bg_media_desc">写真または GIF を選択</string>
+    <string name="bg_media_select">背景を選択</string>
+    <string name="bg_media_none">背景が選択されていません</string>
+    <string name="bg_media_importing">背景をインポート中…</string>
+    <string name="bg_media_import_failed">この背景を読み込めませんでした。対応している写真または GIF を選択してください。</string>
+    <string name="bg_media_blur_unavailable">Android 12 以降</string>
+    <string name="screenshot_saved">スクリーンショットを保存しました</string>
+    <string name="backup_select_downloads">Downloads フォルダーを選択すると、バックアップが Downloads/LeviLauncher/Backups に保存されます。</string>
 </resources>

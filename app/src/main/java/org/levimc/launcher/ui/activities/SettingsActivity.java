@@ -61,16 +61,24 @@ public class SettingsActivity extends BaseActivity {
 
     private TextView tabBasic;
     private TextView tabPersonalize;
+    private TextView tabComponents;
+    private TextView tabOthers;
+    private TextView tabPrivacy;
     private TextView tabUpdates;
     private TextView tabAbout;
 
     private View sectionBasic;
     private View sectionPersonalize;
+    private View sectionComponents;
+    private View sectionOthers;
+    private View sectionPrivacy;
     private View sectionUpdates;
     private View sectionAbout;
 
     private static final String KEY_SELECTED_TAB = "selected_tab_index";
+    private static final String KEY_PERSONALIZE_SECTION = "personalize_section_index";
     private int selectedTabIndex = 0;
+    private int personalizeSectionIndex = 0;
 
     private PersonalizationManager personalizationManager;
     private LinearLayout colorGridContainer;
@@ -96,6 +104,7 @@ public class SettingsActivity extends BaseActivity {
 
         if (savedInstanceState != null) {
             selectedTabIndex = savedInstanceState.getInt(KEY_SELECTED_TAB, 0);
+            personalizeSectionIndex = savedInstanceState.getInt(KEY_PERSONALIZE_SECTION, 0);
         }
 
         permissionsHandler = PermissionsHandler.getInstance();
@@ -142,34 +151,76 @@ public class SettingsActivity extends BaseActivity {
             selectedTabIndex = 0;
         }
         selectTab(tabs[selectedTabIndex]);
+        selectPersonalizeSection(personalizeSectionIndex);
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(KEY_SELECTED_TAB, selectedTabIndex);
+        outState.putInt(KEY_PERSONALIZE_SECTION, personalizeSectionIndex);
     }
 
     private void initTabs() {
         tabBasic = findViewById(R.id.tab_basic);
         tabPersonalize = findViewById(R.id.tab_personalize);
+        tabComponents = findViewById(R.id.tab_components);
+        tabOthers = findViewById(R.id.tab_others);
+        tabPrivacy = findViewById(R.id.tab_privacy);
         tabUpdates = findViewById(R.id.tab_updates);
         tabAbout = findViewById(R.id.tab_about);
 
         sectionBasic = findViewById(R.id.section_basic);
         sectionPersonalize = findViewById(R.id.section_personalize);
+        sectionComponents = findViewById(R.id.section_components);
+        sectionOthers = findViewById(R.id.section_others);
+        sectionPrivacy = findViewById(R.id.section_privacy);
         sectionUpdates = findViewById(R.id.section_updates);
         sectionAbout = findViewById(R.id.section_about);
 
-        tabBasic.setOnClickListener(v -> { selectedTabIndex = 0; selectTab(tabBasic); });
-        tabPersonalize.setOnClickListener(v -> { selectedTabIndex = 1; selectTab(tabPersonalize); });
-        tabUpdates.setOnClickListener(v -> { selectedTabIndex = 2; selectTab(tabUpdates); });
-        tabAbout.setOnClickListener(v -> { selectedTabIndex = 3; selectTab(tabAbout); });
+        TextView[] tabs = getSettingsTabs();
+        for (int i = 0; i < tabs.length; i++) {
+            final int index = i;
+            tabs[i].setOnClickListener(v -> { selectedTabIndex = index; selectTab(tabs[index]); });
+        }
+
+        TextView navTheme = findViewById(R.id.personalize_nav_theme);
+        TextView navWallpaper = findViewById(R.id.personalize_nav_wallpaper);
+        navTheme.setOnClickListener(v -> selectPersonalizeSection(0));
+        navWallpaper.setOnClickListener(v -> selectPersonalizeSection(1));
+    }
+
+    /** Switches between the personalization sub-sections (theme and colors / wallpaper), as on Windows. */
+    private void selectPersonalizeSection(int index) {
+        personalizeSectionIndex = index;
+        TextView[] navs = {findViewById(R.id.personalize_nav_theme), findViewById(R.id.personalize_nav_wallpaper)};
+        View[] groups = {findViewById(R.id.personalize_theme_group), findViewById(R.id.personalize_wallpaper_group)};
+        int accent = personalizationManager.getAccentColor();
+        for (int i = 0; i < navs.length; i++) {
+            boolean selected = i == index;
+            if (selected) {
+                if (accent != 0) {
+                    GradientDrawable gd = new GradientDrawable();
+                    gd.setShape(GradientDrawable.RECTANGLE);
+                    gd.setColor(accent);
+                    gd.setCornerRadius(16 * getResources().getDisplayMetrics().density);
+                    navs[i].setBackground(gd);
+                } else {
+                    navs[i].setBackgroundResource(R.drawable.bg_tab_selected);
+                }
+                navs[i].setTextColor(Color.WHITE);
+            } else {
+                navs[i].setBackgroundResource(R.drawable.bg_tab_unselected);
+                navs[i].setTextColor(getColor(R.color.text_secondary));
+            }
+            groups[i].setVisibility(selected ? View.VISIBLE : View.GONE);
+        }
     }
 
     private void selectTab(TextView selectedTab) {
         TextView[] tabs = getSettingsTabs();
-        View[] sections = {sectionBasic, sectionPersonalize, sectionUpdates, sectionAbout};
+        View[] sections = {sectionBasic, sectionPersonalize, sectionComponents, sectionOthers, sectionPrivacy,
+                sectionUpdates, sectionAbout};
 
         int accent = personalizationManager.getAccentColor();
 
@@ -192,6 +243,8 @@ public class SettingsActivity extends BaseActivity {
                 tabs[i].setBackgroundResource(R.drawable.bg_tab_unselected);
                 tabs[i].setTextColor(getColor(R.color.text_secondary));
             }
+            tabs[i].setTypeface(android.graphics.Typeface.create(tabs[i].getTypeface(),
+                    isSelected ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL));
 
             if (isSelected) {
                 sections[i].setVisibility(View.VISIBLE);
@@ -204,7 +257,7 @@ public class SettingsActivity extends BaseActivity {
     }
 
     private TextView[] getSettingsTabs() {
-        return new TextView[]{tabBasic, tabPersonalize, tabUpdates, tabAbout};
+        return new TextView[]{tabBasic, tabPersonalize, tabComponents, tabOthers, tabPrivacy, tabUpdates, tabAbout};
     }
 
     private void setupBasicSection() {
@@ -477,6 +530,7 @@ public class SettingsActivity extends BaseActivity {
         
         TextView[] tabs = getSettingsTabs();
         selectTab(tabs[selectedTabIndex]);
+        selectPersonalizeSection(personalizeSectionIndex);
         
         View settingsTitle = findViewById(R.id.settings_title);
         if (settingsTitle instanceof TextView && accent != 0) {
@@ -736,7 +790,7 @@ public class SettingsActivity extends BaseActivity {
         try {
             String localVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
             TextView versionText = findViewById(R.id.version_text);
-            versionText.setText(getString(R.string.version_prefix) + localVersion);
+            versionText.setText(localVersion);
         } catch (PackageManager.NameNotFoundException ignored) {
         }
 

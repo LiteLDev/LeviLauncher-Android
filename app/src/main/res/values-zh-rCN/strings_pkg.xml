@@ -414,7 +414,6 @@
     <string name="pkg_settings_mirror_off">关闭</string>
     <string name="pkg_settings_scripts_title">运行包脚本</string>
     <string name="pkg_settings_scripts_desc">钩子通过 sh 运行，后续步骤失败时不会撤销</string>
-    <string name="pkg_settings_cache_title">包缓存</string>
     <string name="pkg_settings_cache_size">缓存大小：%1$s</string>
     <string name="pkg_settings_cache_size_computing">缓存大小：正在计算…</string>
     <string name="pkg_settings_cache_clean">清理缓存</string>

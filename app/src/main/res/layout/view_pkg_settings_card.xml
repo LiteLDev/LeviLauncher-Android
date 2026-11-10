@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- "package package manager" card of SettingsActivity (basic tab), driven by SettingsCard. -->
+<!-- Package manager card of SettingsActivity (third-party components tab), driven by SettingsCard.
+     Ordered like LeviLauncher's (Windows) components tab: package manager + clean cache, then the
+     mirror switch, then the GitHub proxy; Android-only package rows sit with the package manager. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/pkg_settings_card"
     android:layout_width="match_parent"
@@ -8,33 +10,7 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/misans"
-        android:text="@string/pkg_settings_title"
-        android:textColor="@color/on_surface"
-        android:textSize="15sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:fontFamily="@font/misans"
-        android:text="@string/pkg_settings_desc"
-        android:textColor="@color/text_secondary"
-        android:textSize="12sp" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginBottom="14dp"
-        android:alpha="0.3"
-        android:background="@color/divider" />
-
-    <!-- Clean cache -->
+    <!-- Package manager + clean cache -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -51,10 +27,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/misans"
-                android:text="@string/pkg_settings_cache_title"
+                android:text="@string/pkg_settings_title"
                 android:textColor="@color/on_surface"
                 android:textSize="15sp"
                 android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/misans"
+                android:text="@string/pkg_settings_desc"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/pkg_settings_cache_size"
@@ -87,6 +72,109 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:visibility="gone" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="14dp"
+        android:alpha="0.3"
+        android:background="@color/divider" />
+
+    <!-- Catalogue -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/misans"
+                android:text="@string/pkg_settings_catalog_title"
+                android:textColor="@color/on_surface"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/pkg_settings_catalog_age"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/misans"
+                android:text="@string/pkg_checking"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/pkg_settings_catalog_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_marginStart="12dp"
+            android:backgroundTint="@color/primary"
+            android:fontFamily="@font/misans"
+            android:paddingHorizontal="16dp"
+            android:text="@string/pkg_settings_catalog_refresh"
+            android:textAllCaps="false"
+            android:textColor="@color/on_primary"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="14dp"
+        android:alpha="0.3"
+        android:background="@color/divider" />
+
+    <!-- Package scripts -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/misans"
+                android:text="@string/pkg_settings_scripts_title"
+                android:textColor="@color/on_surface"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/misans"
+                android:text="@string/pkg_settings_scripts_desc"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/pkg_settings_scripts_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:thumbTint="@color/primary"
+            android:trackTint="#555555" />
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"
@@ -145,33 +233,47 @@
         android:alpha="0.3"
         android:background="@color/divider" />
 
-    <!-- GitHub proxy -->
-    <TextView
-        android:layout_width="wrap_content"
+    <!-- GitHub proxy: title and description on the left, preset picker on the right (as on Windows) -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/misans"
-        android:text="@string/pkg_settings_proxy_title"
-        android:textColor="@color/on_surface"
-        android:textSize="15sp"
-        android:textStyle="bold" />
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:fontFamily="@font/misans"
-        android:text="@string/pkg_settings_proxy_desc"
-        android:textColor="@color/text_secondary"
-        android:textSize="12sp" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-    <Spinner
-        android:id="@+id/pkg_settings_proxy_preset"
-        android:layout_width="wrap_content"
-        android:layout_height="36dp"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/bg_spinner_outline"
-        android:contentDescription="@string/pkg_settings_proxy_title"
-        android:minWidth="160dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/misans"
+                android:text="@string/pkg_settings_proxy_title"
+                android:textColor="@color/on_surface"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:fontFamily="@font/misans"
+                android:text="@string/pkg_settings_proxy_desc"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <Spinner
+            android:id="@+id/pkg_settings_proxy_preset"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_marginStart="12dp"
+            android:background="@drawable/bg_spinner_outline"
+            android:contentDescription="@string/pkg_settings_proxy_title"
+            android:minWidth="160dp" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -240,107 +342,4 @@
         android:textColor="@color/error"
         android:textSize="12sp"
         android:visibility="gone" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginBottom="14dp"
-        android:alpha="0.3"
-        android:background="@color/divider" />
-
-    <!-- Package scripts -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/misans"
-                android:text="@string/pkg_settings_scripts_title"
-                android:textColor="@color/on_surface"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:fontFamily="@font/misans"
-                android:text="@string/pkg_settings_scripts_desc"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
-        </LinearLayout>
-
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/pkg_settings_scripts_switch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:thumbTint="@color/primary"
-            android:trackTint="#555555" />
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginBottom="14dp"
-        android:alpha="0.3"
-        android:background="@color/divider" />
-
-    <!-- Catalogue -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/misans"
-                android:text="@string/pkg_settings_catalog_title"
-                android:textColor="@color/on_surface"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/pkg_settings_catalog_age"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:fontFamily="@font/misans"
-                android:text="@string/pkg_checking"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/pkg_settings_catalog_refresh"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:layout_marginStart="12dp"
-            android:backgroundTint="@color/primary"
-            android:fontFamily="@font/misans"
-            android:paddingHorizontal="16dp"
-            android:text="@string/pkg_settings_catalog_refresh"
-            android:textAllCaps="false"
-            android:textColor="@color/on_primary"
-            android:textSize="12sp" />
-    </LinearLayout>
 </LinearLayout>

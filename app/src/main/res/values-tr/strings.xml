@@ -105,6 +105,12 @@
     <string name="settings_tab_personalize">Kişiselleştirme</string>
     <string name="settings_tab_updates">Güncellemeler</string>
     <string name="settings_tab_about">Hakkında</string>
+    <string name="settings_tab_components">Üçüncü taraf bileşenler</string>
+    <string name="settings_tab_others">Diğer</string>
+    <string name="settings_tab_privacy">Gizlilik</string>
+    <string name="settings_personalize_theme">Tema ve renkler</string>
+    <string name="settings_personalize_wallpaper">Duvar kağıdı</string>
+    <string name="settings_current_version">Mevcut sürüm</string>
     <string name="settings_theme_desc">Uygulama temasını seçin</string>
 
 
@@ -192,6 +198,9 @@
     <string name="invalid_mod_file_reason">Yalnızca .so dosyalarına, .zip mod paketlerine veya .levipack/.mcmod mod paketlerine izin verilmektedir. Seçilen dosya geçerli bir yerel mod içe aktarma paketi değil.</string>
     <string name="invalid_zip_mod_package_title">Geçersiz ZIP Mod Paketi</string>
     <string name="invalid_zip_mod_package_message">ZIP mod paketi manifest.json ve bir .so dosyası içermelidir.</string>
+    <string name="invalid_mcmod_package_title">Geçersiz .mcmod Paketi</string>
+    <string name="invalid_mcmod_package_message">Bir .mcmod, tam olarak mods/&lt;name&gt;/ klasörünün içeriğini barındırır: kökünde manifest.json bulunmalı; \"name\" klasör adı olmalı, \"type\": \"preload-native\" olmalı ve \"entry\" bir .so dosyasını göstermelidir.</string>
+    <string name="mod_import_refused_by_packages">mods/%1$s içine aktarılamıyor: %2$s. Bunun yerine paket yöneticisiyle güncelleyin veya kaldırın.</string>
     <string name="error_versions">Hatalı Sürümler</string>
 
     <string name="dialog_title_delete_mod">Modu Sil</string>
@@ -595,6 +604,8 @@
     <!-- Crash & Diagnostics -->
     <string name="crash_title">Uygulama çöktü</string>
     <string name="crash_upload">Çökme raporu yükleme</string>
+    <string name="discord_rich_presence">Discord Zengin Durum</string>
+    <string name="discord_rich_presence_desc">Başlatıcı etkinliğini, Minecraft sürümünü ve geçen süreyi Discord\'da göster</string>
     <string name="crash_details_title">Çökme ayrıntıları</string>
     <string name="crash_back_to_main">Ana Sayfaya Dön</string>
     <string name="crash_share_log">Günlüğü Paylaş</string>
@@ -648,6 +659,7 @@
     <string name="inbuilt_mod_camera_desc">Kamera görünümünü değiştir</string>
     <string name="inbuilt_mod_hud">HUD\'u Gizle</string>
     <string name="inbuilt_mod_hud_desc">Kısayol çubuğunu ve arayüzü gizle</string>
+    <string name="mod_config_hide_launcher_hud">Başlatıcı HUD\'unu ve kaplama düğmelerini de gizle</string>
     <string name="inbuilt_mod_autosprint">Otomatik Koş</string>
     <string name="inbuilt_mod_autosprint_desc">Koşmayı aç/kapat</string>
     <string name="inbuilt_mod_chick_pet">Civciv Evcil Hayvan</string>
@@ -722,6 +734,10 @@
     <string name="mod_menu_appearance">Görünüm</string>
     <string name="mod_menu_pause_menu_only">Yalnızca Duraklatma Menüsü</string>
     <string name="mod_menu_pause_menu_only_desc">Mod menüsünü yalnızca duraklatma ekranında göster</string>
+    <string name="mod_menu_keybind">Mod Menüsü Kısayol Tuşu</string>
+    <string name="mod_menu_keybind_desc">Klavye kısayolunu değiştirmek için basın</string>
+    <string name="mod_menu_keybind_reset">M olarak sıfırla</string>
+    <string name="mod_menu_keybind_unbound">Atanmamış</string>
     <string name="mod_menu_default_percent" formatted="false">100%</string>
     <string name="mod_menu_percent_value">%1$d%%</string>
     <string name="mod_menu_settings_coming">Ayarlar yakında geliyor</string>
@@ -1082,4 +1098,17 @@
     <string name="batch_transferring">%1$d / %2$d aktarılıyor…</string>
     <string name="batch_result">%1$d tamamlandı, %2$d başarısız</string>
     <string name="choose_export_folder">Dışa aktarma klasörünü seç</string>
+    <string name="mod_config_activation_keybind">Etkinleştirme kısayol tuşu</string>
+    <string name="mod_config_edit_controls">Kontrolleri düzenle</string>
+    <string name="mod_config_display_size_dp">Görüntü boyutu (dp)</string>
+    <string name="mod_config_clear_keybind">Kısayol tuşunu temizle</string>
+    <string name="bg_media_title">Arka Plan</string>
+    <string name="bg_media_desc">Bir fotoğraf veya GIF seçin</string>
+    <string name="bg_media_select">Arka plan seç</string>
+    <string name="bg_media_none">Arka plan seçilmedi</string>
+    <string name="bg_media_importing">Arka plan içe aktarılıyor…</string>
+    <string name="bg_media_import_failed">Bu arka plan yüklenemedi. Desteklenen bir fotoğraf veya GIF seçin.</string>
+    <string name="bg_media_blur_unavailable">Android 12+</string>
+    <string name="screenshot_saved">Ekran görüntüsü kaydedildi</string>
+    <string name="backup_select_downloads">Yedekleri İndirilenler/LeviLauncher/Yedekler konumuna kaydetmek için İndirilenler klasörünü seçin.</string>
 </resources>

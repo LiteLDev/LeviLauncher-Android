@@ -105,6 +105,12 @@
     <string name="settings_tab_personalize">Personalización</string>
     <string name="settings_tab_updates">Actualizaciones</string>
     <string name="settings_tab_about">Acerca de</string>
+    <string name="settings_tab_components">Componentes de terceros</string>
+    <string name="settings_tab_others">Otros</string>
+    <string name="settings_tab_privacy">Privacidad</string>
+    <string name="settings_personalize_theme">Tema y colores</string>
+    <string name="settings_personalize_wallpaper">Fondo de pantalla</string>
+    <string name="settings_current_version">Versión actual</string>
     <string name="settings_theme_desc">Elige el tema de la aplicación</string>
 
 
@@ -192,6 +198,9 @@
     <string name="invalid_mod_file_reason">Solo se permiten archivos .so, paquetes de mods .zip o paquetes de mods .levipack/.mcmod. El archivo seleccionado no es un paquete válido de mod nativo.</string>
     <string name="invalid_zip_mod_package_title">Paquete ZIP de mod no válido</string>
     <string name="invalid_zip_mod_package_message">El paquete ZIP de mod debe contener manifest.json y un archivo .so.</string>
+    <string name="invalid_mcmod_package_title">Paquete .mcmod no válido</string>
+    <string name="invalid_mcmod_package_message">Un .mcmod contiene exactamente el contenido de mods/&lt;name&gt;/: manifest.json en su raíz, con \"name\" igual al nombre de la carpeta, \"type\": \"preload-native\" y un archivo .so como \"entry\".</string>
+    <string name="mod_import_refused_by_packages">No se puede importar en mods/%1$s: %2$s. Actualízalo o elimínalo con el gestor de paquetes.</string>
     <string name="error_versions">Versiones con error</string>
 
     <string name="dialog_title_delete_mod">Eliminar Mod</string>
@@ -595,6 +604,8 @@
     <!-- Crash & Diagnostics -->
     <string name="crash_title">La aplicación se bloqueó</string>
     <string name="crash_upload">Subir informe de bloqueo</string>
+    <string name="discord_rich_presence">Discord Rich Presence</string>
+    <string name="discord_rich_presence_desc">Mostrar la actividad del launcher, la versión de Minecraft y el tiempo transcurrido en Discord</string>
     <string name="crash_details_title">Detalles del bloqueo</string>
     <string name="crash_back_to_main">Volver al Inicio</string>
     <string name="crash_share_log">Compartir Registro</string>
@@ -648,6 +659,7 @@
     <string name="inbuilt_mod_camera_desc">Cambiar la vista de la cámara</string>
     <string name="inbuilt_mod_hud">Ocultar HUD</string>
     <string name="inbuilt_mod_hud_desc">Ocultar barra de acceso rápido y UI</string>
+    <string name="mod_config_hide_launcher_hud">Ocultar también el HUD y los botones superpuestos del launcher</string>
     <string name="inbuilt_mod_autosprint">Auto Sprint</string>
     <string name="inbuilt_mod_autosprint_desc">Activar/desactivar el sprint automático</string>
     <string name="inbuilt_mod_chick_pet">Mascota Pollito</string>
@@ -722,6 +734,10 @@
     <string name="mod_menu_appearance">Apariencia</string>
     <string name="mod_menu_pause_menu_only">Solo en menú de pausa</string>
     <string name="mod_menu_pause_menu_only_desc">Mostrar el menú de mods solo en la pantalla de pausa</string>
+    <string name="mod_menu_keybind">Tecla del menú de mods</string>
+    <string name="mod_menu_keybind_desc">Pulsa para cambiar el atajo de teclado</string>
+    <string name="mod_menu_keybind_reset">Restablecer a M</string>
+    <string name="mod_menu_keybind_unbound">Sin asignar</string>
     <string name="mod_menu_default_percent" formatted="false">100%</string>
     <string name="mod_menu_percent_value">%1$d%%</string>
     <string name="mod_menu_settings_coming">Ajustes próximamente</string>
@@ -1082,4 +1098,17 @@
     <string name="batch_transferring">Transfiriendo %1$d de %2$d…</string>
     <string name="batch_result">%1$d completados, %2$d fallidos</string>
     <string name="choose_export_folder">Elegir carpeta de exportación</string>
+    <string name="mod_config_activation_keybind">Tecla de activación</string>
+    <string name="mod_config_edit_controls">Editar controles</string>
+    <string name="mod_config_display_size_dp">Tamaño de visualización (dp)</string>
+    <string name="mod_config_clear_keybind">Quitar tecla</string>
+    <string name="bg_media_title">Fondo</string>
+    <string name="bg_media_desc">Elige una foto o un GIF</string>
+    <string name="bg_media_select">Seleccionar fondo</string>
+    <string name="bg_media_none">No se ha seleccionado ningún fondo</string>
+    <string name="bg_media_importing">Importando fondo…</string>
+    <string name="bg_media_import_failed">No se pudo cargar este fondo. Elige una foto o un GIF compatible.</string>
+    <string name="bg_media_blur_unavailable">Android 12+</string>
+    <string name="screenshot_saved">Captura de pantalla guardada</string>
+    <string name="backup_select_downloads">Selecciona la carpeta Descargas para guardar las copias de seguridad en Downloads/LeviLauncher/Backups.</string>
 </resources>

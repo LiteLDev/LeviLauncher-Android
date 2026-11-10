@@ -105,6 +105,12 @@
     <string name="settings_tab_personalize">Персонализация</string>
     <string name="settings_tab_updates">Обновления</string>
     <string name="settings_tab_about">О приложении</string>
+    <string name="settings_tab_components">Сторонние компоненты</string>
+    <string name="settings_tab_others">Другие</string>
+    <string name="settings_tab_privacy">Конфиденциальность</string>
+    <string name="settings_personalize_theme">Тема и цвета</string>
+    <string name="settings_personalize_wallpaper">Обои</string>
+    <string name="settings_current_version">Текущая версия</string>
     <string name="settings_theme_desc">Выберите тему приложения</string>
 
 
@@ -192,6 +198,9 @@
     <string name="invalid_mod_file_reason">Допускаются только файлы .so, ZIP-пакеты модов или пакеты модов .levipack/.mcmod. Выбранный файл не является допустимым пакетом нативного мода.</string>
     <string name="invalid_zip_mod_package_title">Недопустимый ZIP-пакет мода</string>
     <string name="invalid_zip_mod_package_message">ZIP-пакет мода должен содержать manifest.json и файл .so.</string>
+    <string name="invalid_mcmod_package_title">Недопустимый пакет .mcmod</string>
+    <string name="invalid_mcmod_package_message">Пакет .mcmod содержит ровно то же, что и папка mods/&lt;name&gt;/: manifest.json в корне, где \"name\" — имя папки, \"type\": \"preload-native\", а \"entry\" указывает на файл .so.</string>
+    <string name="mod_import_refused_by_packages">Невозможно импортировать в mods/%1$s: %2$s. Обновите или удалите его через менеджер пакетов.</string>
     <string name="error_versions">Ошибочные версии</string>
 
     <string name="dialog_title_delete_mod">Удалить мод</string>
@@ -603,6 +612,8 @@
     <!-- Crash & Diagnostics -->
     <string name="crash_title">Приложение аварийно завершило работу</string>
     <string name="crash_upload">Загрузить отчет о сбое</string>
+    <string name="discord_rich_presence">Discord Rich Presence</string>
+    <string name="discord_rich_presence_desc">Показывать в Discord активность лаунчера, версию Minecraft и время в игре</string>
     <string name="crash_details_title">Сведения о сбое</string>
     <string name="crash_back_to_main">Вернуться на главную</string>
     <string name="crash_share_log">Поделиться логом</string>
@@ -656,6 +667,7 @@
     <string name="inbuilt_mod_camera_desc">Переключение вида камеры</string>
     <string name="inbuilt_mod_hud">Скрыть интерфейс</string>
     <string name="inbuilt_mod_hud_desc">Скрыть панель быстрого доступа и UI</string>
+    <string name="mod_config_hide_launcher_hud">Также скрывать HUD лаунчера и кнопки оверлея</string>
     <string name="inbuilt_mod_autosprint">Авто-спринт</string>
     <string name="inbuilt_mod_autosprint_desc">Включение/выключение спринта</string>
     <string name="inbuilt_mod_chick_pet">Питомец-цыплёнок</string>
@@ -730,6 +742,10 @@
     <string name="mod_menu_appearance">Внешний вид</string>
     <string name="mod_menu_pause_menu_only">Только меню паузы</string>
     <string name="mod_menu_pause_menu_only_desc">Показывать меню модов только на экране паузы</string>
+    <string name="mod_menu_keybind">Клавиша меню модов</string>
+    <string name="mod_menu_keybind_desc">Нажмите, чтобы изменить сочетание клавиш</string>
+    <string name="mod_menu_keybind_reset">Сбросить на M</string>
+    <string name="mod_menu_keybind_unbound">Не назначено</string>
     <string name="mod_menu_default_percent" formatted="false">100%</string>
     <string name="mod_menu_percent_value">%1$d%%</string>
     <string name="mod_menu_settings_coming">Настройки скоро появятся</string>
@@ -1090,4 +1106,17 @@
     <string name="batch_transferring">Перенос: %1$d из %2$d…</string>
     <string name="batch_result">Завершено: %1$d, ошибок: %2$d</string>
     <string name="choose_export_folder">Выбрать папку экспорта</string>
+    <string name="mod_config_activation_keybind">Клавиша активации</string>
+    <string name="mod_config_edit_controls">Изменить управление</string>
+    <string name="mod_config_display_size_dp">Размер отображения (dp)</string>
+    <string name="mod_config_clear_keybind">Сбросить клавишу</string>
+    <string name="bg_media_title">Фон</string>
+    <string name="bg_media_desc">Выберите фото или GIF</string>
+    <string name="bg_media_select">Выбрать фон</string>
+    <string name="bg_media_none">Фон не выбран</string>
+    <string name="bg_media_importing">Импорт фона…</string>
+    <string name="bg_media_import_failed">Не удалось загрузить этот фон. Выберите поддерживаемое фото или GIF.</string>
+    <string name="bg_media_blur_unavailable">Android 12+</string>
+    <string name="screenshot_saved">Снимок экрана сохранён</string>
+    <string name="backup_select_downloads">Выберите папку «Загрузки» (Downloads), чтобы сохранять резервные копии в Downloads/LeviLauncher/Backups.</string>
 </resources>

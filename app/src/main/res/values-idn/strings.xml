@@ -105,6 +105,12 @@
     <string name="settings_tab_personalize">Personalisasi</string>
     <string name="settings_tab_updates">Pembaruan</string>
     <string name="settings_tab_about">Tentang</string>
+    <string name="settings_tab_components">Komponen pihak ketiga</string>
+    <string name="settings_tab_others">Lainnya</string>
+    <string name="settings_tab_privacy">Privasi</string>
+    <string name="settings_personalize_theme">Tema dan warna</string>
+    <string name="settings_personalize_wallpaper">Wallpaper</string>
+    <string name="settings_current_version">Versi saat ini</string>
     <string name="settings_theme_desc">Pilih tema aplikasi</string>
 
 
@@ -192,6 +198,9 @@
     <string name="invalid_mod_file_reason">Hanya file .so, paket mod .zip, atau paket mod .levipack/.mcmod yang diizinkan. File yang dipilih bukan paket impor mod native yang valid.</string>
     <string name="invalid_zip_mod_package_title">Paket Mod ZIP Tidak Valid</string>
     <string name="invalid_zip_mod_package_message">Paket mod ZIP harus berisi manifest.json dan file .so.</string>
+    <string name="invalid_mcmod_package_title">Paket .mcmod Tidak Valid</string>
+    <string name="invalid_mcmod_package_message">File .mcmod berisi tepat isi dari mods/&lt;name&gt;/: manifest.json di root-nya, dengan \"name\" sebagai nama folder, \"type\": \"preload-native\" dan file .so sebagai \"entry\".</string>
+    <string name="mod_import_refused_by_packages">Tidak dapat mengimpor ke mods/%1$s: %2$s. Perbarui atau hapus melalui manajer paket.</string>
     <string name="error_versions">Versi Yang Rusak</string>
 
     <string name="dialog_title_delete_mod">Hapus Mod</string>
@@ -595,6 +604,8 @@
     <!-- Crash & Diagnostics -->
     <string name="crash_title">Aplikasi mengalami kerusakan.</string>
     <string name="crash_upload">Unggah laporan kerusakan</string>
+    <string name="discord_rich_presence">Discord Rich Presence</string>
+    <string name="discord_rich_presence_desc">Tampilkan aktivitas launcher, versi Minecraft, dan waktu bermain di Discord</string>
     <string name="crash_details_title">Detail kerusakan</string>
     <string name="crash_back_to_main">Kembali ke Beranda</string>
     <string name="crash_share_log">Bagikan Log</string>
@@ -648,6 +659,7 @@
     <string name="inbuilt_mod_camera_desc">Alihkan tampilan kamera</string>
     <string name="inbuilt_mod_hud">Hide HUD</string>
     <string name="inbuilt_mod_hud_desc">Sembunyikan hotbar dan UI</string>
+    <string name="mod_config_hide_launcher_hud">Sembunyikan juga HUD launcher dan tombol overlay</string>
     <string name="inbuilt_mod_autosprint">Auto Sprint</string>
     <string name="inbuilt_mod_autosprint_desc">Aktifkan/nonaktifkan lari cepat</string>
     <string name="inbuilt_mod_chick_pet">Chick Pet</string>
@@ -722,6 +734,10 @@
     <string name="mod_menu_appearance">Tampilan</string>
     <string name="mod_menu_pause_menu_only">Hanya Menu Jeda</string>
     <string name="mod_menu_pause_menu_only_desc">Tampilkan menu mod hanya di layar jeda</string>
+    <string name="mod_menu_keybind">Tombol Pintas Menu Mod</string>
+    <string name="mod_menu_keybind_desc">Tekan untuk mengubah pintasan keyboard</string>
+    <string name="mod_menu_keybind_reset">Atur ulang ke M</string>
+    <string name="mod_menu_keybind_unbound">Tidak diatur</string>
     <string name="mod_menu_default_percent" formatted="false">100%</string>
     <string name="mod_menu_percent_value">%1$d%%</string>
     <string name="mod_menu_settings_coming">Pengaturan segera hadir</string>
@@ -1082,4 +1098,17 @@
     <string name="batch_transferring">Mentransfer %1$d dari %2$d…</string>
     <string name="batch_result">%1$d selesai, %2$d gagal</string>
     <string name="choose_export_folder">Pilih folder ekspor</string>
+    <string name="mod_config_activation_keybind">Tombol pintas aktivasi</string>
+    <string name="mod_config_edit_controls">Edit kontrol</string>
+    <string name="mod_config_display_size_dp">Ukuran tampilan (dp)</string>
+    <string name="mod_config_clear_keybind">Hapus tombol pintas</string>
+    <string name="bg_media_title">Latar Belakang</string>
+    <string name="bg_media_desc">Pilih foto atau GIF</string>
+    <string name="bg_media_select">Pilih latar belakang</string>
+    <string name="bg_media_none">Tidak ada latar belakang yang dipilih</string>
+    <string name="bg_media_importing">Mengimpor latar belakang…</string>
+    <string name="bg_media_import_failed">Tidak dapat memuat latar belakang ini. Pilih foto atau GIF yang didukung.</string>
+    <string name="bg_media_blur_unavailable">Android 12+</string>
+    <string name="screenshot_saved">Tangkapan layar disimpan</string>
+    <string name="backup_select_downloads">Pilih folder Download untuk menyimpan cadangan di Download/LeviLauncher/Backups.</string>
 </resources>

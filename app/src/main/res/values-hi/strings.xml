@@ -105,6 +105,12 @@
     <string name="settings_tab_personalize">वैयक्तिकरण</string>
     <string name="settings_tab_updates">अपडेट्स</string>
     <string name="settings_tab_about">बारे में</string>
+    <string name="settings_tab_components">तृतीय-पक्ष घटक</string>
+    <string name="settings_tab_others">अन्य</string>
+    <string name="settings_tab_privacy">गोपनीयता</string>
+    <string name="settings_personalize_theme">थीम और रंग</string>
+    <string name="settings_personalize_wallpaper">वॉलपेपर</string>
+    <string name="settings_current_version">वर्तमान संस्करण</string>
     <string name="settings_theme_desc">एप्लिकेशन थीम चुनें</string>
 
 
@@ -192,6 +198,9 @@
     <string name="invalid_mod_file_reason">केवल .so फ़ाइलें, .zip मॉड पैकेज या .levipack/.mcmod मॉड पैकेज की अनुमति है। चयनित फ़ाइल एक मान्य देशी मॉड आयात पैकेज नहीं है।</string>
     <string name="invalid_zip_mod_package_title">अमान्य ZIP मॉड पैकेज</string>
     <string name="invalid_zip_mod_package_message">ZIP मॉड पैकेज में manifest.json और एक .so फ़ाइल होनी चाहिए।</string>
+    <string name="invalid_mcmod_package_title">अमान्य .mcmod पैकेज</string>
+    <string name="invalid_mcmod_package_message">एक .mcmod में ठीक वही सामग्री होती है जो mods/&lt;name&gt;/ में होती है: इसके रूट में manifest.json, जिसमें \"name\" फ़ोल्डर का नाम हो, \"type\": \"preload-native\" हो और \"entry\" एक .so फ़ाइल हो।</string>
+    <string name="mod_import_refused_by_packages">mods/%1$s में आयात नहीं किया जा सकता: %2$s। इसके बजाय पैकेज मैनेजर से इसे अपडेट करें या हटाएँ।</string>
     <string name="error_versions">त्रुटि वाले संस्करण</string>
 
     <string name="dialog_title_delete_mod">मॉड हटाएं</string>
@@ -595,6 +604,8 @@
     <!-- Crash & Diagnostics -->
     <string name="crash_title">एप्लिकेशन क्रैश हो गया</string>
     <string name="crash_upload">क्रैश रिपोर्ट अपलोड करें</string>
+    <string name="discord_rich_presence">Discord Rich Presence</string>
+    <string name="discord_rich_presence_desc">Discord पर लॉन्चर गतिविधि, Minecraft संस्करण और बीता हुआ समय दिखाएँ</string>
     <string name="crash_details_title">क्रैश विवरण</string>
     <string name="crash_back_to_main">होम पर वापस जाएं</string>
     <string name="crash_share_log">लॉग साझा करें</string>
@@ -648,6 +659,7 @@
     <string name="inbuilt_mod_camera_desc">कैमरा दृश्य टॉगल करें</string>
     <string name="inbuilt_mod_hud">HUD छिपाएं</string>
     <string name="inbuilt_mod_hud_desc">हॉटबार और UI को छिपाएं</string>
+    <string name="mod_config_hide_launcher_hud">लॉन्चर HUD और ओवरले बटन भी छिपाएँ</string>
     <string name="inbuilt_mod_autosprint">ऑटो स्प्रिंट</string>
     <string name="inbuilt_mod_autosprint_desc">स्प्रिंट चालू/बंद टॉगल करें</string>
     <string name="inbuilt_mod_chick_pet">चूजा पालतू</string>
@@ -722,6 +734,10 @@
     <string name="mod_menu_appearance">रूप-रंग</string>
     <string name="mod_menu_pause_menu_only">केवल पॉज़ मेनू</string>
     <string name="mod_menu_pause_menu_only_desc">मॉड मेनू केवल पॉज़ स्क्रीन में दिखाएं</string>
+    <string name="mod_menu_keybind">मॉड मेनू कीबाइंड</string>
+    <string name="mod_menu_keybind_desc">कीबोर्ड शॉर्टकट बदलने के लिए दबाएँ</string>
+    <string name="mod_menu_keybind_reset">M पर रीसेट करें</string>
+    <string name="mod_menu_keybind_unbound">कोई कुंजी नहीं</string>
     <string name="mod_menu_default_percent" formatted="false">100%</string>
     <string name="mod_menu_percent_value">%1$d%%</string>
     <string name="mod_menu_settings_coming">सेटिंग्स जल्द ही आ रही हैं</string>
@@ -1082,4 +1098,17 @@
     <string name="batch_transferring">%2$d में से %1$d ट्रांसफ़र हो रहा है…</string>
     <string name="batch_result">%1$d पूरे हुए, %2$d विफल</string>
     <string name="choose_export_folder">एक्सपोर्ट फ़ोल्डर चुनें</string>
+    <string name="mod_config_activation_keybind">सक्रियण कीबाइंड</string>
+    <string name="mod_config_edit_controls">नियंत्रण संपादित करें</string>
+    <string name="mod_config_display_size_dp">प्रदर्शन आकार (dp)</string>
+    <string name="mod_config_clear_keybind">कीबाइंड साफ़ करें</string>
+    <string name="bg_media_title">पृष्ठभूमि</string>
+    <string name="bg_media_desc">कोई फ़ोटो या GIF चुनें</string>
+    <string name="bg_media_select">पृष्ठभूमि चुनें</string>
+    <string name="bg_media_none">कोई पृष्ठभूमि चयनित नहीं</string>
+    <string name="bg_media_importing">पृष्ठभूमि आयात की जा रही है…</string>
+    <string name="bg_media_import_failed">यह पृष्ठभूमि लोड नहीं की जा सकी। कोई समर्थित फ़ोटो या GIF चुनें।</string>
+    <string name="bg_media_blur_unavailable">Android 12+</string>
+    <string name="screenshot_saved">स्क्रीनशॉट सहेजा गया</string>
+    <string name="backup_select_downloads">बैकअप को Downloads/LeviLauncher/Backups में सहेजने के लिए Downloads फ़ोल्डर चुनें।</string>
 </resources>
