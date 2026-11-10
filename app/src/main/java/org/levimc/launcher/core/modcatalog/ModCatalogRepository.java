@@ -215,6 +215,7 @@ public final class ModCatalogRepository {
 
     private static void deliver(Context context, Callback callback, ModCatalog catalog, Throwable error) {
         if (callback == null) return;
+        if (catalog != null) catalog.githubProxy = GithubUrls.currentProxy();
         context.getMainExecutor().execute(() -> callback.onResult(catalog, error));
     }
 }

@@ -207,6 +207,7 @@ public final class ExternalModsActivity extends BaseActivity {
     private void renderCatalog(ModCatalog catalog) {
         allMods.clear();
         if (catalog != null && catalog.mods != null) allMods.addAll(catalog.mods);
+        if (adapter != null && catalog != null) adapter.setGithubProxy(catalog.githubProxy);
         progress.setVisibility(View.GONE);
         applyFilters();
     }
