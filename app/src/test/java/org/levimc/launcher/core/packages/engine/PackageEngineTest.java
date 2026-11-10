@@ -268,10 +268,25 @@ public class PackageEngineTest {
         assertFalse(exists("c.txt"));
         assertTrue(engine.state().packages.isEmpty());
         File proc = new File("/proc/" + read("child.pid").trim() + "/stat");
-        for (int i = 0; i < 40 && proc.exists() && !new String(Files.readAllBytes(proc.toPath())).contains(") Z"); i++) sleep(50);
-        assertTrue(!proc.exists() || new String(Files.readAllBytes(proc.toPath())).contains(") Z"));
+        String stat = procStat(proc);
+        for (int i = 0; i < 40 && stat != null && !stat.contains(") Z"); i++) {
+            sleep(50);
+            stat = procStat(proc);
+        }
+        assertTrue(stat == null || stat.contains(") Z"));
         failure(PackageException.Kind.TIMEOUT, () -> engine.install(Collections.singletonList(p), false,
                 new Cancel().withTimeout(500), listener));
+    }
+
+    /** The process's /proc stat line, or null once it is gone (it can exit between any two checks). */
+    private static String procStat(File proc) {
+        try {
+            return new String(Files.readAllBytes(proc.toPath()));
+        } catch (java.nio.file.NoSuchFileException e) {
+            return null;
+        } catch (java.io.IOException e) {
+            throw new java.io.UncheckedIOException(e);
+        }
     }
 
     private static void sleep(long ms) {
