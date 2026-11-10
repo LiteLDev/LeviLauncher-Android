@@ -169,16 +169,7 @@ public class ApkInstaller {
                     apkFilesToExtract.add(dstApkFile);
                 }
 
-                postProgress(PROGRESS_COPY_DONE);
-                extractNativeLibsWithProgress(apkFilesToExtract, libTargetDir);
-
-                String versionName = extractVersionName(apkOrApksUri, baseDir, dirName);
-                GamePackageManager.recordImportedLibraries(context, dirName, versionName, apkFilesToExtract);
-                postProgress(PROGRESS_METADATA_DONE);
-                writeProfileMetadata(metadataDir, dirName, versionName);
-
-                postProgress(PROGRESS_MAX);
-                postSuccess(versionName);
+                finishInstall(apkFilesToExtract, libTargetDir, baseDir, metadataDir, dirName);
 
             } catch (Exception e) {
                 postError("Install error: " + e.getMessage());
@@ -186,7 +177,82 @@ public class ApkInstaller {
         });
     }
 
-    private String extractVersionName(Uri apkOrApksUri, File baseDir, String dirName) {
+    /**
+     * Installs a split APK set already on disk (base APK first, then its splits), such as a
+     * build downloaded from Google Play. The source files are copied, not moved.
+     */
+    public void installFiles(final List<File> apkFiles, final String dirName) {
+        executor.submit(() -> {
+            try {
+                lastPostedProgress = -1;
+                postProgress(0);
+                if (apkFiles == null || apkFiles.isEmpty()) {
+                    postError("No APK files to install");
+                    return;
+                }
+                File metadataDir = LauncherStorage.getProfileMetadataDir(context, dirName);
+                if (metadataDir.exists() && !deleteDir(metadataDir))
+                    return;
+                File baseDir = LauncherStorage.getVersionDir(context, dirName);
+                if (baseDir.exists() && !deleteDir(baseDir))
+                    return;
+                File libTargetDir = MinecraftLauncher.getRuntimeLibDir(context, dirName);
+                if (libTargetDir.exists()) {
+                    deleteDir(libTargetDir);
+                }
+                if (!baseDir.mkdirs()) {
+                    postError("Open base dir failed");
+                    return;
+                }
+                postProgress(PROGRESS_PREPARED);
+
+                long totalBytes = 0;
+                for (File apk : apkFiles) totalBytes += apk.length();
+                long[] copied = {0};
+                final long sourceSize = totalBytes;
+                List<File> apkFilesToExtract = new ArrayList<>();
+                File splitsDir = new File(baseDir, "splits");
+                for (int i = 0; i < apkFiles.size(); i++) {
+                    File source = apkFiles.get(i);
+                    File outFile;
+                    if (i == 0) {
+                        outFile = new File(baseDir, APK_FILE_NAME);
+                    } else {
+                        if (!splitsDir.exists()) splitsDir.mkdirs();
+                        outFile = new File(splitsDir, source.getName().replace(".apk", ".apk.levi"));
+                    }
+                    try (InputStream is = new java.io.FileInputStream(source);
+                         OutputStream os = new FileOutputStream(outFile)) {
+                        copyStream(is, os, bytesCopied -> {
+                            copied[0] += bytesCopied;
+                            postProgressFromBytes(copied[0], sourceSize, PROGRESS_PREPARED, PROGRESS_COPY_DONE);
+                        });
+                    }
+                    apkFilesToExtract.add(outFile);
+                }
+
+                finishInstall(apkFilesToExtract, libTargetDir, baseDir, metadataDir, dirName);
+            } catch (Exception e) {
+                postError("Install error: " + e.getMessage());
+            }
+        });
+    }
+
+    private void finishInstall(List<File> apkFilesToExtract, File libTargetDir, File baseDir,
+                               File metadataDir, String dirName) throws IOException {
+        postProgress(PROGRESS_COPY_DONE);
+        extractNativeLibsWithProgress(apkFilesToExtract, libTargetDir);
+
+        String versionName = extractVersionName(baseDir, dirName);
+        GamePackageManager.recordImportedLibraries(context, dirName, versionName, apkFilesToExtract);
+        postProgress(PROGRESS_METADATA_DONE);
+        writeProfileMetadata(metadataDir, dirName, versionName);
+
+        postProgress(PROGRESS_MAX);
+        postSuccess(versionName);
+    }
+
+    private String extractVersionName(File baseDir, String dirName) {
         File baseApkLevi = new File(baseDir, APK_FILE_NAME);
         if (baseApkLevi.exists()) {
             String v = extractApkVersionName(baseApkLevi);

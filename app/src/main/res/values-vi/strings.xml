@@ -865,6 +865,7 @@
 
     <!-- Navigation Bar -->
     <string name="nav_launch">Khởi chạy</string>
+    <string name="nav_download">Tải xuống</string>
     <string name="nav_import">Nhập</string>
     <string name="nav_instances">Các phiên bản</string>
     <string name="nav_about">Về</string>

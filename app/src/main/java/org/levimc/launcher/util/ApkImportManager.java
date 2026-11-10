@@ -16,6 +16,8 @@ import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
 import org.levimc.launcher.ui.dialogs.InstallProgressDialog;
 import org.levimc.launcher.ui.views.MainViewModel;
 
+import java.io.File;
+import java.util.List;
 import java.util.concurrent.Executors;
 
 public class ApkImportManager {
@@ -67,6 +69,19 @@ public class ApkImportManager {
                     .show();
             return;
         }
+        showVersionDialog(initialVersionName, (installer, dirName) -> installer.install(apkUri, dirName));
+    }
+
+    /** Installs a downloaded split APK set (base first) as a new instance, asking for its name first. */
+    public void installDownloadedFiles(List<File> apkFiles, String initialVersionName) {
+        showVersionDialog(initialVersionName, (installer, dirName) -> installer.installFiles(apkFiles, dirName));
+    }
+
+    private interface InstallStarter {
+        void start(ApkInstaller installer, String dirName);
+    }
+
+    private void showVersionDialog(String initialVersionName, InstallStarter starter) {
         ApkVersionConfirmDialog dialog = new ApkVersionConfirmDialog()
                 .setInitialVersionName(initialVersionName)
                 .setCallback(new ApkVersionConfirmDialog.Callback() {
@@ -103,7 +118,7 @@ public class ApkImportManager {
                                 });
                             }
                         });
-                        installer.install(apkUri, versionName);
+                        starter.start(installer, versionName);
                     }
 
                     @Override

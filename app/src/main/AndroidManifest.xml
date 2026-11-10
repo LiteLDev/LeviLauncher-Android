@@ -182,6 +182,22 @@
             android:label="@string/accounts_title" />
 
         <activity
+            android:name="org.levimc.launcher.ui.activities.GameDownloadActivity"
+            android:exported="false"
+            android:screenOrientation="sensorLandscape"
+            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
+            android:windowSoftInputMode="adjustPan"
+            tools:ignore="DiscouragedApi" />
+
+        <activity
+            android:name="org.levimc.launcher.ui.activities.GoogleLoginActivity"
+            android:exported="false"
+            android:screenOrientation="sensorLandscape"
+            android:configChanges="fontScale|density|smallestScreenSize|screenSize|uiMode|screenLayout|orientation|navigation|keyboardHidden|keyboard|touchscreen|locale|mnc|mcc"
+            android:windowSoftInputMode="adjustResize"
+            tools:ignore="DiscouragedApi" />
+
+        <activity
             android:name="org.levimc.launcher.ui.activities.MsftLoginActivity"
             android:exported="false"
             android:screenOrientation="sensorLandscape"

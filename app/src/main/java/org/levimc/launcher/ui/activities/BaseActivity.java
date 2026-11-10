@@ -159,7 +159,7 @@ public class BaseActivity extends AppCompatActivity {
 
     private void setupBaseNavBar() {
         int[] tabIds = {
-            R.id.nav_tab_launch, R.id.nav_tab_instances,
+            R.id.nav_tab_launch, R.id.nav_tab_download, R.id.nav_tab_instances,
             R.id.nav_tab_about, R.id.nav_tab_settings
         };
 
@@ -227,6 +227,11 @@ public class BaseActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                 startActivity(intent);
+            }
+        });
+        findViewById(R.id.nav_tab_download).setOnClickListener(v -> {
+            if (!(this instanceof GameDownloadActivity)) {
+                startActivity(new Intent(this, GameDownloadActivity.class));
             }
         });
         findViewById(R.id.nav_tab_instances).setOnClickListener(v -> {
@@ -365,7 +370,7 @@ public class BaseActivity extends AppCompatActivity {
     protected void setActiveNavTab(int activeTabId) {
         if (!navBarInjected) return;
         int[] tabIds = {
-            R.id.nav_tab_launch, R.id.nav_tab_instances,
+            R.id.nav_tab_launch, R.id.nav_tab_download, R.id.nav_tab_instances,
             R.id.nav_tab_about, R.id.nav_tab_settings
         };
 

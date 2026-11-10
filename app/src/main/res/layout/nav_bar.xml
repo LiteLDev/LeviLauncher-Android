@@ -81,6 +81,20 @@
                     android:background="?attr/selectableItemBackground" />
 
                 <TextView
+                    android:id="@+id/nav_tab_download"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingHorizontal="12dp"
+                    android:fontFamily="@font/misans"
+                    android:text="@string/nav_download"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:drawableStart="@drawable/ic_nav_download"
+                    android:drawablePadding="5dp"
+                    android:background="?attr/selectableItemBackground" />
+
+                <TextView
                     android:id="@+id/nav_tab_instances"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
