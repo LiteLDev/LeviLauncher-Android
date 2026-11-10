@@ -1,0 +1,74 @@
+// Placeholder Minecraft package for the launcher's end-to-end launch test (see e2e/README.md).
+// It installs as com.mojang.minecraftpe and provides the game-side contract the launcher relies on:
+// the native libraries it extracts and loads, GameActivity's JNI entry point and every game JNI
+// native, so a launch runs through the launcher's real code paths up to a running, rendering game.
+plugins {
+    alias(libs.plugins.android.application)
+}
+
+// The game version the placeholder reports, e.g. -Pplaceholder.version=1.21.132.1. It selects the
+// launcher's version-gated launch path (library set and load order), like a real game version.
+def gameVersion = providers.gradleProperty('placeholder.version').getOrElse('1.26.60.5').trim()
+if (!(gameVersion ==~ /\d+(\.\d+){1,3}(-beta)?/)) {
+    throw new GradleException("placeholder.version must look like 1.26.60.5, got '${gameVersion}'")
+}
+def versionParts = gameVersion.replace('-beta', '').tokenize('.').collect { it as int } + [0, 0, 0]
+// libMallocRedirect.so ships with the game from 1.26.70.00 (GamePackageManager.requiredLibraries).
+def hasMallocRedirect = versionParts[0] == 1 && (versionParts[1] > 26 || (versionParts[1] == 26 && versionParts[2] >= 70))
+
+android {
+    namespace 'org.levimc.e2e.placeholdergame'
+    compileSdk 36
+    ndkVersion '28.2.13676358'
+
+    defaultConfig {
+        applicationId 'com.mojang.minecraftpe'
+        minSdk 28
+        targetSdk 35
+        versionName gameVersion
+        // Same shape as the real game's codes: increases with the version.
+        versionCode 900000000 + versionParts[1] * 1000000 + versionParts[2] * 1000 + versionParts[3]
+        ndk {
+            //noinspection ChromeOsAbiSupport
+            abiFilters 'arm64-v8a'
+        }
+        externalNativeBuild {
+            cmake {
+                arguments '-DANDROID_STL=c++_shared',
+                        "-DPH_GAME_VERSION=${gameVersion}",
+                        "-DPH_MALLOC_REDIRECT=${hasMallocRedirect ? 'ON' : 'OFF'}",
+                        "-DPH_LAUNCHER_CPP_DIR=${rootProject.file('app/src/main/cpp').absolutePath.replace('\\', '/')}"
+            }
+        }
+    }
+
+    buildFeatures {
+        prefab true
+    }
+
+    externalNativeBuild {
+        cmake {
+            path 'src/main/cpp/CMakeLists.txt'
+        }
+    }
+
+    packaging {
+        jniLibs {
+            // Installed with extracted native libraries, so they are also present in the
+            // package's nativeLibraryDir, which the launcher copies from first.
+            useLegacyPackaging true
+        }
+    }
+}
+
+dependencies {
+    implementation libs.androidx.games.activity
+}
+
+// Keeps the generated JNI natives in step with the launcher's Java declarations.
+tasks.register('checkGeneratedJni', Exec) {
+    group = 'verification'
+    description = 'Fails if generated JNI natives are out of date with the minecraft module.'
+    commandLine 'python', file('tools/gen_jni.py').absolutePath, '--check'
+}
+tasks.named('preBuild') { dependsOn 'checkGeneratedJni' }

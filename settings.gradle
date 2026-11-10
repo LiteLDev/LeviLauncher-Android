@@ -26,3 +26,8 @@ rootProject.name = "levilauncher"
 include ':app'
 include ':minecraft'
 include ':pojav_controls'
+
+// End-to-end launch test fixture (e2e/README.md). Opt-in so regular and CI builds skip it.
+if (providers.gradleProperty('levi.e2e').getOrElse('false') == 'true') {
+    include ':e2e:placeholder-game'
+}

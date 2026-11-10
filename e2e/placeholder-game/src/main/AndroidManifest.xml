@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The launcher only reads this package's metadata and files; it never runs its code. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application
+        android:hasCode="false"
+        android:extractNativeLibs="true"
+        android:label="Minecraft (E2E placeholder)" />
+</manifest>

@@ -7,6 +7,7 @@ import android.content.pm.ApplicationInfo;
 import android.os.Build;
 import android.widget.Toast;
 
+import org.levimc.launcher.BuildConfig;
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.versions.GameVersion;
 import org.levimc.launcher.util.LauncherStorage;
@@ -146,7 +147,7 @@ public class MinecraftLauncher {
 
             activity.runOnUiThread(() -> {
                 try {
-                    if (!PlayStoreValidator.isMinecraftFromPlayStore(activity)) {
+                    if (!BuildConfig.SKIP_PLAY_STORE_CHECK && !PlayStoreValidator.isMinecraftFromPlayStore(activity)) {
                         Log.w(TAG, "Launch denied: Minecraft is not verified as Play Store install");
                         PlayStoreValidationDialog.showNotFromPlayStoreDialog(activity);
                         notifyLaunchFailed(callback, new SecurityException("Minecraft is not verified as Play Store install"));

@@ -78,6 +78,7 @@ android {
         buildConfigField "String", "CURSEFORGE_API_KEY", groovy.json.JsonOutput.toJson(curseForgeApiKey)
         buildConfigField 'long', 'DISCORD_APPLICATION_ID', "${discordApplicationId}L"
         buildConfigField 'String', 'DISCORD_LARGE_IMAGE', groovy.json.JsonOutput.toJson(discordLargeImage)
+        buildConfigField 'boolean', 'SKIP_PLAY_STORE_CHECK', 'false'
         ndk {
             //noinspection ChromeOsAbiSupport
             abiFilters 'arm64-v8a'
@@ -131,6 +132,10 @@ android {
             }
             buildConfigField "boolean", "IS_BETA", "false"
             buildConfigField "String", "CURSEFORGE_API_KEY", groovy.json.JsonOutput.toJson(curseForgeDebugApiKey)
+            // Local development only (e.g. emulators without Play): set dev.skip_play_store_check=true
+            // in local.properties. CI never sets it, so published debug APKs keep the check.
+            buildConfigField 'boolean', 'SKIP_PLAY_STORE_CHECK',
+                    localProperties.getProperty('dev.skip_play_store_check', 'false').trim() == 'true' ? 'true' : 'false'
         }
         beta {
             initWith release
