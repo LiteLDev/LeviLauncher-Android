@@ -84,6 +84,51 @@
                         android:focusable="true" />
 
                     <TextView
+                        android:id="@+id/tab_components"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:layout_marginStart="8dp"
+                        android:paddingHorizontal="16dp"
+                        android:gravity="center"
+                        android:text="@string/settings_tab_components"
+                        android:fontFamily="@font/misans"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp"
+                        android:background="@drawable/bg_tab_unselected"
+                        android:clickable="true"
+                        android:focusable="true" />
+
+                    <TextView
+                        android:id="@+id/tab_others"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:layout_marginStart="8dp"
+                        android:paddingHorizontal="16dp"
+                        android:gravity="center"
+                        android:text="@string/settings_tab_others"
+                        android:fontFamily="@font/misans"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp"
+                        android:background="@drawable/bg_tab_unselected"
+                        android:clickable="true"
+                        android:focusable="true" />
+
+                    <TextView
+                        android:id="@+id/tab_privacy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:layout_marginStart="8dp"
+                        android:paddingHorizontal="16dp"
+                        android:gravity="center"
+                        android:text="@string/settings_tab_privacy"
+                        android:fontFamily="@font/misans"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="13sp"
+                        android:background="@drawable/bg_tab_unselected"
+                        android:clickable="true"
+                        android:focusable="true" />
+
+                    <TextView
                         android:id="@+id/tab_updates"
                         android:layout_width="wrap_content"
                         android:layout_height="32dp"
@@ -135,7 +180,6 @@
                         android:background="@drawable/card_background"
                         android:orientation="vertical"
                         android:padding="16dp">
-
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -173,38 +217,6 @@
                                 android:layout_height="36dp"
                                 android:minWidth="120dp"
                                 android:background="@drawable/bg_spinner_outline" />
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="14dp"
-                            android:layout_marginBottom="14dp"
-                            android:background="@color/divider"
-                            android:alpha="0.3" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/show_logcat_overlay"
-                                android:fontFamily="@font/misans"
-                                android:textColor="@color/on_surface"
-                                android:textSize="15sp"
-                                android:textStyle="bold" />
-
-                            <com.google.android.material.switchmaterial.SwitchMaterial
-                                android:id="@+id/switch_logcat"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:thumbTint="@color/primary"
-                                android:trackTint="#555555" />
                         </LinearLayout>
 
                         <View
@@ -279,38 +291,6 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="@string/crash_upload"
-                                android:fontFamily="@font/misans"
-                                android:textColor="@color/on_surface"
-                                android:textSize="15sp"
-                                android:textStyle="bold" />
-
-                            <com.google.android.material.switchmaterial.SwitchMaterial
-                                android:id="@+id/switch_crash_upload"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:thumbTint="@color/primary"
-                                android:trackTint="#555555" />
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="14dp"
-                            android:layout_marginBottom="14dp"
-                            android:background="@color/divider"
-                            android:alpha="0.3" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
                                 android:text="@string/launcher_managed_mc_login"
                                 android:fontFamily="@font/misans"
                                 android:textColor="@color/on_surface"
@@ -324,15 +304,8 @@
                                 android:thumbTint="@color/primary"
                                 android:trackTint="#555555" />
                         </LinearLayout>
-
-                        
                     </LinearLayout>
 
-                    <include
-                        layout="@layout/view_pkg_settings_card"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -346,9 +319,52 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/card_background"
+                        android:orientation="horizontal"
+                        android:padding="8dp">
+
+                        <TextView
+                            android:id="@+id/personalize_nav_theme"
+                            android:layout_width="wrap_content"
+                            android:layout_height="30dp"
+                            android:paddingHorizontal="14dp"
+                            android:gravity="center"
+                            android:text="@string/settings_personalize_theme"
+                            android:fontFamily="@font/misans"
+                            android:textColor="@color/on_primary"
+                            android:textSize="12sp"
+                            android:background="@drawable/bg_tab_selected"
+                            android:clickable="true"
+                            android:focusable="true" />
+
+                        <TextView
+                            android:id="@+id/personalize_nav_wallpaper"
+                            android:layout_width="wrap_content"
+                            android:layout_height="30dp"
+                            android:layout_marginStart="8dp"
+                            android:paddingHorizontal="14dp"
+                            android:gravity="center"
+                            android:text="@string/settings_personalize_wallpaper"
+                            android:fontFamily="@font/misans"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp"
+                            android:background="@drawable/bg_tab_unselected"
+                            android:clickable="true"
+                            android:focusable="true" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/personalize_theme_group"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/card_background"
                         android:orientation="vertical"
                         android:padding="16dp">
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -374,41 +390,6 @@
                             android:layout_marginTop="12dp"
                             android:background="@drawable/bg_spinner_outline"
                             android:orientation="horizontal">
-
-                            <LinearLayout
-                                android:id="@+id/theme_item_system"
-                                android:layout_width="0dp"
-                                android:layout_height="40dp"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:orientation="horizontal"
-                                android:background="?attr/selectableItemBackground"
-                                android:clickable="true"
-                                android:focusable="true">
-                                <ImageView
-                                    android:id="@+id/theme_icon_system"
-                                    android:layout_width="16dp"
-                                    android:layout_height="16dp"
-                                    android:src="@drawable/ic_monitor"
-                                    app:tint="@color/text_secondary" />
-                                <TextView
-                                    android:id="@+id/theme_text_system"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="6dp"
-                                    android:text="@string/theme_follow_system"
-                                    android:fontFamily="@font/misans"
-                                    android:textColor="@color/on_surface"
-                                    android:textSize="12sp" />
-                            </LinearLayout>
-
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="match_parent"
-                                android:layout_marginVertical="8dp"
-                                android:background="@color/divider"
-                                android:alpha="0.3" />
-
                             <LinearLayout
                                 android:id="@+id/theme_item_light"
                                 android:layout_width="0dp"
@@ -442,7 +423,6 @@
                                 android:layout_marginVertical="8dp"
                                 android:background="@color/divider"
                                 android:alpha="0.3" />
-
                             <LinearLayout
                                 android:id="@+id/theme_item_dark"
                                 android:layout_width="0dp"
@@ -465,6 +445,39 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="6dp"
                                     android:text="@string/theme_dark"
+                                    android:fontFamily="@font/misans"
+                                    android:textColor="@color/on_surface"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginVertical="8dp"
+                                android:background="@color/divider"
+                                android:alpha="0.3" />
+                            <LinearLayout
+                                android:id="@+id/theme_item_system"
+                                android:layout_width="0dp"
+                                android:layout_height="40dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:orientation="horizontal"
+                                android:background="?attr/selectableItemBackground"
+                                android:clickable="true"
+                                android:focusable="true">
+                                <ImageView
+                                    android:id="@+id/theme_icon_system"
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    android:src="@drawable/ic_monitor"
+                                    app:tint="@color/text_secondary" />
+                                <TextView
+                                    android:id="@+id/theme_text_system"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="6dp"
+                                    android:text="@string/theme_follow_system"
                                     android:fontFamily="@font/misans"
                                     android:textColor="@color/on_surface"
                                     android:textSize="12sp" />
@@ -585,15 +598,22 @@
                                 android:backgroundTint="@color/primary" />
                         </LinearLayout>
                     </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/personalize_wallpaper_group"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:orientation="vertical"
+                        android:visibility="gone">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
                         android:background="@drawable/card_background"
                         android:orientation="vertical"
                         android:padding="16dp">
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -611,7 +631,57 @@
                             android:fontFamily="@font/misans"
                             android:textColor="@color/text_secondary"
                             android:textSize="12sp" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
 
+                            <TextView
+                                android:id="@+id/bg_image_status"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/bg_image_none"
+                                android:fontFamily="@font/misans"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="12sp" />
+
+                            <Button
+                                android:id="@+id/btn_clear_bg_image"
+                                android:layout_width="wrap_content"
+                                android:layout_height="32dp"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:paddingHorizontal="14dp"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:layout_marginEnd="8dp"
+                                android:text="@string/clear"
+                                android:fontFamily="@font/misans"
+                                android:textColor="@color/on_surface"
+                                android:textSize="11sp"
+                                android:textAllCaps="false"
+                                android:backgroundTint="@color/surface_variant"
+                                android:visibility="gone" />
+
+                            <Button
+                                android:id="@+id/btn_select_bg_image"
+                                android:layout_width="wrap_content"
+                                android:layout_height="32dp"
+                                android:minWidth="0dp"
+                                android:minHeight="0dp"
+                                android:paddingHorizontal="14dp"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp"
+                                android:text="@string/bg_media_select"
+                                android:fontFamily="@font/misans"
+                                android:textColor="@color/on_primary"
+                                android:textSize="11sp"
+                                android:textAllCaps="false"
+                                android:backgroundTint="@color/primary" />
+                        </LinearLayout>
                         <ImageView
                             android:id="@+id/bg_image_preview"
                             android:layout_width="match_parent"
@@ -619,7 +689,6 @@
                             android:layout_marginTop="12dp"
                             android:scaleType="centerCrop"
                             android:visibility="gone" />
-
                         <LinearLayout
                             android:id="@+id/bg_image_effect_controls"
                             android:layout_width="match_parent"
@@ -702,59 +771,103 @@
                                 android:progressTint="@color/primary"
                                 android:thumbTint="@color/primary" />
                         </LinearLayout>
+                    </LinearLayout>
 
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/section_components"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <include
+                        layout="@layout/view_pkg_settings_card"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/section_others"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/card_background"
+                        android:orientation="vertical"
+                        android:padding="16dp">
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
                             android:gravity="center_vertical"
                             android:orientation="horizontal">
 
                             <TextView
-                                android:id="@+id/bg_image_status"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:text="@string/bg_image_none"
-                                android:fontFamily="@font/misans"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="12sp" />
-
-                            <Button
-                                android:id="@+id/btn_clear_bg_image"
-                                android:layout_width="wrap_content"
-                                android:layout_height="32dp"
-                                android:minWidth="0dp"
-                                android:minHeight="0dp"
-                                android:paddingHorizontal="14dp"
-                                android:insetTop="0dp"
-                                android:insetBottom="0dp"
-                                android:layout_marginEnd="8dp"
-                                android:text="@string/clear"
+                                android:text="@string/show_logcat_overlay"
                                 android:fontFamily="@font/misans"
                                 android:textColor="@color/on_surface"
-                                android:textSize="11sp"
-                                android:textAllCaps="false"
-                                android:backgroundTint="@color/surface_variant"
-                                android:visibility="gone" />
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
 
-                            <Button
-                                android:id="@+id/btn_select_bg_image"
+                            <com.google.android.material.switchmaterial.SwitchMaterial
+                                android:id="@+id/switch_logcat"
                                 android:layout_width="wrap_content"
-                                android:layout_height="32dp"
-                                android:minWidth="0dp"
-                                android:minHeight="0dp"
-                                android:paddingHorizontal="14dp"
-                                android:insetTop="0dp"
-                                android:insetBottom="0dp"
-                                android:text="@string/bg_media_select"
-                                android:fontFamily="@font/misans"
-                                android:textColor="@color/on_primary"
-                                android:textSize="11sp"
-                                android:textAllCaps="false"
-                                android:backgroundTint="@color/primary" />
+                                android:layout_height="wrap_content"
+                                android:thumbTint="@color/primary"
+                                android:trackTint="#555555" />
                         </LinearLayout>
                     </LinearLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/section_privacy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/card_background"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="@string/crash_upload"
+                                android:fontFamily="@font/misans"
+                                android:textColor="@color/on_surface"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
+
+                            <com.google.android.material.switchmaterial.SwitchMaterial
+                                android:id="@+id/switch_crash_upload"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:thumbTint="@color/primary"
+                                android:trackTint="#555555" />
+                        </LinearLayout>
+                    </LinearLayout>
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -771,14 +884,50 @@
                         android:orientation="vertical"
                         android:padding="16dp">
 
-                        <TextView
-                            android:id="@+id/version_text"
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/misans"
-                            android:textColor="@color/on_surface"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/settings_current_version"
+                                    android:fontFamily="@font/misans"
+                                    android:textColor="@color/on_surface"
+                                    android:textSize="15sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/version_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:fontFamily="@font/misans"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+
+                            <Button
+                                android:id="@+id/btn_check_update"
+                                android:layout_width="wrap_content"
+                                android:layout_height="40dp"
+                                android:layout_marginStart="12dp"
+                                android:text="@string/check_update"
+                                android:fontFamily="@font/misans"
+                                android:textSize="13sp"
+                                android:textColor="@color/on_primary"
+                                android:backgroundTint="@color/primary"
+                                android:paddingHorizontal="20dp"
+                                android:textAllCaps="false" />
+                        </LinearLayout>
 
                         <View
                             android:layout_width="match_parent"
@@ -788,57 +937,52 @@
                             android:background="@color/divider"
                             android:alpha="0.3" />
 
-                        <Button
-                            android:id="@+id/btn_check_update"
-                            android:layout_width="wrap_content"
-                            android:layout_height="40dp"
-                            android:text="@string/check_update"
-                            android:fontFamily="@font/misans"
-                            android:textSize="13sp"
-                            android:textColor="@color/on_primary"
-                            android:backgroundTint="@color/primary"
-                            android:paddingHorizontal="20dp"
-                            android:textAllCaps="false" />
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="14dp"
-                            android:layout_marginBottom="14dp"
-                            android:background="@color/divider"
-                            android:alpha="0.3" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/preloader_sigs_title"
-                            android:fontFamily="@font/misans"
-                            android:textColor="@color/on_surface"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/preloader_sigs_last_update"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:fontFamily="@font/misans"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp" />
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
 
-                        <Button
-                            android:id="@+id/btn_update_preloader_sigs"
-                            android:layout_width="wrap_content"
-                            android:layout_height="40dp"
-                            android:layout_marginTop="12dp"
-                            android:text="@string/preloader_sigs_update"
-                            android:fontFamily="@font/misans"
-                            android:textSize="13sp"
-                            android:textColor="@color/on_primary"
-                            android:backgroundTint="@color/primary"
-                            android:paddingHorizontal="20dp"
-                            android:textAllCaps="false" />
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/preloader_sigs_title"
+                                    android:fontFamily="@font/misans"
+                                    android:textColor="@color/on_surface"
+                                    android:textSize="15sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/preloader_sigs_last_update"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="2dp"
+                                    android:fontFamily="@font/misans"
+                                    android:textColor="@color/text_secondary"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
+
+                            <Button
+                                android:id="@+id/btn_update_preloader_sigs"
+                                android:layout_width="wrap_content"
+                                android:layout_height="40dp"
+                                android:layout_marginStart="12dp"
+                                android:text="@string/preloader_sigs_update"
+                                android:fontFamily="@font/misans"
+                                android:textSize="13sp"
+                                android:textColor="@color/on_primary"
+                                android:backgroundTint="@color/primary"
+                                android:paddingHorizontal="20dp"
+                                android:textAllCaps="false" />
+                        </LinearLayout>
                     </LinearLayout>
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -847,7 +991,6 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:visibility="gone">
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -911,7 +1054,6 @@
                             app:tint="@color/text_secondary" />
                     </LinearLayout>
                 </LinearLayout>
-
 
             </FrameLayout>
 

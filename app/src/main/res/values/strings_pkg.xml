@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Strings of the package manager integration. Keep values-zh-rCN/strings_pkg.xml
-     aligned: same keys, order and comments. The other locales
-     fall back to these English texts until they are translated, hence MissingTranslation is off. -->
+<!-- Strings of the package manager integration. Keep every values-*/strings_pkg.xml
+     aligned: same keys, order and comments. A key added here falls back to English in a locale
+     until it is translated there, hence MissingTranslation is off. -->
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <!-- Workspace guards (launch, backup, restore, instance deletion) -->
     <string name="pkg_err_workspace_busy">A package operation is running on this instance. Wait for it to finish and try again.</string>
@@ -425,7 +425,6 @@
     <string name="pkg_settings_mirror_off">Off</string>
     <string name="pkg_settings_scripts_title">Run package scripts</string>
     <string name="pkg_settings_scripts_desc">Hooks run via sh and are not undone if a later step fails</string>
-    <string name="pkg_settings_cache_title">Package cache</string>
     <string name="pkg_settings_cache_size">Cache size: %1$s</string>
     <string name="pkg_settings_cache_size_computing">Cache size: calculating…</string>
     <string name="pkg_settings_cache_clean">Clean Cache</string>

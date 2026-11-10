@@ -105,6 +105,12 @@
     <string name="settings_tab_personalize">Personnalisation</string>
     <string name="settings_tab_updates">Mises à jour</string>
     <string name="settings_tab_about">À propos</string>
+    <string name="settings_tab_components">Composants tiers</string>
+    <string name="settings_tab_others">Autres</string>
+    <string name="settings_tab_privacy">Confidentialité</string>
+    <string name="settings_personalize_theme">Thème et couleurs</string>
+    <string name="settings_personalize_wallpaper">Fond d\'écran</string>
+    <string name="settings_current_version">Version actuelle</string>
     <string name="settings_theme_desc">Choisir le thème de l\'application</string>
 
 
@@ -192,6 +198,9 @@
     <string name="invalid_mod_file_reason">Seuls les fichiers .so, les packages de mod .zip ou les packages de mod .levipack/.mcmod sont autorisés. Le fichier sélectionné n\'est pas un mod natif valide.</string>
     <string name="invalid_zip_mod_package_title">Package ZIP de mod invalide</string>
     <string name="invalid_zip_mod_package_message">Le package ZIP de mod doit contenir manifest.json et un fichier .so.</string>
+    <string name="invalid_mcmod_package_title">Paquet .mcmod invalide</string>
+    <string name="invalid_mcmod_package_message">Un .mcmod contient exactement le contenu de mods/&lt;name&gt;/ : manifest.json à sa racine, avec \"name\" égal au nom du dossier, \"type\": \"preload-native\" et un fichier .so en \"entry\".</string>
+    <string name="mod_import_refused_by_packages">Impossible d\'importer dans mods/%1$s : %2$s. Mettez-le à jour ou supprimez-le plutôt avec le gestionnaire de paquets.</string>
     <string name="error_versions">Versions erronées</string>
 
     <string name="dialog_title_delete_mod">Supprimer le mod</string>
@@ -595,6 +604,8 @@
     <!-- Crash & Diagnostics -->
     <string name="crash_title">L\'application s\'est arrêtée</string>
     <string name="crash_upload">Téléverser le rapport de plantage</string>
+    <string name="discord_rich_presence">Discord Rich Presence</string>
+    <string name="discord_rich_presence_desc">Afficher l\'activité du lanceur, la version de Minecraft et le temps écoulé sur Discord</string>
     <string name="crash_details_title">Détails du plantage</string>
     <string name="crash_back_to_main">Retour à l\'accueil</string>
     <string name="crash_share_log">Partager le journal</string>
@@ -648,6 +659,7 @@
     <string name="inbuilt_mod_camera_desc">Basculer la vue de la caméra</string>
     <string name="inbuilt_mod_hud">Cacher le HUD</string>
     <string name="inbuilt_mod_hud_desc">Cacher la barre d\'outils et l\'UI</string>
+    <string name="mod_config_hide_launcher_hud">Masquer aussi le HUD et les boutons superposés du lanceur</string>
     <string name="inbuilt_mod_autosprint">Sprint Auto</string>
     <string name="inbuilt_mod_autosprint_desc">Activer/désactiver le sprint automatique</string>
     <string name="inbuilt_mod_chick_pet">Poussin de compagnie</string>
@@ -722,6 +734,10 @@
     <string name="mod_menu_appearance">Apparence</string>
     <string name="mod_menu_pause_menu_only">Menu pause uniquement</string>
     <string name="mod_menu_pause_menu_only_desc">Afficher le menu des mods uniquement dans le menu de pause</string>
+    <string name="mod_menu_keybind">Raccourci du menu des mods</string>
+    <string name="mod_menu_keybind_desc">Appuyez pour modifier le raccourci clavier</string>
+    <string name="mod_menu_keybind_reset">Réinitialiser sur M</string>
+    <string name="mod_menu_keybind_unbound">Non attribué</string>
     <string name="mod_menu_default_percent" formatted="false">100%</string>
     <string name="mod_menu_percent_value">%1$d%%</string>
     <string name="mod_menu_settings_coming">Paramètres à venir</string>
@@ -1082,4 +1098,17 @@
     <string name="batch_transferring">Transfert de %1$d sur %2$d…</string>
     <string name="batch_result">%1$d terminés, %2$d échoués</string>
     <string name="choose_export_folder">Choisir le dossier d’exportation</string>
+    <string name="mod_config_activation_keybind">Raccourci d\'activation</string>
+    <string name="mod_config_edit_controls">Modifier les contrôles</string>
+    <string name="mod_config_display_size_dp">Taille d\'affichage (dp)</string>
+    <string name="mod_config_clear_keybind">Effacer le raccourci</string>
+    <string name="bg_media_title">Arrière-plan</string>
+    <string name="bg_media_desc">Choisissez une photo ou un GIF</string>
+    <string name="bg_media_select">Sélectionner un arrière-plan</string>
+    <string name="bg_media_none">Aucun arrière-plan sélectionné</string>
+    <string name="bg_media_importing">Importation de l\'arrière-plan…</string>
+    <string name="bg_media_import_failed">Impossible de charger cet arrière-plan. Choisissez une photo ou un GIF pris en charge.</string>
+    <string name="bg_media_blur_unavailable">Android 12+</string>
+    <string name="screenshot_saved">Capture d\'écran enregistrée</string>
+    <string name="backup_select_downloads">Sélectionnez le dossier Téléchargements pour enregistrer les sauvegardes dans Downloads/LeviLauncher/Backups.</string>
 </resources>
