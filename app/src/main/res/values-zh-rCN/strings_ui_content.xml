@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="content_ui_storage_location">存储位置</string>
+    <string name="content_ui_storage">存储</string>
+    <string name="content_ui_game_version">游戏版本</string>
+    <string name="content_ui_refresh">刷新</string>
+    <string name="content_ui_multi_select">多选</string>
+    <string name="content_ui_worlds_title">世界列表</string>
+    <string name="content_ui_screenshots">屏幕截图</string>
+    <string name="content_ui_add_server">添加服务器</string>
+    <string name="content_ui_search_worlds">搜索世界…</string>
+    <string name="content_ui_sort_name">名称</string>
+    <string name="content_ui_sort_time">修改时间</string>
+    <string name="content_ui_sort_asc">升序</string>
+    <string name="content_ui_sort_desc">降序</string>
+    <string name="content_ui_sort_format">%1$s / %2$s</string>
+    <string name="content_ui_strip_label">%1$s:</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Material icon (Apache 2.0). Tint with app:tint or setImageTintList. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M20,3H4c-1.1,0 -2,0.9 -2,2v11c0,1.1 0.9,2 2,2h3l-1,1v2h12v-2l-1,-1h3c1.1,0 2,-0.9 2,-2V5c0,-1.1 -0.9,-2 -2,-2zM20,16H4V5h16v11z" />
+</vector>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="instances_ui_sort_oldest">版本（旧到新）</string>
+    <string name="instances_ui_auto_saved">修改已自动保存</string>
+    <string name="instances_ui_info_name">名称: %1$s</string>
+    <string name="instances_ui_icon_hint">图标同时用于桌面快捷方式。点击图标更换。</string>
+    <string name="instances_ui_icon_import_failed">无法导入此图片。</string>
+</resources>

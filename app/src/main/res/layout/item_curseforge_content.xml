@@ -1,88 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- A CurseForge result row: icon, name, author, summary, tags and a View button. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="5dp"
-    android:layout_marginVertical="3dp"
-    android:paddingHorizontal="11dp"
-    android:paddingVertical="10dp"
-    android:background="@drawable/bg_cf_item"
-    android:foreground="?android:attr/selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true">
+    android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/mod_icon"
-        android:layout_width="52dp"
-        android:layout_height="52dp"
-        android:background="@drawable/bg_cf_icon"
-        android:clipToOutline="true"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_minecraft_cube"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/mod_title"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:id="@+id/cf_row"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="11dp"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:fontFamily="@font/misans"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        android:textColor="@color/on_surface"
-        app:layout_constraintStart_toEndOf="@id/mod_icon"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Furnicraft Addon" />
+        android:background="@drawable/bg_ui_row"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:minHeight="72dp"
+        android:orientation="horizontal"
+        android:paddingStart="6dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="6dp"
+        android:paddingBottom="12dp">
 
-    <TextView
-        android:id="@+id/mod_author"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:fontFamily="@font/misans"
-        android:textSize="11sp"
-        android:textColor="@color/text_secondary"
-        app:layout_constraintStart_toStartOf="@id/mod_title"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mod_title"
-        tools:text="by RobertGamer69" />
+        <ImageView
+            android:id="@+id/mod_icon"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/bg_cf_icon"
+            android:clipToOutline="true"
+            android:importantForAccessibility="no"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_minecraft_cube" />
 
-    <TextView
-        android:id="@+id/mod_description"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="3dp"
-        android:maxLines="2"
-        android:ellipsize="end"
-        android:fontFamily="@font/misans"
-        android:textSize="12sp"
-        android:textColor="@color/text_secondary"
-        app:layout_constraintStart_toStartOf="@id/mod_title"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mod_author"
-        tools:text="Beautiful furniture and decorations for your Minecraft worlds" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/mod_metadata"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:maxLines="1"
-        android:ellipsize="end"
-        android:fontFamily="@font/misans"
-        android:textSize="10sp"
-        android:textColor="@color/primary"
-        app:layout_constraintStart_toStartOf="@id/mod_title"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mod_description"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:text="1.2M downloads · 2026-10-11 · Addons" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/mod_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
+                    tools:text="Furnicraft Addon" />
+
+                <TextView
+                    android:id="@+id/mod_author"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textAppearance="@style/TextAppearance.Levi.Caption"
+                    tools:text="| by RobertGamer69" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/mod_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:textAppearance="@style/TextAppearance.Levi.Body"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp"
+                tools:text="Beautiful furniture and decorations for your Minecraft worlds" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/mod_tag_category"
+                    style="@style/Widget.Levi.Tag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:ellipsize="end"
+                    android:maxWidth="160dp"
+                    tools:text="Addons" />
+
+                <TextView
+                    android:id="@+id/mod_tag_downloads"
+                    style="@style/Widget.Levi.Tag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    tools:text="1.2M downloads" />
+
+                <TextView
+                    android:id="@+id/mod_metadata"
+                    style="@style/Widget.Levi.Tag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    tools:text="2026-10-11" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/mod_view"
+            style="@style/Widget.Levi.Button.Outline"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:minWidth="72dp"
+            android:text="@string/catalog_view" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/mod_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
+</LinearLayout>

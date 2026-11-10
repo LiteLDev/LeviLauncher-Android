@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.content.ServerItem;
+import org.levimc.launcher.ui.widget.UiKit;
 
 import java.util.List;
 
@@ -45,6 +47,7 @@ public class ServersAdapter extends RecyclerView.Adapter<ServersAdapter.ViewHold
         ServerItem server = servers.get(position);
         holder.nameText.setText(server.name);
         holder.ipText.setText(server.ip + ":" + server.port);
+        UiKit.tintIconChip(holder.chip, holder.icon, UiKit.INDIGO);
 
         holder.deleteButton.setOnClickListener(v -> {
             if (listener != null) {
@@ -66,12 +69,16 @@ public class ServersAdapter extends RecyclerView.Adapter<ServersAdapter.ViewHold
         TextView nameText;
         TextView ipText;
         Button deleteButton;
+        View chip;
+        ImageView icon;
 
         ViewHolder(View view) {
             super(view);
             nameText = view.findViewById(R.id.server_name);
             ipText = view.findViewById(R.id.server_ip);
             deleteButton = view.findViewById(R.id.server_delete_button);
+            chip = view.findViewById(R.id.server_chip);
+            icon = view.findViewById(R.id.server_icon);
         }
     }
 }

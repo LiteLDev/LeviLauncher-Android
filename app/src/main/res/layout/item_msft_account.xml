@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/card_background"
-    android:orientation="horizontal"
-    android:padding="12dp"
     android:layout_marginBottom="8dp"
+    android:background="@drawable/bg_ui_card_inner"
     android:gravity="center_vertical"
-    android:elevation="1dp">
+    android:minHeight="64dp"
+    android:orientation="horizontal"
+    android:paddingStart="14dp"
+    android:paddingTop="10dp"
+    android:paddingEnd="8dp"
+    android:paddingBottom="10dp">
 
-    <!-- Text Information -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -19,79 +22,57 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/account_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:textColor="@color/on_surface"
-                android:fontFamily="@font/misans"/>
+                android:ellipsize="end"
+                android:fontFamily="@font/misans"
+                android:maxLines="1"
+                android:textColor="@color/text_primary"
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/active_badge"
+                style="@style/Widget.Levi.Tag.Accent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/ms_active_badge"
-                android:textSize="10sp"
-                android:textColor="@color/primary"
                 android:layout_marginStart="8dp"
-                android:background="@drawable/card_background"
-                android:paddingLeft="6dp"
-                android:paddingRight="6dp"
-                android:paddingTop="2dp"
-                android:paddingBottom="2dp"
-                android:visibility="gone"/>
+                android:text="@string/ms_active_badge"
+                android:visibility="gone" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/account_subtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="#888888"
-            android:textSize="12sp"
-            android:fontFamily="@font/misans"
             android:layout_marginTop="2dp"
+            android:ellipsize="end"
             android:maxLines="1"
-            android:ellipsize="end"/>
+            android:textAppearance="@style/TextAppearance.Levi.Caption" />
     </LinearLayout>
 
-    <!-- Action Buttons -->
-    <LinearLayout
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_use"
+        style="@style/Widget.Levi.Button.Primary"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginStart="8dp">
+        android:layout_height="40dp"
+        android:layout_marginStart="8dp"
+        android:text="@string/ms_set_active"
+        android:textSize="13sp" />
 
-        <Button
-            android:id="@+id/btn_use"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:text="@string/ms_set_active"
-            android:textSize="12sp"
-            android:textColor="@color/on_primary"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:fontFamily="@font/misans"/>
-
-        <ImageButton
-            android:id="@+id/btn_delete"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginStart="8dp"
-            android:src="@drawable/ic_close"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/ms_delete"
-            android:tint="#D32F2F"/>
-
-    </LinearLayout>
+    <ImageButton
+        android:id="@+id/btn_delete"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="4dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/ms_delete"
+        android:src="@drawable/ic_ui_delete"
+        app:tint="@color/ui_danger" />
 
 </LinearLayout>

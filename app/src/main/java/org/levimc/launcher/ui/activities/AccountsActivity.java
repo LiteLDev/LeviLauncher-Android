@@ -2,7 +2,6 @@ package org.levimc.launcher.ui.activities;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -16,12 +15,15 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.google.android.material.button.MaterialButton;
+
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.auth.MsftAccountStore;
 import org.levimc.launcher.core.auth.MsftAuthManager;
 import org.levimc.launcher.ui.adapter.AccountsAdapter;
 import org.levimc.launcher.ui.animation.DynamicAnim;
 import org.levimc.launcher.ui.dialogs.LoadingDialog;
+import org.levimc.launcher.ui.widget.UiKit;
 import org.levimc.launcher.util.AccountTextUtils;
 import org.levimc.launcher.util.PersonalizationManager;
 
@@ -55,6 +57,7 @@ public class AccountsActivity extends BaseActivity {
     private ActivityResultLauncher<Intent> loginLauncher;
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private LoadingDialog loadingDialog;
+    private boolean shownEnabled;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +91,12 @@ public class AccountsActivity extends BaseActivity {
         View.OnClickListener addAction = v -> loginLauncher.launch(new Intent(this, MsftLoginActivity.class));
         if (bottomAddButton != null) bottomAddButton.setOnClickListener(addAction);
         if (bottomAddButton != null) DynamicAnim.applyPressScale(bottomAddButton);
+
+        View goSettings = findViewById(R.id.accounts_go_settings);
+        if (goSettings != null) {
+            goSettings.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
+            DynamicAnim.applyPressScale(goSettings);
+        }
 
         adapter.setOnAccountActionListener(new AccountsAdapter.OnAccountActionListener() {
             @Override
@@ -147,10 +156,10 @@ public class AccountsActivity extends BaseActivity {
         if (avatarProgress != null) {
             avatarProgress.setIndeterminateTintList(ColorStateList.valueOf(accent));
         }
-        if (bottomAddButton != null) {
-            bottomAddButton.setBackgroundTintList(ColorStateList.valueOf(accent));
-            bottomAddButton.setTextColor(Color.WHITE);
+        if (bottomAddButton instanceof MaterialButton) {
+            UiKit.applyPrimary((MaterialButton) bottomAddButton);
         }
+        if (privilegesText != null) UiKit.tintSoftAccent(privilegesText, 7);
     }
 
     private MsftAccountStore.MsftAccount getActiveAccount() {
@@ -163,11 +172,13 @@ public class AccountsActivity extends BaseActivity {
 
     private void refreshUI() {
         boolean enabled = org.levimc.launcher.settings.FeatureSettings.getInstance().isLauncherManagedMcLoginEnabled();
+        shownEnabled = enabled;
         View mainContent = findViewById(R.id.main_content_container);
         View disabledState = findViewById(R.id.disabled_state_container);
         
         if (mainContent != null) mainContent.setVisibility(enabled ? View.VISIBLE : View.GONE);
         if (disabledState != null) disabledState.setVisibility(enabled ? View.GONE : View.VISIBLE);
+        if (bottomAddButton != null) bottomAddButton.setVisibility(enabled ? View.VISIBLE : View.GONE);
         
         if (!enabled) return;
         
@@ -175,6 +186,7 @@ public class AccountsActivity extends BaseActivity {
         if (active == null) {
             gamertagText.setText(getString(R.string.not_signed_in));
             privilegesText.setText("");
+            privilegesText.setVisibility(View.GONE);
             xuidText.setText("");
             if (xboxAvatar != null) {
                 xboxAvatar.setImageDrawable(null);
@@ -186,6 +198,7 @@ public class AccountsActivity extends BaseActivity {
             String displayName = AccountTextUtils.displayNameOrNotSigned(this, active);
             gamertagText.setText(displayName);
             privilegesText.setText(getString(R.string.accounts_active_privilege));
+            privilegesText.setVisibility(View.VISIBLE);
             xuidText.setText(active.xuid != null ? active.xuid : "");
             loadXboxAvatar(active);
             if (rightCardContainer != null) rightCardContainer.setVisibility(View.VISIBLE);
@@ -198,6 +211,15 @@ public class AccountsActivity extends BaseActivity {
         if (emptyStateContainer != null) emptyStateContainer.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
         
         refreshNavAccountUI();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // The feature switch may have been changed in Settings ("Go to Settings").
+        if (isFinishing() || gamertagText == null) return;
+        boolean enabled = org.levimc.launcher.settings.FeatureSettings.getInstance().isLauncherManagedMcLoginEnabled();
+        if (enabled != shownEnabled) refreshUI();
     }
 
     @Override

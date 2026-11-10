@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_manage">Manage</string>
+    <string name="home_view_all">View all</string>
+    <string name="home_mods_empty">No mods installed yet</string>
+    <string name="home_mods_none_enabled">No mods enabled</string>
+    <string name="home_content_download">Content download</string>
+    <string name="home_launch_options">More launch options</string>
+</resources>

@@ -29,6 +29,8 @@ import androidx.core.app.ActivityOptionsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
+
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.versions.GameVersion;
 import org.levimc.launcher.util.PersonalizationManager;
@@ -37,12 +39,17 @@ import org.levimc.launcher.ui.animation.DynamicAnim;
 import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
 import org.levimc.launcher.ui.dialogs.InstallProgressDialog;
 import org.levimc.launcher.util.ApkImportManager;
+import org.levimc.launcher.ui.widget.SegmentedControl;
+import org.levimc.launcher.ui.widget.UiKit;
 import org.levimc.launcher.util.InstanceBackupManager;
+import org.levimc.launcher.util.InstanceShortcutManager;
 import org.levimc.launcher.util.StorageAccess;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InstancesActivity extends BaseActivity {
     public static final String EXTRA_RESTORE_BACKUP_ON_OPEN = "restore_backup_on_open";
@@ -60,10 +67,11 @@ public class InstancesActivity extends BaseActivity {
     private VersionManager versionManager;
     private RecyclerView recyclerView;
     private InstanceCardAdapter adapter;
-    private TextView filterAll, filterCustom;
-    private TextView instanceCountBadge;
+    private SegmentedControl filterControl;
+    private MaterialButton sortButton;
     private EditText searchInput;
     private int currentFilter = FILTER_ALL;
+    private boolean sortOldestFirst;
     private List<GameVersion> allVersions = new ArrayList<>();
 
     private ApkImportManager apkImportManager;
@@ -131,6 +139,7 @@ public class InstancesActivity extends BaseActivity {
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == RESULT_OK) {
+                        if (adapter != null) adapter.clearIconCache();
                         versionManager.loadAllVersions();
                         loadVersions();
                         applyFilters();
@@ -139,9 +148,8 @@ public class InstancesActivity extends BaseActivity {
         );
 
         recyclerView = findViewById(R.id.instances_recycler);
-        filterAll = findViewById(R.id.filter_all);
-        filterCustom = findViewById(R.id.filter_custom);
-        instanceCountBadge = findViewById(R.id.instance_count_badge);
+        filterControl = findViewById(R.id.filter_segmented);
+        sortButton = findViewById(R.id.sort_button);
         searchInput = findViewById(R.id.search_input);
 
         int spanCount = calculateSpanCount();
@@ -175,10 +183,10 @@ public class InstancesActivity extends BaseActivity {
 
         setupFilterTabs();
         setupSearch();
+        setupSortButton();
         setupImportButton();
         setupBackupImportButton();
         setupBatchBackupButton();
-        updateCount();
         handleBackupOpenIntent(getIntent());
 
         DynamicAnim.applyPressScaleRecursively(findViewById(android.R.id.content));
@@ -210,49 +218,33 @@ public class InstancesActivity extends BaseActivity {
         Collections.sort(allVersions, (a, b) -> {
             String va = a.versionCode != null ? a.versionCode : "";
             String vb = b.versionCode != null ? b.versionCode : "";
-            return vb.compareTo(va);
+            return sortOldestFirst ? va.compareTo(vb) : vb.compareTo(va);
         });
     }
 
     private void setupFilterTabs() {
-        updateFilterUI();
-
-        filterAll.setOnClickListener(v -> {
-            currentFilter = FILTER_ALL;
-            updateFilterUI();
-            applyFilters();
-        });
-        filterCustom.setOnClickListener(v -> {
-            currentFilter = FILTER_CUSTOM;
-            updateFilterUI();
+        filterControl.setItems(getString(R.string.filter_all), getString(R.string.filter_custom));
+        filterControl.setSelectedIndex(currentFilter, false);
+        filterControl.setOnSegmentSelectedListener(index -> {
+            currentFilter = index == 1 ? FILTER_CUSTOM : FILTER_ALL;
             applyFilters();
         });
     }
 
-    private void updateFilterUI() {
-        PersonalizationManager pm = new PersonalizationManager(this);
-        int accent = pm.getAccentColor();
-        TextView[] tabs = {filterAll, filterCustom};
-        for (int i = 0; i < tabs.length; i++) {
-            boolean selected = (i == currentFilter);
-            tabs[i].setSelected(selected);
-            if (selected) {
-                tabs[i].setTextColor(android.graphics.Color.WHITE);
-                tabs[i].setTypeface(tabs[i].getTypeface(), android.graphics.Typeface.BOLD);
-                if (accent != 0) {
-                    android.graphics.drawable.GradientDrawable gd = new android.graphics.drawable.GradientDrawable();
-                    gd.setShape(android.graphics.drawable.GradientDrawable.RECTANGLE);
-                    gd.setColor(accent);
-                    gd.setCornerRadius(20 * getResources().getDisplayMetrics().density);
-                    tabs[i].setBackground(gd);
-                }
-            } else {
-                tabs[i].setTextColor(getResources().getColor(R.color.on_surface, getTheme()));
-                tabs[i].setTypeface(tabs[i].getTypeface(), android.graphics.Typeface.NORMAL);
-                tabs[i].setBackgroundResource(R.drawable.bg_filter_chip);
-                tabs[i].setSelected(false);
-            }
-        }
+    private void setupSortButton() {
+        updateSortLabel();
+        sortButton.setOnClickListener(v -> {
+            sortOldestFirst = !sortOldestFirst;
+            updateSortLabel();
+            loadVersions();
+            applyFilters();
+        });
+    }
+
+    private void updateSortLabel() {
+        sortButton.setText(sortOldestFirst
+                ? R.string.instances_ui_sort_oldest
+                : R.string.sort_version_newest);
     }
 
     private void setupSearch() {
@@ -271,52 +263,22 @@ public class InstancesActivity extends BaseActivity {
     }
 
     private void setupImportButton() {
-        TextView btnImport = findViewById(R.id.btn_import_apk);
+        MaterialButton btnImport = findViewById(R.id.btn_import_apk);
         if (btnImport == null) return;
-        btnImport.setVisibility(View.VISIBLE);
-        btnImport.setSelected(true);
-        PersonalizationManager pm = new PersonalizationManager(this);
-        int accent = pm.getAccentColor();
-        if (accent != 0) {
-            android.graphics.drawable.GradientDrawable gd = new android.graphics.drawable.GradientDrawable();
-            gd.setShape(GradientDrawable.RECTANGLE);
-            gd.setColor(accent);
-            gd.setCornerRadius(20 * getResources().getDisplayMetrics().density);
-            btnImport.setBackground(gd);
-            btnImport.setTextColor(android.graphics.Color.WHITE);
-        }
+        UiKit.applyPrimary(btnImport);
         btnImport.setOnClickListener(v -> startApkFilePicker());
     }
 
     private void setupBackupImportButton() {
-        TextView btnImportBackup = findViewById(R.id.btn_import_backup);
+        View btnImportBackup = findViewById(R.id.btn_import_backup);
         if (btnImportBackup == null) return;
-        btnImportBackup.setVisibility(View.VISIBLE);
-        btnImportBackup.setSelected(true);
-        applyAccentButtonStyle(btnImportBackup);
         btnImportBackup.setOnClickListener(v -> startBackupImportPicker());
     }
 
     private void setupBatchBackupButton() {
         batchBackupButton = findViewById(R.id.btn_batch_backup);
         if (batchBackupButton == null) return;
-        batchBackupButton.setVisibility(View.VISIBLE);
-        batchBackupButton.setSelected(true);
-        applyAccentButtonStyle(batchBackupButton);
         batchBackupButton.setOnClickListener(v -> showBatchBackupSelection());
-    }
-
-    private void applyAccentButtonStyle(TextView button) {
-        PersonalizationManager pm = new PersonalizationManager(this);
-        int accent = pm.getAccentColor();
-        if (accent != 0) {
-            android.graphics.drawable.GradientDrawable gd = new android.graphics.drawable.GradientDrawable();
-            gd.setShape(GradientDrawable.RECTANGLE);
-            gd.setColor(accent);
-            gd.setCornerRadius(20 * getResources().getDisplayMetrics().density);
-            button.setBackground(gd);
-            button.setTextColor(android.graphics.Color.WHITE);
-        }
     }
 
     private void startApkFilePicker() {
@@ -786,13 +748,6 @@ public class InstancesActivity extends BaseActivity {
         }
 
         adapter.updateData(filtered);
-        updateCount();
-    }
-
-    private void updateCount() {
-        if (instanceCountBadge != null && adapter != null) {
-            instanceCountBadge.setText(String.valueOf(adapter.getItemCount()));
-        }
     }
 
     private void setupNavBar() {
@@ -806,6 +761,7 @@ public class InstancesActivity extends BaseActivity {
         if (firstResume) {
             firstResume = false;
         } else {
+            if (adapter != null) adapter.clearIconCache();
             versionManager.loadAllVersions();
             loadVersions();
         }
@@ -842,6 +798,7 @@ public class InstancesActivity extends BaseActivity {
         private GameVersion selectedVersion;
         private OnItemClickListener listener;
         private OnSettingsClickListener settingsListener;
+        private final Map<String, android.graphics.Bitmap> iconCache = new HashMap<>();
 
         interface OnItemClickListener {
             void onClick(GameVersion version);
@@ -883,74 +840,60 @@ public class InstancesActivity extends BaseActivity {
         @Override
         public void onBindViewHolder(@NonNull VH holder, int position) {
             GameVersion v = versions.get(position);
+            Context ctx = holder.itemView.getContext();
             boolean isSelected = selectedVersion != null
                     && selectedVersion.directoryName != null
                     && selectedVersion.directoryName.equals(v.directoryName);
 
             holder.itemView.setActivated(isSelected);
 
-            PersonalizationManager pm = new PersonalizationManager(holder.itemView.getContext());
-            int accent = pm.getAccentColor();
+            PersonalizationManager pm = new PersonalizationManager(ctx);
             boolean hasBackgroundImage = pm.hasBackgroundImage();
-            boolean isDark = isDarkMode(holder.itemView.getContext());
-            
-            int bgColor;
+            boolean isDark = isDarkMode(ctx);
+            float radius = UiKit.dp(ctx, 20);
+
             int primaryTextColor;
             int secondaryTextColor;
-            int outlineColor;
+            if (isSelected) {
+                holder.itemView.setBackground(UiKit.selectedRing(ctx, 20));
+            } else {
+                GradientDrawable gd = new GradientDrawable();
+                gd.setShape(GradientDrawable.RECTANGLE);
+                gd.setCornerRadius(radius);
+                if (hasBackgroundImage) {
+                    gd.setColor(isDark
+                            ? Color.argb(CARD_GLASS_ALPHA_DARK, 18, 20, 24)
+                            : Color.argb(CARD_GLASS_ALPHA_LIGHT, 255, 255, 255));
+                    gd.setStroke(Math.round(UiKit.dp(ctx, 1)), Color.argb(
+                            isDark ? CARD_OUTLINE_ALPHA_DARK : CARD_OUTLINE_ALPHA_LIGHT, 255, 255, 255));
+                } else {
+                    gd.setColor(UiKit.color(ctx, R.color.surface));
+                    gd.setStroke(Math.round(UiKit.dp(ctx, 1)), UiKit.color(ctx, R.color.ui_card_stroke));
+                }
+                holder.itemView.setBackground(gd);
+            }
             if (hasBackgroundImage) {
-                bgColor = isDark
-                        ? Color.argb(CARD_GLASS_ALPHA_DARK, 18, 20, 24)
-                        : Color.argb(CARD_GLASS_ALPHA_LIGHT, 255, 255, 255);
                 primaryTextColor = isDark ? Color.WHITE : CARD_TEXT_PRIMARY_LIGHT;
                 secondaryTextColor = isDark ? CARD_TEXT_SECONDARY_DARK : CARD_TEXT_SECONDARY_LIGHT;
-                outlineColor = Color.argb(isDark ? CARD_OUTLINE_ALPHA_DARK : CARD_OUTLINE_ALPHA_LIGHT,
-                        255, 255, 255);
             } else {
-                bgColor = androidx.core.content.ContextCompat.getColor(holder.itemView.getContext(), R.color.surface);
-                primaryTextColor = androidx.core.content.ContextCompat.getColor(holder.itemView.getContext(), R.color.on_surface);
-                secondaryTextColor = androidx.core.content.ContextCompat.getColor(holder.itemView.getContext(), R.color.text_secondary);
-                outlineColor = androidx.core.content.ContextCompat.getColor(holder.itemView.getContext(), R.color.outline);
+                primaryTextColor = UiKit.color(ctx, R.color.text_primary);
+                secondaryTextColor = UiKit.color(ctx, R.color.text_secondary);
             }
-            
-            GradientDrawable gd = new GradientDrawable();
-            gd.setShape(GradientDrawable.RECTANGLE);
-            gd.setCornerRadius(12 * holder.itemView.getContext().getResources().getDisplayMetrics().density);
-            gd.setColor(bgColor);
-            
-            if (isSelected && accent != 0) {
-                gd.setStroke((int)(2 * holder.itemView.getContext().getResources().getDisplayMetrics().density), accent);
-            } else {
-                gd.setStroke((int)(1 * holder.itemView.getContext().getResources().getDisplayMetrics().density), outlineColor);
-            }
-            
-            holder.itemView.setBackground(gd);
 
             holder.versionCode.setText(v.versionCode != null ? v.versionCode : v.directoryName);
             holder.versionCode.setTextColor(primaryTextColor);
             holder.displayName.setTextColor(secondaryTextColor);
-            holder.settingsIcon.setImageTintList(ColorStateList.valueOf(secondaryTextColor));
 
             if (v.isInstalled) {
                 holder.typeTag.setText(R.string.tag_installed);
-                int tagColor = accent != 0 ? accent : holder.itemView.getContext().getResources().getColor(R.color.primary, holder.itemView.getContext().getTheme());
-                holder.typeTag.setTextColor(tagColor);
-                if (hasBackgroundImage) {
-                    holder.typeTag.setBackground(makeTagBackground(holder.itemView.getContext(), tagColor));
-                } else {
-                    holder.typeTag.setBackgroundResource(R.drawable.bg_release_tag);
-                }
+                UiKit.tintSoftAccent(holder.typeTag, 7);
             } else {
                 holder.typeTag.setText(R.string.tag_custom);
-                int tagColor = hasBackgroundImage
-                        ? secondaryTextColor
-                        : holder.itemView.getContext().getResources().getColor(R.color.text_secondary, holder.itemView.getContext().getTheme());
-                holder.typeTag.setTextColor(tagColor);
-                if (hasBackgroundImage) {
-                    holder.typeTag.setBackground(makeTagBackground(holder.itemView.getContext(), tagColor));
-                } else {
-                    holder.typeTag.setBackgroundResource(R.drawable.bg_preview_tag);
-                }
+                GradientDrawable tagBg = new GradientDrawable();
+                tagBg.setCornerRadius(UiKit.dp(ctx, 7));
+                tagBg.setColor(UiKit.alpha(UiKit.INDIGO, isDark ? 46 : 28));
+                holder.typeTag.setBackground(tagBg);
+                holder.typeTag.setTextColor(isDark ? 0xFFA5B4FC : 0xFF4F46E5);
             }
             holder.typeTag.setVisibility(View.VISIBLE);
 
@@ -958,9 +901,10 @@ public class InstancesActivity extends BaseActivity {
             if (v.displayName != null && !v.displayName.isEmpty()) {
                 displayLabel = v.displayName;
             } else {
-                displayLabel = holder.itemView.getContext().getString(R.string.vanilla_prefix, v.versionCode != null ? v.versionCode : "");
+                displayLabel = ctx.getString(R.string.vanilla_prefix, v.versionCode != null ? v.versionCode : "");
             }
             holder.displayName.setText(displayLabel);
+            bindIcon(holder.icon, v);
 
             holder.settingsIcon.setOnClickListener(iv -> {
                 if (settingsListener != null) settingsListener.onClick(v);
@@ -973,18 +917,39 @@ public class InstancesActivity extends BaseActivity {
             DynamicAnim.applyPressScale(holder.itemView);
         }
 
+        /** Shows the custom instance icon (set in instance settings) or the default cube. */
+        private void bindIcon(ImageView icon, GameVersion v) {
+            Context ctx = icon.getContext();
+            String uri = InstanceShortcutManager.getSavedIconUri(ctx, v);
+            android.graphics.Bitmap bitmap = null;
+            if (uri != null && !uri.isEmpty()) {
+                if (iconCache.containsKey(uri)) {
+                    bitmap = iconCache.get(uri);
+                } else {
+                    bitmap = InstanceShortcutManager.loadIconBitmap(ctx, uri);
+                    if (bitmap != null) {
+                        int size = Math.round(UiKit.dp(ctx, 28));
+                        bitmap = android.graphics.Bitmap.createScaledBitmap(bitmap, size, size, true);
+                    }
+                    iconCache.put(uri, bitmap);
+                }
+            }
+            icon.setClipToOutline(true);
+            if (bitmap != null) {
+                icon.setImageBitmap(bitmap);
+            } else {
+                icon.setImageResource(R.drawable.ic_minecraft_cube);
+            }
+        }
+
+        void clearIconCache() {
+            iconCache.clear();
+        }
+
         private static boolean isDarkMode(Context context) {
             int nightModeFlags = context.getResources().getConfiguration().uiMode
                     & Configuration.UI_MODE_NIGHT_MASK;
             return nightModeFlags == Configuration.UI_MODE_NIGHT_YES;
-        }
-
-        private static GradientDrawable makeTagBackground(Context context, int color) {
-            GradientDrawable tagBg = new GradientDrawable();
-            tagBg.setShape(GradientDrawable.RECTANGLE);
-            tagBg.setColor(Color.argb(28, Color.red(color), Color.green(color), Color.blue(color)));
-            tagBg.setCornerRadius(4 * context.getResources().getDisplayMetrics().density);
-            return tagBg;
         }
 
         @Override
@@ -994,7 +959,8 @@ public class InstancesActivity extends BaseActivity {
 
         static class VH extends RecyclerView.ViewHolder {
             TextView versionCode, typeTag, displayName;
-            ImageView settingsIcon;
+            ImageView icon;
+            MaterialButton settingsIcon;
 
             VH(View v) {
                 super(v);
@@ -1002,6 +968,7 @@ public class InstancesActivity extends BaseActivity {
                 typeTag = v.findViewById(R.id.card_type_tag);
                 displayName = v.findViewById(R.id.card_display_name);
                 settingsIcon = v.findViewById(R.id.card_settings_icon);
+                icon = v.findViewById(R.id.card_icon);
             }
         }
     }

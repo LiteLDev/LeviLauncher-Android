@@ -1,14 +1,20 @@
 package org.levimc.launcher.ui.activities;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.android.material.button.MaterialButton;
 
 import org.levimc.launcher.R;
 import org.levimc.launcher.ui.animation.DynamicAnim;
+import org.levimc.launcher.ui.widget.UiKit;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -27,6 +33,8 @@ public class AboutActivity extends BaseActivity {
     private static final String URL_ISSUES = "https://github.com/LiteLDev/LeviLauncher-Android/issues";
     private static final String MAINTAINER_AVATAR_URL = "https://yt3.googleusercontent.com/ft4khqXZ_fQn-DbSLg91kQy3_JUQ_73rbg18nOcmMtunX5bq25jzrThWQAk9YsFkTKFesUL7sg8=s160-c-k-c0x00ffffff-no-rj";
     private static final String URL_YOUTUBE = "https://www.youtube.com/c/mrpokeg";
+    private static final String URL_LICENSE = "https://github.com/LiteLDev/LeviLauncher-Android/blob/HEAD/LICENSE";
+    private static final String URL_RHYMC = "https://www.rhymc.com/";
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final OkHttpClient client = new OkHttpClient();
@@ -47,28 +55,37 @@ public class AboutActivity extends BaseActivity {
     private void styleBadges() {
         TextView authorBadge = findViewById(R.id.author_badge);
         TextView maintainerBadge = findViewById(R.id.maintainer_badge);
+        if (authorBadge != null) UiKit.tintSoftAccent(authorBadge, 7);
+        if (maintainerBadge != null) UiKit.tintSoftAccent(maintainerBadge, 7);
 
-        org.levimc.launcher.util.PersonalizationManager pm = new org.levimc.launcher.util.PersonalizationManager(this);
-        int accent = pm.getAccentColor();
-        if (accent != 0) {
-            android.graphics.drawable.GradientDrawable gd = new android.graphics.drawable.GradientDrawable();
-            gd.setShape(android.graphics.drawable.GradientDrawable.RECTANGLE);
-            gd.setColor(accent);
-            gd.setCornerRadius(4 * getResources().getDisplayMetrics().density);
-            if (authorBadge != null) {
-                authorBadge.setBackground(gd);
-                authorBadge.setTextColor(android.graphics.Color.WHITE);
-            }
-            if (maintainerBadge != null) {
-                maintainerBadge.setBackground(gd);
-                maintainerBadge.setTextColor(android.graphics.Color.WHITE);
-            }
-        }
+        tintChip(R.id.about_authors_chip, R.id.about_authors_icon, UiKit.accent(this));
+        tintChip(R.id.about_thanks_chip, R.id.about_thanks_icon, UiKit.AMBER);
+        tintChip(R.id.about_rhymc_chip, R.id.about_rhymc_icon, UiKit.BLUE);
+        tintChip(R.id.about_sponsors_chip, R.id.about_sponsors_icon, UiKit.ROSE);
+        tintChip(R.id.about_source_chip, R.id.about_source_icon, UiKit.BLUE);
+
+        // Brand icons keep their own colors (the YouTube logo has a white play mark).
+        clearIconTint(R.id.btn_afdian);
+        clearIconTint(R.id.btn_patreon);
+        clearIconTint(R.id.btn_youtube_maintainer);
+
+        MaterialButton starFork = findViewById(R.id.btn_star_fork);
+        if (starFork != null) UiKit.applyPrimary(starFork);
+    }
+
+    private void tintChip(int chipId, int iconId, int color) {
+        View chip = findViewById(chipId);
+        ImageView icon = findViewById(iconId);
+        if (chip != null) UiKit.tintIconChip(chip, icon, color);
+    }
+
+    private void clearIconTint(int buttonId) {
+        MaterialButton button = findViewById(buttonId);
+        if (button != null) button.setIconTint((ColorStateList) null);
     }
 
     private void setupNavBar() {
         setActiveNavTab(R.id.nav_tab_about);
-        findViewById(R.id.nav_tab_about).setOnClickListener(v -> {});
     }
 
     private void loadAvatars() {
@@ -110,6 +127,8 @@ public class AboutActivity extends BaseActivity {
         setupLinkButton(R.id.btn_issues, URL_ISSUES);
         setupLinkButton(R.id.btn_star_fork, URL_REPO);
         setupLinkButton(R.id.btn_youtube_maintainer, URL_YOUTUBE);
+        setupLinkButton(R.id.btn_license, URL_LICENSE);
+        setupLinkButton(R.id.btn_rhymc_website, URL_RHYMC);
     }
 
     private void setupLinkButton(int viewId, String url) {

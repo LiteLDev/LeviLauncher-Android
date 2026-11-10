@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- An installed package package of the Installed tab (InstalledFragment.Adapter). -->
+<!-- An installed package row of the Installed tab (InstalledFragment.Adapter), inside the results card. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/pkg_inst_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="4dp"
-    android:layout_marginVertical="4dp"
-    android:background="@drawable/bg_cf_item"
+    android:background="@drawable/bg_ui_row"
     android:clickable="true"
     android:focusable="true"
-    android:foreground="?android:attr/selectableItemBackground"
     android:gravity="center_vertical"
+    android:minHeight="72dp"
     android:orientation="horizontal"
-    android:paddingHorizontal="11dp"
-    android:paddingVertical="10dp">
+    android:paddingStart="6dp"
+    android:paddingTop="10dp"
+    android:paddingEnd="2dp"
+    android:paddingBottom="10dp">
 
     <CheckBox
         android:id="@+id/pkg_inst_check"
@@ -28,8 +28,8 @@
 
     <ImageView
         android:id="@+id/pkg_inst_icon"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
         android:background="@drawable/bg_cf_icon"
         android:clipToOutline="true"
         android:importantForAccessibility="no"
@@ -39,7 +39,7 @@
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="11dp"
+        android:layout_marginStart="14dp"
         android:layout_weight="1"
         android:orientation="vertical">
 
@@ -54,18 +54,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:fontFamily="@font/misans"
                 android:maxLines="1"
-                android:textColor="@color/on_surface"
-                android:textSize="14sp"
-                android:textStyle="bold"
+                android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
                 tools:text="LHolo" />
 
             <TextView
                 android:id="@+id/pkg_inst_kind"
                 style="@style/PkgChip"
-                android:layout_marginStart="6dp"
-                android:textStyle="bold"
+                android:layout_marginStart="8dp"
                 tools:text="Dependency" />
 
             <TextView
@@ -85,7 +81,7 @@
             android:fontFamily="@font/misans"
             android:maxLines="1"
             android:textColor="@color/text_secondary"
-            android:textSize="11sp"
+            android:textSize="12sp"
             tools:text="github.com/LiteLDev/LHolo#client · v1.0.0" />
 
         <TextView
@@ -97,7 +93,7 @@
             android:fontFamily="@font/misans"
             android:maxLines="1"
             android:textColor="@color/text_secondary"
-            android:textSize="11sp"
+            android:textSize="12sp"
             tools:text="Includes: LHolo" />
 
         <TextView
@@ -107,8 +103,8 @@
             android:layout_marginTop="2dp"
             android:fontFamily="@font/misans"
             android:text="@string/pkg_installed_not_loadable"
-            android:textColor="@color/pkg_log_warning"
-            android:textSize="11sp"
+            android:textColor="@color/ui_warning"
+            android:textSize="12sp"
             android:visibility="gone" />
 
         <TextView
@@ -120,7 +116,7 @@
             android:fontFamily="@font/misans"
             android:maxLines="2"
             android:textColor="@color/text_secondary"
-            android:textSize="11sp"
+            android:textSize="12sp"
             android:visibility="gone"
             tools:text="Required by: Foo" />
     </LinearLayout>
@@ -135,7 +131,8 @@
         <TextView
             android:id="@+id/pkg_inst_update"
             style="@style/PkgChip"
-            android:textStyle="bold"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
             tools:text="Update to 1.1.0" />
 
         <androidx.appcompat.widget.SwitchCompat
@@ -147,11 +144,11 @@
 
     <ImageView
         android:id="@+id/pkg_inst_more"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
         android:layout_marginStart="4dp"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="6dp"
-        android:src="@drawable/ic_more_vert"
+        android:padding="9dp"
+        android:src="@drawable/ic_ui_more"
         app:tint="@color/text_secondary" />
 </LinearLayout>

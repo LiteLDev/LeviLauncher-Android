@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_cf_search_hint">搜索游戏内容…</string>
+    <string name="catalog_cf_search">搜索</string>
+    <string name="catalog_cf_class">类型</string>
+    <string name="catalog_cf_all_classes">全部类型</string>
+    <string name="catalog_cf_game_version">游戏版本</string>
+    <string name="catalog_cf_all_versions">全部版本</string>
+    <string name="catalog_cf_sort">排序</string>
+    <string name="catalog_cf_sort_popular">热门</string>
+    <string name="catalog_cf_sort_downloads">下载量</string>
+    <string name="catalog_cf_sort_updated">最近更新</string>
+    <string name="catalog_cf_sort_name">名称</string>
+    <string name="catalog_cf_downloads">%1$s 下载</string>
+    <string name="catalog_cf_no_results">未找到结果</string>
+    <string name="catalog_view">查看</string>
+    <string name="catalog_order">顺序</string>
+    <string name="catalog_order_desc">降序</string>
+    <string name="catalog_order_asc">升序</string>
+    <string name="catalog_instance_tag">实例：%1$s</string>
+    <string name="catalog_retry">重试</string>
+</resources>

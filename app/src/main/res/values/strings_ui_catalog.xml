@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- CurseForge and LeviMC mods pages (Windows-aligned layout). -->
+<resources>
+    <string name="catalog_cf_search_hint">Search game resources…</string>
+    <string name="catalog_cf_search">Search</string>
+    <string name="catalog_cf_class">Class</string>
+    <string name="catalog_cf_all_classes">All classes</string>
+    <string name="catalog_cf_game_version">Game version</string>
+    <string name="catalog_cf_all_versions">All versions</string>
+    <string name="catalog_cf_sort">Sort by</string>
+    <string name="catalog_cf_sort_popular">Popular</string>
+    <string name="catalog_cf_sort_downloads">Total downloads</string>
+    <string name="catalog_cf_sort_updated">Last updated</string>
+    <string name="catalog_cf_sort_name">Name</string>
+    <string name="catalog_cf_downloads">%1$s downloads</string>
+    <string name="catalog_cf_no_results">No results found</string>
+    <string name="catalog_view">View</string>
+    <string name="catalog_order">Order</string>
+    <string name="catalog_order_desc">Descending</string>
+    <string name="catalog_order_asc">Ascending</string>
+    <string name="catalog_instance_tag">Instance: %1$s</string>
+    <string name="catalog_retry">Retry</string>
+</resources>

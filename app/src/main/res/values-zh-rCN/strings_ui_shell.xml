@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_back">后退</string>
+    <string name="nav_forward">前进</string>
+    <string name="nav_toggle_theme">切换主题</string>
+    <string name="nav_account">账户</string>
+    <string name="nav_sign_in_account">登录微软账户</string>
+    <string name="crumb_home">首页</string>
+    <string name="crumb_instances">实例列表</string>
+    <string name="crumb_instance_settings">实例设置</string>
+    <string name="crumb_content">内容管理</string>
+    <string name="crumb_mods">模组</string>
+    <string name="crumb_curseforge">CurseForge</string>
+    <string name="crumb_levimc_mods">LeviMC 模组</string>
+    <string name="crumb_external_mods">外部模组</string>
+    <string name="crumb_settings">设置</string>
+    <string name="crumb_about">关于</string>
+    <string name="crumb_accounts">账号</string>
+    <string name="crumb_news">启动器新闻</string>
+    <string name="crumb_quick_launch">快速启动</string>
+    <string name="crumb_details">详情</string>
+    <string name="crumb_options_editor">游戏选项</string>
+    <string name="crumb_custom_flat_world">自定义超平坦世界</string>
+    <string name="crumb_mod_config">模组设置</string>
+</resources>

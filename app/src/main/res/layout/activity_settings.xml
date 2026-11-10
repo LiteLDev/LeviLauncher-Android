@@ -1,696 +1,766 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- Settings, aligned with LeviLauncher for Windows: header card (title, search, tabs) and the
+     selected tab's settings in cards with divider-separated rows. Rows carry the tag "settings_row"
+     (from @style/settings_Row) so the search box can find them. -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/settings_scroll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/background">
+    android:fillViewport="true"
+    android:scrollbars="none">
 
-    <ScrollView
+    <LinearLayout
+        android:id="@+id/settings_scroll_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:scrollbars="none">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp"
-            android:paddingTop="15dp"
-            android:paddingBottom="24dp">
+        <!-- Header card -->
+        <com.google.android.material.card.MaterialCardView style="@style/settings_Card">
 
-            <TextView
-                android:id="@+id/settings_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/settings_title"
-                android:fontFamily="@font/misans"
-                android:textColor="@color/primary"
-                android:textSize="22sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@string/settings_subtitle"
-                android:fontFamily="@font/misans"
-                android:textColor="@color/text_secondary"
-                android:textSize="14sp" />
-
-            <HorizontalScrollView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:scrollbars="none"
-                android:overScrollMode="never">
+                android:orientation="vertical"
+                android:padding="18dp">
 
                 <LinearLayout
-                    android:id="@+id/tab_container"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tab_basic"
-                        android:layout_width="wrap_content"
-                        android:layout_height="32dp"
-                        android:paddingHorizontal="16dp"
-                        android:gravity="center"
-                        android:text="@string/settings_tab_basic"
-                        android:fontFamily="@font/misans"
-                        android:textColor="@color/on_primary"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
-                        android:background="@drawable/bg_tab_selected"
-                        android:clickable="true"
-                        android:focusable="true" />
-
-                    <TextView
-                        android:id="@+id/tab_personalize"
-                        android:layout_width="wrap_content"
-                        android:layout_height="32dp"
-                        android:layout_marginStart="8dp"
-                        android:paddingHorizontal="16dp"
-                        android:gravity="center"
-                        android:text="@string/settings_tab_personalize"
-                        android:fontFamily="@font/misans"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="13sp"
-                        android:background="@drawable/bg_tab_unselected"
-                        android:clickable="true"
-                        android:focusable="true" />
-
-                    <TextView
-                        android:id="@+id/tab_components"
-                        android:layout_width="wrap_content"
-                        android:layout_height="32dp"
-                        android:layout_marginStart="8dp"
-                        android:paddingHorizontal="16dp"
-                        android:gravity="center"
-                        android:text="@string/settings_tab_components"
-                        android:fontFamily="@font/misans"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="13sp"
-                        android:background="@drawable/bg_tab_unselected"
-                        android:clickable="true"
-                        android:focusable="true" />
-
-                    <TextView
-                        android:id="@+id/tab_others"
-                        android:layout_width="wrap_content"
-                        android:layout_height="32dp"
-                        android:layout_marginStart="8dp"
-                        android:paddingHorizontal="16dp"
-                        android:gravity="center"
-                        android:text="@string/settings_tab_others"
-                        android:fontFamily="@font/misans"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="13sp"
-                        android:background="@drawable/bg_tab_unselected"
-                        android:clickable="true"
-                        android:focusable="true" />
-
-                    <TextView
-                        android:id="@+id/tab_privacy"
-                        android:layout_width="wrap_content"
-                        android:layout_height="32dp"
-                        android:layout_marginStart="8dp"
-                        android:paddingHorizontal="16dp"
-                        android:gravity="center"
-                        android:text="@string/settings_tab_privacy"
-                        android:fontFamily="@font/misans"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="13sp"
-                        android:background="@drawable/bg_tab_unselected"
-                        android:clickable="true"
-                        android:focusable="true" />
-
-                    <TextView
-                        android:id="@+id/tab_updates"
-                        android:layout_width="wrap_content"
-                        android:layout_height="32dp"
-                        android:layout_marginStart="8dp"
-                        android:paddingHorizontal="16dp"
-                        android:gravity="center"
-                        android:text="@string/settings_tab_updates"
-                        android:fontFamily="@font/misans"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="13sp"
-                        android:background="@drawable/bg_tab_unselected"
-                        android:clickable="true"
-                        android:focusable="true" />
-
-                    <TextView
-                        android:id="@+id/tab_about"
-                        android:layout_width="wrap_content"
-                        android:layout_height="32dp"
-                        android:layout_marginStart="8dp"
-                        android:paddingHorizontal="16dp"
-                        android:gravity="center"
-                        android:text="@string/settings_tab_about"
-                        android:fontFamily="@font/misans"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="13sp"
-                        android:background="@drawable/bg_tab_unselected"
-                        android:clickable="true"
-                        android:focusable="true" />
-
-                </LinearLayout>
-            </HorizontalScrollView>
-
-            <FrameLayout
-                android:id="@+id/settings_content"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp">
-
-                <LinearLayout
-                    android:id="@+id/section_basic"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="visible">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/card_background"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
+                        android:layout_marginEnd="16dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/settings_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/settings_title"
+                            android:textAppearance="@style/TextAppearance.Levi.PageTitle" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/settings_ui_subtitle"
+                            android:textAppearance="@style/TextAppearance.Levi.PageSubtitle" />
+                    </LinearLayout>
+
+                    <EditText
+                        android:id="@+id/settings_search"
+                        style="@style/Widget.Levi.Input"
+                        android:layout_width="240dp"
+                        android:layout_height="44dp"
+                        android:drawableStart="@drawable/ic_ui_search"
+                        android:hint="@string/settings_ui_search_hint"
+                        android:imeOptions="actionSearch|flagNoExtractUi"
+                        android:importantForAutofill="no"
+                        android:inputType="text" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/settings_search_empty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/settings_ui_search_none"
+                    android:textAppearance="@style/TextAppearance.Levi.Caption"
+                    android:visibility="gone" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fillViewport="true"
+                    android:overScrollMode="never"
+                    android:scrollbars="none">
+
+                    <org.levimc.launcher.ui.widget.SegmentedControl
+                        android:id="@+id/settings_tabs"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+                </HorizontalScrollView>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <FrameLayout
+            android:id="@+id/settings_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
+
+            <!-- ============================== Basic ============================== -->
+            <LinearLayout
+                android:id="@+id/section_basic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <com.google.android.material.card.MaterialCardView style="@style/settings_Card">
+
+                    <LinearLayout style="@style/settings_CardBody">
+
+                        <LinearLayout style="@style/settings_Row">
+
+                            <LinearLayout style="@style/settings_RowText">
 
                                 <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/language"
-                                    android:fontFamily="@font/misans"
-                                    android:textColor="@color/on_surface"
-                                    android:textSize="15sp"
-                                    android:textStyle="bold" />
+                                    style="@style/settings_RowTitle"
+                                    android:text="@string/language" />
 
                                 <TextView
                                     android:id="@+id/language_current"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="2dp"
-                                    android:fontFamily="@font/misans"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp" />
+                                    style="@style/settings_RowDesc" />
                             </LinearLayout>
 
-                            <Spinner
-                                android:id="@+id/language_spinner"
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/language_change"
+                                style="@style/Widget.Levi.Button.Secondary"
                                 android:layout_width="wrap_content"
-                                android:layout_height="36dp"
-                                android:minWidth="120dp"
-                                android:background="@drawable/bg_spinner_outline" />
+                                android:layout_height="wrap_content"
+                                android:text="@string/settings_ui_change" />
                         </LinearLayout>
 
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="14dp"
-                            android:layout_marginBottom="14dp"
-                            android:background="@color/divider"
-                            android:alpha="0.3" />
+                        <View style="@style/settings_Divider" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
+                        <LinearLayout style="@style/settings_Row">
 
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
+                            <LinearLayout style="@style/settings_RowText">
 
-                                <LinearLayout
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:orientation="vertical">
+                                <TextView
+                                    style="@style/settings_RowTitle"
+                                    android:text="@string/discord_rich_presence" />
 
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:fontFamily="@font/misans"
-                                        android:text="@string/discord_rich_presence"
-                                        android:textColor="@color/on_surface"
-                                        android:textSize="15sp"
-                                        android:textStyle="bold" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginTop="2dp"
-                                        android:fontFamily="@font/misans"
-                                        android:text="@string/discord_rich_presence_desc"
-                                        android:textColor="@color/text_secondary"
-                                        android:textSize="12sp" />
-                                </LinearLayout>
-
-                                <com.google.android.material.switchmaterial.SwitchMaterial
-                                    android:id="@+id/switch_discord_presence"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:thumbTint="@color/primary"
-                                    android:trackTint="#555555" />
+                                <TextView
+                                    style="@style/settings_RowDesc"
+                                    android:text="@string/discord_rich_presence_desc" />
                             </LinearLayout>
 
+                            <com.google.android.material.switchmaterial.SwitchMaterial
+                                android:id="@+id/switch_discord_presence"
+                                style="@style/settings_Switch" />
                         </LinearLayout>
 
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="14dp"
-                            android:layout_marginBottom="14dp"
-                            android:background="@color/divider"
-                            android:alpha="0.3" />
+                        <View style="@style/settings_Divider" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
+                        <LinearLayout style="@style/settings_Row">
 
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/launcher_managed_mc_login"
-                                android:fontFamily="@font/misans"
-                                android:textColor="@color/on_surface"
-                                android:textSize="15sp"
-                                android:textStyle="bold" />
+                            <LinearLayout style="@style/settings_RowText">
+
+                                <TextView
+                                    style="@style/settings_RowTitle"
+                                    android:text="@string/launcher_managed_mc_login" />
+
+                                <TextView
+                                    style="@style/settings_RowDesc"
+                                    android:text="@string/settings_ui_managed_login_desc" />
+                            </LinearLayout>
 
                             <com.google.android.material.switchmaterial.SwitchMaterial
                                 android:id="@+id/switch_managed_login"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:thumbTint="@color/primary"
-                                android:trackTint="#555555" />
+                                style="@style/settings_Switch" />
                         </LinearLayout>
                     </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
 
-                </LinearLayout>
+            <!-- ============================== Personalization ============================== -->
+            <LinearLayout
+                android:id="@+id/section_personalize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-                <LinearLayout
-                    android:id="@+id/section_personalize"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/card_background"
-                        android:orientation="horizontal"
-                        android:padding="8dp">
-
-                        <TextView
-                            android:id="@+id/personalize_nav_theme"
-                            android:layout_width="wrap_content"
-                            android:layout_height="30dp"
-                            android:paddingHorizontal="14dp"
-                            android:gravity="center"
-                            android:text="@string/settings_personalize_theme"
-                            android:fontFamily="@font/misans"
-                            android:textColor="@color/on_primary"
-                            android:textSize="12sp"
-                            android:background="@drawable/bg_tab_selected"
-                            android:clickable="true"
-                            android:focusable="true" />
-
-                        <TextView
-                            android:id="@+id/personalize_nav_wallpaper"
-                            android:layout_width="wrap_content"
-                            android:layout_height="30dp"
-                            android:layout_marginStart="8dp"
-                            android:paddingHorizontal="14dp"
-                            android:gravity="center"
-                            android:text="@string/settings_personalize_wallpaper"
-                            android:fontFamily="@font/misans"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp"
-                            android:background="@drawable/bg_tab_unselected"
-                            android:clickable="true"
-                            android:focusable="true" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/personalize_theme_group"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:orientation="vertical">
+                <com.google.android.material.card.MaterialCardView style="@style/settings_Card">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/card_background"
                         android:orientation="vertical"
-                        android:padding="16dp">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/theme_title"
-                            android:fontFamily="@font/misans"
-                            android:textColor="@color/on_surface"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
+                        android:padding="18dp">
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="@string/settings_theme_desc"
-                            android:fontFamily="@font/misans"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp" />
-
-                        <LinearLayout
-                            android:id="@+id/theme_list"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:background="@drawable/bg_spinner_outline"
-                            android:orientation="horizontal">
-                            <LinearLayout
-                                android:id="@+id/theme_item_light"
-                                android:layout_width="0dp"
-                                android:layout_height="40dp"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:orientation="horizontal"
-                                android:background="?attr/selectableItemBackground"
-                                android:clickable="true"
-                                android:focusable="true">
-                                <ImageView
-                                    android:id="@+id/theme_icon_light"
-                                    android:layout_width="16dp"
-                                    android:layout_height="16dp"
-                                    android:src="@drawable/ic_sun"
-                                    app:tint="@color/text_secondary" />
-                                <TextView
-                                    android:id="@+id/theme_text_light"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="6dp"
-                                    android:text="@string/theme_light"
-                                    android:fontFamily="@font/misans"
-                                    android:textColor="@color/on_surface"
-                                    android:textSize="12sp" />
-                            </LinearLayout>
-
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="match_parent"
-                                android:layout_marginVertical="8dp"
-                                android:background="@color/divider"
-                                android:alpha="0.3" />
-                            <LinearLayout
-                                android:id="@+id/theme_item_dark"
-                                android:layout_width="0dp"
-                                android:layout_height="40dp"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:orientation="horizontal"
-                                android:background="?attr/selectableItemBackground"
-                                android:clickable="true"
-                                android:focusable="true">
-                                <ImageView
-                                    android:id="@+id/theme_icon_dark"
-                                    android:layout_width="16dp"
-                                    android:layout_height="16dp"
-                                    android:src="@drawable/ic_moon"
-                                    app:tint="@color/text_secondary" />
-                                <TextView
-                                    android:id="@+id/theme_text_dark"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="6dp"
-                                    android:text="@string/theme_dark"
-                                    android:fontFamily="@font/misans"
-                                    android:textColor="@color/on_surface"
-                                    android:textSize="12sp" />
-                            </LinearLayout>
-
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="match_parent"
-                                android:layout_marginVertical="8dp"
-                                android:background="@color/divider"
-                                android:alpha="0.3" />
-                            <LinearLayout
-                                android:id="@+id/theme_item_system"
-                                android:layout_width="0dp"
-                                android:layout_height="40dp"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:orientation="horizontal"
-                                android:background="?attr/selectableItemBackground"
-                                android:clickable="true"
-                                android:focusable="true">
-                                <ImageView
-                                    android:id="@+id/theme_icon_system"
-                                    android:layout_width="16dp"
-                                    android:layout_height="16dp"
-                                    android:src="@drawable/ic_monitor"
-                                    app:tint="@color/text_secondary" />
-                                <TextView
-                                    android:id="@+id/theme_text_system"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="6dp"
-                                    android:text="@string/theme_follow_system"
-                                    android:fontFamily="@font/misans"
-                                    android:textColor="@color/on_surface"
-                                    android:textSize="12sp" />
-                            </LinearLayout>
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:background="@drawable/card_background"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/theme_color_title"
-                            android:fontFamily="@font/misans"
-                            android:textColor="@color/on_surface"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="@string/theme_color_desc"
-                            android:fontFamily="@font/misans"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
-                            android:text="@string/preset_colors"
-                            android:fontFamily="@font/misans"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-
+                        <!-- Sub-sections (Windows button row: selected = primary, others secondary) -->
                         <HorizontalScrollView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:scrollbars="none"
-                            android:overScrollMode="never">
+                            android:background="@drawable/bg_ui_strip"
+                            android:overScrollMode="never"
+                            android:padding="6dp"
+                            android:scrollbars="none">
 
                             <LinearLayout
-                                android:id="@+id/color_preset_grid"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:orientation="vertical" />
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/personalize_nav_theme"
+                                    style="@style/Widget.Levi.Button.Secondary"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/settings_ui_section_theme" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/personalize_nav_layout"
+                                    style="@style/Widget.Levi.Button.Secondary"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:text="@string/settings_ui_section_layout" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/personalize_nav_wallpaper"
+                                    style="@style/Widget.Levi.Button.Secondary"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:text="@string/settings_ui_section_wallpaper" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/personalize_nav_material"
+                                    style="@style/Widget.Levi.Button.Secondary"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:text="@string/settings_ui_section_material" />
+                            </LinearLayout>
                         </HorizontalScrollView>
 
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
-                            android:text="@string/more_colors"
-                            android:fontFamily="@font/misans"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
-
-                        <HorizontalScrollView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:scrollbars="none"
-                            android:overScrollMode="never">
-
-                            <LinearLayout
-                                android:id="@+id/color_more_grid"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical" />
-                        </HorizontalScrollView>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:text="@string/custom_color_hex_rgb"
-                            android:fontFamily="@font/misans"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="11sp"
-                            android:textStyle="bold" />
+                        <!-- ===== Theme and colors ===== -->
                         <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
-                            <EditText
-                                android:id="@+id/input_custom_color"
-                                android:layout_width="0dp"
-                                android:layout_height="40dp"
-                                android:layout_weight="1"
-                                android:background="@drawable/bg_spinner_outline"
-                                android:paddingHorizontal="12dp"
-                                android:hint="@string/custom_color_hint"
-                                android:fontFamily="@font/misans"
-                                android:textSize="13sp"
-                                android:textColor="@color/on_surface" />
-                            <Button
-                                android:id="@+id/btn_apply_color"
-                                android:layout_width="wrap_content"
-                                android:layout_height="40dp"
-                                android:layout_marginStart="8dp"
-                                android:text="@string/apply"
-                                android:textAllCaps="false"
-                                android:fontFamily="@font/misans"
-                                android:textSize="12sp"
-                                android:textColor="@color/on_primary"
-                                android:backgroundTint="@color/primary" />
-                        </LinearLayout>
-                    </LinearLayout>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/personalize_wallpaper_group"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:orientation="vertical"
-                        android:visibility="gone">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/card_background"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/bg_media_title"
-                            android:fontFamily="@font/misans"
-                            android:textColor="@color/on_surface"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="@string/bg_media_desc"
-                            android:fontFamily="@font/misans"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp" />
-                        <LinearLayout
+                            android:id="@+id/personalize_theme_group"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="12dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
+                            android:orientation="vertical">
 
-                            <TextView
-                                android:id="@+id/bg_image_status"
-                                android:layout_width="0dp"
+                            <LinearLayout
+                                android:id="@+id/theme_mode_row"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/bg_image_none"
-                                android:fontFamily="@font/misans"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="12sp" />
+                                android:orientation="vertical"
+                                android:paddingTop="12dp"
+                                android:paddingBottom="16dp"
+                                android:tag="settings_row">
 
-                            <Button
-                                android:id="@+id/btn_clear_bg_image"
-                                android:layout_width="wrap_content"
-                                android:layout_height="32dp"
-                                android:minWidth="0dp"
-                                android:minHeight="0dp"
-                                android:paddingHorizontal="14dp"
-                                android:insetTop="0dp"
-                                android:insetBottom="0dp"
-                                android:layout_marginEnd="8dp"
-                                android:text="@string/clear"
-                                android:fontFamily="@font/misans"
-                                android:textColor="@color/on_surface"
-                                android:textSize="11sp"
-                                android:textAllCaps="false"
-                                android:backgroundTint="@color/surface_variant"
-                                android:visibility="gone" />
+                                <TextView
+                                    style="@style/settings_RowTitle"
+                                    android:text="@string/settings_ui_theme_mode" />
 
-                            <Button
-                                android:id="@+id/btn_select_bg_image"
-                                android:layout_width="wrap_content"
-                                android:layout_height="32dp"
-                                android:minWidth="0dp"
-                                android:minHeight="0dp"
-                                android:paddingHorizontal="14dp"
-                                android:insetTop="0dp"
-                                android:insetBottom="0dp"
-                                android:text="@string/bg_media_select"
-                                android:fontFamily="@font/misans"
-                                android:textColor="@color/on_primary"
-                                android:textSize="11sp"
-                                android:textAllCaps="false"
-                                android:backgroundTint="@color/primary" />
+                                <TextView
+                                    style="@style/settings_RowDesc"
+                                    android:text="@string/settings_ui_theme_mode_desc" />
+
+                                <HorizontalScrollView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:fillViewport="true"
+                                    android:overScrollMode="never"
+                                    android:scrollbars="none">
+
+                                    <org.levimc.launcher.ui.widget.SegmentedControl
+                                        android:id="@+id/theme_mode_tabs"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content" />
+                                </HorizontalScrollView>
+
+                                <LinearLayout
+                                    android:id="@+id/theme_mode_panel"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp"
+                                    android:background="@drawable/bg_ui_strip"
+                                    android:orientation="vertical"
+                                    android:padding="14dp"
+                                    android:visibility="gone">
+
+                                    <TextView
+                                        android:id="@+id/theme_mode_panel_desc"
+                                        style="@style/settings_Label"
+                                        android:textSize="12sp" />
+
+                                    <LinearLayout
+                                        android:id="@+id/theme_schedule_box"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="10dp"
+                                        android:orientation="horizontal">
+
+                                        <LinearLayout
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:orientation="vertical">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:text="@string/settings_ui_schedule_start"
+                                                android:textAppearance="@style/TextAppearance.Levi.FieldLabel" />
+
+                                            <TextView
+                                                android:id="@+id/theme_schedule_start"
+                                                style="@style/Widget.Levi.Input"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="44dp"
+                                                android:layout_marginTop="6dp"
+                                                android:background="@drawable/bg_ui_input"
+                                                android:clickable="true"
+                                                android:drawableEnd="@drawable/ic_ui_schedule"
+                                                android:focusable="true"
+                                                android:gravity="center_vertical"
+                                                android:minWidth="140dp" />
+                                        </LinearLayout>
+
+                                        <LinearLayout
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginStart="16dp"
+                                            android:orientation="vertical">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:text="@string/settings_ui_schedule_end"
+                                                android:textAppearance="@style/TextAppearance.Levi.FieldLabel" />
+
+                                            <TextView
+                                                android:id="@+id/theme_schedule_end"
+                                                style="@style/Widget.Levi.Input"
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="44dp"
+                                                android:layout_marginTop="6dp"
+                                                android:background="@drawable/bg_ui_input"
+                                                android:clickable="true"
+                                                android:drawableEnd="@drawable/ic_ui_schedule"
+                                                android:focusable="true"
+                                                android:gravity="center_vertical"
+                                                android:minWidth="140dp" />
+                                        </LinearLayout>
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:id="@+id/theme_sun_box"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="10dp"
+                                        android:gravity="center_vertical"
+                                        android:orientation="horizontal">
+
+                                        <FrameLayout
+                                            android:id="@+id/theme_sunrise_chip"
+                                            android:layout_width="32dp"
+                                            android:layout_height="32dp"
+                                            android:background="@drawable/bg_ui_icon_chip">
+
+                                            <ImageView
+                                                android:id="@+id/theme_sunrise_icon"
+                                                android:layout_width="18dp"
+                                                android:layout_height="18dp"
+                                                android:layout_gravity="center"
+                                                android:importantForAccessibility="no"
+                                                android:src="@drawable/ic_ui_sunrise" />
+                                        </FrameLayout>
+
+                                        <LinearLayout
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginStart="8dp"
+                                            android:orientation="vertical">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:text="@string/settings_ui_sunrise"
+                                                android:textAppearance="@style/TextAppearance.Levi.Caption" />
+
+                                            <TextView
+                                                android:id="@+id/theme_sunrise_time"
+                                                style="@style/settings_Label" />
+                                        </LinearLayout>
+
+                                        <FrameLayout
+                                            android:id="@+id/theme_sunset_chip"
+                                            android:layout_width="32dp"
+                                            android:layout_height="32dp"
+                                            android:layout_marginStart="24dp"
+                                            android:background="@drawable/bg_ui_icon_chip">
+
+                                            <ImageView
+                                                android:id="@+id/theme_sunset_icon"
+                                                android:layout_width="18dp"
+                                                android:layout_height="18dp"
+                                                android:layout_gravity="center"
+                                                android:importantForAccessibility="no"
+                                                android:src="@drawable/ic_moon" />
+                                        </FrameLayout>
+
+                                        <LinearLayout
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginStart="8dp"
+                                            android:orientation="vertical">
+
+                                            <TextView
+                                                android:layout_width="wrap_content"
+                                                android:layout_height="wrap_content"
+                                                android:text="@string/settings_ui_sunset"
+                                                android:textAppearance="@style/TextAppearance.Levi.Caption" />
+
+                                            <TextView
+                                                android:id="@+id/theme_sunset_time"
+                                                style="@style/settings_Label" />
+                                        </LinearLayout>
+
+                                        <com.google.android.material.button.MaterialButton
+                                            android:id="@+id/theme_sun_refresh"
+                                            style="@style/Widget.Levi.Button.Secondary"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginStart="24dp"
+                                            android:text="@string/settings_ui_refresh"
+                                            app:icon="@drawable/ic_ui_refresh" />
+                                    </LinearLayout>
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <View style="@style/settings_Divider" />
+
+                            <!-- Per-mode settings -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="18dp"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <View
+                                    android:id="@+id/mode_config_bar"
+                                    android:layout_width="4dp"
+                                    android:layout_height="18dp"
+                                    android:background="@color/primary" />
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="10dp"
+                                    android:text="@string/settings_ui_mode_config"
+                                    android:textAppearance="@style/TextAppearance.Levi.SectionTitle" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                style="@style/settings_Row"
+                                android:layout_marginTop="4dp">
+
+                                <ImageView
+                                    android:id="@+id/edit_mode_icon"
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_marginEnd="10dp"
+                                    android:importantForAccessibility="no"
+                                    android:src="@drawable/ic_sun" />
+
+                                <LinearLayout style="@style/settings_RowText">
+
+                                    <TextView
+                                        android:id="@+id/edit_mode_title"
+                                        style="@style/settings_RowTitle"
+                                        android:text="@string/settings_ui_mode_light" />
+
+                                    <TextView
+                                        style="@style/settings_RowDesc"
+                                        android:text="@string/settings_ui_edit_mode_desc" />
+                                </LinearLayout>
+
+                                <org.levimc.launcher.ui.widget.SegmentedControl
+                                    android:id="@+id/edit_mode_tabs"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                            </LinearLayout>
+
+                            <View style="@style/settings_Divider" />
+
+                            <!-- Theme color + base layer -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:background="@drawable/bg_ui_card_inner"
+                                android:orientation="vertical"
+                                android:padding="16dp">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:tag="settings_row">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal">
+
+                                        <ImageView
+                                            android:layout_width="20dp"
+                                            android:layout_height="20dp"
+                                            android:layout_marginTop="1dp"
+                                            android:layout_marginEnd="10dp"
+                                            android:importantForAccessibility="no"
+                                            android:src="@drawable/ic_ui_palette"
+                                            app:tint="@color/primary" />
+
+                                        <LinearLayout
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:orientation="vertical">
+
+                                            <TextView
+                                                style="@style/settings_RowTitle"
+                                                android:text="@string/settings_ui_theme_color" />
+
+                                            <TextView
+                                                style="@style/settings_RowDesc"
+                                                android:text="@string/settings_ui_theme_color_desc" />
+                                        </LinearLayout>
+                                    </LinearLayout>
+
+                                    <TextView
+                                        style="@style/settings_Label"
+                                        android:layout_marginTop="14dp"
+                                        android:text="@string/preset_colors" />
+
+                                    <LinearLayout
+                                        android:id="@+id/color_preset_grid"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:background="@drawable/bg_ui_strip"
+                                        android:orientation="vertical"
+                                        android:padding="8dp" />
+
+                                    <TextView
+                                        style="@style/settings_Label"
+                                        android:layout_marginTop="14dp"
+                                        android:text="@string/more_colors" />
+
+                                    <LinearLayout
+                                        android:id="@+id/color_more_grid"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:background="@drawable/bg_ui_strip"
+                                        android:orientation="vertical"
+                                        android:padding="8dp" />
+                                </LinearLayout>
+
+                                <View
+                                    style="@style/settings_Divider"
+                                    android:layout_marginTop="16dp"
+                                    android:layout_marginBottom="16dp" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:tag="settings_row">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal">
+
+                                        <ImageView
+                                            android:layout_width="20dp"
+                                            android:layout_height="20dp"
+                                            android:layout_marginTop="1dp"
+                                            android:layout_marginEnd="10dp"
+                                            android:importantForAccessibility="no"
+                                            android:src="@drawable/settings_ic_layers"
+                                            app:tint="@color/primary" />
+
+                                        <LinearLayout
+                                            android:layout_width="0dp"
+                                            android:layout_height="wrap_content"
+                                            android:layout_weight="1"
+                                            android:orientation="vertical">
+
+                                            <TextView
+                                                style="@style/settings_RowTitle"
+                                                android:text="@string/settings_ui_base_mode" />
+
+                                            <TextView
+                                                style="@style/settings_RowDesc"
+                                                android:text="@string/settings_ui_base_mode_desc" />
+                                        </LinearLayout>
+                                    </LinearLayout>
+
+                                    <org.levimc.launcher.ui.widget.SegmentedControl
+                                        android:id="@+id/base_mode_tabs"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="12dp" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:id="@+id/base_color_box"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="14dp"
+                                    android:orientation="vertical"
+                                    android:tag="settings_row"
+                                    android:visibility="gone">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center_vertical"
+                                        android:orientation="horizontal">
+
+                                        <TextView
+                                            style="@style/settings_Label"
+                                            android:layout_width="0dp"
+                                            android:layout_weight="1"
+                                            android:text="@string/settings_ui_base_color_pick" />
+
+                                        <TextView
+                                            android:id="@+id/base_color_value"
+                                            style="@style/Widget.Levi.Tag.Accent"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content" />
+                                    </LinearLayout>
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="8dp"
+                                        android:gravity="center_vertical"
+                                        android:orientation="horizontal">
+
+                                        <View
+                                            android:id="@+id/base_color_swatch"
+                                            android:layout_width="44dp"
+                                            android:layout_height="44dp" />
+
+                                        <EditText
+                                            android:id="@+id/base_color_input"
+                                            style="@style/Widget.Levi.Input"
+                                            android:layout_width="0dp"
+                                            android:layout_height="44dp"
+                                            android:layout_marginStart="10dp"
+                                            android:layout_weight="1"
+                                            android:hint="@string/custom_color_hint"
+                                            android:imeOptions="actionDone|flagNoExtractUi"
+                                            android:importantForAutofill="no"
+                                            android:inputType="text" />
+
+                                        <com.google.android.material.button.MaterialButton
+                                            android:id="@+id/base_color_apply"
+                                            style="@style/Widget.Levi.Button.Primary"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginStart="10dp"
+                                            android:text="@string/apply" />
+                                    </LinearLayout>
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:id="@+id/base_opacity_box"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="14dp"
+                                    android:orientation="vertical"
+                                    android:tag="settings_row"
+                                    android:visibility="gone">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center_vertical"
+                                        android:orientation="horizontal">
+
+                                        <TextView
+                                            style="@style/settings_Label"
+                                            android:layout_width="0dp"
+                                            android:layout_weight="1"
+                                            android:text="@string/settings_ui_base_opacity" />
+
+                                        <TextView
+                                            android:id="@+id/base_opacity_value"
+                                            style="@style/Widget.Levi.Tag.Accent"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content" />
+                                    </LinearLayout>
+
+                                    <SeekBar
+                                        android:id="@+id/base_opacity_seek"
+                                        style="@style/settings_Seek"
+                                        android:max="100" />
+                                </LinearLayout>
+                            </LinearLayout>
                         </LinearLayout>
-                        <ImageView
-                            android:id="@+id/bg_image_preview"
-                            android:layout_width="match_parent"
-                            android:layout_height="120dp"
-                            android:layout_marginTop="12dp"
-                            android:scaleType="centerCrop"
-                            android:visibility="gone" />
+
+                        <!-- ===== Layout and motion ===== -->
                         <LinearLayout
-                            android:id="@+id/bg_image_effect_controls"
+                            android:id="@+id/personalize_layout_group"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <LinearLayout style="@style/settings_Row">
+
+                                <LinearLayout style="@style/settings_RowText">
+
+                                    <TextView
+                                        style="@style/settings_RowTitle"
+                                        android:text="@string/settings_ui_navbar" />
+
+                                    <TextView
+                                        style="@style/settings_RowDesc"
+                                        android:text="@string/settings_ui_navbar_desc" />
+                                </LinearLayout>
+
+                                <com.google.android.material.switchmaterial.SwitchMaterial
+                                    android:id="@+id/switch_top_navbar"
+                                    style="@style/settings_Switch" />
+                            </LinearLayout>
+
+                            <View style="@style/settings_Divider" />
+
+                            <LinearLayout style="@style/settings_Row">
+
+                                <LinearLayout style="@style/settings_RowText">
+
+                                    <TextView
+                                        style="@style/settings_RowTitle"
+                                        android:text="@string/settings_ui_disable_animations" />
+
+                                    <TextView
+                                        style="@style/settings_RowDesc"
+                                        android:text="@string/settings_ui_disable_animations_desc" />
+                                </LinearLayout>
+
+                                <com.google.android.material.switchmaterial.SwitchMaterial
+                                    android:id="@+id/switch_disable_animations"
+                                    style="@style/settings_Switch" />
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- ===== Wallpaper ===== -->
+                        <LinearLayout
+                            android:id="@+id/personalize_wallpaper_group"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="12dp"
@@ -700,363 +770,625 @@
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
+                                android:orientation="vertical"
+                                android:paddingTop="12dp"
+                                android:paddingBottom="14dp"
+                                android:tag="settings_row">
 
                                 <TextView
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="@string/bg_image_blur"
-                                    android:fontFamily="@font/misans"
-                                    android:textColor="@color/on_surface"
-                                    android:textSize="12sp"
-                                    android:textStyle="bold" />
+                                    style="@style/settings_RowTitle"
+                                    android:text="@string/settings_ui_bg_image" />
 
                                 <TextView
-                                    android:id="@+id/bg_image_blur_value"
-                                    android:layout_width="56dp"
+                                    style="@style/settings_RowDesc"
+                                    android:text="@string/settings_ui_bg_image_desc" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:gravity="end"
-                                    android:fontFamily="@font/misans"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp" />
+                                    android:layout_marginTop="12dp"
+                                    android:background="@drawable/bg_ui_strip"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal"
+                                    android:padding="10dp">
+
+                                    <ImageView
+                                        android:id="@+id/bg_image_preview"
+                                        android:layout_width="48dp"
+                                        android:layout_height="48dp"
+                                        android:background="@drawable/bg_ui_tag"
+                                        android:importantForAccessibility="no"
+                                        android:scaleType="centerInside"
+                                        android:src="@drawable/ic_ui_image"
+                                        app:tint="@color/ui_muted" />
+
+                                    <LinearLayout
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="12dp"
+                                        android:layout_marginEnd="12dp"
+                                        android:layout_weight="1"
+                                        android:orientation="vertical">
+
+                                        <TextView
+                                            android:id="@+id/bg_folder_name"
+                                            style="@style/settings_Label"
+                                            android:layout_width="match_parent"
+                                            android:ellipsize="middle"
+                                            android:singleLine="true"
+                                            android:text="@string/settings_ui_no_folder" />
+
+                                        <TextView
+                                            android:id="@+id/bg_image_status"
+                                            style="@style/settings_RowDesc"
+                                            android:layout_width="match_parent"
+                                            android:ellipsize="middle"
+                                            android:singleLine="true" />
+                                    </LinearLayout>
+
+                                    <TextView
+                                        android:id="@+id/bg_image_count"
+                                        style="@style/Widget.Levi.Tag"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:visibility="gone" />
+                                </LinearLayout>
+
+                                <HorizontalScrollView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="10dp"
+                                    android:overScrollMode="never"
+                                    android:scrollbars="none">
+
+                                    <LinearLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="horizontal">
+
+                                        <com.google.android.material.button.MaterialButton
+                                            android:id="@+id/btn_next_bg_image"
+                                            style="@style/Widget.Levi.Button.Secondary"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="@string/settings_ui_next_image"
+                                            app:icon="@drawable/ic_ui_refresh" />
+
+                                        <com.google.android.material.button.MaterialButton
+                                            android:id="@+id/btn_clear_bg_image"
+                                            style="@style/Widget.Levi.Button.Danger"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginStart="8dp"
+                                            android:text="@string/settings_ui_clear_folder"
+                                            app:icon="@drawable/ic_ui_delete" />
+
+                                        <com.google.android.material.button.MaterialButton
+                                            android:id="@+id/btn_select_bg_image"
+                                            style="@style/Widget.Levi.Button.Secondary"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginStart="8dp"
+                                            android:text="@string/settings_ui_select_image"
+                                            app:icon="@drawable/ic_ui_image" />
+
+                                        <com.google.android.material.button.MaterialButton
+                                            android:id="@+id/btn_select_bg_folder"
+                                            style="@style/Widget.Levi.Button.Primary"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:layout_marginStart="8dp"
+                                            android:text="@string/settings_ui_select_folder"
+                                            app:icon="@drawable/ic_ui_folder" />
+                                    </LinearLayout>
+                                </HorizontalScrollView>
                             </LinearLayout>
 
-                            <SeekBar
-                                android:id="@+id/seek_bg_image_blur"
+                            <LinearLayout
+                                android:id="@+id/bg_image_effect_controls"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:max="25"
-                                android:progress="0"
-                                android:progressTint="@color/primary"
-                                android:thumbTint="@color/primary" />
+                                android:orientation="vertical"
+                                android:visibility="gone">
+
+                                <LinearLayout
+                                    android:id="@+id/bg_play_order_row"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical">
+
+                                    <View style="@style/settings_Divider" />
+
+                                    <LinearLayout style="@style/settings_Row">
+
+                                        <LinearLayout style="@style/settings_RowText">
+
+                                            <TextView
+                                                style="@style/settings_RowTitle"
+                                                android:text="@string/settings_ui_play_order" />
+                                        </LinearLayout>
+
+                                        <org.levimc.launcher.ui.widget.SegmentedControl
+                                            android:id="@+id/bg_play_order"
+                                            android:layout_width="220dp"
+                                            android:layout_height="wrap_content" />
+                                    </LinearLayout>
+                                </LinearLayout>
+
+                                <View style="@style/settings_Divider" />
+
+                                <LinearLayout style="@style/settings_Row">
+
+                                    <LinearLayout style="@style/settings_RowText">
+
+                                        <TextView
+                                            style="@style/settings_RowTitle"
+                                            android:text="@string/settings_ui_fit_mode" />
+                                    </LinearLayout>
+
+                                    <TextView
+                                        android:id="@+id/bg_fit_mode"
+                                        style="@style/Widget.Levi.Input"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="44dp"
+                                        android:background="@drawable/bg_ui_input"
+                                        android:clickable="true"
+                                        android:drawableEnd="@drawable/ic_ui_expand_more"
+                                        android:focusable="true"
+                                        android:gravity="center_vertical"
+                                        android:minWidth="180dp" />
+                                </LinearLayout>
+
+                                <View style="@style/settings_Divider" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:paddingTop="14dp"
+                                    android:tag="settings_row">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center_vertical"
+                                        android:orientation="horizontal">
+
+                                        <TextView
+                                            style="@style/settings_Label"
+                                            android:layout_width="0dp"
+                                            android:layout_weight="1"
+                                            android:text="@string/settings_ui_bg_blur" />
+
+                                        <TextView
+                                            android:id="@+id/bg_image_blur_value"
+                                            style="@style/Widget.Levi.Tag.Accent"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content" />
+                                    </LinearLayout>
+
+                                    <SeekBar
+                                        android:id="@+id/seek_bg_image_blur"
+                                        style="@style/settings_Seek"
+                                        android:max="50" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:paddingTop="10dp"
+                                    android:tag="settings_row">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center_vertical"
+                                        android:orientation="horizontal">
+
+                                        <TextView
+                                            style="@style/settings_Label"
+                                            android:layout_width="0dp"
+                                            android:layout_weight="1"
+                                            android:text="@string/settings_ui_bg_brightness" />
+
+                                        <TextView
+                                            android:id="@+id/bg_image_brightness_value"
+                                            style="@style/Widget.Levi.Tag.Accent"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content" />
+                                    </LinearLayout>
+
+                                    <SeekBar
+                                        android:id="@+id/seek_bg_image_brightness"
+                                        style="@style/settings_Seek"
+                                        android:max="100"
+                                        android:min="20" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="vertical"
+                                    android:paddingTop="10dp"
+                                    android:paddingBottom="6dp"
+                                    android:tag="settings_row">
+
+                                    <LinearLayout
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center_vertical"
+                                        android:orientation="horizontal">
+
+                                        <TextView
+                                            style="@style/settings_Label"
+                                            android:layout_width="0dp"
+                                            android:layout_weight="1"
+                                            android:text="@string/settings_ui_bg_opacity" />
+
+                                        <TextView
+                                            android:id="@+id/bg_image_opacity_value"
+                                            style="@style/Widget.Levi.Tag.Accent"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content" />
+                                    </LinearLayout>
+
+                                    <SeekBar
+                                        android:id="@+id/seek_bg_image_opacity"
+                                        style="@style/settings_Seek"
+                                        android:max="100" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <!-- ===== Materials and readability ===== -->
+                        <LinearLayout
+                            android:id="@+id/personalize_material_group"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <LinearLayout style="@style/settings_Row">
+
+                                <LinearLayout style="@style/settings_RowText">
+
+                                    <TextView
+                                        style="@style/settings_RowTitle"
+                                        android:text="@string/settings_ui_material" />
+
+                                    <TextView
+                                        style="@style/settings_RowDesc"
+                                        android:text="@string/settings_ui_material_desc" />
+                                </LinearLayout>
+
+                                <org.levimc.launcher.ui.widget.SegmentedControl
+                                    android:id="@+id/material_mode_tabs"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/material_no_image"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:background="@drawable/bg_ui_strip"
+                                android:padding="12dp"
+                                android:text="@string/settings_ui_material_no_image"
+                                android:textAppearance="@style/TextAppearance.Levi.Caption"
+                                android:visibility="gone" />
+
+                            <View style="@style/settings_Divider" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="10dp"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
+                                android:orientation="vertical"
+                                android:paddingTop="14dp"
+                                android:tag="settings_row">
 
                                 <TextView
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:text="@string/bg_image_brightness"
-                                    android:fontFamily="@font/misans"
-                                    android:textColor="@color/on_surface"
-                                    android:textSize="12sp"
-                                    android:textStyle="bold" />
+                                    style="@style/settings_Label"
+                                    android:text="@string/settings_ui_material_presets" />
 
-                                <TextView
-                                    android:id="@+id/bg_image_brightness_value"
-                                    android:layout_width="56dp"
+                                <FrameLayout
+                                    android:id="@+id/material_preset_holder"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:gravity="end"
-                                    android:fontFamily="@font/misans"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp" />
+                                    android:layout_marginTop="8dp" />
                             </LinearLayout>
 
-                            <SeekBar
-                                android:id="@+id/seek_bg_image_brightness"
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:min="1"
-                                android:max="150"
-                                android:progress="100"
-                                android:progressTint="@color/primary"
-                                android:thumbTint="@color/primary" />
+                                android:orientation="vertical"
+                                android:paddingTop="14dp"
+                                android:tag="settings_row">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        style="@style/settings_Label"
+                                        android:layout_width="0dp"
+                                        android:layout_weight="1"
+                                        android:text="@string/settings_ui_material_opacity" />
+
+                                    <TextView
+                                        android:id="@+id/material_opacity_value"
+                                        style="@style/Widget.Levi.Tag.Accent"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+                                </LinearLayout>
+
+                                <SeekBar
+                                    android:id="@+id/seek_material_opacity"
+                                    style="@style/settings_Seek"
+                                    android:max="100" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:paddingTop="10dp"
+                                android:paddingBottom="8dp"
+                                android:tag="settings_row">
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <TextView
+                                        style="@style/settings_Label"
+                                        android:layout_width="0dp"
+                                        android:layout_weight="1"
+                                        android:text="@string/settings_ui_material_overlay" />
+
+                                    <TextView
+                                        android:id="@+id/material_overlay_value"
+                                        style="@style/Widget.Levi.Tag.Accent"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+                                </LinearLayout>
+
+                                <SeekBar
+                                    android:id="@+id/seek_material_overlay"
+                                    style="@style/settings_Seek"
+                                    android:max="80" />
+                            </LinearLayout>
+
+                            <View style="@style/settings_Divider" />
+
+                            <LinearLayout style="@style/settings_Row">
+
+                                <LinearLayout style="@style/settings_RowText">
+
+                                    <TextView
+                                        style="@style/settings_RowTitle"
+                                        android:text="@string/settings_ui_material_readability" />
+
+                                    <TextView
+                                        style="@style/settings_RowDesc"
+                                        android:text="@string/settings_ui_material_readability_desc" />
+                                </LinearLayout>
+
+                                <com.google.android.material.switchmaterial.SwitchMaterial
+                                    android:id="@+id/switch_material_readability"
+                                    style="@style/settings_Switch" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal"
+                                android:paddingBottom="4dp">
+
+                                <TextView
+                                    android:id="@+id/material_status"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="12dp"
+                                    android:layout_weight="1"
+                                    android:textAppearance="@style/TextAppearance.Levi.Caption" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/material_reset"
+                                    style="@style/Widget.Levi.Button.Ghost"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/settings_ui_material_reset"
+                                    app:icon="@drawable/ic_ui_refresh" />
+                            </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
 
-                    </LinearLayout>
+            <!-- ============================== Third-party components ============================== -->
+            <LinearLayout
+                android:id="@+id/section_components"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/section_components"
+                <include
+                    layout="@layout/view_pkg_settings_card"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
 
-                    <include
-                        layout="@layout/view_pkg_settings_card"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
+            <!-- ============================== Others ============================== -->
+            <LinearLayout
+                android:id="@+id/section_others"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-                <LinearLayout
-                    android:id="@+id/section_others"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
+                <com.google.android.material.card.MaterialCardView style="@style/settings_Card">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/card_background"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
+                    <LinearLayout style="@style/settings_CardBody">
 
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/show_logcat_overlay"
-                                android:fontFamily="@font/misans"
-                                android:textColor="@color/on_surface"
-                                android:textSize="15sp"
-                                android:textStyle="bold" />
+                        <LinearLayout style="@style/settings_Row">
+
+                            <LinearLayout style="@style/settings_RowText">
+
+                                <TextView
+                                    style="@style/settings_RowTitle"
+                                    android:text="@string/show_logcat_overlay" />
+                            </LinearLayout>
 
                             <com.google.android.material.switchmaterial.SwitchMaterial
                                 android:id="@+id/switch_logcat"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:thumbTint="@color/primary"
-                                android:trackTint="#555555" />
+                                style="@style/settings_Switch" />
                         </LinearLayout>
                     </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
 
-                </LinearLayout>
+            <!-- ============================== Privacy ============================== -->
+            <LinearLayout
+                android:id="@+id/section_privacy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-                <LinearLayout
-                    android:id="@+id/section_privacy"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
+                <com.google.android.material.card.MaterialCardView style="@style/settings_Card">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/card_background"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
+                    <LinearLayout style="@style/settings_CardBody">
 
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/crash_upload"
-                                android:fontFamily="@font/misans"
-                                android:textColor="@color/on_surface"
-                                android:textSize="15sp"
-                                android:textStyle="bold" />
+                        <LinearLayout style="@style/settings_Row">
+
+                            <LinearLayout style="@style/settings_RowText">
+
+                                <TextView
+                                    style="@style/settings_RowTitle"
+                                    android:text="@string/crash_upload" />
+                            </LinearLayout>
 
                             <com.google.android.material.switchmaterial.SwitchMaterial
                                 android:id="@+id/switch_crash_upload"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:thumbTint="@color/primary"
-                                android:trackTint="#555555" />
+                                style="@style/settings_Switch" />
                         </LinearLayout>
                     </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
 
-                </LinearLayout>
+            <!-- ============================== Updates ============================== -->
+            <LinearLayout
+                android:id="@+id/section_updates"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-                <LinearLayout
-                    android:id="@+id/section_updates"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
+                <com.google.android.material.card.MaterialCardView style="@style/settings_Card">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/card_background"
-                        android:orientation="vertical"
-                        android:padding="16dp">
+                    <LinearLayout style="@style/settings_CardBody">
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
+                        <LinearLayout style="@style/settings_Row">
 
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
+                            <LinearLayout style="@style/settings_RowText">
 
                                 <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/settings_current_version"
-                                    android:fontFamily="@font/misans"
-                                    android:textColor="@color/on_surface"
-                                    android:textSize="15sp"
-                                    android:textStyle="bold" />
+                                    style="@style/settings_RowTitle"
+                                    android:text="@string/settings_current_version" />
 
                                 <TextView
                                     android:id="@+id/version_text"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="2dp"
-                                    android:fontFamily="@font/misans"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp" />
+                                    style="@style/settings_RowDesc" />
                             </LinearLayout>
 
-                            <Button
+                            <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btn_check_update"
+                                style="@style/Widget.Levi.Button.Primary"
                                 android:layout_width="wrap_content"
-                                android:layout_height="40dp"
-                                android:layout_marginStart="12dp"
-                                android:text="@string/check_update"
-                                android:fontFamily="@font/misans"
-                                android:textSize="13sp"
-                                android:textColor="@color/on_primary"
-                                android:backgroundTint="@color/primary"
-                                android:paddingHorizontal="20dp"
-                                android:textAllCaps="false" />
+                                android:layout_height="wrap_content"
+                                android:text="@string/check_update" />
                         </LinearLayout>
 
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="14dp"
-                            android:layout_marginBottom="14dp"
-                            android:background="@color/divider"
-                            android:alpha="0.3" />
+                        <View style="@style/settings_Divider" />
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
+                        <LinearLayout style="@style/settings_Row">
 
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
+                            <LinearLayout style="@style/settings_RowText">
 
                                 <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/preloader_sigs_title"
-                                    android:fontFamily="@font/misans"
-                                    android:textColor="@color/on_surface"
-                                    android:textSize="15sp"
-                                    android:textStyle="bold" />
+                                    style="@style/settings_RowTitle"
+                                    android:text="@string/preloader_sigs_title" />
 
                                 <TextView
                                     android:id="@+id/preloader_sigs_last_update"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="2dp"
-                                    android:fontFamily="@font/misans"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp" />
+                                    style="@style/settings_RowDesc" />
                             </LinearLayout>
 
-                            <Button
+                            <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btn_update_preloader_sigs"
+                                style="@style/Widget.Levi.Button.Secondary"
                                 android:layout_width="wrap_content"
-                                android:layout_height="40dp"
-                                android:layout_marginStart="12dp"
-                                android:text="@string/preloader_sigs_update"
-                                android:fontFamily="@font/misans"
-                                android:textSize="13sp"
-                                android:textColor="@color/on_primary"
-                                android:backgroundTint="@color/primary"
-                                android:paddingHorizontal="20dp"
-                                android:textAllCaps="false" />
+                                android:layout_height="wrap_content"
+                                android:text="@string/preloader_sigs_update" />
                         </LinearLayout>
                     </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
 
-                </LinearLayout>
+            <!-- ============================== About ============================== -->
+            <LinearLayout
+                android:id="@+id/section_about"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-                <LinearLayout
-                    android:id="@+id/section_about"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="gone">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/card_background"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:padding="16dp">
+                <com.google.android.material.card.MaterialCardView style="@style/settings_Card">
 
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
+                    <LinearLayout style="@style/settings_CardBody">
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/about_title"
-                                android:fontFamily="@font/misans"
-                                android:textColor="@color/on_surface"
-                                android:textSize="15sp"
-                                android:textStyle="bold" />
+                        <LinearLayout style="@style/settings_Row">
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:text="@string/copyright"
-                                android:fontFamily="@font/misans"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="12sp" />
+                            <LinearLayout style="@style/settings_RowText">
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/font_license"
-                                android:fontFamily="@font/misans"
-                                android:textColor="@color/text_secondary"
-                                android:textSize="12sp" />
+                                <TextView
+                                    style="@style/settings_RowTitle"
+                                    android:text="@string/about_title" />
+
+                                <TextView
+                                    style="@style/settings_RowDesc"
+                                    android:text="@string/copyright" />
+
+                                <TextView
+                                    style="@style/settings_RowDesc"
+                                    android:text="@string/font_license" />
+                            </LinearLayout>
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/settings_btn_github"
+                                style="@style/Widget.Levi.Button.Icon"
+                                android:contentDescription="@string/github"
+                                app:icon="@drawable/ic_github" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/settings_btn_discord"
+                                style="@style/Widget.Levi.Button.Icon"
+                                android:layout_marginStart="8dp"
+                                android:contentDescription="@string/discord"
+                                app:icon="@drawable/ic_discord" />
                         </LinearLayout>
-
-                        <ImageView
-                            android:id="@+id/settings_btn_github"
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:layout_marginEnd="12dp"
-                            android:src="@drawable/ic_github"
-                            android:contentDescription="@string/github"
-                            android:clickable="true"
-                            android:focusable="true"
-                            app:tint="@color/text_secondary" />
-
-                        <ImageView
-                            android:id="@+id/settings_btn_discord"
-                            android:layout_width="28dp"
-                            android:layout_height="28dp"
-                            android:src="@drawable/ic_discord"
-                            android:contentDescription="@string/discord"
-                            android:clickable="true"
-                            android:focusable="true"
-                            app:tint="@color/text_secondary" />
                     </LinearLayout>
-                </LinearLayout>
-
-            </FrameLayout>
-
-        </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+        </FrameLayout>
+    </LinearLayout>
+</ScrollView>

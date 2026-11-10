@@ -1,212 +1,294 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <!-- Disabled State Container -->
-    <LinearLayout
-        android:id="@+id/disabled_state_container"
+    <!-- Header -->
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.Levi.Card"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="32dp"
-        android:visibility="gone">
-
-        <ImageView
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:src="@drawable/ic_settings"
-            app:tint="#888888"
-            android:layout_marginBottom="16dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/ms_feature_disabled_title"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:textColor="@color/primary"
-            android:fontFamily="@font/misans" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/ms_feature_disabled_desc"
-            android:textSize="14sp"
-            android:textColor="#888888"
-            android:textAlignment="center"
-            android:layout_marginTop="8dp"
-            android:fontFamily="@font/misans" />
-    </LinearLayout>
-
-    <!-- Main Content Container -->
-    <LinearLayout
-        android:id="@+id/main_content_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp">
-
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal">
-            
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="18dp">
+
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1.2"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="1">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/misc_accounts_title"
+                    android:textAppearance="@style/TextAppearance.Levi.PageTitle" />
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/accounts_recycler_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:clipToPadding="false"
-                        android:paddingBottom="8dp"/>
-
-                    <LinearLayout
-                        android:id="@+id/empty_state_container"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:visibility="gone">
-
-                        <TextView
-                            android:id="@+id/empty_state_text"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/not_signed_in"
-                            android:textSize="16sp"
-                            android:textColor="#888888"
-                            android:fontFamily="@font/misans"/>
-                    </LinearLayout>
-                </FrameLayout>
-
-                <Button
-                    android:id="@+id/bottom_add_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="48dp"
-                    android:layout_marginTop="8dp"
-                    android:backgroundTint="@color/primary"
-                    android:text="@string/ms_add_account"
-                    android:textColor="@color/on_primary"
-                    android:textStyle="bold"
-                    android:textSize="14sp"
-                    android:fontFamily="@font/misans" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/misc_accounts_subtitle"
+                    android:textAppearance="@style/TextAppearance.Levi.PageSubtitle" />
             </LinearLayout>
 
-        <ScrollView
-            android:id="@+id/right_card_container"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/card_background"
-            android:layout_marginStart="16dp"
-            android:elevation="2dp"
-            android:fillViewport="true">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/bottom_add_button"
+                style="@style/Widget.Levi.Button.Primary"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginStart="12dp"
+                android:text="@string/ms_add_account"
+                app:icon="@drawable/ic_ui_add" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="12dp"
+        android:layout_weight="1">
+
+        <!-- Feature turned off in Settings -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/disabled_state_container"
+            style="@style/Widget.Levi.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:paddingStart="24dp"
+                android:paddingTop="28dp"
+                android:paddingEnd="24dp"
+                android:paddingBottom="24dp">
 
-                <FrameLayout
-                    android:layout_width="64dp"
-                    android:layout_height="64dp"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginBottom="16dp">
-
-                    <com.microsoft.xbox.idp.toolkit.CircleImageView
-                        android:id="@+id/xbox_avatar"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:contentDescription="@string/xbox_avatar"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/ic_minecraft_cube" />
-
-                    <ProgressBar
-                        android:id="@+id/avatar_progress"
-                        style="?android:attr/progressBarStyleSmall"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:indeterminate="true"
-                        android:visibility="gone" />
-                </FrameLayout>
+                <ImageView
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_ui_person"
+                    app:tint="@color/ui_muted" />
 
                 <TextView
-                    android:id="@+id/gamertag_text"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/not_signed_in"
-                    android:textStyle="bold"
-                    android:textSize="20sp"
-                    android:textAlignment="center"
-                    android:textColor="@color/on_surface"
-                    android:fontFamily="@font/misans"/>
+                    android:layout_marginTop="12dp"
+                    android:fontFamily="@font/misans"
+                    android:text="@string/misc_accounts_disabled_title"
+                    android:textColor="@color/text_primary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/privileges_text"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text=""
-                    android:textSize="14sp"
-                    android:textColor="#888888"
-                    android:textAlignment="center"
-                    android:layout_marginTop="4dp"
-                    android:fontFamily="@font/misans"/>
+                    android:layout_marginTop="6dp"
+                    android:gravity="center"
+                    android:text="@string/misc_accounts_disabled_desc"
+                    android:textAppearance="@style/TextAppearance.Levi.PageSubtitle" />
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#33888888"
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/accounts_go_settings"
+                    style="@style/Widget.Levi.Button.Secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
                     android:layout_marginTop="16dp"
-                    android:layout_marginBottom="16dp"/>
+                    android:text="@string/misc_accounts_go_settings"
+                    app:icon="@drawable/ic_settings" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Account list + current account details -->
+        <LinearLayout
+            android:id="@+id/main_content_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Levi.Card"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1.2">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:gravity="center_horizontal">
+                    android:paddingStart="14dp"
+                    android:paddingTop="16dp"
+                    android:paddingEnd="14dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/xuid"
-                        android:textColor="#888888"
-                        android:textSize="12sp"
-                        android:fontFamily="@font/misans"/>
+                        android:layout_marginStart="4dp"
+                        android:text="@string/misc_accounts_list"
+                        android:textAppearance="@style/TextAppearance.Levi.SectionTitle" />
 
-                    <TextView
-                        android:id="@+id/xuid_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=""
-                        android:textStyle="bold"
-                        android:textSize="14sp"
-                        android:layout_marginTop="2dp"
-                        android:textColor="@color/on_surface"
-                        android:fontFamily="@font/misans"/>
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_marginTop="12dp"
+                        android:layout_weight="1">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/accounts_recycler_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:clipToPadding="false"
+                            android:paddingBottom="6dp"
+                            android:scrollbars="none" />
+
+                        <LinearLayout
+                            android:id="@+id/empty_state_container"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <ImageView
+                                android:layout_width="36dp"
+                                android:layout_height="36dp"
+                                android:importantForAccessibility="no"
+                                android:src="@drawable/ic_ui_person"
+                                app:tint="@color/ui_muted" />
+
+                            <TextView
+                                android:id="@+id/empty_state_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="8dp"
+                                android:text="@string/not_signed_in"
+                                android:textAppearance="@style/TextAppearance.Levi.PageSubtitle" />
+                        </LinearLayout>
+                    </FrameLayout>
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/right_card_container"
+                style="@style/Widget.Levi.Card"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1">
 
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fillViewport="true"
+                    android:scrollbars="none">
 
-            </LinearLayout>
-        </ScrollView>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="18dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/misc_accounts_current"
+                            android:textAppearance="@style/TextAppearance.Levi.SectionTitle" />
+
+                        <FrameLayout
+                            android:layout_width="64dp"
+                            android:layout_height="64dp"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="16dp">
+
+                            <com.microsoft.xbox.idp.toolkit.CircleImageView
+                                android:id="@+id/xbox_avatar"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@drawable/misc_bg_avatar"
+                                android:contentDescription="@string/xbox_avatar"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/ic_minecraft_cube" />
+
+                            <ProgressBar
+                                android:id="@+id/avatar_progress"
+                                style="?android:attr/progressBarStyleSmall"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:indeterminate="true"
+                                android:visibility="gone" />
+                        </FrameLayout>
+
+                        <TextView
+                            android:id="@+id/gamertag_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:fontFamily="@font/misans"
+                            android:gravity="center"
+                            android:text="@string/not_signed_in"
+                            android:textColor="@color/text_primary"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/privileges_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="6dp"
+                            style="@style/Widget.Levi.Tag.Accent"
+                            android:text="" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginBottom="12dp"
+                            android:background="@color/divider" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:minHeight="40dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/xuid"
+                                android:textAppearance="@style/TextAppearance.Levi.StripLabel" />
+
+                            <TextView
+                                android:id="@+id/xuid_text"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="12dp"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/misans"
+                                android:gravity="end"
+                                android:text=""
+                                android:textColor="@color/text_primary"
+                                android:textIsSelectable="true"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </ScrollView>
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
-    </LinearLayout>
-</FrameLayout>
+    </FrameLayout>
+</LinearLayout>

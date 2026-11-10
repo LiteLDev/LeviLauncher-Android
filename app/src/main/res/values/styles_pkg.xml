@@ -4,16 +4,16 @@
     <style name="PkgFilterLabel">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginBottom">3dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
         <item name="android:fontFamily">@font/misans</item>
         <item name="android:textColor">@color/text_secondary</item>
-        <item name="android:textSize">10sp</item>
+        <item name="android:textSize">12sp</item>
     </style>
 
     <style name="PkgFilterSpinner">
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:minHeight">34dp</item>
-        <item name="android:background">@drawable/bg_spinner</item>
+        <item name="android:minHeight">40dp</item>
+        <item name="android:background">@drawable/bg_ui_input</item>
         <item name="android:paddingStart">12dp</item>
         <item name="android:paddingEnd">12dp</item>
         <item name="android:paddingTop">2dp</item>
@@ -25,16 +25,16 @@
     <style name="PkgChip">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@drawable/bg_pkg_status_chip</item>
-        <item name="android:backgroundTint">@color/surface_variant</item>
+        <item name="android:background">@drawable/bg_ui_tag</item>
         <item name="android:fontFamily">@font/misans</item>
         <item name="android:maxLines">1</item>
-        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingStart">7dp</item>
         <item name="android:paddingTop">2dp</item>
-        <item name="android:paddingEnd">8dp</item>
+        <item name="android:paddingEnd">7dp</item>
         <item name="android:paddingBottom">2dp</item>
         <item name="android:textColor">@color/text_secondary</item>
-        <item name="android:textSize">10sp</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="PkgFieldLabel">
@@ -53,5 +53,21 @@
         <item name="android:fontFamily">@font/misans</item>
         <item name="android:textColor">@color/on_surface</item>
         <item name="android:textSize">12sp</item>
+    </style>
+    <!-- Windows select trigger (catalog pages): grey field, value, chevron; opens CatalogSelect's sheet. -->
+    <style name="CatalogSelect" parent="Widget.Levi.Input">
+        <item name="android:layout_height">44dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:drawableEnd">@drawable/ic_ui_expand_more</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="CatalogFieldLabel" parent="TextAppearance.Levi.FieldLabel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_marginStart">2dp</item>
     </style>
 </resources>

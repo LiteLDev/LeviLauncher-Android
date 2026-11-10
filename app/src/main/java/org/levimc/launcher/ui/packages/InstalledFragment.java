@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,9 +30,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.divider.MaterialDividerItemDecoration;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import org.levimc.launcher.R;
+import org.levimc.launcher.ui.widget.SegmentedControl;
+import org.levimc.launcher.ui.widget.UiKit;
 import org.levimc.launcher.ui.dialogs.SimpleTextWatcher;
 import org.levimc.launcher.core.mods.Mod;
 import org.levimc.launcher.core.mods.ModManager;
@@ -79,9 +81,7 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
     private MaterialButton refreshButton;
     private MaterialButton fileButton;
     private MaterialButton idButton;
-    private TextView filterAll;
-    private TextView filterExplicit;
-    private TextView filterDependency;
+    private SegmentedControl filterTabs;
     private SwitchMaterial onlyEnabledSwitch;
     private TextView summary;
     private View selectionBar;
@@ -148,9 +148,7 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
         refreshButton = view.findViewById(R.id.pkg_inst_btn_refresh);
         fileButton = view.findViewById(R.id.pkg_inst_btn_file);
         idButton = view.findViewById(R.id.pkg_inst_btn_id);
-        filterAll = view.findViewById(R.id.pkg_inst_filter_all);
-        filterExplicit = view.findViewById(R.id.pkg_inst_filter_explicit);
-        filterDependency = view.findViewById(R.id.pkg_inst_filter_dependency);
+        filterTabs = view.findViewById(R.id.pkg_inst_filter);
         onlyEnabledSwitch = view.findViewById(R.id.pkg_inst_only_enabled);
         summary = view.findViewById(R.id.pkg_inst_summary);
         selectionBar = view.findViewById(R.id.pkg_inst_selection_bar);
@@ -168,10 +166,8 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
         loading = view.findViewById(R.id.pkg_inst_loading);
 
         accent = PkgUi.accent(requireContext());
-        idButton.setBackgroundTintList(android.content.res.ColorStateList.valueOf(accent));
-        int onAccent = Color.luminance(accent) > 0.42f ? Color.BLACK : Color.WHITE;
-        idButton.setTextColor(onAccent);
-        idButton.setIconTint(android.content.res.ColorStateList.valueOf(onAccent));
+        UiKit.applyPrimary(idButton);
+        UiKit.applyPrimary(selectionDone);
         progress.setShowCancel(true);
         progress.setShowStatus(true);
 
@@ -202,6 +198,11 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
             }
         }, accent);
         list.setLayoutManager(new LinearLayoutManager(requireContext()));
+        MaterialDividerItemDecoration divider = new MaterialDividerItemDecoration(requireContext(),
+                LinearLayoutManager.VERTICAL);
+        divider.setDividerColor(requireContext().getColor(R.color.divider));
+        divider.setLastItemDecorated(false);
+        list.addItemDecoration(divider);
         list.setItemAnimator(null);
         list.setAdapter(adapter);
 
@@ -220,9 +221,12 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
             query = s.toString();
             render();
         }));
-        filterAll.setOnClickListener(v -> setFilter(InstalledFragment.Model.Filter.ALL));
-        filterExplicit.setOnClickListener(v -> setFilter(InstalledFragment.Model.Filter.EXPLICIT));
-        filterDependency.setOnClickListener(v -> setFilter(InstalledFragment.Model.Filter.DEPENDENCY));
+        filterTabs.setEqualWidth(false);
+        filterTabs.setItems(getString(R.string.pkg_installed_filter_all),
+                getString(R.string.pkg_installed_filter_explicit),
+                getString(R.string.pkg_installed_filter_dependency));
+        filterTabs.setOnSegmentSelectedListener(i -> setFilter(i == 1 ? InstalledFragment.Model.Filter.EXPLICIT
+                : i == 2 ? InstalledFragment.Model.Filter.DEPENDENCY : InstalledFragment.Model.Filter.ALL));
         onlyEnabledSwitch.setOnCheckedChangeListener((b, checked) -> {
             onlyEnabled = checked;
             render();
@@ -237,13 +241,14 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
         uninstallSelected.setOnClickListener(v -> runBatch(false));
         selectionDone.setOnClickListener(v -> endSelection());
         emptyAction.setOnClickListener(v -> load(true, false));
-        for (View b : new View[]{refreshButton, fileButton, idButton, filterAll, filterExplicit, filterDependency,
+        for (View b : new View[]{refreshButton, fileButton, idButton,
                 selectAll, updateSelected, uninstallSelected, selectionDone}) {
             DynamicAnim.applyPressScale(b);
         }
 
         PackagesActivity host = host();
         if (host != null) {
+            host.bindHeader(view, 1);
             host.addPkgTargetListener(this);
         }
         TaskSession.addGlobalListener(this);
@@ -299,6 +304,10 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
 
     @Override
     public void onPkgTargetChanged(@Nullable GameVersion target) {
+        PackagesActivity host = host();
+        if (host != null && getView() != null) {
+            host.renderTargetTag(getView().findViewById(R.id.pkg_header_target));
+        }
         targetName = targetNameOf(target);
         selecting = false;
         selected.clear();
@@ -460,28 +469,14 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
         render();
     }
 
-    private void styleChip(TextView chip, boolean on) {
-        if (on) {
-            GradientDrawable gd = new GradientDrawable();
-            gd.setColor(accent);
-            gd.setCornerRadius(15 * getResources().getDisplayMetrics().density);
-            chip.setBackground(gd);
-            chip.setTextColor(Color.luminance(accent) > 0.42f ? Color.BLACK : Color.WHITE);
-        } else {
-            chip.setBackgroundResource(R.drawable.bg_tab_unselected);
-            chip.setTextColor(requireContext().getColor(R.color.text_secondary));
-        }
-    }
-
     private void render() {
         if (getView() == null || adapter == null) {
             return;
         }
         Context c = requireContext();
         GameVersion v = target();
-        styleChip(filterAll, filter == InstalledFragment.Model.Filter.ALL);
-        styleChip(filterExplicit, filter == InstalledFragment.Model.Filter.EXPLICIT);
-        styleChip(filterDependency, filter == InstalledFragment.Model.Filter.DEPENDENCY);
+        filterTabs.setSelectedIndex(filter == InstalledFragment.Model.Filter.EXPLICIT ? 1
+                : filter == InstalledFragment.Model.Filter.DEPENDENCY ? 2 : 0, false);
         fileButton.setEnabled(v != null);
         idButton.setEnabled(v != null);
 

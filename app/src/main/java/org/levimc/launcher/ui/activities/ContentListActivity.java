@@ -8,6 +8,7 @@ import android.os.Build;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
@@ -20,6 +21,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -52,6 +54,8 @@ import android.graphics.BitmapFactory;
 import java.io.OutputStream;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -70,6 +74,8 @@ public class ContentListActivity extends BaseActivity {
     public static final int TYPE_SERVERS = 5;
     private static final String STATE_SELECTION_MODE = "selection_mode";
     private static final String STATE_SELECTED_PATHS = "selected_paths";
+    private static final int SORT_NAME = 0;
+    private static final int SORT_TIME = 1;
 
     private ActivityContentListBinding binding;
     private ContentManager contentManager;
@@ -102,6 +108,8 @@ public class ContentListActivity extends BaseActivity {
     private List<WorldItem> allWorlds = new ArrayList<>();
     private List<ResourcePackItem> allPacks = new ArrayList<>();
     private List<ServerItem> allServers = new ArrayList<>();
+    private int sortField = SORT_NAME;
+    private boolean sortAscending = true;
     
     private org.levimc.launcher.ui.dialogs.LoadingDialog progressDialog;
 
@@ -248,7 +256,8 @@ public class ContentListActivity extends BaseActivity {
 
         switch (contentType) {
             case TYPE_WORLDS:
-                binding.titleText.setText(getString(R.string.worlds_title));
+                binding.titleText.setText(getString(R.string.content_ui_worlds_title));
+                binding.searchEditText.setHint(R.string.content_ui_search_worlds);
                 binding.customFlatButton.setVisibility(View.VISIBLE);
                 binding.selectButton.setVisibility(View.VISIBLE);
                 setupWorldsRecyclerView();
@@ -269,13 +278,13 @@ public class ContentListActivity extends BaseActivity {
                 setupPacksRecyclerView();
                 break;
             case TYPE_SCREENSHOTS:
-                binding.titleText.setText(getString(R.string.screenshots_category));
-                binding.searchEditText.setVisibility(View.GONE);
+                binding.titleText.setText(getString(R.string.content_ui_screenshots));
+                binding.searchRow.setVisibility(View.GONE);
                 setupScreenshotsRecyclerView();
                 break;
             case TYPE_SERVERS:
                 binding.titleText.setText(getString(R.string.servers_category));
-                binding.customFlatButton.setText(getString(R.string.quick_launch_add_server));
+                binding.customFlatButton.setText(getString(R.string.content_ui_add_server));
                 binding.customFlatButton.setVisibility(View.VISIBLE);
                 setupServersRecyclerView();
                 break;
@@ -286,13 +295,105 @@ public class ContentListActivity extends BaseActivity {
             else openCustomFlatWorld();
         });
         binding.selectButton.setOnClickListener(v -> enterSelectionMode());
+        binding.selectionCancelButton.setOnClickListener(v -> exitSelectionMode());
+        binding.refreshButton.setOnClickListener(v -> loadContent());
+        binding.sortButton.setOnClickListener(v -> showSortMenu());
         binding.selectAllButton.setOnClickListener(v -> selectAllVisible());
         binding.batchExportButton.setOnClickListener(v -> startBatchExport());
         binding.batchTransferButton.setOnClickListener(v -> showBatchTransferDialog());
         binding.batchDeleteButton.setOnClickListener(v -> showBatchDeleteDialog());
 
         setupSearchFilter();
+        loadSortPreference();
+        updateSortLabel();
+        updateInfoStrip();
         updateSelectionToolbar();
+    }
+
+    @Override
+    protected CharSequence getBreadcrumbTitle() {
+        // Called from BaseActivity while the shell is built, before contentType is assigned.
+        int type = getIntent() != null ? getIntent().getIntExtra(EXTRA_CONTENT_TYPE, TYPE_WORLDS) : TYPE_WORLDS;
+        return switch (type) {
+            case TYPE_SKIN_PACKS -> getString(R.string.skin_packs_category);
+            case TYPE_RESOURCE_PACKS -> getString(R.string.resource_packs_category);
+            case TYPE_BEHAVIOR_PACKS -> getString(R.string.behavior_packs_category);
+            case TYPE_SCREENSHOTS -> getString(R.string.content_ui_screenshots);
+            case TYPE_SERVERS -> getString(R.string.servers_category);
+            default -> getString(R.string.worlds_category);
+        };
+    }
+
+    private void updateInfoStrip() {
+        GameVersion version = versionManager.getSelectedVersion();
+        binding.stripInstanceValue.setText(version != null
+                ? ContentManagementActivity.instanceName(version) : getString(R.string.not_found_version));
+        FeatureSettings.StorageType type = currentStorageType;
+        if (version != null) type = LauncherStorage.normalizeContentStorageType(type, version.versionIsolation);
+        String label = switch (type) {
+            case INTERNAL -> getString(R.string.storage_internal);
+            case EXTERNAL -> getString(R.string.storage_external);
+            case VERSION_ISOLATION_INTERNAL -> getString(R.string.storage_version_isolation) + " (" + getString(R.string.storage_internal) + ")";
+            case VERSION_ISOLATION, VERSION_ISOLATION_EXTERNAL -> getString(R.string.storage_version_isolation) + " (" + getString(R.string.storage_external) + ")";
+        };
+        binding.stripStorageValue.setText(label);
+    }
+
+    private boolean supportsTimeSort() {
+        return contentType == TYPE_WORLDS || isPackType();
+    }
+
+    private void loadSortPreference() {
+        SharedPreferences prefs = getSharedPreferences("content_management", MODE_PRIVATE);
+        sortField = prefs.getInt("sort_field_" + contentType, SORT_NAME);
+        if (!supportsTimeSort()) sortField = SORT_NAME;
+        sortAscending = prefs.getBoolean("sort_asc_" + contentType, true);
+    }
+
+    private void updateSortLabel() {
+        binding.sortButton.setText(getString(R.string.content_ui_sort_format,
+                getString(sortField == SORT_TIME ? R.string.content_ui_sort_time : R.string.content_ui_sort_name),
+                getString(sortAscending ? R.string.content_ui_sort_asc : R.string.content_ui_sort_desc)));
+    }
+
+    private void showSortMenu() {
+        PopupMenu menu = new PopupMenu(this, binding.sortButton);
+        int fields = supportsTimeSort() ? 2 : 1;
+        for (int field = 0; field < fields; field++) {
+            for (int asc = 1; asc >= 0; asc--) {
+                int id = field * 2 + (1 - asc);
+                String label = getString(R.string.content_ui_sort_format,
+                        getString(field == SORT_TIME ? R.string.content_ui_sort_time : R.string.content_ui_sort_name),
+                        getString(asc == 1 ? R.string.content_ui_sort_asc : R.string.content_ui_sort_desc));
+                menu.getMenu().add(Menu.NONE, id, id, label);
+            }
+        }
+        menu.setOnMenuItemClickListener(item -> {
+            sortField = item.getItemId() / 2;
+            sortAscending = item.getItemId() % 2 == 0;
+            getSharedPreferences("content_management", MODE_PRIVATE).edit()
+                    .putInt("sort_field_" + contentType, sortField)
+                    .putBoolean("sort_asc_" + contentType, sortAscending)
+                    .apply();
+            updateSortLabel();
+            filterContent(binding.searchEditText.getText().toString());
+            return true;
+        });
+        menu.show();
+    }
+
+    private <T> void applySort(List<T> items, java.util.function.Function<T, String> name, java.util.function.Function<T, File> file) {
+        Comparator<T> comparator;
+        if (sortField == SORT_TIME && file != null) {
+            comparator = Comparator.comparingLong(item -> {
+                File f = file.apply(item);
+                return f != null ? f.lastModified() : 0L;
+            });
+        } else {
+            comparator = (a, b) -> String.CASE_INSENSITIVE_ORDER.compare(
+                    name.apply(a) != null ? name.apply(a) : "", name.apply(b) != null ? name.apply(b) : "");
+        }
+        items.sort(sortAscending ? comparator : Collections.reverseOrder(comparator));
     }
 
     private void setupSearchFilter() {
@@ -318,6 +419,7 @@ public class ContentListActivity extends BaseActivity {
             List<WorldItem> filtered = lowerQuery.isEmpty() ? new ArrayList<>(allWorlds) : allWorlds.stream()
                     .filter(world -> world.getWorldName() != null && world.getWorldName().toLowerCase().contains(lowerQuery))
                     .collect(Collectors.toList());
+            applySort(filtered, WorldItem::getWorldName, WorldItem::getFile);
             worldsAdapter.updateWorlds(filtered);
             updateListState(filtered.size(), allWorlds.size(), rawQuery);
         } else if (contentType == TYPE_SERVERS && serversAdapter != null) {
@@ -325,12 +427,14 @@ public class ContentListActivity extends BaseActivity {
                     .filter(server -> (server.name != null && server.name.toLowerCase().contains(lowerQuery)) ||
                             (server.ip != null && server.ip.toLowerCase().contains(lowerQuery)))
                     .collect(Collectors.toList());
+            applySort(filtered, server -> server.name, null);
             serversAdapter.updateData(filtered);
             updateListState(filtered.size(), allServers.size(), rawQuery);
         } else if (isPackType() && packsAdapter != null) {
             List<ResourcePackItem> filtered = lowerQuery.isEmpty() ? new ArrayList<>(allPacks) : allPacks.stream()
                     .filter(pack -> pack.getPackName() != null && pack.getPackName().toLowerCase().contains(lowerQuery))
                     .collect(Collectors.toList());
+            applySort(filtered, ResourcePackItem::getPackName, ResourcePackItem::getFile);
             packsAdapter.updateResourcePacks(filtered);
             updateListState(filtered.size(), allPacks.size(), rawQuery);
         }
@@ -1594,6 +1698,7 @@ public class ContentListActivity extends BaseActivity {
         if (skipInitialResumeRefresh) {
             skipInitialResumeRefresh = false;
         } else {
+            updateInfoStrip();
             loadContent();
         }
     }

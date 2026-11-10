@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Accent tag (soft brand fill). UiKit.tintSoftAccent re-colors it for the chosen theme color. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/primary_container" />
+    <corners android:radius="7dp" />
+</shape>

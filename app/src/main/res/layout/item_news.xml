@@ -2,114 +2,94 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/news_card"
+    style="@style/Widget.Levi.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
+    android:layout_marginBottom="12dp"
     android:clickable="true"
     android:focusable="true"
-    app:cardBackgroundColor="@color/surface"
-    app:cardCornerRadius="10dp"
-    app:cardElevation="0dp"
-    app:rippleColor="@color/surface_variant">
+    app:rippleColor="@color/ui_default">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="15dp">
-
-        <View
-            android:id="@+id/news_item_unread"
-            android:layout_width="7dp"
-            android:layout_height="7dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="10dp"
-            android:background="@drawable/bg_news_unread_dot" />
+        android:orientation="vertical"
+        android:paddingStart="18dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="18dp"
+        android:paddingBottom="8dp">
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/news_item_category"
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:background="@drawable/bg_news_category"
-                    android:fontFamily="@font/misans"
-                    android:gravity="center"
-                    android:paddingHorizontal="9dp"
-                    android:textColor="@color/primary"
-                    android:textSize="9sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/news_item_important"
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:layout_marginStart="7dp"
-                    android:background="@drawable/bg_news_important"
-                    android:fontFamily="@font/misans"
-                    android:gravity="center"
-                    android:paddingHorizontal="9dp"
-                    android:text="@string/news_important"
-                    android:textColor="@color/on_error"
-                    android:textSize="9sp"
-                    android:textStyle="bold"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/news_item_date"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_weight="1"
-                    android:fontFamily="@font/misans"
-                    android:gravity="end"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="10sp" />
-            </LinearLayout>
+            <View
+                android:id="@+id/news_item_unread"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_news_unread_dot" />
 
             <TextView
-                android:id="@+id/news_item_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/misans"
-                android:textColor="@color/on_surface"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/news_item_summary"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:fontFamily="@font/misans"
-                android:lineSpacingMultiplier="1.08"
-                android:textColor="@color/text_secondary"
-                android:textSize="13sp" />
-
-            <TextView
-                android:id="@+id/news_item_action"
+                android:id="@+id/news_item_important"
+                style="@style/Widget.Levi.Tag"
                 android:layout_width="wrap_content"
-                android:layout_height="28dp"
-                android:layout_marginTop="9dp"
-                android:drawableEnd="@drawable/ic_news_open"
-                android:drawablePadding="5dp"
-                android:fontFamily="@font/misans"
-                android:gravity="center"
-                android:text="@string/news_read_more"
-                android:textColor="@color/primary"
-                android:textSize="11sp"
-                android:textStyle="bold" />
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
+                android:background="@drawable/misc_bg_tag_danger"
+                android:text="@string/news_important"
+                android:textColor="@color/ui_danger"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/news_item_category"
+                style="@style/Widget.Levi.Tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/news_item_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:singleLine="true"
+                android:textAppearance="@style/TextAppearance.Levi.Caption"
+                android:textSize="13sp" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/news_item_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/misans"
+            android:textColor="@color/text_primary"
+            android:textSize="17sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/news_item_summary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:lineSpacingMultiplier="1.1"
+            android:textAppearance="@style/TextAppearance.Levi.PageSubtitle" />
+
+        <TextView
+            android:id="@+id/news_item_action"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_ui_row"
+            android:drawablePadding="6dp"
+            android:fontFamily="@font/misans"
+            android:gravity="center_vertical"
+            android:text="@string/news_read_more"
+            android:textColor="@color/accent_text"
+            android:textSize="14sp"
+            android:textStyle="bold" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

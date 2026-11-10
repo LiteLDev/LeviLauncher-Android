@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- About -->
+    <string name="misc_about_subtitle">LeviLauncher - 一个现代化的 Minecraft 基岩版启动器</string>
+    <string name="misc_about_authors">作者与维护者</string>
+    <string name="misc_about_maintainer_role">Android 版维护者</string>
+    <string name="misc_about_thanks">特别鸣谢</string>
+    <string name="misc_about_thanks_desc">特别感谢为 LeviLauncher 提供帮助与支持的个人与项目。</string>
+    <string name="misc_about_rhymc">旋律云</string>
+    <string name="misc_about_website">官网</string>
+    <string name="misc_about_sponsors">支持者（赞助者）</string>
+    <string name="misc_about_sponsors_desc">感谢所有为项目发展提供帮助的赞助者与支持者！</string>
+    <string name="misc_about_github_org">LiteLDev 组织</string>
+    <string name="misc_about_license_tip">LeviLauncher Android 版使用 Apache-2.0 许可，完整文本见仓库中的 LICENSE 文件。</string>
+    <string name="misc_about_contribute_desc">欢迎通过提交 Issue 或 Pull Request 的方式参与贡献，共同完善 LeviLauncher。</string>
+
+    <!-- Accounts -->
+    <string name="misc_accounts_title">Microsoft 账号</string>
+    <string name="misc_accounts_subtitle">管理用于登录 Minecraft 的账号</string>
+    <string name="misc_accounts_list">账号列表</string>
+    <string name="misc_accounts_current">当前账号</string>
+    <string name="misc_accounts_disabled_title">账号管理已关闭</string>
+    <string name="misc_accounts_disabled_desc">在设置中开启“使用 LeviLauncher 登录 Minecraft”后可管理 Microsoft 账号。</string>
+    <string name="misc_accounts_go_settings">前往设置</string>
+</resources>

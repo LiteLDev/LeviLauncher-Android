@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mods page -->
+    <string name="mods_get_mods">Get mods</string>
+    <string name="mods_subtitle">%1$s · %2$d mods, %3$d enabled</string>
+    <string name="mods_subtitle_counts">%1$d mods, %2$d enabled</string>
+    <string name="mods_only_enabled">Only show enabled mods</string>
+    <string name="mods_ingame_menu">In-game mod menu</string>
+    <string name="mods_filter_all">All</string>
+    <string name="mods_filter_normal">Regular mods</string>
+    <string name="mods_col_name">Name</string>
+    <string name="mods_col_version">Version</string>
+    <string name="mods_col_enabled">Enabled</string>
+    <string name="mods_refresh">Refresh</string>
+    <string name="mods_empty">No mods installed</string>
+    <string name="mods_empty_filtered">No mods match the filters</string>
+    <string name="mods_sort_by_name">Sort by name</string>
+    <!-- External mods page -->
+    <string name="mods_external_join">Join community</string>
+    <string name="mods_external_compatible">Compatible only</string>
+    <string name="mods_external_sort">Sort: %1$s</string>
+    <string name="mods_external_author">by %1$s</string>
+</resources>

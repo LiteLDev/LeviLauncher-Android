@@ -1,145 +1,158 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- A row of the mod table: drag handle, name (+ load order, author, package badges), version, enable switch. -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="56dp"
-    android:paddingHorizontal="4dp"
-    android:paddingVertical="8dp"
-    android:gravity="center_vertical">
+    android:background="@drawable/bg_ui_row"
+    android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/drag_handle"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="12dp"
-        android:src="@drawable/ic_drag_handle"
-        android:contentDescription="@string/drag_to_reorder"
-        android:alpha="0.6"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="4dp"/>
+    <View
+        android:id="@+id/mod_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@color/divider" />
 
     <LinearLayout
-        android:layout_width="220dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:gravity="center_vertical"
+        android:minHeight="56dp"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingTop="6dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="6dp">
 
-        <TextView
-            android:id="@+id/mod_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/mod_name_placeholder"
-            android:ellipsize="end"
-            android:fontFamily="@font/misans"
-            android:maxLines="1"
-            android:textColor="@color/on_surface"
-            android:textSize="15sp"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:id="@+id/mod_order"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/mod_load_order_placeholder"
-            android:textSize="12sp"
-            android:fontFamily="@font/misans"
-            android:textColor="@color/text_secondary"
-            android:visibility="gone"/>
+        <ImageView
+            android:id="@+id/drag_handle"
+            android:layout_width="24dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="12dp"
+            android:alpha="0.6"
+            android:contentDescription="@string/drag_to_reorder"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:src="@drawable/ic_drag_handle"
+            app:tint="@color/text_secondary" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/mod_config_badge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:layout_marginEnd="4dp"
-                android:background="@drawable/bg_mod_page_badge"
-                android:fontFamily="@font/misans"
-                android:paddingHorizontal="7dp"
-                android:paddingVertical="2dp"
-                android:text="@string/mod_config_badge"
-                android:textColor="@color/primary"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                android:visibility="gone" />
-
-            <ImageView
-                android:id="@+id/mod_pkg_badge"
-                android:layout_width="26dp"
-                android:layout_height="17dp"
-                android:layout_marginTop="2dp"
-                android:layout_marginEnd="4dp"
-                android:background="@drawable/bg_mod_page_badge"
-                android:paddingHorizontal="7dp"
-                android:paddingVertical="2dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/ic_pkg_package"
-                android:contentDescription="@string/pkg_mod_badge"
-                android:tooltipText="@string/pkg_mod_badge"
-                app:tint="@color/primary"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/mod_pkg_update"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:background="@drawable/bg_pkg_status_chip"
-                android:backgroundTint="@color/pkg_status_success"
-                android:ellipsize="end"
-                android:fontFamily="@font/misans"
-                android:maxLines="1"
-                android:paddingHorizontal="7dp"
-                android:paddingVertical="2dp"
-                android:textColor="@color/on_primary"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                android:visibility="gone" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_weight="1"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/mod_author"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:ellipsize="end"
-            android:fontFamily="@font/misans"
-            android:maxLines="1"
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp" />
+            android:orientation="vertical"
+            android:paddingEnd="8dp">
+
+            <TextView
+                android:id="@+id/mod_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@string/mod_name_placeholder"
+                android:textAppearance="@style/TextAppearance.Levi.Body"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/mod_order"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:maxLines="1"
+                    android:text="@string/mod_load_order_placeholder"
+                    android:textAppearance="@style/TextAppearance.Levi.Caption"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/mod_config_badge"
+                    style="@style/Widget.Levi.Tag.Accent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:text="@string/mod_config_badge"
+                    android:textSize="10sp"
+                    android:visibility="gone" />
+
+                <ImageView
+                    android:id="@+id/mod_pkg_badge"
+                    android:layout_width="26dp"
+                    android:layout_height="18dp"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/bg_ui_tag_accent"
+                    android:contentDescription="@string/pkg_mod_badge"
+                    android:paddingHorizontal="6dp"
+                    android:paddingVertical="2dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_pkg_package"
+                    android:tooltipText="@string/pkg_mod_badge"
+                    android:visibility="gone"
+                    app:tint="@color/accent_text" />
+
+                <TextView
+                    android:id="@+id/mod_pkg_update"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/bg_pkg_status_chip"
+                    android:backgroundTint="@color/pkg_status_success"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/misans"
+                    android:maxLines="1"
+                    android:minHeight="24dp"
+                    android:gravity="center"
+                    android:paddingHorizontal="8dp"
+                    android:textColor="@color/on_primary"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/mod_author"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textAppearance="@style/TextAppearance.Levi.Caption" />
+            </LinearLayout>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/mod_version"
-            android:layout_width="0dp"
+            android:layout_width="140dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_weight="1"
+            android:layout_marginStart="12dp"
             android:ellipsize="end"
-            android:fontFamily="@font/misans"
             android:maxLines="1"
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-    </LinearLayout>
+            android:textAppearance="@style/TextAppearance.Levi.Body"
+            android:textColor="@color/text_secondary" />
 
-    <Switch
-        android:id="@+id/mod_switch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"/>
+        <FrameLayout
+            android:layout_width="72dp"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/mod_switch"
+                style="@style/Widget.Levi.Switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+        </FrameLayout>
+
+        <!-- Keeps the switch column under the header's "Enabled" label (the header ends with the refresh button). -->
+        <Space
+            android:layout_width="44dp"
+            android:layout_height="1dp" />
+    </LinearLayout>
 </LinearLayout>

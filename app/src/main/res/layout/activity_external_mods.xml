@@ -1,195 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- External mods (Android only), styled like the LeviMC mods page: header card, search row and a
+     results card. The results list scrolls by itself so rows are recycled. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
     android:orientation="vertical"
-    android:paddingStart="16dp"
-    android:paddingTop="12dp"
-    android:paddingEnd="16dp"
-    android:paddingBottom="14dp">
+    android:padding="16dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        <!-- Header card -->
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.Levi.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="18dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/external_mods"
+                        android:textAppearance="@style/TextAppearance.Levi.PageTitle" />
+
+                    <TextView
+                        android:id="@+id/external_mods_subtitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:ellipsize="end"
+                        android:maxLines="2"
+                        android:textAppearance="@style/TextAppearance.Levi.PageSubtitle" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/external_mods_discord"
+                    style="@style/Widget.Levi.Button.Secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="12dp"
+                    android:text="@string/mods_external_join"
+                    app:icon="@drawable/ic_discord" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/external_mods_refresh"
+                    style="@style/Widget.Levi.Button.Icon"
+                    android:layout_marginStart="10dp"
+                    android:contentDescription="@string/external_mods_refresh"
+                    app:icon="@drawable/ic_ui_refresh" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Search, compatible-only and sort -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/misans"
-                android:text="@string/external_mods"
-                android:textColor="@color/primary"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/external_mods_subtitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:fontFamily="@font/misans"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
-        </LinearLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/external_mods_discord"
-            style="@style/Widget.MaterialComponents.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="38dp"
-            android:layout_marginStart="8dp"
-            android:backgroundTint="#5865F2"
-            android:fontFamily="@font/misans"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:minHeight="0dp"
-            android:minWidth="0dp"
-            android:paddingHorizontal="11dp"
-            android:text="@string/external_mods_join_discord"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            android:textSize="11sp"
-            android:textStyle="bold"
-            app:cornerRadius="9dp"
-            app:icon="@drawable/ic_discord"
-            app:iconPadding="6dp"
-            app:iconSize="17dp"
-            app:iconTint="@android:color/white" />
-
-        <ImageButton
-            android:id="@+id/external_mods_refresh"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:layout_marginStart="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/external_mods_refresh"
-            android:padding="9dp"
-            android:src="@drawable/ic_news_refresh"
-            app:tint="@color/text_secondary" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="38dp"
-        android:layout_marginTop="10dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@drawable/bg_search_field_light"
+            android:layout_marginTop="14dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="12dp">
-
-            <ImageView
-                android:layout_width="17dp"
-                android:layout_height="17dp"
-                android:src="@drawable/ic_search"
-                app:tint="@color/text_secondary" />
+            android:orientation="horizontal">
 
             <EditText
                 android:id="@+id/external_mods_search"
+                style="@style/Widget.Levi.Input"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
+                android:layout_height="44dp"
                 android:layout_weight="1"
-                android:background="@null"
-                android:fontFamily="@font/misans"
+                android:drawableStart="@drawable/ic_ui_search"
                 android:hint="@string/external_mods_search_hint"
                 android:imeOptions="actionSearch"
-                android:inputType="text"
-                android:singleLine="true"
-                android:textColor="@color/on_surface"
-                android:textColorHint="@color/text_secondary"
-                android:textSize="12sp" />
+                android:importantForAutofill="no"
+                android:inputType="text" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/external_mods_compatible_filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:minHeight="44dp"
+                android:text="@string/mods_external_compatible"
+                android:textAppearance="@style/TextAppearance.Levi.Body" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/external_mods_sort"
+                style="@style/Widget.Levi.Button.Secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:layout_marginStart="12dp"
+                android:minWidth="140dp"
+                app:cornerRadius="12dp"
+                app:icon="@drawable/ic_ui_sort" />
         </LinearLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/external_mods_compatible_filter"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginStart="8dp"
-            android:fontFamily="@font/misans"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:minHeight="0dp"
-            android:minWidth="126dp"
-            android:paddingHorizontal="12dp"
-            android:text="@string/external_mods_compatible_only"
-            android:textAllCaps="false"
-            android:textColor="@color/primary"
-            android:textSize="11sp"
-            android:textStyle="bold"
-            app:cornerRadius="9dp"
-            app:strokeColor="@color/primary" />
-
-        <Spinner
-            android:id="@+id/external_mods_sort"
-            android:layout_width="130dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="8dp"
-            android:background="@drawable/bg_spinner"
-            android:popupBackground="@drawable/bg_popup_menu_rounded" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/external_mods_status"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:fontFamily="@font/misans"
-        android:textColor="@color/text_secondary"
-        android:textSize="11sp"
-        android:visibility="gone" />
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:layout_weight="1">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/external_mods_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:overScrollMode="never"
-            android:paddingBottom="8dp"
-            android:scrollbars="none" />
-
-        <ProgressBar
-            android:id="@+id/external_mods_progress"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_gravity="center"
-            android:indeterminateTint="@color/primary" />
-
         <TextView
-            android:id="@+id/external_mods_empty"
-            android:layout_width="wrap_content"
+            android:id="@+id/external_mods_status"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:drawableTop="@drawable/ic_plugin"
-            android:drawablePadding="10dp"
-            android:fontFamily="@font/misans"
-            android:gravity="center"
-            android:text="@string/external_mods_empty"
-            android:textColor="@color/text_secondary"
-            android:textSize="14sp"
+            android:layout_marginTop="8dp"
+            android:textAppearance="@style/TextAppearance.Levi.Caption"
             android:visibility="gone" />
-    </FrameLayout>
+
+        <!-- Results -->
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.Levi.Card"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="14dp">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:minHeight="160dp">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/external_mods_recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:overScrollMode="never"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp" />
+
+                <ProgressBar
+                    android:id="@+id/external_mods_progress"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="center"
+                    android:indeterminateTint="@color/primary" />
+
+                <TextView
+                    android:id="@+id/external_mods_empty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:drawableTop="@drawable/ic_ui_puzzle"
+                    android:drawablePadding="10dp"
+                    android:drawableTint="@color/ui_muted"
+                    android:gravity="center"
+                    android:padding="24dp"
+                    android:text="@string/external_mods_empty"
+                    android:textAppearance="@style/TextAppearance.Levi.Body"
+                    android:textColor="@color/text_secondary"
+                    android:visibility="gone" />
+            </FrameLayout>
+        </com.google.android.material.card.MaterialCardView>
 </LinearLayout>
