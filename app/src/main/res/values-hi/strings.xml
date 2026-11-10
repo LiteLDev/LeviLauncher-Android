@@ -865,6 +865,7 @@
 
     <!-- Navigation Bar -->
     <string name="nav_launch">लॉन्च</string>
+    <string name="nav_download">डाउनलोड</string>
     <string name="nav_import">आयात</string>
     <string name="nav_instances">इंस्टेंस</string>
     <string name="nav_about">बारे में</string>

@@ -865,6 +865,7 @@
 
     <!-- Navigation Bar -->
     <string name="nav_launch">Iniciar</string>
+    <string name="nav_download">Baixar</string>
     <string name="nav_import">Importar</string>
     <string name="nav_instances">Instâncias</string>
     <string name="nav_about">Sobre</string>

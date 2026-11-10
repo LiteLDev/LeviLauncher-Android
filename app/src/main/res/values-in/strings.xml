@@ -865,6 +865,7 @@
 
     <!-- Navigation Bar -->
     <string name="nav_launch">Luncurkan</string>
+    <string name="nav_download">Unduh</string>
     <string name="nav_import">Impor</string>
     <string name="nav_instances">Instans</string>
     <string name="nav_about">Tentang</string>
