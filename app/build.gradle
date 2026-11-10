@@ -26,6 +26,21 @@ discordApplicationId = new BigInteger(discordApplicationId).toString()
 def discordLargeImage = providers.gradleProperty('discord.large_image')
         .getOrElse(discordProperties.getProperty('large_image', '')).trim()
 
+def curseForgeApiKey = localProperties.getProperty('curseforge.api_key', '').trim()
+
+// Fallback for local debug builds only: the same obfuscated key LeviLauncher
+// for Windows embeds (base64, then XOR 0xAF). Release and beta builds, and
+// every CI build, keep using the key from local.properties (CI fills it from
+// a secret).
+def curseForgeDebugApiKey = curseForgeApiKey
+if (curseForgeDebugApiKey.isEmpty() && !System.getenv('CI')) {
+    def embeddedKeyFile = file('curseforge-debug-apikey.bin')
+    if (embeddedKeyFile.exists()) {
+        def deobfuscated = embeddedKeyFile.bytes.collect { (byte) (it ^ 0xAF) } as byte[]
+        curseForgeDebugApiKey = new String(Base64.decoder.decode(new String(deobfuscated, 'US-ASCII')), 'UTF-8').trim()
+    }
+}
+
 def getGitTag() {
     def tag = "unknown"
     try {
@@ -60,7 +75,7 @@ android {
         versionCode getVersionCodeByTimestamp()
         versionName getGitTag()
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField "String", "CURSEFORGE_API_KEY", "\"${localProperties.getProperty('curseforge.api_key', '')}\""
+        buildConfigField "String", "CURSEFORGE_API_KEY", groovy.json.JsonOutput.toJson(curseForgeApiKey)
         buildConfigField 'long', 'DISCORD_APPLICATION_ID', "${discordApplicationId}L"
         buildConfigField 'String', 'DISCORD_LARGE_IMAGE', groovy.json.JsonOutput.toJson(discordLargeImage)
         ndk {
@@ -115,6 +130,7 @@ android {
                 debugSymbolLevel 'FULL'
             }
             buildConfigField "boolean", "IS_BETA", "false"
+            buildConfigField "String", "CURSEFORGE_API_KEY", groovy.json.JsonOutput.toJson(curseForgeDebugApiKey)
         }
         beta {
             initWith release

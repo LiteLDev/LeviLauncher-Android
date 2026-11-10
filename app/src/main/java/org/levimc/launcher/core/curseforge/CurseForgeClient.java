@@ -50,6 +50,17 @@ public class CurseForgeClient {
         return instance;
     }
 
+    private static IOException httpError(Response response) {
+        int code = response.code();
+        if (code == 401 || code == 403) {
+            String reason = API_KEY == null || API_KEY.isEmpty()
+                    ? "no CurseForge API key in this build (set curseforge.api_key in local.properties)"
+                    : "CurseForge rejected the API key";
+            return new IOException(reason + " (HTTP " + code + ")");
+        }
+        return new IOException("Unexpected code " + response);
+    }
+
     public interface CurseForgeCallback<T> {
         void onSuccess(T result);
         void onError(Throwable t);
@@ -88,7 +99,7 @@ public class CurseForgeClient {
             @Override
             public void onResponse(Call call, Response response) {
                 if (!response.isSuccessful()) {
-                    callback.onError(new IOException("Unexpected code " + response));
+                    callback.onError(httpError(response));
                     return;
                 }
                 
@@ -120,7 +131,7 @@ public class CurseForgeClient {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    callback.onError(new IOException("Unexpected code " + response));
+                    callback.onError(httpError(response));
                     return;
                 }
 
@@ -155,7 +166,7 @@ public class CurseForgeClient {
             @Override
             public void onResponse(Call call, Response response) {
                 if (!response.isSuccessful()) {
-                    callback.onError(new IOException("Unexpected code " + response));
+                    callback.onError(httpError(response));
                     return;
                 }
 
