@@ -51,7 +51,7 @@ public final class UiSettings {
     // ---- Layout and motion ----
 
     public static String getLayoutMode(Context context) {
-        String mode = prefs(context).getString(KEY_LAYOUT_MODE, LAYOUT_SIDEBAR);
+        String mode = prefs(context).getString(KEY_LAYOUT_MODE, LAYOUT_NAVBAR);
         return LAYOUT_NAVBAR.equals(mode) ? LAYOUT_NAVBAR : LAYOUT_SIDEBAR;
     }
 
@@ -72,7 +72,7 @@ public final class UiSettings {
      * header card on top.
      */
     public static boolean useTwoPane(Context context) {
-        return prefs(context).getBoolean(KEY_TWO_PANE, true);
+        return prefs(context).getBoolean(KEY_TWO_PANE, false);
     }
 
     public static void setTwoPane(Context context, boolean twoPane) {

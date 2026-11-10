@@ -10,19 +10,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingStart="20dp"
+        android:paddingTop="15dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="24dp">
 
-        <!-- Header -->
+        <!-- Header: title and subtitle sit directly on the page background (v1.6.1) -->
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.Levi.Card"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="18dp">
+                android:padding="0dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -33,325 +39,359 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="4dp"
                     android:text="@string/misc_about_subtitle"
-                    android:textAppearance="@style/TextAppearance.Levi.PageSubtitle" />
+                    android:textAppearance="@style/TextAppearance.Levi.PageSubtitle"
+                    android:textSize="14sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Authors + special thanks (two columns) -->
-        <LinearLayout
+        <!-- Authors & maintainers: one full-width card; plain person rows, link chips under each, divider between -->
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.Levi.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:baselineAligned="false"
-            android:orientation="horizontal">
+            android:layout_marginTop="20dp">
 
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Widget.Levi.Card"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="6dp"
-                android:layout_weight="1">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="18dp">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                    <FrameLayout
+                        android:id="@+id/about_authors_chip"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/bg_ui_icon_chip">
 
-                        <FrameLayout
-                            android:id="@+id/about_authors_chip"
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:background="@drawable/bg_ui_icon_chip">
-
-                            <ImageView
-                                android:id="@+id/about_authors_icon"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_gravity="center"
-                                android:importantForAccessibility="no"
-                                android:src="@drawable/ic_ui_group" />
-                        </FrameLayout>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:text="@string/misc_about_authors"
-                            android:textAppearance="@style/TextAppearance.Levi.SectionTitle" />
-                    </LinearLayout>
-
-                    <!-- Author -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
-                        android:background="@drawable/bg_ui_card_inner"
-                        android:gravity="center_vertical"
-                        android:minHeight="72dp"
-                        android:orientation="horizontal"
-                        android:padding="12dp">
-
-                        <com.microsoft.xbox.idp.toolkit.CircleImageView
-                            android:id="@+id/author_avatar"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:background="@drawable/misc_bg_avatar"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/ic_qa_account" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="@font/misans"
-                                    android:text="@string/about_author_name"
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:id="@+id/author_badge"
-                                    style="@style/Widget.Levi.Tag.Accent"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="8dp"
-                                    android:text="@string/about_author_badge" />
-                            </LinearLayout>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:text="@string/about_author_role"
-                                android:textAppearance="@style/TextAppearance.Levi.Caption" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <!-- Android maintainer -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/bg_ui_card_inner"
-                        android:gravity="center_vertical"
-                        android:minHeight="72dp"
-                        android:orientation="horizontal"
-                        android:padding="12dp">
-
-                        <com.microsoft.xbox.idp.toolkit.CircleImageView
-                            android:id="@+id/maintainer_avatar"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:background="@drawable/misc_bg_avatar"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/ic_qa_account" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="@font/misans"
-                                    android:text="MrPokeG"
-                                    android:textColor="@color/text_primary"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:id="@+id/maintainer_badge"
-                                    style="@style/Widget.Levi.Tag.Accent"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="8dp"
-                                    android:text="@string/maintainer" />
-                            </LinearLayout>
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="2dp"
-                                android:text="@string/misc_about_maintainer_role"
-                                android:textAppearance="@style/TextAppearance.Levi.Caption" />
-                        </LinearLayout>
-                    </LinearLayout>
-
-                    <!-- Sponsor / channel links -->
-                    <HorizontalScrollView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
-                        android:scrollbars="none">
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_afdian"
-                                style="@style/Widget.Levi.Button.Secondary"
-                                android:layout_width="wrap_content"
-                                android:layout_height="40dp"
-                                android:text="@string/about_afdian"
-                                android:textSize="13sp"
-                                app:icon="@drawable/ic_afdian" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_patreon"
-                                style="@style/Widget.Levi.Button.Secondary"
-                                android:layout_width="wrap_content"
-                                android:layout_height="40dp"
-                                android:layout_marginStart="8dp"
-                                android:text="@string/about_patreon"
-                                android:textSize="13sp"
-                                app:icon="@drawable/ic_patreon" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_youtube_maintainer"
-                                style="@style/Widget.Levi.Button.Secondary"
-                                android:layout_width="wrap_content"
-                                android:layout_height="40dp"
-                                android:layout_marginStart="8dp"
-                                android:text="@string/youtube"
-                                android:textSize="13sp"
-                                app:icon="@drawable/ic_youtube" />
-                        </LinearLayout>
-                    </HorizontalScrollView>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                style="@style/Widget.Levi.Card"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="6dp"
-                android:layout_weight="1">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="18dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <FrameLayout
-                            android:id="@+id/about_thanks_chip"
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:background="@drawable/bg_ui_icon_chip">
-
-                            <ImageView
-                                android:id="@+id/about_thanks_icon"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_gravity="center"
-                                android:importantForAccessibility="no"
-                                android:src="@drawable/ic_ui_star" />
-                        </FrameLayout>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:text="@string/misc_about_thanks"
-                            android:textAppearance="@style/TextAppearance.Levi.SectionTitle" />
-                    </LinearLayout>
+                        <ImageView
+                            android:id="@+id/about_authors_icon"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/ic_ui_group" />
+                    </FrameLayout>
 
                     <TextView
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
-                        android:lineSpacingMultiplier="1.15"
-                        android:text="@string/misc_about_thanks_desc"
-                        android:textAppearance="@style/TextAppearance.Levi.Body" />
+                        android:layout_marginStart="8dp"
+                        android:text="@string/misc_about_authors"
+                        android:textAppearance="@style/TextAppearance.Levi.SectionTitle" />
+                </LinearLayout>
+
+                <!-- Author -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:gravity="center_vertical"
+                    android:minHeight="0dp"
+                    android:orientation="horizontal">
+
+                    <com.microsoft.xbox.idp.toolkit.CircleImageView
+                        android:id="@+id/author_avatar"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/misc_bg_avatar"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_qa_account" />
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
-                        android:background="@drawable/bg_ui_card_inner"
-                        android:gravity="center_vertical"
-                        android:minHeight="64dp"
-                        android:orientation="horizontal"
-                        android:paddingStart="12dp"
-                        android:paddingTop="10dp"
-                        android:paddingEnd="8dp"
-                        android:paddingBottom="10dp">
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-                        <FrameLayout
-                            android:id="@+id/about_rhymc_chip"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:background="@drawable/bg_ui_icon_chip">
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
 
-                            <ImageView
-                                android:id="@+id/about_rhymc_icon"
-                                android:layout_width="22dp"
-                                android:layout_height="22dp"
-                                android:layout_gravity="center"
-                                android:importantForAccessibility="no"
-                                android:src="@drawable/ic_ui_server" />
-                        </FrameLayout>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/misans"
+                                android:text="@string/about_author_name"
+                                android:textColor="@color/text_primary"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/author_badge"
+                                style="@style/Widget.Levi.Tag.Accent"
+                                android:layout_width="wrap_content"
+                                android:layout_height="18dp"
+                                android:layout_marginStart="8dp"
+                                android:gravity="center"
+                                android:paddingStart="8dp"
+                                android:paddingTop="0dp"
+                                android:paddingEnd="8dp"
+                                android:paddingBottom="0dp"
+                                android:text="@string/about_author_badge"
+                                android:textSize="9sp" />
+                        </LinearLayout>
 
                         <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:layout_weight="1"
-                            android:fontFamily="@font/misans"
-                            android:text="@string/misc_about_rhymc"
-                            android:textColor="@color/text_primary"
-                            android:textSize="15sp"
-                            android:textStyle="bold" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btn_rhymc_website"
-                            style="@style/Widget.Levi.Button.Ghost"
                             android:layout_width="wrap_content"
-                            android:layout_height="40dp"
-                            android:text="@string/misc_about_website"
-                            android:textSize="13sp" />
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/about_author_role"
+                            android:textAppearance="@style/TextAppearance.Levi.Caption" />
                     </LinearLayout>
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-        </LinearLayout>
+
+                <!-- Author links (v1.6.1 order: Patreon, Afdian) -->
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_patreon"
+                        style="@style/Widget.Levi.Button.Secondary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="28dp"
+                        android:minHeight="0dp"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="@string/about_patreon"
+                        android:textSize="11sp"
+                        app:cornerRadius="14dp"
+                        app:iconPadding="6dp"
+                        app:iconSize="16dp"
+                        app:icon="@drawable/ic_patreon" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_afdian"
+                        style="@style/Widget.Levi.Button.Secondary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="28dp"
+                        android:layout_marginStart="8dp"
+                        android:minHeight="0dp"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:text="@string/about_afdian"
+                        android:textSize="11sp"
+                        app:cornerRadius="14dp"
+                        app:iconPadding="6dp"
+                        app:iconSize="16dp"
+                        app:icon="@drawable/ic_afdian" />
+                    </LinearLayout>
+                </HorizontalScrollView>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="2dp"
+                    android:background="@color/divider" />
+
+                <!-- Android maintainer -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:gravity="center_vertical"
+                    android:minHeight="0dp"
+                    android:orientation="horizontal">
+
+                    <com.microsoft.xbox.idp.toolkit.CircleImageView
+                        android:id="@+id/maintainer_avatar"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/misc_bg_avatar"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/ic_qa_account" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/misans"
+                                android:text="MrPokeG"
+                                android:textColor="@color/text_primary"
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/maintainer_badge"
+                                style="@style/Widget.Levi.Tag.Accent"
+                                android:layout_width="wrap_content"
+                                android:layout_height="18dp"
+                                android:layout_marginStart="8dp"
+                                android:gravity="center"
+                                android:paddingStart="8dp"
+                                android:paddingTop="0dp"
+                                android:paddingEnd="8dp"
+                                android:paddingBottom="0dp"
+                                android:text="@string/maintainer"
+                                android:textSize="9sp" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="@string/misc_about_maintainer_role"
+                            android:textAppearance="@style/TextAppearance.Levi.Caption" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Maintainer links -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_youtube_maintainer"
+                    style="@style/Widget.Levi.Button.Secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="28dp"
+                    android:minHeight="0dp"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:text="@string/youtube"
+                    android:textSize="11sp"
+                    app:cornerRadius="14dp"
+                    app:iconPadding="6dp"
+                    app:iconSize="16dp"
+                    app:icon="@drawable/ic_youtube" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Special thanks: full-width card below the authors card -->
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.Levi.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <FrameLayout
+                        android:id="@+id/about_thanks_chip"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:background="@drawable/bg_ui_icon_chip">
+
+                        <ImageView
+                            android:id="@+id/about_thanks_icon"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_gravity="center"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/ic_ui_star" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/misc_about_thanks"
+                        android:textAppearance="@style/TextAppearance.Levi.SectionTitle" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:lineSpacingMultiplier="1.15"
+                    android:text="@string/misc_about_thanks_desc"
+                    android:textAppearance="@style/TextAppearance.Levi.Body"
+                android:textSize="12sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:gravity="center_vertical"
+                    android:minHeight="0dp"
+                    android:orientation="horizontal">
+
+                    <FrameLayout
+                        android:id="@+id/about_rhymc_chip"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/bg_ui_icon_chip">
+
+                        <ImageView
+                            android:id="@+id/about_rhymc_icon"
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/ic_ui_server" />
+                    </FrameLayout>
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/misans"
+                        android:text="@string/misc_about_rhymc"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_rhymc_website"
+                        style="@style/Widget.Levi.Button.Ghost"
+                        android:layout_width="wrap_content"
+                        android:layout_height="28dp"
+                            android:minHeight="0dp"
+                            android:paddingStart="14dp"
+                            android:paddingEnd="14dp"
+                        android:text="@string/misc_about_website"
+                        android:textSize="11sp"
+                            app:cornerRadius="14dp"
+                            app:iconPadding="6dp"
+                            app:iconSize="16dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
         <!-- Supporters -->
         <com.google.android.material.card.MaterialCardView
@@ -364,7 +404,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="18dp">
+                android:padding="16dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -374,8 +414,8 @@
 
                     <FrameLayout
                         android:id="@+id/about_sponsors_chip"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
                         android:background="@drawable/bg_ui_icon_chip">
 
                         <ImageView
@@ -390,7 +430,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginStart="8dp"
                         android:text="@string/misc_about_sponsors"
                         android:textAppearance="@style/TextAppearance.Levi.SectionTitle" />
                 </LinearLayout>
@@ -398,185 +438,236 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
+                    android:layout_marginTop="8dp"
                     android:text="@string/misc_about_sponsors_desc"
-                    android:textAppearance="@style/TextAppearance.Levi.Body" />
+                    android:textAppearance="@style/TextAppearance.Levi.Body"
+                    android:textSize="12sp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Source code + contribute -->
+        <!-- Source code + contribute: two side-by-side cards (v1.6.1); the outer card is an invisible wrapper -->
         <com.google.android.material.card.MaterialCardView
             style="@style/Widget.Levi.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp">
+            android:layout_marginTop="12dp"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:baselineAligned="false"
                 android:orientation="horizontal"
-                android:padding="18dp">
+                android:padding="0dp">
 
-                <LinearLayout
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.Levi.Card"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:orientation="vertical"
+                        android:padding="16dp">
 
-                        <FrameLayout
-                            android:id="@+id/about_source_chip"
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:background="@drawable/bg_ui_icon_chip">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
 
-                            <ImageView
-                                android:id="@+id/about_source_icon"
+                            <FrameLayout
+                                android:id="@+id/about_source_chip"
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
-                                android:layout_gravity="center"
-                                android:importantForAccessibility="no"
-                                android:src="@drawable/ic_ui_code" />
-                        </FrameLayout>
+                                android:background="@drawable/bg_ui_icon_chip">
+
+                                <ImageView
+                                    android:id="@+id/about_source_icon"
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_gravity="center"
+                                    android:importantForAccessibility="no"
+                                    android:src="@drawable/ic_ui_code" />
+                            </FrameLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="@string/about_source_title"
+                                android:textAppearance="@style/TextAppearance.Levi.SectionTitle" />
+                        </LinearLayout>
+
+                        <HorizontalScrollView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:scrollbars="none">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_github_repo"
+                                    style="@style/Widget.Levi.Button.Secondary"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="28dp"
+                                    android:minHeight="0dp"
+                                    android:paddingStart="14dp"
+                                    android:paddingEnd="14dp"
+                                    android:text="@string/about_github_repo"
+                                    android:textSize="11sp"
+                                    app:cornerRadius="14dp"
+                                    app:iconPadding="6dp"
+                                    app:iconSize="16dp"
+                                    app:icon="@drawable/ic_github" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_github_org"
+                                    style="@style/Widget.Levi.Button.Secondary"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="28dp"
+                                    android:minHeight="0dp"
+                                    android:paddingStart="14dp"
+                                    android:paddingEnd="14dp"
+                                    android:layout_marginStart="8dp"
+                                    android:text="@string/misc_about_github_org"
+                                    android:textSize="11sp"
+                                    app:cornerRadius="14dp"
+                                    app:iconPadding="6dp"
+                                    app:iconSize="16dp"
+                                    app:icon="@drawable/ic_github" />
+
+                                <com.google.android.material.button.MaterialButton
+                                    android:id="@+id/btn_license"
+                                    style="@style/Widget.Levi.Button.Secondary"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="28dp"
+                                    android:minHeight="0dp"
+                                    android:paddingStart="14dp"
+                                    android:paddingEnd="14dp"
+                                    android:layout_marginStart="8dp"
+                                    android:text="@string/misc_about_license_name"
+                                    android:textSize="11sp"
+                                    app:cornerRadius="14dp"
+                                    app:iconPadding="6dp"
+                                    app:iconSize="16dp" />
+                            </LinearLayout>
+                        </HorizontalScrollView>
 
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:text="@string/about_source_title"
-                            android:textAppearance="@style/TextAppearance.Levi.SectionTitle" />
+                            android:layout_marginTop="12dp"
+                            android:text="@string/misc_about_license_tip"
+                            android:textAppearance="@style/TextAppearance.Levi.Caption"
+                            android:textSize="11sp" />
                     </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                    <HorizontalScrollView
+                <!-- Former column divider: zero width, its margins form the 12dp gap between the cards -->
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginEnd="6dp"
+                    android:background="@color/divider" />
+
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/Widget.Levi.Card"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
-                        android:scrollbars="none">
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <FrameLayout
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:background="@drawable/bg_ui_icon_chip">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_gravity="center"
+                                    android:importantForAccessibility="no"
+                                    android:src="@drawable/ic_github"
+                                    app:tint="@color/text_primary" />
+                            </FrameLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:text="@string/about_contribute_title"
+                                android:textAppearance="@style/TextAppearance.Levi.SectionTitle" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:lineSpacingMultiplier="1.15"
+                            android:text="@string/misc_about_contribute_desc"
+                            android:textAppearance="@style/TextAppearance.Levi.Body"
+                        android:textSize="12sp" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
                             android:orientation="horizontal">
 
                             <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_github_repo"
+                                android:id="@+id/btn_issues"
                                 style="@style/Widget.Levi.Button.Secondary"
                                 android:layout_width="wrap_content"
-                                android:layout_height="40dp"
-                                android:text="@string/about_github_repo"
-                                android:textSize="13sp"
+                                android:layout_height="28dp"
+                                    android:minHeight="0dp"
+                                    android:paddingStart="14dp"
+                                    android:paddingEnd="14dp"
+                                android:text="@string/about_issues"
+                                android:textSize="11sp"
+                                    app:cornerRadius="14dp"
+                                    app:iconPadding="6dp"
+                                    app:iconSize="16dp"
                                 app:icon="@drawable/ic_github" />
 
                             <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_github_org"
-                                style="@style/Widget.Levi.Button.Secondary"
+                                android:id="@+id/btn_star_fork"
+                                style="@style/Widget.Levi.Button.Primary"
                                 android:layout_width="wrap_content"
-                                android:layout_height="40dp"
+                                android:layout_height="28dp"
+                                    android:minHeight="0dp"
+                                    android:paddingStart="14dp"
+                                    android:paddingEnd="14dp"
                                 android:layout_marginStart="8dp"
-                                android:text="@string/misc_about_github_org"
-                                android:textSize="13sp"
-                                app:icon="@drawable/ic_github" />
-
-                            <com.google.android.material.button.MaterialButton
-                                android:id="@+id/btn_license"
-                                style="@style/Widget.Levi.Button.Secondary"
-                                android:layout_width="wrap_content"
-                                android:layout_height="40dp"
-                                android:layout_marginStart="8dp"
-                                android:text="@string/misc_about_license_name"
-                                android:textSize="13sp" />
+                                android:text="@string/about_star_fork"
+                                android:textSize="11sp"
+                                    app:cornerRadius="14dp"
+                                    app:iconPadding="6dp"
+                                    app:iconSize="16dp"
+                                app:icon="@drawable/ic_ui_star" />
                         </LinearLayout>
-                    </HorizontalScrollView>
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:text="@string/misc_about_license_tip"
-                        android:textAppearance="@style/TextAppearance.Levi.Caption" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="18dp"
-                    android:layout_marginEnd="18dp"
-                    android:background="@color/divider" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
-
-                        <FrameLayout
-                            android:layout_width="36dp"
-                            android:layout_height="36dp"
-                            android:background="@drawable/bg_ui_icon_chip">
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_gravity="center"
-                                android:importantForAccessibility="no"
-                                android:src="@drawable/ic_github"
-                                app:tint="@color/text_primary" />
-                        </FrameLayout>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
-                            android:text="@string/about_contribute_title"
-                            android:textAppearance="@style/TextAppearance.Levi.SectionTitle" />
                     </LinearLayout>
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
-                        android:lineSpacingMultiplier="1.15"
-                        android:text="@string/misc_about_contribute_desc"
-                        android:textAppearance="@style/TextAppearance.Levi.Body" />
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:orientation="horizontal">
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btn_issues"
-                            style="@style/Widget.Levi.Button.Secondary"
-                            android:layout_width="wrap_content"
-                            android:layout_height="40dp"
-                            android:text="@string/about_issues"
-                            android:textSize="13sp"
-                            app:icon="@drawable/ic_github" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btn_star_fork"
-                            style="@style/Widget.Levi.Button.Primary"
-                            android:layout_width="wrap_content"
-                            android:layout_height="40dp"
-                            android:layout_marginStart="8dp"
-                            android:text="@string/about_star_fork"
-                            android:textSize="13sp"
-                            app:icon="@drawable/ic_ui_star" />
-                    </LinearLayout>
-                </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>

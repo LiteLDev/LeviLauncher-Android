@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- v1.6.1 news important pill shape (12dp radius), current danger fill. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/ui_danger_soft" />
+    <corners android:radius="12dp" />
+</shape>

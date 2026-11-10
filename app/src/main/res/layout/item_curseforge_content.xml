@@ -1,31 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- A CurseForge result row: icon, name, author, summary, tags and a View button. -->
+<!-- A CurseForge result: a standalone bordered card (v1.6.1) with icon, name, author, summary, tags and a View button. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginStart="5dp"
+    android:layout_marginTop="3dp"
+    android:layout_marginEnd="5dp"
+    android:layout_marginBottom="3dp"
     android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/cf_row"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_ui_row"
+        android:background="@drawable/bg_cf_item"
+        android:foreground="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center_vertical"
         android:minHeight="72dp"
         android:orientation="horizontal"
-        android:paddingStart="6dp"
-        android:paddingTop="12dp"
-        android:paddingEnd="6dp"
-        android:paddingBottom="12dp">
+        android:paddingStart="11dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="11dp"
+        android:paddingBottom="10dp">
 
         <ImageView
             android:id="@+id/mod_icon"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
             android:background="@drawable/bg_cf_icon"
             android:clipToOutline="true"
             android:importantForAccessibility="no"
@@ -35,7 +40,7 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="14dp"
+            android:layout_marginStart="11dp"
             android:layout_marginEnd="12dp"
             android:layout_weight="1"
             android:orientation="vertical">
@@ -53,6 +58,7 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
+                    android:textSize="14sp"
                     tools:text="Furnicraft Addon" />
 
                 <TextView
@@ -64,6 +70,7 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:textAppearance="@style/TextAppearance.Levi.Caption"
+                    android:textSize="11sp"
                     tools:text="| by RobertGamer69" />
             </LinearLayout>
 
@@ -71,18 +78,18 @@
                 android:id="@+id/mod_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="3dp"
                 android:ellipsize="end"
                 android:maxLines="2"
                 android:textAppearance="@style/TextAppearance.Levi.Body"
                 android:textColor="@color/text_secondary"
-                android:textSize="13sp"
+                android:textSize="12sp"
                 tools:text="Beautiful furniture and decorations for your Minecraft worlds" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="5dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -94,6 +101,7 @@
                     android:layout_marginEnd="6dp"
                     android:ellipsize="end"
                     android:maxWidth="160dp"
+                    android:textSize="10sp"
                     tools:text="Addons" />
 
                 <TextView
@@ -102,6 +110,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="6dp"
+                    android:textSize="10sp"
                     tools:text="1.2M downloads" />
 
                 <TextView
@@ -109,6 +118,7 @@
                     style="@style/Widget.Levi.Tag"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textSize="10sp"
                     tools:text="2026-10-11" />
             </LinearLayout>
         </LinearLayout>
@@ -125,6 +135,6 @@
     <View
         android:id="@+id/mod_divider"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="0dp"
         android:background="@color/divider" />
 </LinearLayout>

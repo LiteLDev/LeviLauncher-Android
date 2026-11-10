@@ -430,18 +430,15 @@ public class BaseActivity extends AppCompatActivity {
         int accent = pm.getAccentColor(dark);
         float density = getResources().getDisplayMetrics().density;
         if (navbar) {
-            int text = ContextCompat.getColor(this, R.color.text_primary);
+            // As in v1.6.1: no pill behind the active tab; it is bold in the primary text color and
+            // the other tabs use the secondary text color.
+            int text = ContextCompat.getColor(this, active ? R.color.text_primary : R.color.text_secondary);
             tab.setTextColor(text);
-            tab.setTypeface(tab.getTypeface(), active ? Typeface.BOLD : Typeface.NORMAL);
+            tab.setTypeface(Typeface.create(tab.getTypeface(), active ? Typeface.BOLD : Typeface.NORMAL));
             TextViewCompat.setCompoundDrawableTintList(tab, ColorStateList.valueOf(text));
-            if (active) {
-                GradientDrawable bg = new GradientDrawable();
-                bg.setCornerRadius(12 * density);
-                bg.setColor(ContextCompat.getColor(this, R.color.surface_variant));
-                tab.setBackground(bg);
-            } else {
-                tab.setBackgroundResource(R.drawable.bg_shell_icon_button);
-            }
+            android.util.TypedValue ripple = new android.util.TypedValue();
+            getTheme().resolveAttribute(android.R.attr.selectableItemBackground, ripple, true);
+            tab.setBackgroundResource(ripple.resourceId);
         } else {
             int icon = active ? ThemePalette.foreground(accent, dark) : ContextCompat.getColor(this, R.color.ui_muted);
             TextViewCompat.setCompoundDrawableTintList(tab, ColorStateList.valueOf(icon));

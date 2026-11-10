@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- v1.6.1 news category pill shape (12dp radius), current tag fill. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/ui_default" />
+    <corners android:radius="12dp" />
+</shape>

@@ -7,10 +7,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:paddingStart="16dp"
-    android:paddingTop="10dp"
-    android:paddingEnd="16dp"
-    android:paddingBottom="12dp">
+    android:paddingStart="15dp"
+    android:paddingTop="15dp"
+    android:paddingEnd="15dp"
+    android:paddingBottom="24dp">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/main_card"
@@ -22,10 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="20dp"
-            android:paddingTop="10dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="8dp">
+            android:padding="15dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -45,13 +42,10 @@
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
                         android:fontFamily="@font/misans"
-                        android:includeFontPadding="false"
-                        android:letterSpacing="-0.025"
                         android:singleLine="true"
                         android:text="@string/minecraft"
                         android:textColor="@color/accent_text"
-                        android:textFontWeight="900"
-                        android:textSize="34sp"
+                        android:textSize="28sp"
                         android:textStyle="bold" />
 
                     <!-- Subtitle and the loader chip share the second line, so the chip stays reachable
@@ -59,7 +53,7 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
+                        android:layout_marginTop="2dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
@@ -69,21 +63,22 @@
                             android:fontFamily="@font/misans"
                             android:text="@string/bedrock_edition"
                             android:textColor="@color/text_primary"
-                            android:textSize="16sp" />
+                            android:textSize="14sp" />
 
                         <TextView
                             android:id="@+id/loader_chip"
                             style="@style/Widget.Levi.Tag.Accent"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
+                            android:layout_marginStart="8dp"
                             android:clickable="true"
                             android:focusable="true"
-                            android:minHeight="28dp"
+                            android:minHeight="26dp"
                             android:gravity="center_vertical"
                             android:paddingStart="10dp"
                             android:paddingEnd="10dp"
                             android:text="@string/pkg_loader_name"
+                            android:textSize="10sp"
                             android:visibility="gone" />
                     </LinearLayout>
                 </LinearLayout>
@@ -93,38 +88,37 @@
                     style="?android:attr/progressBarStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
                     android:visibility="gone" />
 
                 <LinearLayout
                     android:id="@+id/select_version_button"
                     android:layout_width="wrap_content"
-                    android:layout_height="56dp"
+                    android:layout_height="40dp"
                     android:background="@drawable/bg_ui_row"
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="8dp">
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp">
 
                     <TextView
                         android:id="@+id/home_instance_letter"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
                         android:background="@drawable/bg_ui_icon_chip"
                         android:fontFamily="@font/misans"
                         android:gravity="center"
                         android:importantForAccessibility="no"
                         android:text="M"
                         android:textColor="@color/text_primary"
-                        android:textSize="18sp"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
+                        android:layout_marginStart="8dp"
                         android:orientation="vertical">
 
                         <TextView
@@ -133,7 +127,7 @@
                             android:fontFamily="@font/misans"
                             android:text="@string/current_instance"
                             android:textColor="@color/text_secondary"
-                            android:textSize="12sp" />
+                            android:textSize="10sp" />
 
                         <TextView
                             android:id="@+id/text_minecraft_version"
@@ -141,18 +135,18 @@
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
                             android:fontFamily="@font/misans"
-                            android:maxWidth="170dp"
+                            android:maxWidth="180dp"
                             android:minWidth="72dp"
                             android:singleLine="true"
                             android:textColor="@color/text_primary"
-                            android:textSize="15sp"
+                            android:textSize="13sp"
                             android:textStyle="bold" />
                     </LinearLayout>
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_marginStart="12dp"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginStart="4dp"
                         android:importantForAccessibility="no"
                         android:src="@drawable/ic_ui_expand_more"
                         app:tint="@color/text_primary" />
@@ -161,24 +155,21 @@
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/home_instance_settings_button"
                     style="@style/Widget.Levi.Button.Icon"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginStart="8dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginStart="10dp"
                     android:contentDescription="@string/instance_settings_title"
                     android:tooltipText="@string/instance_settings_title"
                     app:icon="@drawable/ic_nav_settings"
-                    app:iconSize="22dp" />
+                    app:iconSize="18dp" />
 
                 <!-- Split launch button: the main part launches, the chevron opens more launch options. -->
                 <LinearLayout
                     android:id="@+id/home_launch_group"
                     android:layout_width="wrap_content"
-                    android:layout_height="48dp"
+                    android:layout_height="40dp"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="@drawable/home_bg_launch_group"
-                    android:elevation="6dp"
+                    android:background="@drawable/v161_home_launch_group"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -186,37 +177,41 @@
                         android:id="@+id/launch_button"
                         style="@style/Widget.Levi.Button.Primary"
                         android:layout_width="wrap_content"
-                        android:layout_height="48dp"
-                        android:minHeight="48dp"
-                        android:paddingStart="20dp"
-                        android:paddingEnd="12dp"
+                        android:layout_height="40dp"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
                         android:stateListAnimator="@null"
                         android:text="@string/launch"
-                        android:textSize="17sp"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
                         app:backgroundTint="@android:color/transparent"
-                        app:cornerRadius="14dp"
+                        app:cornerRadius="8dp"
                         app:icon="@drawable/ic_nav_launch"
-                        app:iconPadding="8dp"
-                        app:iconSize="20dp"
+                        app:iconPadding="6dp"
+                        app:iconSize="18dp"
                         app:rippleColor="#33FFFFFF" />
 
                     <View
                         android:id="@+id/home_launch_divider"
                         android:layout_width="1dp"
-                        android:layout_height="24dp"
+                        android:layout_height="20dp"
                         android:alpha="0.4"
                         android:background="@color/on_primary" />
 
                     <ImageView
                         android:id="@+id/home_launch_menu_button"
-                        android:layout_width="40dp"
-                        android:layout_height="48dp"
+                        android:layout_width="32dp"
+                        android:layout_height="40dp"
                         android:background="@drawable/bg_ui_row"
                         android:clickable="true"
                         android:contentDescription="@string/home_launch_options"
                         android:focusable="true"
-                        android:paddingStart="8dp"
-                        android:paddingEnd="10dp"
+                        android:paddingStart="6dp"
+                        android:paddingEnd="8dp"
                         android:src="@drawable/ic_ui_expand_more"
                         android:tooltipText="@string/home_launch_options"
                         app:tint="@color/on_primary" />
@@ -226,19 +221,19 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="12dp"
                 android:background="@color/divider" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="12dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
                     android:importantForAccessibility="no"
                     android:src="@drawable/ic_ui_lightbulb"
                     app:tint="@color/text_secondary" />
@@ -247,13 +242,13 @@
                     android:id="@+id/tip_text"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="6dp"
                     android:layout_weight="1"
                     android:ellipsize="end"
                     android:fontFamily="@font/misans"
                     android:singleLine="true"
                     android:textColor="@color/text_secondary"
-                    android:textSize="13sp" />
+                    android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
@@ -280,26 +275,25 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="15dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingStart="14dp"
-                    android:paddingEnd="10dp">
+                    android:orientation="horizontal">
 
                     <FrameLayout
                         android:id="@+id/home_mods_chip"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
                         android:background="@drawable/bg_ui_icon_chip">
 
                         <ImageView
                             android:id="@+id/home_mods_icon"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
                             android:layout_gravity="center"
                             android:importantForAccessibility="no"
                             android:src="@drawable/ic_ui_puzzle" />
@@ -308,17 +302,19 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginStart="6dp"
                         android:layout_weight="1"
                         android:ellipsize="end"
                         android:singleLine="true"
                         android:text="@string/mods_section_title"
-                        android:textAppearance="@style/TextAppearance.Levi.SectionTitle" />
+                        android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/manage_mods_button"
                         android:layout_width="wrap_content"
-                        android:layout_height="40dp"
+                        android:layout_height="26dp"
                         android:background="@drawable/bg_ui_row"
                         android:drawableEnd="@drawable/ic_ui_chevron_right"
                         android:drawablePadding="2dp"
@@ -326,15 +322,17 @@
                         android:fontFamily="@font/misans"
                         android:gravity="center_vertical"
                         android:paddingStart="10dp"
-                        android:paddingEnd="4dp"
+                        android:paddingEnd="10dp"
                         android:text="@string/home_manage"
                         android:textColor="@color/text_secondary"
-                        android:textSize="14sp" />
+                        android:textSize="10sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
+                    android:layout_marginTop="10dp"
                     android:background="@color/divider" />
 
                 <FrameLayout
@@ -356,11 +354,7 @@
                             android:id="@+id/mods_list_container"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:orientation="vertical"
-                            android:paddingStart="16dp"
-                            android:paddingTop="8dp"
-                            android:paddingEnd="16dp"
-                            android:paddingBottom="8dp" />
+                            android:orientation="vertical" />
                     </ScrollView>
 
                     <LinearLayout
@@ -400,31 +394,30 @@
             android:layout_height="match_parent"
             android:layout_marginStart="6dp"
             android:layout_marginEnd="6dp"
-            android:layout_weight="1">
+            android:layout_weight="1.3">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="15dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingStart="14dp"
-                    android:paddingEnd="10dp">
+                    android:orientation="horizontal">
 
                     <FrameLayout
                         android:id="@+id/home_content_chip"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
                         android:background="@drawable/bg_ui_icon_chip">
 
                         <ImageView
                             android:id="@+id/home_content_icon"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
                             android:layout_gravity="center"
                             android:importantForAccessibility="no"
                             android:src="@drawable/ic_content" />
@@ -433,33 +426,34 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginStart="6dp"
                         android:layout_weight="1"
                         android:ellipsize="end"
                         android:singleLine="true"
                         android:text="@string/content_mgmt_section_title"
-                        android:textAppearance="@style/TextAppearance.Levi.SectionTitle" />
+                        android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/content_view_all"
                         android:layout_width="wrap_content"
-                        android:layout_height="40dp"
+                        android:layout_height="wrap_content"
                         android:background="@drawable/bg_ui_row"
                         android:drawableEnd="@drawable/ic_ui_chevron_right"
                         android:drawablePadding="2dp"
                         android:drawableTint="@color/text_secondary"
                         android:fontFamily="@font/misans"
                         android:gravity="center_vertical"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="4dp"
                         android:text="@string/home_view_all"
                         android:textColor="@color/text_secondary"
-                        android:textSize="14sp" />
+                        android:textSize="11sp" />
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
+                    android:layout_marginTop="8dp"
                     android:background="@color/divider" />
 
                 <ScrollView
@@ -473,31 +467,30 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="4dp">
+                        android:orientation="vertical">
 
                         <LinearLayout
                             android:id="@+id/content_worlds_row"
                             android:layout_width="match_parent"
-                            android:layout_height="44dp"
+                            android:layout_height="wrap_content"
                             android:background="@drawable/bg_ui_row"
                             android:clickable="true"
                             android:focusable="true"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="6dp">
+                            android:paddingTop="8dp"
+                            android:paddingBottom="8dp">
 
                             <FrameLayout
                                 android:id="@+id/home_worlds_chip"
-                                android:layout_width="36dp"
-                                android:layout_height="36dp"
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
                                 android:background="@drawable/bg_ui_icon_chip">
 
                                 <ImageView
                                     android:id="@+id/home_worlds_icon"
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
                                     android:layout_gravity="center"
                                     android:importantForAccessibility="no"
                                     android:scaleType="fitCenter"
@@ -507,13 +500,13 @@
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="12dp"
+                                android:layout_marginStart="8dp"
                                 android:layout_weight="1"
                                 android:ellipsize="end"
                                 android:singleLine="true"
                                 android:text="@string/worlds_category"
                                 android:textAppearance="@style/TextAppearance.Levi.Body"
-                                android:textSize="15sp" />
+                                android:textSize="13sp" />
 
                             <TextView
                                 android:id="@+id/content_worlds_count"
@@ -522,13 +515,13 @@
                                 android:fontFamily="@font/misans"
                                 android:text="0"
                                 android:textColor="@color/text_primary"
-                                android:textSize="16sp"
+                                android:textSize="13sp"
                                 android:textStyle="bold" />
 
                             <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:layout_marginStart="6dp"
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:layout_marginStart="4dp"
                                 android:importantForAccessibility="no"
                                 android:src="@drawable/ic_ui_chevron_right"
                                 app:tint="@color/text_secondary" />
@@ -537,25 +530,25 @@
                         <LinearLayout
                             android:id="@+id/content_resource_packs_row"
                             android:layout_width="match_parent"
-                            android:layout_height="44dp"
+                            android:layout_height="wrap_content"
                             android:background="@drawable/bg_ui_row"
                             android:clickable="true"
                             android:focusable="true"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="6dp">
+                            android:paddingTop="8dp"
+                            android:paddingBottom="8dp">
 
                             <FrameLayout
                                 android:id="@+id/home_resource_packs_chip"
-                                android:layout_width="36dp"
-                                android:layout_height="36dp"
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
                                 android:background="@drawable/bg_ui_icon_chip">
 
                                 <ImageView
                                     android:id="@+id/home_resource_packs_icon"
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
                                     android:layout_gravity="center"
                                     android:importantForAccessibility="no"
                                     android:scaleType="fitCenter"
@@ -565,13 +558,13 @@
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="12dp"
+                                android:layout_marginStart="8dp"
                                 android:layout_weight="1"
                                 android:ellipsize="end"
                                 android:singleLine="true"
                                 android:text="@string/resource_packs_category"
                                 android:textAppearance="@style/TextAppearance.Levi.Body"
-                                android:textSize="15sp" />
+                                android:textSize="13sp" />
 
                             <TextView
                                 android:id="@+id/content_resource_packs_count"
@@ -580,13 +573,13 @@
                                 android:fontFamily="@font/misans"
                                 android:text="0"
                                 android:textColor="@color/text_primary"
-                                android:textSize="16sp"
+                                android:textSize="13sp"
                                 android:textStyle="bold" />
 
                             <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:layout_marginStart="6dp"
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:layout_marginStart="4dp"
                                 android:importantForAccessibility="no"
                                 android:src="@drawable/ic_ui_chevron_right"
                                 app:tint="@color/text_secondary" />
@@ -595,25 +588,25 @@
                         <LinearLayout
                             android:id="@+id/content_behavior_packs_row"
                             android:layout_width="match_parent"
-                            android:layout_height="44dp"
+                            android:layout_height="wrap_content"
                             android:background="@drawable/bg_ui_row"
                             android:clickable="true"
                             android:focusable="true"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="6dp">
+                            android:paddingTop="8dp"
+                            android:paddingBottom="8dp">
 
                             <FrameLayout
                                 android:id="@+id/home_behavior_packs_chip"
-                                android:layout_width="36dp"
-                                android:layout_height="36dp"
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
                                 android:background="@drawable/bg_ui_icon_chip">
 
                                 <ImageView
                                     android:id="@+id/home_behavior_packs_icon"
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
                                     android:layout_gravity="center"
                                     android:importantForAccessibility="no"
                                     android:scaleType="fitCenter"
@@ -623,13 +616,13 @@
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="12dp"
+                                android:layout_marginStart="8dp"
                                 android:layout_weight="1"
                                 android:ellipsize="end"
                                 android:singleLine="true"
                                 android:text="@string/behavior_packs_category"
                                 android:textAppearance="@style/TextAppearance.Levi.Body"
-                                android:textSize="15sp" />
+                                android:textSize="13sp" />
 
                             <TextView
                                 android:id="@+id/content_behavior_packs_count"
@@ -638,13 +631,13 @@
                                 android:fontFamily="@font/misans"
                                 android:text="0"
                                 android:textColor="@color/text_primary"
-                                android:textSize="16sp"
+                                android:textSize="13sp"
                                 android:textStyle="bold" />
 
                             <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:layout_marginStart="6dp"
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:layout_marginStart="4dp"
                                 android:importantForAccessibility="no"
                                 android:src="@drawable/ic_ui_chevron_right"
                                 app:tint="@color/text_secondary" />
@@ -668,26 +661,25 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="15dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingStart="14dp"
-                    android:paddingEnd="10dp">
+                    android:orientation="horizontal">
 
                     <FrameLayout
                         android:id="@+id/home_download_chip"
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
                         android:background="@drawable/bg_ui_icon_chip">
 
                         <ImageView
                             android:id="@+id/home_download_icon"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
                             android:layout_gravity="center"
                             android:importantForAccessibility="no"
                             android:src="@drawable/ic_ui_cloud_download" />
@@ -696,17 +688,20 @@
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginStart="6dp"
                         android:layout_weight="1"
                         android:ellipsize="end"
                         android:singleLine="true"
                         android:text="@string/home_content_download"
-                        android:textAppearance="@style/TextAppearance.Levi.SectionTitle" />
+                        android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
+                    android:layout_marginTop="8dp"
                     android:background="@color/divider" />
 
                 <ScrollView
@@ -720,31 +715,30 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="4dp">
+                        android:orientation="vertical">
 
                         <LinearLayout
                             android:id="@+id/misc_curseforge_row"
                             android:layout_width="match_parent"
-                            android:layout_height="44dp"
+                            android:layout_height="wrap_content"
                             android:background="@drawable/bg_ui_row"
                             android:clickable="true"
                             android:focusable="true"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="6dp">
+                            android:paddingTop="8dp"
+                            android:paddingBottom="8dp">
 
                             <FrameLayout
                                 android:id="@+id/home_curseforge_chip"
-                                android:layout_width="36dp"
-                                android:layout_height="36dp"
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
                                 android:background="@drawable/bg_ui_icon_chip">
 
                                 <ImageView
                                     android:id="@+id/home_curseforge_icon"
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
                                     android:layout_gravity="center"
                                     android:importantForAccessibility="no"
                                     android:scaleType="fitCenter"
@@ -754,18 +748,17 @@
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="12dp"
+                                android:layout_marginStart="8dp"
                                 android:layout_weight="1"
                                 android:ellipsize="end"
                                 android:singleLine="true"
                                 android:text="@string/curseforge_title"
                                 android:textAppearance="@style/TextAppearance.Levi.Body"
-                                android:textSize="15sp" />
+                                android:textSize="13sp" />
 
                             <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:layout_marginStart="6dp"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
                                 android:importantForAccessibility="no"
                                 android:src="@drawable/ic_ui_chevron_right"
                                 app:tint="@color/text_secondary" />
@@ -774,25 +767,25 @@
                         <LinearLayout
                             android:id="@+id/misc_pkg_row"
                             android:layout_width="match_parent"
-                            android:layout_height="44dp"
+                            android:layout_height="wrap_content"
                             android:background="@drawable/bg_ui_row"
                             android:clickable="true"
                             android:focusable="true"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="6dp">
+                            android:paddingTop="8dp"
+                            android:paddingBottom="8dp">
 
                             <FrameLayout
                                 android:id="@+id/home_pkg_chip"
-                                android:layout_width="36dp"
-                                android:layout_height="36dp"
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
                                 android:background="@drawable/bg_ui_icon_chip">
 
                                 <ImageView
                                     android:id="@+id/home_pkg_icon"
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
                                     android:layout_gravity="center"
                                     android:importantForAccessibility="no"
                                     android:scaleType="fitCenter"
@@ -802,18 +795,17 @@
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="12dp"
+                                android:layout_marginStart="8dp"
                                 android:layout_weight="1"
                                 android:ellipsize="end"
                                 android:singleLine="true"
                                 android:text="@string/pkg_title_mods"
                                 android:textAppearance="@style/TextAppearance.Levi.Body"
-                                android:textSize="15sp" />
+                                android:textSize="13sp" />
 
                             <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:layout_marginStart="6dp"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
                                 android:importantForAccessibility="no"
                                 android:src="@drawable/ic_ui_chevron_right"
                                 app:tint="@color/text_secondary" />
@@ -822,25 +814,25 @@
                         <LinearLayout
                             android:id="@+id/misc_external_mods_row"
                             android:layout_width="match_parent"
-                            android:layout_height="44dp"
+                            android:layout_height="wrap_content"
                             android:background="@drawable/bg_ui_row"
                             android:clickable="true"
                             android:focusable="true"
                             android:gravity="center_vertical"
                             android:orientation="horizontal"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="6dp">
+                            android:paddingTop="8dp"
+                            android:paddingBottom="8dp">
 
                             <FrameLayout
                                 android:id="@+id/home_external_mods_chip"
-                                android:layout_width="36dp"
-                                android:layout_height="36dp"
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
                                 android:background="@drawable/bg_ui_icon_chip">
 
                                 <ImageView
                                     android:id="@+id/home_external_mods_icon"
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
+                                    android:layout_width="18dp"
+                                    android:layout_height="18dp"
                                     android:layout_gravity="center"
                                     android:importantForAccessibility="no"
                                     android:scaleType="fitCenter"
@@ -850,18 +842,17 @@
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="12dp"
+                                android:layout_marginStart="8dp"
                                 android:layout_weight="1"
                                 android:ellipsize="end"
                                 android:singleLine="true"
                                 android:text="@string/external_mods"
                                 android:textAppearance="@style/TextAppearance.Levi.Body"
-                                android:textSize="15sp" />
+                                android:textSize="13sp" />
 
                             <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
-                                android:layout_marginStart="6dp"
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
                                 android:importantForAccessibility="no"
                                 android:src="@drawable/ic_ui_chevron_right"
                                 app:tint="@color/text_secondary" />

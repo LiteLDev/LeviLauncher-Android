@@ -16,20 +16,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingStart="20dp"
+            android:paddingTop="15dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="24dp">
 
             <!-- Header: title, instance info, auto-save status, tabs -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/instance_settings_header"
                 style="@style/Widget.Levi.Card"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@android:color/transparent"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="18dp">
+                    android:padding="0dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -52,7 +58,7 @@
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
+                                android:layout_marginTop="4dp"
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
 
@@ -114,7 +120,7 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp">
+                android:layout_marginTop="20dp">
 
                 <!-- 基础设置 -->
                 <LinearLayout
@@ -133,53 +139,55 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
-                            android:padding="18dp">
+                            android:padding="16dp">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/instance_new_name"
                                 android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
-                                android:textSize="14sp" />
+                                android:textSize="15sp" />
 
                             <EditText
                                 android:id="@+id/edit_instance_name"
                                 style="@style/Widget.Levi.Input"
                                 android:layout_width="match_parent"
-                                android:layout_height="48dp"
+                                android:layout_height="44dp"
                                 android:layout_marginTop="10dp"
-                                android:background="@drawable/instances_bg_search"
+                                android:background="@drawable/v161_instances_bg_search"
                                 android:paddingStart="14dp"
                                 android:paddingEnd="14dp"
                                 android:importantForAutofill="no"
-                                android:inputType="text" />
+                                android:inputType="text"
+                                android:textSize="14sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
                                 android:text="@string/instance_rename_hint"
-                                android:textAppearance="@style/TextAppearance.Levi.Caption" />
+                                android:textAppearance="@style/TextAppearance.Levi.Caption"
+                                android:textSize="11sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="18dp"
+                                android:layout_marginTop="12dp"
                                 android:text="@string/instance_custom_icon"
                                 android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
-                                android:textSize="14sp" />
+                                android:textSize="15sp" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="10dp"
+                                android:layout_marginTop="8dp"
                                 android:gravity="center_vertical"
                                 android:orientation="horizontal">
 
                                 <FrameLayout
                                     android:id="@+id/btn_choose_shortcut_icon"
-                                    android:layout_width="46dp"
-                                    android:layout_height="46dp"
+                                    android:layout_width="56dp"
+                                    android:layout_height="56dp"
                                     android:background="@drawable/instances_bg_icon_slot"
                                     android:clickable="true"
                                     android:contentDescription="@string/instance_shortcut_choose_icon"
@@ -208,9 +216,13 @@
                                     android:id="@+id/btn_reset_shortcut_icon"
                                     style="@style/Widget.Levi.Button.Danger"
                                     android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="36dp"
                                     android:layout_marginStart="12dp"
-                                    android:text="@string/instance_clear_icon" />
+                                    android:minHeight="36dp"
+                                    android:paddingStart="14dp"
+                                    android:paddingEnd="14dp"
+                                    android:text="@string/instance_clear_icon"
+                                    android:textSize="12sp" />
 
                                 <TextView
                                     android:layout_width="0dp"
@@ -218,7 +230,8 @@
                                     android:layout_weight="1"
                                     android:layout_marginStart="12dp"
                                     android:text="@string/instances_ui_icon_hint"
-                                    android:textAppearance="@style/TextAppearance.Levi.Caption" />
+                                    android:textAppearance="@style/TextAppearance.Levi.Caption"
+                                    android:textSize="11sp" />
                             </LinearLayout>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
@@ -241,13 +254,12 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
-                            android:padding="18dp">
+                            android:padding="16dp">
 
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:gravity="center_vertical"
-                                android:minHeight="52dp"
                                 android:orientation="horizontal">
 
                                 <LinearLayout
@@ -261,7 +273,7 @@
                                         android:layout_height="wrap_content"
                                         android:text="@string/version_isolation"
                                         android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
-                                        android:textSize="14sp" />
+                                        android:textSize="15sp" />
 
                                     <TextView
                                         android:layout_width="wrap_content"
@@ -279,18 +291,11 @@
                                     android:layout_marginStart="12dp" />
                             </LinearLayout>
 
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="1dp"
-                                android:layout_marginTop="12dp"
-                                android:layout_marginBottom="12dp"
-                                android:background="@color/divider" />
-
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
                                 android:gravity="center_vertical"
-                                android:minHeight="52dp"
                                 android:orientation="horizontal">
 
                                 <LinearLayout
@@ -304,7 +309,7 @@
                                         android:layout_height="wrap_content"
                                         android:text="@string/launch_vertically"
                                         android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
-                                        android:textSize="14sp" />
+                                        android:textSize="15sp" />
 
                                     <TextView
                                         android:layout_width="wrap_content"
@@ -321,27 +326,35 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="12dp" />
                             </LinearLayout>
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
 
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="16dp"
+                                android:background="@color/divider" />
+
+                    <!-- Home screen shortcut: inside the launch-switch card, as in v1.6.1 -->
                     <com.google.android.material.card.MaterialCardView
                         style="@style/Widget.Levi.Card"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp">
+                        app:cardBackgroundColor="@android:color/transparent"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="0dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
-                            android:padding="18dp">
+                            android:padding="0dp">
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/instance_shortcut_title"
                                 android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
-                                android:textSize="14sp" />
+                                android:textSize="15sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -361,37 +374,42 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="@string/instance_shortcut_name"
-                                    android:textAppearance="@style/TextAppearance.Levi.FieldLabel" />
+                                    android:textAppearance="@style/TextAppearance.Levi.FieldLabel"
+                                    android:textSize="13sp"
+                                    android:textStyle="bold" />
 
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="6dp"
-                                    android:gravity="center_vertical"
-                                    android:orientation="horizontal">
+                                    android:layout_marginTop="8dp"
+                                    android:orientation="vertical">
 
                                     <EditText
                                         android:id="@+id/edit_shortcut_name"
                                         style="@style/Widget.Levi.Input"
-                                        android:layout_width="0dp"
-                                        android:layout_height="48dp"
-                                        android:layout_weight="1"
-                                        android:background="@drawable/instances_bg_search"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="44dp"
+                                        android:background="@drawable/v161_instances_bg_search"
                                         android:paddingStart="14dp"
                                         android:paddingEnd="14dp"
                                         android:importantForAutofill="no"
-                                        android:inputType="text" />
+                                        android:inputType="text"
+                                        android:textSize="14sp" />
 
                                     <com.google.android.material.button.MaterialButton
                                         android:id="@+id/btn_add_instance_shortcut"
                                         style="@style/Widget.Levi.Button.Primary"
                                         android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="12dp"
+                                        android:layout_height="40dp"
+                                        android:layout_marginTop="14dp"
+                                        android:paddingStart="20dp"
+                                        android:paddingEnd="20dp"
                                         android:text="@string/instance_shortcut_add_button"
                                         app:icon="@drawable/ic_ui_add" />
                                 </LinearLayout>
                             </LinearLayout>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
                 </LinearLayout>
@@ -426,14 +444,12 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal"
-                            android:padding="18dp">
+                            android:orientation="vertical"
+                            android:padding="16dp">
 
                             <LinearLayout
-                                android:layout_width="0dp"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
                                 android:orientation="vertical">
 
                                 <TextView
@@ -441,7 +457,7 @@
                                     android:layout_height="wrap_content"
                                     android:text="@string/instance_backup_title"
                                     android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
-                                    android:textSize="14sp" />
+                                    android:textSize="15sp" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -455,8 +471,11 @@
                                 android:id="@+id/btn_backup_instance"
                                 style="@style/Widget.Levi.Button.Secondary"
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="12dp"
+                                android:layout_height="36dp"
+                                android:layout_marginTop="14dp"
+                                android:minHeight="36dp"
+                                android:paddingStart="20dp"
+                                android:paddingEnd="20dp"
                                 android:text="@string/instance_backup_button"
                                 app:icon="@drawable/ic_ui_download" />
                         </LinearLayout>
@@ -466,13 +485,13 @@
                         style="@style/Widget.Levi.Card"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp">
+                        android:layout_marginTop="14dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
-                            android:padding="18dp">
+                            android:padding="16dp">
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -480,7 +499,7 @@
                                 android:text="@string/instance_danger_zone"
                                 android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
                                 android:textColor="@color/ui_danger"
-                                android:textSize="14sp" />
+                                android:textSize="15sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -513,7 +532,7 @@
                                         android:layout_height="wrap_content"
                                         android:text="@string/delete"
                                         android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
-                                        android:textSize="14sp" />
+                                        android:textSize="15sp" />
 
                                     <TextView
                                         android:layout_width="wrap_content"
@@ -528,15 +547,19 @@
                                         android:layout_marginTop="2dp"
                                         android:text="@string/instance_delete_warning"
                                         android:textAppearance="@style/TextAppearance.Levi.Caption"
-                                        android:textColor="@color/ui_danger" />
+                                        android:textColor="@color/ui_danger"
+                                        android:textSize="11sp" />
                                 </LinearLayout>
 
                                 <com.google.android.material.button.MaterialButton
                                     android:id="@+id/btn_delete_instance"
                                     style="@style/Widget.Levi.Button.Danger"
                                     android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="36dp"
                                     android:layout_marginStart="12dp"
+                                    android:minHeight="36dp"
+                                    android:paddingStart="20dp"
+                                    android:paddingEnd="20dp"
                                     android:text="@string/delete"
                                     app:icon="@drawable/ic_ui_delete" />
                             </LinearLayout>

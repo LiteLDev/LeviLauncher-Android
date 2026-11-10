@@ -3,22 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="8dp"
     android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/quick_launch_row"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_ui_row"
+        android:background="@drawable/v161r2_misc_quick_launch_card"
+        android:elevation="2dp"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center_vertical"
         android:minHeight="64dp"
         android:orientation="horizontal"
-        android:paddingStart="10dp"
-        android:paddingTop="10dp"
-        android:paddingEnd="10dp"
-        android:paddingBottom="10dp">
+        android:padding="16dp">
 
         <FrameLayout
             android:id="@+id/icon_chip"
@@ -49,14 +48,14 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/misans"
                 android:textColor="@color/text_primary"
-                android:textSize="15sp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/description_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="4dp"
                 android:textAppearance="@style/TextAppearance.Levi.Caption"
                 android:textSize="13sp" />
         </LinearLayout>
@@ -73,8 +72,8 @@
     <View
         android:id="@+id/item_divider"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:background="@color/divider" />
 </LinearLayout>

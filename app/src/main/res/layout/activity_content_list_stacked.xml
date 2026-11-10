@@ -16,16 +16,17 @@
             style="@style/Widget.Levi.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="4dp"
+            android:layout_margin="8dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
             app:layout_scrollFlags="scroll|enterAlways|snap">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="18dp">
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="8dp">
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -43,6 +44,7 @@
                             android:id="@+id/title_text"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
                             android:ellipsize="end"
                             android:maxLines="1"
                             android:text="@string/content_ui_worlds_title"
@@ -52,32 +54,75 @@
                             android:id="@+id/item_count_text"
                             style="@style/Widget.Levi.Tag"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
+                            android:layout_height="28dp"
+                            android:layout_marginStart="8dp"
                             android:gravity="center"
-                            android:minWidth="24dp"
+                            android:minWidth="34dp"
+                            android:paddingStart="8dp"
+                            android:paddingTop="0dp"
+                            android:paddingEnd="8dp"
+                            android:paddingBottom="0dp"
                             android:text="0"
                             android:textColor="@color/text_primary"
-                            android:textSize="12sp" />
+                            android:textSize="12sp"
+                            android:textStyle="normal" />
+
+                        <!-- v1.6.1 single row: title, count, search (+ sort), Select, Custom Flat World, refresh.
+                             The Space only takes the free width when search_row is gone (screenshots). -->
+                        <LinearLayout
+                            android:id="@+id/search_row"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="14dp"
+                            android:layout_weight="1"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <EditText
+                                android:id="@+id/search_edit_text"
+                                style="@style/Widget.Levi.Input"
+                                android:layout_width="0dp"
+                                android:layout_height="38dp"
+                                android:layout_weight="1"
+                                android:drawableStart="@drawable/ic_ui_filter"
+                                android:minHeight="0dp"
+                                android:hint="@string/search_hint"
+                                android:imeOptions="actionSearch"
+                                android:importantForAutofill="no"
+                                android:inputType="text" />
+
+                            <Space
+                                android:id="@+id/search_spacer"
+                                android:layout_width="0dp"
+                                android:layout_height="1dp"
+                                android:layout_weight="0" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/sort_button"
+                                style="@style/Widget.Levi.Button.Secondary"
+                                android:layout_width="wrap_content"
+                                android:layout_height="38dp"
+                                android:layout_marginStart="8dp"
+                                android:minHeight="0dp"
+                                android:paddingStart="14dp"
+                                android:paddingEnd="14dp"
+                                android:text="@string/content_ui_sort_name"
+                                android:textSize="12sp"
+                                app:icon="@drawable/ic_ui_sort" />
+                        </LinearLayout>
 
                         <Space
                             android:layout_width="0dp"
                             android:layout_height="1dp"
-                            android:layout_weight="1" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/custom_flat_button"
-                            style="@style/Widget.Levi.Button.Secondary"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:text="@string/custom_flat_world"
-                            android:visibility="gone"
-                            app:icon="@drawable/ic_ui_add" />
+                            android:layout_weight="0.001" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/select_button"
                             style="@style/Widget.Levi.Button.Icon"
+                            android:layout_width="38dp"
+                            android:layout_height="38dp"
+                            android:minWidth="0dp"
+                            android:minHeight="0dp"
                             android:layout_marginStart="8dp"
                             android:contentDescription="@string/content_ui_multi_select"
                             android:tooltipText="@string/content_ui_multi_select"
@@ -85,8 +130,26 @@
                             app:icon="@drawable/ic_ui_select" />
 
                         <com.google.android.material.button.MaterialButton
+                            android:id="@+id/custom_flat_button"
+                            style="@style/Widget.Levi.Button.Secondary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="38dp"
+                            android:minHeight="0dp"
+                            android:paddingStart="14dp"
+                            android:paddingEnd="14dp"
+                            android:textSize="12sp"
+                            android:layout_marginStart="8dp"
+                            android:text="@string/custom_flat_world"
+                            android:visibility="gone"
+                            app:icon="@drawable/ic_ui_add" />
+
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/refresh_button"
                             style="@style/Widget.Levi.Button.Icon"
+                            android:layout_width="38dp"
+                            android:layout_height="38dp"
+                            android:minWidth="0dp"
+                            android:minHeight="0dp"
                             android:layout_marginStart="8dp"
                             android:contentDescription="@string/content_ui_refresh"
                             android:tooltipText="@string/content_ui_refresh"
@@ -105,6 +168,10 @@
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/selection_cancel_button"
                             style="@style/Widget.Levi.Button.Icon"
+                            android:layout_width="38dp"
+                            android:layout_height="38dp"
+                            android:minWidth="0dp"
+                            android:minHeight="0dp"
                             android:contentDescription="@string/cancel"
                             android:tooltipText="@string/cancel"
                             app:icon="@drawable/ic_ui_arrow_back" />
@@ -113,18 +180,23 @@
                             android:id="@+id/selection_count_text"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="12dp"
+                            android:layout_marginStart="8dp"
                             android:layout_weight="1"
                             android:ellipsize="end"
                             android:maxLines="1"
                             android:text="@string/selected_count_zero"
-                            android:textAppearance="@style/TextAppearance.Levi.SectionTitle" />
+                            android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
+                            android:textSize="16sp" />
 
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/select_all_button"
                             style="@style/Widget.Levi.Button.Secondary"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_height="38dp"
+                            android:minHeight="0dp"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="12dp"
+                            android:textSize="12sp"
                             android:text="@string/select_all"
                             app:icon="@drawable/ic_ui_select" />
 
@@ -132,8 +204,12 @@
                             android:id="@+id/batch_export_button"
                             style="@style/Widget.Levi.Button.Secondary"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
+                            android:layout_marginStart="6dp"
+                            android:layout_height="38dp"
+                            android:minHeight="0dp"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="12dp"
+                            android:textSize="12sp"
                             android:text="@string/export"
                             app:icon="@drawable/ic_ui_download" />
 
@@ -141,8 +217,12 @@
                             android:id="@+id/batch_transfer_button"
                             style="@style/Widget.Levi.Button.Secondary"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
+                            android:layout_marginStart="6dp"
+                            android:layout_height="38dp"
+                            android:minHeight="0dp"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="12dp"
+                            android:textSize="12sp"
                             android:text="@string/transfer"
                             app:icon="@drawable/ic_ui_storage" />
 
@@ -150,54 +230,22 @@
                             android:id="@+id/batch_delete_button"
                             style="@style/Widget.Levi.Button.Danger"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
+                            android:layout_marginStart="6dp"
+                            android:layout_height="38dp"
+                            android:minHeight="0dp"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="12dp"
+                            android:textSize="12sp"
                             android:text="@string/delete"
                             app:icon="@drawable/ic_ui_delete" />
                     </LinearLayout>
                 </FrameLayout>
 
-                <LinearLayout
-                    android:id="@+id/search_row"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <EditText
-                        android:id="@+id/search_edit_text"
-                        style="@style/Widget.Levi.Input"
-                        android:layout_width="0dp"
-                        android:layout_height="44dp"
-                        android:layout_weight="1"
-                        android:drawableStart="@drawable/ic_ui_filter"
-                        android:hint="@string/search_hint"
-                        android:imeOptions="actionSearch"
-                        android:importantForAutofill="no"
-                        android:inputType="text"
-                        android:maxWidth="420dp" />
-
-                    <Space
-                        android:id="@+id/search_spacer"
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="0.6" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/sort_button"
-                        style="@style/Widget.Levi.Button.Secondary"
-                        android:layout_width="wrap_content"
-                        android:layout_height="44dp"
-                        android:layout_marginStart="12dp"
-                        android:text="@string/content_ui_sort_name"
-                        app:icon="@drawable/ic_ui_sort" />
-                </LinearLayout>
 
                 <HorizontalScrollView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="8dp"
                     android:background="@drawable/bg_ui_strip"
                     android:overScrollMode="never"
                     android:scrollbars="none">
@@ -259,9 +307,8 @@
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:overScrollMode="never"
-            android:paddingHorizontal="10dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="16dp" />
+            android:paddingHorizontal="8dp"
+            android:paddingBottom="8dp" />
 
         <LinearLayout
             android:id="@+id/empty_state"
@@ -288,7 +335,7 @@
                 android:layout_marginTop="10dp"
                 android:fontFamily="@font/misans"
                 android:textColor="@color/text_secondary"
-                android:textSize="15sp"
+                android:textSize="16sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -310,8 +357,8 @@
 
             <ProgressBar
                 android:id="@+id/loading_progress"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_gravity="center"
                 android:indeterminate="true" />
         </FrameLayout>
