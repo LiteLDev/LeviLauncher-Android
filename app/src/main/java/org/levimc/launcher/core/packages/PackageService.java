@@ -17,6 +17,8 @@ import org.levimc.launcher.util.LauncherStorage;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -79,7 +81,15 @@ public final class PackageService {
     public static final String LEVILAMINA_PACKAGE_ID = "github.com/LiteLDev/LeviLamina";
     /** The variant holding a package's client build (tooth.json label "client"). */
     public static final String CLIENT_VARIANT = "client";
-    public static final String DEFAULT_GITHUB_PROXY = "https://github.bibk.top";
+    /** The built-in GitHub proxy (LeviLauncher's default): gh-proxy.org, which takes the whole GitHub URL. */
+    public static final String DEFAULT_GITHUB_PROXY = "https://gh-proxy.org/https://github.com";
+    /**
+     * GitHub proxies that take the whole GitHub URL after their own (https://gh-proxy.org/https://github.com/o/r).
+     * The engine only appends a request's path to the proxy, so these must be configured with
+     * "/https://github.com"; without it they answer 404 (gh-proxy.org) or 400 (ghproxy.vip).
+     */
+    private static final String[] FULL_URL_PROXY_HOSTS = {"gh-proxy.org", "ghproxy.vip", "gh.bibk.top"};
+    private static final String GITHUB_ORIGIN = "https://github.com";
     public static final long TASK_TIMEOUT_MS = TimeUnit.MINUTES.toMillis(15);
     public static final ExecutorService EXECUTOR = Executors.newCachedThreadPool(daemon("package-task"));
 
@@ -185,13 +195,58 @@ public final class PackageService {
     }
 
     public PackageEngine engine(File workspace) {
+        // Completes a bare proxy saved by an earlier version before the engine reads config.toml.
+        configuredGithubProxy();
         return new PackageEngine(workspace, config(), http(), rid(), mirrorEnabled() ? DEFAULT_GITHUB_PROXY : null);
     }
 
     /** The GitHub proxy operations use: config.toml's, else the mirror default when mirroring; null for none. */
     public String effectiveGithubProxy() {
-        String p = config().githubProxy();
+        String p = configuredGithubProxy();
         return p != null ? p : mirrorEnabled() ? DEFAULT_GITHUB_PROXY : null;
+    }
+
+    /**
+     * config.toml's {@code github_proxy}, or null for none. A bare full-URL proxy that earlier versions offered
+     * and saved (such as "https://gh-proxy.org") is completed ({@link #completeGithubProxy}) and saved back.
+     */
+    public String configuredGithubProxy() {
+        Config c = config();
+        String p = c.githubProxy();
+        String complete = completeGithubProxy(p);
+        if (p != null && !p.equals(complete)) {
+            try {
+                c.setGithubProxy(complete);
+            } catch (PackageException e) {
+                warn("packages: cannot save the completed GitHub proxy " + complete, e);
+            }
+        }
+        return complete;
+    }
+
+    /**
+     * {@code proxy} with "/https://github.com" added when it is a bare full-URL proxy (FULL_URL_PROXY_HOSTS, or a
+     * subdomain of one, with no path, query or fragment), so that the engine's path rewrite reaches GitHub
+     * through it; any other proxy (and null) is returned unchanged.
+     */
+    public static String completeGithubProxy(String proxy) {
+        if (proxy == null) return null;
+        URI u;
+        try {
+            u = new URI(proxy);
+        } catch (URISyntaxException e) {
+            return proxy;
+        }
+        String host = u.getHost();
+        String path = u.getRawPath() == null ? "" : u.getRawPath();
+        if (host == null || !path.replace("/", "").isEmpty() || u.getRawQuery() != null || u.getRawFragment() != null) {
+            return proxy;
+        }
+        host = host.toLowerCase(Locale.ROOT);
+        for (String h : FULL_URL_PROXY_HOSTS) {
+            if (host.equals(h) || host.endsWith("." + h)) return proxy.replaceAll("/+$", "") + "/" + GITHUB_ORIGIN;
+        }
+        return proxy;
     }
 
     public static MirrorMode mirrorMode() {
@@ -218,7 +273,7 @@ public final class PackageService {
 
     /** "" or ERR_PKG_INVALID_GITHUB_PROXY / ERR_WRITE_FILE; blank resets to the default. */
     public String setGithubProxy(String raw) {
-        String p = raw == null ? "" : raw.trim().replaceAll("/+$", "");
+        String p = completeGithubProxy(raw == null ? "" : raw.trim().replaceAll("/+$", ""));
         try {
             if (p.isEmpty()) config().deleteGithubProxy();
             else config().setGithubProxy(p);
