@@ -49,19 +49,26 @@ public final class CutoutAvoider {
         ViewGroup railItems = shell.findViewById(R.id.nav_rail_items);
         View content = shell.findViewById(R.id.shell_content);
         Base base = new Base(bar, content, railItems);
+        String[] applied = {null};
         shell.setOnApplyWindowInsetsListener((v, insets) -> {
             List<Rect> holes = holes(insets);
+            // Insets are re-dispatched often (system bars, focus); recompute only when the camera moved.
+            String signature = holes.toString();
+            if (signature.equals(applied[0])) return insets;
+            applied[0] = signature;
             base.restore();
-            afterNextLayout(v, () -> {
+            beforeNextDraw(v, () -> {
                 float density = v.getResources().getDisplayMetrics().density;
                 int gap = Math.round(GAP_DP * density);
+                boolean changed = false;
                 for (Rect hole : holes) {
                     boolean left = hole.centerX() < v.getWidth() / 2;
-                    if (bar != null) avoidInBar(bar, hole, left, gap);
-                    if (railItems != null) avoidInRail(railItems, hole, gap);
-                    if (content != null) avoidInPage(content, hole, left, gap, Math.round(PAGE_CLEARANCE_DP * density));
+                    if (bar != null) changed |= avoidInBar(bar, hole, left, gap);
+                    if (railItems != null) changed |= avoidInRail(railItems, hole, gap);
+                    if (content != null) changed |= avoidInPage(content, hole, left, gap, Math.round(PAGE_CLEARANCE_DP * density));
                 }
-                if (afterLayout != null) v.post(afterLayout);
+                if (afterLayout != null) afterLayout.run();
+                return changed;
             });
             return insets;
         });
@@ -72,27 +79,36 @@ public final class CutoutAvoider {
     public static void attachToPage(View root) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
         Base base = new Base(null, root, null);
+        String[] applied = {null};
         root.setOnApplyWindowInsetsListener((v, insets) -> {
             List<Rect> holes = holes(insets);
+            String signature = holes.toString();
+            if (signature.equals(applied[0])) return insets;
+            applied[0] = signature;
             base.restore();
-            afterNextLayout(v, () -> {
+            beforeNextDraw(v, () -> {
                 int gap = Math.round(GAP_DP * v.getResources().getDisplayMetrics().density);
+                boolean changed = false;
                 for (Rect hole : holes) {
-                    avoidInPage(v, hole, hole.centerX() < v.getWidth() / 2, gap, 0);
+                    changed |= avoidInPage(v, hole, hole.centerX() < v.getWidth() / 2, gap, 0);
                 }
+                return changed;
             });
             return insets;
         });
         root.requestApplyInsets();
     }
 
-    /** Positions are measured after the restored (unadjusted) layout has been laid out. */
-    private static void afterNextLayout(View v, Runnable action) {
-        v.getViewTreeObserver().addOnGlobalLayoutListener(new android.view.ViewTreeObserver.OnGlobalLayoutListener() {
+    /**
+     * Runs {@code action} once the restored (unadjusted) layout is laid out, before it is drawn. When the
+     * action moved something, that draw is skipped, so the first frame shown already avoids the camera.
+     */
+    private static void beforeNextDraw(View v, java.util.function.BooleanSupplier action) {
+        v.getViewTreeObserver().addOnPreDrawListener(new android.view.ViewTreeObserver.OnPreDrawListener() {
             @Override
-            public void onGlobalLayout() {
-                v.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                action.run();
+            public boolean onPreDraw() {
+                v.getViewTreeObserver().removeOnPreDrawListener(this);
+                return !action.getAsBoolean();
             }
         });
         v.requestLayout();
@@ -127,20 +143,23 @@ public final class CutoutAvoider {
     }
 
     /** Moves the bar's items aside only when the camera reaches into the bar; its background stays put. */
-    private static void avoidInBar(View bar, Rect hole, boolean left, int gap) {
+    private static boolean avoidInBar(View bar, Rect hole, boolean left, int gap) {
         Rect b = windowRect(bar);
-        if (!overlapsVertically(hole, b, 0) || !Rect.intersects(hole, b)) return;
+        if (!overlapsVertically(hole, b, 0) || !Rect.intersects(hole, b)) return false;
         if (left) {
             int need = hole.right + gap - (b.left + bar.getPaddingLeft());
-            if (need > 0) bar.setPadding(bar.getPaddingLeft() + need, bar.getPaddingTop(), bar.getPaddingRight(), bar.getPaddingBottom());
+            if (need <= 0) return false;
+            bar.setPadding(bar.getPaddingLeft() + need, bar.getPaddingTop(), bar.getPaddingRight(), bar.getPaddingBottom());
         } else {
             int need = (b.right - bar.getPaddingRight()) - (hole.left - gap);
-            if (need > 0) bar.setPadding(bar.getPaddingLeft(), bar.getPaddingTop(), bar.getPaddingRight() + need, bar.getPaddingBottom());
+            if (need <= 0) return false;
+            bar.setPadding(bar.getPaddingLeft(), bar.getPaddingTop(), bar.getPaddingRight() + need, bar.getPaddingBottom());
         }
+        return true;
     }
 
     /** Pushes the first rail item that the camera covers (and the items after it) below the camera. */
-    private static void avoidInRail(ViewGroup items, Rect hole, int gap) {
+    private static boolean avoidInRail(ViewGroup items, Rect hole, int gap) {
         for (int i = 0; i < items.getChildCount(); i++) {
             View child = items.getChildAt(i);
             if (child.getVisibility() != View.VISIBLE || child.getWidth() == 0 || child.getHeight() == 0) continue;
@@ -150,21 +169,25 @@ public final class CutoutAvoider {
             ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) child.getLayoutParams();
             lp.topMargin += hole.bottom + gap - c.top;
             child.setLayoutParams(lp);
-            return;
+            return true;
         }
+        return false;
     }
 
     /** Grows the page's margin on the camera side by the part of the camera beyond its clearance. */
-    private static void avoidInPage(View page, Rect hole, boolean left, int gap, int clearance) {
+    private static boolean avoidInPage(View page, Rect hole, boolean left, int gap, int clearance) {
         Rect p = windowRect(page);
-        if (!overlapsVertically(hole, p, 0)) return;
+        if (!overlapsVertically(hole, p, 0)) return false;
         if (left) {
             int need = hole.right + gap - (p.left + page.getPaddingLeft() + clearance);
-            if (need > 0) page.setPadding(page.getPaddingLeft() + need, page.getPaddingTop(), page.getPaddingRight(), page.getPaddingBottom());
+            if (need <= 0) return false;
+            page.setPadding(page.getPaddingLeft() + need, page.getPaddingTop(), page.getPaddingRight(), page.getPaddingBottom());
         } else {
             int need = (p.right - page.getPaddingRight() - clearance) - (hole.left - gap);
-            if (need > 0) page.setPadding(page.getPaddingLeft(), page.getPaddingTop(), page.getPaddingRight() + need, page.getPaddingBottom());
+            if (need <= 0) return false;
+            page.setPadding(page.getPaddingLeft(), page.getPaddingTop(), page.getPaddingRight() + need, page.getPaddingBottom());
         }
+        return true;
     }
 
     /** Original paddings and rail margins, restored before every recomputation. */

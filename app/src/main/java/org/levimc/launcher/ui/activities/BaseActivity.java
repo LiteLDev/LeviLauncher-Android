@@ -182,8 +182,10 @@ public class BaseActivity extends AppCompatActivity {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         if (!UiSettings.animationsDisabled()) {
-            contentView.setAlpha(0f);
-            contentView.setTranslationY(8f * getResources().getDisplayMetrics().density);
+            // The page fades in inside the static shell. Starting from partly visible avoids a blank
+            // page area for the first frames, which reads as a flash when switching pages.
+            contentView.setAlpha(0.4f);
+            contentView.setTranslationY(6f * getResources().getDisplayMetrics().density);
         }
 
         super.setContentView(shell);
@@ -466,16 +468,23 @@ public class BaseActivity extends AppCompatActivity {
         indicator.setBackgroundTintList(ColorStateList.valueOf(new PersonalizationManager(this).getAccentColor(
                 new PersonalizationManager(this).isDarkMode(this))));
         View rail = findViewById(R.id.nav_rail);
-        tab.post(() -> {
-            // Window coordinates: the rail scrolls and items may be moved away from the camera.
-            int[] tabLoc = new int[2];
-            int[] railLoc = new int[2];
-            tab.getLocationInWindow(tabLoc);
-            (rail != null ? rail : (View) indicator.getParent()).getLocationInWindow(railLoc);
-            float y = tabLoc[1] - railLoc[1] + (tab.getHeight() - indicator.getHeight()) / 2f;
-            indicator.setTranslationY(y);
-            indicator.setVisibility(View.VISIBLE);
+        // Placed right before the next draw (after layout), so the pill never shows up a frame late.
+        tab.getViewTreeObserver().addOnPreDrawListener(new android.view.ViewTreeObserver.OnPreDrawListener() {
+            @Override
+            public boolean onPreDraw() {
+                tab.getViewTreeObserver().removeOnPreDrawListener(this);
+                // Window coordinates: the rail scrolls and items may be moved away from the camera.
+                int[] tabLoc = new int[2];
+                int[] railLoc = new int[2];
+                tab.getLocationInWindow(tabLoc);
+                (rail != null ? rail : (View) indicator.getParent()).getLocationInWindow(railLoc);
+                float y = tabLoc[1] - railLoc[1] + (tab.getHeight() - indicator.getHeight()) / 2f;
+                indicator.setTranslationY(y);
+                indicator.setVisibility(View.VISIBLE);
+                return true;
+            }
         });
+        tab.invalidate();
     }
 
     private void refreshNewsBadge() {
@@ -733,7 +742,7 @@ public class BaseActivity extends AppCompatActivity {
     private boolean isLauncherNavigation(Intent intent) {
         return intent != null && intent.getComponent() != null
                 && getPackageName().equals(intent.getComponent().getPackageName())
-                && intent.getComponent().getClassName().startsWith("org.levimc.launcher.ui.activities.")
+                && intent.getComponent().getClassName().startsWith("org.levimc.launcher.ui.")
                 && !SplashActivity.class.getName().equals(intent.getComponent().getClassName());
     }
 
@@ -751,7 +760,7 @@ public class BaseActivity extends AppCompatActivity {
             sForwardHistory.addFirst(again);
             while (sForwardHistory.size() > 20) sForwardHistory.pollLast();
         }
-        boolean keepBackground = !isTaskRoot() && hasLauncherBackground();
+        boolean keepBackground = !isTaskRoot() && (navBarInjected || hasLauncherBackground());
         if (!isTaskRoot()) LauncherBackgroundController.navigating(this);
         super.finish();
         applyExitTransition(keepBackground);
@@ -799,7 +808,7 @@ public class BaseActivity extends AppCompatActivity {
 
     @Override
     public void finishAfterTransition() {
-        boolean keepBackground = !isTaskRoot() && hasLauncherBackground();
+        boolean keepBackground = !isTaskRoot() && (navBarInjected || hasLauncherBackground());
         if (!isTaskRoot()) LauncherBackgroundController.navigating(this);
         super.finishAfterTransition();
         applyExitTransition(keepBackground);
@@ -814,7 +823,9 @@ public class BaseActivity extends AppCompatActivity {
     private void prepareBackgroundNavigation(Intent intent) {
         if (isLauncherNavigation(intent)) {
             LauncherBackgroundController.navigating(this);
-            if (hasLauncherBackground()) intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+            // Between launcher pages the shell (rail, top bar) stays where it is, as on Windows: no window
+            // cross-fade, only the page content fades in. A window animation would fade the whole shell.
+            if (navBarInjected || hasLauncherBackground()) intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         }
     }
 }
