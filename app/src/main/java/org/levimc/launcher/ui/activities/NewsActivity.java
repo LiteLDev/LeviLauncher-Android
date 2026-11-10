@@ -7,9 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -31,9 +29,9 @@ public final class NewsActivity extends BaseActivity {
     private RecyclerView recycler;
     private NewsAdapter adapter;
     private ProgressBar progress;
-    private TextView empty;
+    private View empty;
     private Button enableNotifications;
-    private ImageButton refresh;
+    private View refresh;
     private ActivityResultLauncher<String> notificationPermissionLauncher;
     private boolean rendered;
 

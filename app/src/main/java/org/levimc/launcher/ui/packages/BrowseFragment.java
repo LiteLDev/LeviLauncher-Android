@@ -17,15 +17,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -34,7 +31,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -54,8 +51,11 @@ import org.levimc.launcher.core.packages.Readme;
 import org.levimc.launcher.core.packages.engine.Cancel;
 import org.levimc.launcher.core.versions.GameVersion;
 import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
+import org.levimc.launcher.ui.widget.CatalogSelect;
+import org.levimc.launcher.ui.widget.UiKit;
 import org.levimc.launcher.util.PersonalizationManager;
 import org.levimc.launcher.util.UIHelper;
+import org.levimc.launcher.util.UiSettings;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -75,9 +75,10 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
 
     private EditText searchBox;
     private MaterialButton refreshButton;
-    private Spinner gameSpinner;
-    private Spinner loaderSpinner;
-    private Spinner sortSpinner;
+    private CatalogSelect gameSelect;
+    private CatalogSelect loaderSelect;
+    private CatalogSelect sortSelect;
+    private CatalogSelect orderSelect;
     private MaterialButton filtersButton;
     private View activeFiltersScroll;
     private ChipGroup activeFilters;
@@ -99,7 +100,6 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
     private int catalogRequest;
     private int contextRequest;
     private boolean resumedOnce;
-    private boolean binding;
 
     /** Opens a package page; its "More by owner" link comes back here as the owner to list. */
     private final ActivityResultLauncher<Intent> openPackage = registerForActivityResult(
@@ -116,7 +116,8 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_pkg_browse, container, false);
+        return inflater.inflate(UiSettings.useTwoPane(requireContext())
+                ? R.layout.fragment_pkg_browse : R.layout.fragment_pkg_browse_stacked, container, false);
     }
 
     @Override
@@ -127,9 +128,10 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
         MaterialButton searchButton = view.findViewById(R.id.pkg_btn_search);
         refreshButton = view.findViewById(R.id.pkg_btn_refresh);
         MaterialButton guideButton = view.findViewById(R.id.pkg_btn_guide);
-        gameSpinner = view.findViewById(R.id.pkg_spinner_game);
-        loaderSpinner = view.findViewById(R.id.pkg_spinner_ll);
-        sortSpinner = view.findViewById(R.id.pkg_spinner_sort);
+        gameSelect = new CatalogSelect(view.findViewById(R.id.pkg_spinner_game), getString(R.string.pkg_game_version_label));
+        loaderSelect = new CatalogSelect(view.findViewById(R.id.pkg_spinner_ll), getString(R.string.pkg_ll_version_label));
+        sortSelect = new CatalogSelect(view.findViewById(R.id.pkg_spinner_sort), getString(R.string.pkg_sort_by));
+        orderSelect = new CatalogSelect(view.findViewById(R.id.pkg_spinner_order), getString(R.string.catalog_order));
         filtersButton = view.findViewById(R.id.pkg_btn_filters);
         activeFiltersScroll = view.findViewById(R.id.pkg_active_filters_scroll);
         activeFilters = view.findViewById(R.id.pkg_active_filters);
@@ -141,8 +143,7 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
         emptyAction = view.findViewById(R.id.pkg_empty_action);
         loading = view.findViewById(R.id.pkg_loading);
 
-        int accent = PkgUi.accent(requireContext());
-        searchButton.setBackgroundTintList(android.content.res.ColorStateList.valueOf(accent));
+        UiKit.applyPrimary(searchButton);
 
         adapter = new BrowseFragment.Adapter(new Adapter.Listener() {
             @Override
@@ -156,6 +157,11 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
             }
 
             @Override
+            public void onInstall(CatalogModels.Pkg pkg) {
+                BrowseFragment.this.onInstallClick(pkg);
+            }
+
+            @Override
             public void onOpenAuthor(CatalogModels.Pkg pkg) {
                 PkgUi.openUrl(requireContext(), pkg.ownerUrl());
             }
@@ -165,15 +171,7 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
                 BrowseFragment.this.onPage(page);
             }
         }, PackageService.rid());
-        int span = getResources().getConfiguration().screenWidthDp >= 720 ? 2 : 1;
-        GridLayoutManager layout = new GridLayoutManager(requireContext(), span);
-        layout.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                return adapter.getItemViewType(position) == BrowseFragment.Adapter.TYPE_FOOTER ? span : 1;
-            }
-        });
-        results.setLayoutManager(layout);
+        results.setLayoutManager(new LinearLayoutManager(requireContext()));
         results.setItemAnimator(null);
         results.setAdapter(adapter);
 
@@ -198,6 +196,7 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
 
         PackagesActivity host = host();
         if (host != null) {
+            host.bindHeader(view, 0);
             host.addPkgTargetListener(this);
         }
         loadCatalog(false);
@@ -241,6 +240,10 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
 
     @Override
     public void onPkgTargetChanged(@Nullable GameVersion target) {
+        PackagesActivity host = host();
+        if (host != null && getView() != null) {
+            host.renderTargetTag(getView().findViewById(R.id.pkg_header_target));
+        }
         loadFilterContext();
     }
 
@@ -255,13 +258,11 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
     }
 
     private void setupSortSpinner() {
-        String[] sortLabels = {getString(R.string.pkg_sort_relevance), getString(R.string.pkg_sort_stars),
-                getString(R.string.pkg_sort_updated), getString(R.string.pkg_sort_newest)};
-        sortSpinner.setAdapter(spinnerAdapter(requireContext(), sortLabels));
-        binding = true;
-        sortSpinner.setSelection(Math.max(0, SORT_KEYS.indexOf(filters.sort())), false);
-        binding = false;
-        sortSpinner.setOnItemSelectedListener(new SimpleSelection(position -> {
+        List<String> sortLabels = java.util.Arrays.asList(getString(R.string.pkg_sort_relevance),
+                getString(R.string.pkg_sort_stars), getString(R.string.pkg_sort_updated),
+                getString(R.string.pkg_sort_newest));
+        sortSelect.setItems(sortLabels, Math.max(0, SORT_KEYS.indexOf(filters.sort())));
+        sortSelect.setOnPick(position -> {
             String key = SORT_KEYS.get(position);
             if (key.equals(filters.sort())) {
                 return;
@@ -269,11 +270,18 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
             filters.setSort(key);
             page = 1;
             render();
-        }));
+        });
+        orderSelect.setItems(java.util.Arrays.asList(getString(R.string.catalog_order_desc),
+                getString(R.string.catalog_order_asc)), filters.descending() ? 0 : 1);
+        orderSelect.setOnPick(position -> {
+            filters.setDescending(position == 0);
+            page = 1;
+            render();
+        });
     }
 
     private void setupVersionSpinners() {
-        gameSpinner.setOnItemSelectedListener(new SimpleSelection(position -> {
+        gameSelect.setOnPick(position -> {
             String game = position == 0 ? BrowseFragment.Filters.ALL : filters.gameOptions().get(position - 1);
             if (game.equals(filters.selectedGame())) {
                 return;
@@ -282,8 +290,8 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
             page = 1;
             bindVersionSpinners();
             render();
-        }));
-        loaderSpinner.setOnItemSelectedListener(new SimpleSelection(position -> {
+        });
+        loaderSelect.setOnPick(position -> {
             String ll = position == 0 ? BrowseFragment.Filters.ALL : filters.loaderOptions().get(position - 1);
             if (ll.equals(filters.selectedLoader())) {
                 return;
@@ -291,60 +299,27 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
             filters.selectLoader(ll);
             page = 1;
             render();
-        }));
+        });
         bindVersionSpinners();
     }
 
     private void bindVersionSpinners() {
-        if (gameSpinner == null) {
+        if (gameSelect == null) {
             return;
         }
-        Context c = requireContext();
         List<String> games = new ArrayList<>();
         games.add(getString(R.string.pkg_game_all_versions));
         games.addAll(filters.gameOptions());
         List<String> lls = new ArrayList<>();
         lls.add(getString(R.string.pkg_ll_all_versions));
         lls.addAll(filters.loaderOptions());
-        binding = true;
-        gameSpinner.setAdapter(spinnerAdapter(c, games.toArray(new String[0])));
-        loaderSpinner.setAdapter(spinnerAdapter(c, lls.toArray(new String[0])));
-        gameSpinner.setSelection(filters.gameOptions().indexOf(filters.selectedGame()) + 1, false);
-        loaderSpinner.setSelection(filters.loaderOptions().indexOf(filters.selectedLoader()) + 1, false);
-        binding = false;
+        gameSelect.setItems(games, filters.gameOptions().indexOf(filters.selectedGame()) + 1);
+        loaderSelect.setItems(lls, filters.loaderOptions().indexOf(filters.selectedLoader()) + 1);
         // The game filter needs the catalogue's game versions; only the LeviLamina filter needs the database.
-        boolean hasGames = !filters.gameOptions().isEmpty();
-        gameSpinner.setEnabled(hasGames);
-        gameSpinner.setAlpha(hasGames ? 1f : 0.5f);
+        gameSelect.setEnabled(!filters.gameOptions().isEmpty());
         boolean mapping = filters.mappingAvailable();
-        loaderSpinner.setEnabled(mapping);
-        loaderSpinner.setAlpha(mapping ? 1f : 0.5f);
+        loaderSelect.setEnabled(mapping);
         mappingHint.setVisibility(filters.contextReady() && !mapping ? View.VISIBLE : View.GONE);
-    }
-
-    private static ArrayAdapter<String> spinnerAdapter(Context c, String[] items) {
-        ArrayAdapter<String> a = new ArrayAdapter<>(c, R.layout.spinner_item, items);
-        a.setDropDownViewResource(R.layout.spinner_dropdown_item);
-        return a;
-    }
-
-    private final class SimpleSelection implements AdapterView.OnItemSelectedListener {
-        private final java.util.function.IntConsumer onSelect;
-
-        SimpleSelection(java.util.function.IntConsumer onSelect) {
-            this.onSelect = onSelect;
-        }
-
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            if (!binding) {
-                onSelect.accept(position);
-            }
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-        }
     }
 
     // #endregion
@@ -469,6 +444,10 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
         }
         result = Catalog.Search.run(packages, filters.query());
         List<CatalogModels.Pkg> sorted = result.matched;
+        if (!filters.descending()) {
+            sorted = new ArrayList<>(sorted);
+            Collections.reverse(sorted);
+        }
         int pages = BrowseFragment.Filters.pageCount(sorted.size());
         page = BrowseFragment.Filters.clampPage(page, sorted.size());
         List<CatalogModels.Pkg> items = BrowseFragment.Filters.page(sorted, page);
@@ -477,7 +456,7 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
         results.setVisibility(showList ? View.VISIBLE : View.INVISIBLE);
         loading.setVisibility(loadingCatalog ? View.VISIBLE : View.GONE);
         int facets = filters.facetCount();
-        filtersButton.setText(facets > 0 ? getString(R.string.pkg_filters_count, facets) : getString(R.string.pkg_filters));
+        styleFiltersButton(facets);
         bindActiveFilters();
 
         emptyAction.setVisibility(View.GONE);
@@ -505,6 +484,17 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
         } else {
             emptyText.setText(R.string.pkg_no_results);
         }
+    }
+
+    /** The Filters icon button: accent tinted while facet filters are on (the chips below list them). */
+    private void styleFiltersButton(int facets) {
+        Context c = requireContext();
+        filtersButton.setContentDescription(facets > 0
+                ? getString(R.string.pkg_filters_count, facets) : getString(R.string.pkg_filters));
+        int fill = facets > 0 ? UiKit.accentSoft(c) : c.getColor(R.color.ui_default);
+        int ink = facets > 0 ? UiKit.accentText(c) : c.getColor(R.color.text_primary);
+        filtersButton.setBackgroundTintList(ColorStateList.valueOf(fill));
+        filtersButton.setIconTint(ColorStateList.valueOf(ink));
     }
 
     /** The facet filters in effect as chips; tapping one removes it. */
@@ -577,6 +567,12 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
         openPackage.launch(PackageActivity.intent(requireContext(), pkg.identifier, target()));
     }
 
+    /** The row's Install button: the package page on its Versions tab (pick a version, then install). */
+    public void onInstallClick(CatalogModels.Pkg pkg) {
+        openPackage.launch(PackageActivity.intent(requireContext(), pkg.identifier, target())
+                .putExtra(PackageActivity.EXTRA_SHOW_VERSIONS, true));
+    }
+
     public void onOpenProject(CatalogModels.Pkg pkg) {
         PkgUi.openUrl(requireContext(), pkg.projectUrl);
     }
@@ -613,6 +609,7 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
 
         private String query = "";
         private String sort = Catalog.Search.SORT_RELEVANCE;
+        private boolean descending = true;
         private Catalog.Search.Facet tags = Catalog.Search.Facet.EMPTY;
         private List<String> license = new ArrayList<>();
         private List<String> dep = new ArrayList<>();
@@ -799,6 +796,15 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
             sort = Catalog.Search.SORTS.contains(key) ? key : Catalog.Search.SORT_RELEVANCE;
         }
 
+        /** Descending is the catalogue's order for the sort (most, latest or best match first); ascending reverses it. */
+        public boolean descending() {
+            return descending;
+        }
+
+        public void setDescending(boolean descending) {
+            this.descending = descending;
+        }
+
         public Catalog.Search.Facet tags() {
             return tags;
         }
@@ -912,6 +918,8 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
 
             void onOpenProject(CatalogModels.Pkg pkg);
 
+            void onInstall(CatalogModels.Pkg pkg);
+
             void onOpenAuthor(CatalogModels.Pkg pkg);
 
             void onPage(int page);
@@ -965,7 +973,7 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             if (holder instanceof ItemHolder) {
-                ((ItemHolder) holder).bind(items.get(position));
+                ((ItemHolder) holder).bind(items.get(position), position == items.size() - 1);
             } else if (holder instanceof FooterHolder) {
                 ((FooterHolder) holder).bind();
             }
@@ -989,6 +997,8 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
             final TextView badge;
             final TextView meta;
             final ViewGroup tags;
+            final View install;
+            final View divider;
 
             ItemHolder(@NonNull View v) {
                 super(v);
@@ -1000,10 +1010,12 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
                 badge = v.findViewById(R.id.pkg_pkg_badge);
                 meta = v.findViewById(R.id.pkg_pkg_meta);
                 tags = v.findViewById(R.id.pkg_pkg_tags);
-                new PersonalizationManager(v.getContext()).applyGlassToView(v);
+                install = v.findViewById(R.id.pkg_pkg_install);
+                divider = v.findViewById(R.id.pkg_pkg_divider);
+                new PersonalizationManager(v.getContext()).applyAccentToView(v, v.getContext());
             }
 
-            void bind(CatalogModels.Pkg pkg) {
+            void bind(CatalogModels.Pkg pkg, boolean last) {
                 Context ctx = itemView.getContext();
                 name.setText(pkg.name);
                 boolean hasOwner = !pkg.author.trim().isEmpty();
@@ -1032,28 +1044,33 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
                 boolean hasProject = Readme.Markdown.isOpenableExternal(pkg.projectUrl);
                 open.setVisibility(hasProject ? View.VISIBLE : View.GONE);
                 open.setOnClickListener(v -> listener.onOpenProject(pkg));
-                itemView.setContentDescription(ctx.getString(R.string.pkg_view_details, pkg.name));
-                itemView.setOnClickListener(v -> listener.onPackageClick(pkg));
+                View row = itemView.findViewById(R.id.pkg_pkg_row);
+                row.setContentDescription(ctx.getString(R.string.pkg_view_details, pkg.name));
+                row.setOnClickListener(v -> listener.onPackageClick(pkg));
+                install.setOnClickListener(v -> listener.onInstall(pkg));
+                divider.setVisibility(last ? View.GONE : View.VISIBLE);
             }
         }
 
         final class FooterHolder extends RecyclerView.ViewHolder {
-            final Button prev;
-            final Button next;
+            private static final int WINDOW = 5;
+            final View prev;
+            final View next;
             final TextView info;
+            final ViewGroup numbers;
 
             FooterHolder(@NonNull View v) {
                 super(v);
                 prev = v.findViewById(R.id.pkg_page_prev);
                 next = v.findViewById(R.id.pkg_page_next);
                 info = v.findViewById(R.id.pkg_page_info);
-                int accent = PkgUi.accent(v.getContext());
-                prev.setTextColor(accent);
-                next.setTextColor(accent);
+                numbers = v.findViewById(R.id.pkg_page_numbers);
             }
 
             void bind() {
-                info.setText(itemView.getContext().getString(R.string.pkg_page_of, page, pages));
+                Context ctx = itemView.getContext();
+                info.setText(ctx.getString(R.string.pkg_page_of, page, pages));
+                itemView.setContentDescription(info.getText());
                 boolean hasPrev = page > 1;
                 boolean hasNext = page < pages;
                 prev.setEnabled(hasPrev);
@@ -1062,6 +1079,35 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
                 next.setAlpha(hasNext ? 1f : 0.4f);
                 prev.setOnClickListener(v -> listener.onPage(page - 1));
                 next.setOnClickListener(v -> listener.onPage(page + 1));
+
+                numbers.removeAllViews();
+                int first = Math.max(1, Math.min(page - WINDOW / 2, pages - WINDOW + 1));
+                int lastPage = Math.min(pages, first + WINDOW - 1);
+                int size = Math.round(UiKit.dp(ctx, 36));
+                int accent = UiKit.accent(ctx);
+                for (int p = first; p <= lastPage; p++) {
+                    final int target = p;
+                    TextView n = new TextView(ctx);
+                    n.setText(String.valueOf(p));
+                    n.setGravity(Gravity.CENTER);
+                    n.setTypeface(ResourcesCompat.getFont(ctx, R.font.misans), Typeface.BOLD);
+                    n.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
+                    if (p == page) {
+                        android.graphics.drawable.GradientDrawable dot = new android.graphics.drawable.GradientDrawable();
+                        dot.setShape(android.graphics.drawable.GradientDrawable.OVAL);
+                        dot.setColor(accent);
+                        n.setBackground(dot);
+                        n.setTextColor(org.levimc.launcher.util.ThemePalette.onAccent(accent));
+                    } else {
+                        n.setBackgroundResource(R.drawable.bg_ui_row);
+                        n.setTextColor(ctx.getColor(R.color.text_primary));
+                        n.setOnClickListener(v -> listener.onPage(target));
+                    }
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(size, size);
+                    lp.setMarginStart(Math.round(UiKit.dp(ctx, 2)));
+                    lp.setMarginEnd(Math.round(UiKit.dp(ctx, 2)));
+                    numbers.addView(n, lp);
+                }
             }
         }
     }

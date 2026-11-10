@@ -2,8 +2,6 @@ package org.levimc.launcher.ui.packages;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -21,32 +19,32 @@ import org.levimc.launcher.core.packages.PackageService;
 import org.levimc.launcher.core.versions.GameVersion;
 import org.levimc.launcher.core.versions.VersionManager;
 import org.levimc.launcher.ui.activities.BaseActivity;
-import org.levimc.launcher.ui.animation.DynamicAnim;
-import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
+import org.levimc.launcher.ui.widget.SegmentedControl;
 import org.levimc.launcher.util.PersonalizationManager;
+import org.levimc.launcher.util.UiSettings;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * "LeviMC Mods" (Windows LIP page): the Browse and Installed tabs. Packages go into the global current instance
+ * (the one selected on the home page), as on Windows; each tab's header shows it as a read-only tag.
+ */
 public class PackagesActivity extends BaseActivity {
+    /** Kept for callers; the page always follows the global current instance. */
     public static final String EXTRA_VERSION = "version";
     public static final String EXTRA_TAB = "tab";
     public static final String TAB_BROWSE = "browse";
     public static final String TAB_INSTALLED = "installed";
 
     private static final String STATE_TAB = "pkg_tab";
-    private static final String STATE_TARGET = "pkg_target";
 
-    private TextView tabBrowse;
-    private TextView tabInstalled;
-    private TextView targetText;
     private String currentTab = TAB_BROWSE;
     @Nullable
     private GameVersion target;
     private final List<TargetListener> listeners = new ArrayList<>();
-    private int accent;
 
     public static Intent intent(Context context, @Nullable GameVersion version, @Nullable String tab) {
         Intent intent = new Intent(context, PackagesActivity.class);
@@ -62,59 +60,36 @@ public class PackagesActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_packages);
+        setContentView(UiSettings.useTwoPane(this)
+                ? R.layout.activity_packages : R.layout.activity_packages_stacked);
 
-        PersonalizationManager pm = new PersonalizationManager(this);
-        accent = pm.getAccentColor();
-        if (accent == 0) {
-            accent = getColor(R.color.primary);
-        }
-
-        tabBrowse = findViewById(R.id.pkg_tab_browse);
-        tabInstalled = findViewById(R.id.pkg_tab_installed);
-        targetText = findViewById(R.id.pkg_target_text);
-        View targetChip = findViewById(R.id.pkg_target_chip);
-
+        target = PackagesActivity.Instances.selected(this);
         if (savedInstanceState != null) {
-            target = savedInstanceState.getParcelable(STATE_TARGET);
             currentTab = savedInstanceState.getString(STATE_TAB, TAB_BROWSE);
         } else {
-            target = getIntent().getParcelableExtra(EXTRA_VERSION);
-            if (target == null) {
-                target = PackagesActivity.Instances.selected(this);
-            }
             String tab = getIntent().getStringExtra(EXTRA_TAB);
             currentTab = TAB_INSTALLED.equals(tab) ? TAB_INSTALLED : TAB_BROWSE;
         }
-
-        tabBrowse.setOnClickListener(v -> selectTab(TAB_BROWSE));
-        tabInstalled.setOnClickListener(v -> selectTab(TAB_INSTALLED));
-        targetChip.setOnClickListener(v -> pickTarget());
-        DynamicAnim.applyPressScale(targetChip);
-        DynamicAnim.applyPressScale(tabBrowse);
-        DynamicAnim.applyPressScale(tabInstalled);
-
-        View root = findViewById(android.R.id.content);
-        if (root != null) {
-            pm.applyAccentToView(root, this);
-        }
-        renderTarget();
         selectTab(currentTab);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // The current instance may have been switched on another page meanwhile.
+        setTarget(PackagesActivity.Instances.selected(this));
     }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(STATE_TAB, currentTab);
-        outState.putParcelable(STATE_TARGET, target);
     }
 
     // #region Tabs
 
     private void selectTab(String tab) {
         currentTab = tab;
-        styleTab(tabBrowse, TAB_BROWSE.equals(tab));
-        styleTab(tabInstalled, TAB_INSTALLED.equals(tab));
 
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction tx = fm.beginTransaction();
@@ -140,68 +115,62 @@ public class PackagesActivity extends BaseActivity {
             }
         }
         tx.commitNow();
+        syncHeaderTabs(browse);
+        syncHeaderTabs(installed);
     }
 
-    private void styleTab(TextView tab, boolean selected) {
-        if (selected) {
-            GradientDrawable gd = new GradientDrawable();
-            gd.setShape(GradientDrawable.RECTANGLE);
-            gd.setColor(accent);
-            gd.setCornerRadius(16 * getResources().getDisplayMetrics().density);
-            tab.setBackground(gd);
-            tab.setTextColor(Color.luminance(accent) > 0.42f ? Color.BLACK : Color.WHITE);
-            tab.setTypeface(tab.getTypeface(), android.graphics.Typeface.BOLD);
-        } else {
-            tab.setBackgroundResource(R.drawable.bg_tab_unselected);
-            tab.setTextColor(getColor(R.color.text_secondary));
-            tab.setTypeface(android.graphics.Typeface.create(tab.getTypeface(), android.graphics.Typeface.NORMAL));
+    /** Each tab draws its own copy of the header; keep the hidden one's segmented control in step. */
+    private void syncHeaderTabs(@Nullable Fragment fragment) {
+        View root = fragment == null ? null : fragment.getView();
+        SegmentedControl tabs = root == null ? null : root.findViewById(R.id.pkg_header_tabs);
+        if (tabs != null) {
+            tabs.setSelectedIndex(TAB_INSTALLED.equals(currentTab) ? 1 : 0, false);
         }
+    }
+
+    /**
+     * Wires a tab's header (catalog_pkg_header_lead): the Browse / Installed segmented control and the current
+     * instance tag. {@code index} is the tab that owns the header (0 Browse, 1 Installed).
+     */
+    void bindHeader(View root, int index) {
+        SegmentedControl tabs = root.findViewById(R.id.pkg_header_tabs);
+        if (tabs != null) {
+            tabs.setEqualWidth(UiSettings.useTwoPane(this));
+            tabs.setItems(getString(R.string.pkg_tab_browse), getString(R.string.pkg_tab_installed));
+            tabs.setSelectedIndex(index, false);
+            tabs.setOnSegmentSelectedListener(i -> selectTab(i == 1 ? TAB_INSTALLED : TAB_BROWSE));
+        }
+        renderTargetTag(root.findViewById(R.id.pkg_header_target));
+        // Tab fragments are added after setContentView's personalization pass: re-tint their accent views.
+        new PersonalizationManager(this).applyAccentToView(root, this);
+        // Fragment views are inflated after the page's glass pass; give their cards the wallpaper material too.
+        new PersonalizationManager(this).applyGlassToTree(root, this);
     }
 
     // #endregion
 
     // #region Target
 
-    private void renderTarget() {
+    void renderTargetTag(@Nullable TextView tag) {
+        if (tag == null) {
+            return;
+        }
+        String value;
         if (target == null) {
-            targetText.setText(R.string.pkg_target_none);
-            return;
+            value = getString(R.string.pkg_target_none);
+        } else {
+            String name = PackagesActivity.Instances.displayName(target);
+            String game = PackagesActivity.Instances.gameVersion(target);
+            value = game.isEmpty() || game.equals(name) ? name : getString(R.string.pkg_target_value, name, game);
         }
-        String name = PackagesActivity.Instances.displayName(target);
-        String game = PackagesActivity.Instances.gameVersion(target);
-        targetText.setText(game.isEmpty() || game.equals(name)
-                ? name : getString(R.string.pkg_target_value, name, game));
+        tag.setText(getString(R.string.catalog_instance_tag, value));
     }
 
-    private void pickTarget() {
-        List<GameVersion> all = PackagesActivity.Instances.all(this);
-        if (all.isEmpty()) {
-            android.widget.Toast.makeText(this, R.string.not_found_version, android.widget.Toast.LENGTH_SHORT).show();
-            return;
-        }
-        String[] names = new String[all.size()];
-        for (int i = 0; i < all.size(); i++) {
-            GameVersion v = all.get(i);
-            String game = PackagesActivity.Instances.gameVersion(v);
-            String name = PackagesActivity.Instances.displayName(v);
-            names[i] = game.isEmpty() || game.equals(name) ? name : getString(R.string.pkg_target_value, name, game);
-            if (PackagesActivity.Instances.same(v, target)) {
-                names[i] = "✓ " + names[i];
-            }
-        }
-        new CustomAlertDialog(this)
-                .setTitleText(getString(R.string.pkg_target_select_title))
-                .setItems(names, (dialog, which) -> setTarget(all.get(which)))
-                .setNegativeButton(getString(R.string.pkg_task_cancel), null)
-                .show();
-    }
-
-    private void setTarget(GameVersion v) {
+    private void setTarget(@Nullable GameVersion v) {
         if (PackagesActivity.Instances.same(v, target)) {
             return;
         }
         target = v;
-        renderTarget();
         for (TargetListener l : new ArrayList<>(listeners)) {
             l.onPkgTargetChanged(target);
         }

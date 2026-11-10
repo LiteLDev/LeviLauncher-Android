@@ -1,139 +1,164 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- CurseForge (Windows CurseForgePage), two-pane: left card with title, search and the stacked selects;
+     right card with the results (pagination is the list's footer item). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background">
+    android:baselineAligned="false"
+    android:orientation="horizontal"
+    android:padding="16dp">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/background"
-        app:elevation="0dp">
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/header_container"
+        style="@style/Widget.Levi.Card"
+        android:layout_width="@dimen/levi_side_panel_width"
+        android:layout_height="match_parent">
 
-        <LinearLayout
-            android:id="@+id/header_container"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
-            android:paddingTop="6dp"
-            android:paddingBottom="8dp"
-            app:layout_scrollFlags="scroll|enterAlways">
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:scrollbars="none">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
 
                 <TextView
-                    android:layout_width="0dp"
+                    android:id="@+id/cf_title"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
+                    android:singleLine="true"
                     android:text="@string/curseforge_title"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/on_surface"
-                    android:fontFamily="@font/misans" />
+                    android:textAppearance="@style/TextAppearance.Levi.PageTitle" />
+
+                <EditText
+                    android:id="@+id/search_box"
+                    style="@style/Widget.Levi.Input"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="14dp"
+                    android:drawableStart="@drawable/ic_ui_search"
+                    android:hint="@string/catalog_cf_search_hint"
+                    android:imeOptions="actionSearch"
+                    android:importantForAutofill="no"
+                    android:inputType="text" />
 
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_search"
+                    style="@style/Widget.Levi.Button.Primary"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/catalog_cf_search"
+                    app:icon="@drawable/ic_ui_search"
+                    app:iconGravity="textStart" />
+
+                <TextView
+                    style="@style/CatalogFieldLabel"
+                    android:layout_marginTop="14dp"
+                    android:text="@string/catalog_cf_class" />
+
+                <TextView
+                    android:id="@+id/cf_select_class"
+                    style="@style/CatalogSelect"
+                    android:layout_width="match_parent" />
+
+                <LinearLayout
+                    android:id="@+id/cf_version_column"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/CatalogFieldLabel"
+                        android:text="@string/catalog_cf_game_version" />
+
+                    <TextView
+                        android:id="@+id/cf_select_version"
+                        style="@style/CatalogSelect"
+                        android:layout_width="match_parent" />
+                </LinearLayout>
+
+                <TextView
+                    style="@style/CatalogFieldLabel"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/catalog_cf_sort" />
+
+                <TextView
                     android:id="@+id/btn_sort"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="32dp"
-                    android:minWidth="0dp"
-                    android:minHeight="0dp"
-                    android:insetTop="0dp"
-                    android:insetBottom="0dp"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="8dp"
-                    android:textSize="11sp"
-                    android:textAllCaps="false"
-                    android:fontFamily="@font/misans"
-                    android:textColor="@color/on_surface"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="@color/divider"
-                    app:cornerRadius="12dp"
-                    app:icon="@drawable/ic_arrow_down"
-                    app:iconTint="@color/on_surface"
-                    app:iconSize="14dp"
-                    app:iconPadding="5dp"
-                    app:iconGravity="textEnd" />
+                    style="@style/CatalogSelect"
+                    android:layout_width="match_parent" />
             </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </com.google.android.material.card.MaterialCardView>
 
-            <EditText
-                android:id="@+id/search_box"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cf_results_card"
+        style="@style/Widget.Levi.Card"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/levi_pane_gap"
+        android:layout_weight="1">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/mods_recycler"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginTop="5dp"
-                android:background="@drawable/bg_cf_search"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
                 android:paddingStart="12dp"
+                android:paddingTop="8dp"
                 android:paddingEnd="12dp"
-                android:hint="@string/curseforge_search_hint"
-                android:textSize="13sp"
-                android:singleLine="true"
-                android:selectAllOnFocus="false"
-                android:textColor="@color/on_surface"
-                android:textColorHint="@color/text_secondary"
-                android:fontFamily="@font/misans"
-                android:imeOptions="actionSearch"
-                android:inputType="text"
-                android:drawableStart="@drawable/ic_search"
-                android:drawableTint="@color/text_secondary"
-                android:drawablePadding="9dp" />
+                android:paddingBottom="8dp"
+                android:scrollbars="none" />
 
-            <HorizontalScrollView
+            <LinearLayout
+                android:id="@+id/empty_state"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="9dp"
-                android:fillViewport="false"
-                android:scrollbars="none">
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:visibility="gone">
 
-                <RadioGroup
-                    android:id="@+id/category_group"
+                <TextView
+                    android:id="@+id/empty_message"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal" />
-            </HorizontalScrollView>
-        </LinearLayout>
-    </com.google.android.material.appbar.AppBarLayout>
+                    android:ellipsize="end"
+                    android:gravity="center"
+                    android:maxLines="6"
+                    android:maxWidth="480dp"
+                    android:text="@string/catalog_cf_no_results"
+                    android:textAppearance="@style/TextAppearance.Levi.Body"
+                    android:textColor="@color/text_secondary" />
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/cf_retry"
+                    style="@style/Widget.Levi.Button.Secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/catalog_retry"
+                    android:visibility="gone"
+                    app:icon="@drawable/ic_ui_refresh" />
+            </LinearLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/mods_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingStart="6dp"
-            android:paddingEnd="6dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="12dp"
-            android:scrollbars="none" />
-
-        <TextView
-            android:id="@+id/empty_message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:padding="24dp"
-            android:gravity="center"
-            android:fontFamily="@font/misans"
-            android:textSize="13sp"
-            android:textColor="@color/text_secondary"
-            android:text="@string/no_mods_found"
-            android:visibility="gone" />
-
-        <ProgressBar
-            android:id="@+id/loading_progress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:visibility="gone" />
-    </FrameLayout>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+            <ProgressBar
+                android:id="@+id/loading_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+        </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
+</LinearLayout>

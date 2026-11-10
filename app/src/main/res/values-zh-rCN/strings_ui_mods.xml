@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 模组页 -->
+    <string name="mods_get_mods">获取模组</string>
+    <string name="mods_subtitle">%1$s · 共 %2$d 个，已启用 %3$d 个</string>
+    <string name="mods_subtitle_counts">共 %1$d 个，已启用 %2$d 个</string>
+    <string name="mods_only_enabled">仅显示已启用的模组</string>
+    <string name="mods_ingame_menu">游戏内模组菜单</string>
+    <string name="mods_filter_all">全部</string>
+    <string name="mods_filter_normal">普通模组</string>
+    <string name="mods_col_name">名称</string>
+    <string name="mods_col_version">版本</string>
+    <string name="mods_col_enabled">启用</string>
+    <string name="mods_refresh">刷新</string>
+    <string name="mods_empty">尚未安装模组</string>
+    <string name="mods_empty_filtered">没有符合条件的模组</string>
+    <string name="mods_sort_by_name">按名称排序</string>
+    <!-- 外部模组页 -->
+    <string name="mods_external_join">加入社区</string>
+    <string name="mods_external_compatible">仅显示兼容</string>
+    <string name="mods_external_sort">排序：%1$s</string>
+    <string name="mods_external_author">作者 %1$s</string>
+</resources>

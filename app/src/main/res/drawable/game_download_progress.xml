@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Inline download progress; the progress layer is re-tinted with the theme color in code. -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@android:id/background">
         <shape android:shape="rectangle">
-            <corners android:radius="4dp" />
-            <solid android:color="@color/primary_container" />
+            <corners android:radius="3dp" />
+            <solid android:color="@color/ui_default" />
         </shape>
     </item>
     <item android:id="@android:id/progress">
         <clip>
             <shape android:shape="rectangle">
-                <corners android:radius="4dp" />
+                <corners android:radius="3dp" />
                 <solid android:color="@color/primary" />
             </shape>
         </clip>

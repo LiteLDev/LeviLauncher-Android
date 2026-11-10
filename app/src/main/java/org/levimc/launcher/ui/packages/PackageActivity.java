@@ -68,6 +68,8 @@ import java.util.TreeSet;
 public class PackageActivity extends BaseActivity {
     public static final String EXTRA_PACKAGE_ID = "package_id";
     public static final String EXTRA_VERSION = "version";
+    /** Opens on the Versions tab (the Browse list's Install button). */
+    public static final String EXTRA_SHOW_VERSIONS = "show_versions";
     /** Result extra: the owner the Browse tab that opened this page lists ("More by owner"). */
     public static final String RESULT_AUTHOR = "author";
 
@@ -172,7 +174,7 @@ public class PackageActivity extends BaseActivity {
         findViewById(R.id.pkg_pkg_btn_share).setOnClickListener(v -> share());
         DynamicAnim.applyPressScale(install);
 
-        selectTab(false);
+        selectTab(getIntent().getBooleanExtra(EXTRA_SHOW_VERSIONS, false));
         if (identifier.isEmpty()) {
             showError(getString(R.string.pkg_package_empty), false);
             return;
@@ -435,18 +437,10 @@ public class PackageActivity extends BaseActivity {
     }
 
     private void styleTab(TextView tab, boolean selected) {
-        if (selected) {
-            GradientDrawable gd = new GradientDrawable();
-            gd.setColor(accent);
-            gd.setCornerRadius(16 * getResources().getDisplayMetrics().density);
-            tab.setBackground(gd);
-            tab.setTextColor(Color.luminance(accent) > 0.42f ? Color.BLACK : Color.WHITE);
-            tab.setTypeface(Typeface.DEFAULT_BOLD);
-        } else {
-            tab.setBackgroundResource(R.drawable.bg_tab_unselected);
-            tab.setTextColor(getColor(R.color.text_secondary));
-            tab.setTypeface(Typeface.DEFAULT);
-        }
+        tab.setBackgroundResource(selected ? R.drawable.bg_ui_segment_selected : android.R.color.transparent);
+        tab.setElevation(selected ? getResources().getDisplayMetrics().density : 0);
+        tab.setTextColor(getColor(selected ? R.color.text_primary : R.color.text_secondary));
+        tab.setTypeface(Typeface.create(tab.getTypeface(), selected ? Typeface.BOLD : Typeface.NORMAL));
     }
 
     static String variantLabel(Context c, CatalogModels.Variant v) {

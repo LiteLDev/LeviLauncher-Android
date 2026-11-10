@@ -155,6 +155,9 @@ public final class LauncherBackgroundController {
                     if (success && activity != null && !activity.isDestroyed()) {
                         new PersonalizationManager(activity).applyToActivity(activity);
                         resume(activity);
+                        if (activity instanceof org.levimc.launcher.ui.activities.BaseActivity) {
+                            ((org.levimc.launcher.ui.activities.BaseActivity) activity).markPersonalizationApplied();
+                        }
                     }
                     callback.accept(success);
                 });

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Top navigation layout, as LeviLauncher for Windows "navbar" mode (Settings > Personalization >
+     Layout and motion > Use top navigation bar): back, logo and name, icon + label tabs in the
+     middle, theme toggle, news and account on the right. BaseActivity puts the page into @id/shell_content. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/shell_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical"
+    android:tag="levi_keep_background">
+
+    <LinearLayout
+        android:id="@+id/nav_bar_root"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/ui_chrome"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingEnd="12dp"
+        android:tag="levi_keep_background">
+
+        <ImageView
+            android:id="@+id/nav_back_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_shell_icon_button"
+            android:contentDescription="@string/nav_back"
+            android:padding="10dp"
+            android:src="@drawable/ic_ui_arrow_back"
+            android:tooltipText="@string/nav_back"
+            app:tint="@color/ui_muted" />
+
+        <ImageView
+            android:id="@+id/nav_logo"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginStart="6dp"
+            android:contentDescription="@string/app_name"
+            android:src="@drawable/ic_leaf_logo" />
+
+        <TextView
+            android:id="@+id/nav_app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:fontFamily="@font/misans"
+            android:text="@string/app_name"
+            android:textColor="@color/accent_text"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <HorizontalScrollView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:fillViewport="true"
+            android:overScrollMode="never"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/nav_navbar_items"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/nav_tab_launch"
+                    style="@style/Widget.Levi.NavbarItem"
+                    android:drawableStart="@drawable/ic_nav_launch"
+                    android:text="@string/nav_launch" />
+
+                <TextView
+                    android:id="@+id/nav_tab_download"
+                    style="@style/Widget.Levi.NavbarItem"
+                    android:drawableStart="@drawable/ic_nav_download"
+                    android:text="@string/nav_download" />
+
+                <TextView
+                    android:id="@+id/nav_tab_instances"
+                    style="@style/Widget.Levi.NavbarItem"
+                    android:drawableStart="@drawable/ic_nav_instances"
+                    android:text="@string/nav_instances" />
+
+                <TextView
+                    android:id="@+id/nav_tab_about"
+                    style="@style/Widget.Levi.NavbarItem"
+                    android:drawableStart="@drawable/ic_nav_about"
+                    android:text="@string/nav_about" />
+
+                <TextView
+                    android:id="@+id/nav_tab_settings"
+                    style="@style/Widget.Levi.NavbarItem"
+                    android:drawableStart="@drawable/ic_nav_settings"
+                    android:text="@string/nav_settings" />
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="20dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="6dp"
+            android:background="@color/ui_border" />
+
+        <ImageView
+            android:id="@+id/nav_theme_toggle"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/bg_shell_icon_button"
+            android:contentDescription="@string/nav_toggle_theme"
+            android:padding="10dp"
+            android:src="@drawable/ic_sun"
+            android:tooltipText="@string/nav_toggle_theme"
+            app:tint="@color/ui_muted" />
+
+        <include layout="@layout/shell_account_cluster" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/nav_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/ui_border" />
+
+    <FrameLayout
+        android:id="@+id/shell_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+</LinearLayout>

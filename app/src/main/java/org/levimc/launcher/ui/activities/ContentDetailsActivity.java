@@ -196,15 +196,7 @@ public class ContentDetailsActivity extends BaseActivity {
             info.append("  ·  ").append(content.dateModified, 0, 10);
         }
         metadata.setText(info.toString());
-        org.levimc.launcher.util.PersonalizationManager personalization =
-                new org.levimc.launcher.util.PersonalizationManager(this);
-        if (personalization.hasCustomAccent()) {
-            btnInstall.setBackgroundTintList(android.content.res.ColorStateList.valueOf(personalization.getAccentColor()));
-            int onAccent = android.graphics.Color.luminance(personalization.getAccentColor()) > 0.42f
-                    ? android.graphics.Color.BLACK : android.graphics.Color.WHITE;
-            btnInstall.setTextColor(onAccent);
-            btnInstall.setIconTint(android.content.res.ColorStateList.valueOf(onAccent));
-        }
+        org.levimc.launcher.ui.widget.UiKit.applyPrimary(btnInstall);
         if (content.logo != null && content.logo.thumbnailUrl != null) {
             Glide.with(this)
                     .load(content.logo.thumbnailUrl)

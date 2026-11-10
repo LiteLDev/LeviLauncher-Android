@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="download_ui_search_hint">按版本搜索…</string>
+    <string name="download_ui_filter_all">全部</string>
+    <string name="download_ui_col_version">版本</string>
+    <string name="download_ui_col_type">类型</string>
+    <string name="download_ui_col_status">状态</string>
+    <string name="download_ui_col_actions">操作</string>
+</resources>

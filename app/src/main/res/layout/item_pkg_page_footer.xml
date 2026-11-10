@@ -1,50 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Pagination row under the catalogue results (PagePagination). -->
+<!-- Pagination row under the catalogue results (Windows PagePagination): previous, page numbers, next. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center_vertical"
+    android:gravity="center"
     android:orientation="horizontal"
-    android:paddingHorizontal="14dp"
     android:paddingTop="10dp"
-    android:paddingBottom="16dp">
+    android:paddingBottom="6dp">
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/pkg_page_prev"
-        android:layout_width="0dp"
-        android:layout_height="36dp"
-        android:layout_weight="1"
-        android:background="@drawable/bg_mod_menu_toggle"
-        android:fontFamily="@font/misans"
-        android:minWidth="0dp"
-        android:minHeight="0dp"
-        android:paddingHorizontal="3dp"
-        android:text="@string/pkg_page_prev"
-        android:textAllCaps="false"
-        android:textColor="@color/primary"
-        android:textSize="12sp" />
+        style="@style/Widget.Levi.Button.Icon"
+        android:contentDescription="@string/pkg_page_prev"
+        app:backgroundTint="@android:color/transparent"
+        app:icon="@drawable/ic_ui_arrow_back" />
 
-    <TextView
-        android:id="@+id/pkg_page_info"
+    <!-- Page number buttons, filled by BrowseFragment.Adapter.FooterHolder. -->
+    <LinearLayout
+        android:id="@+id/pkg_page_numbers"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="12dp"
-        android:fontFamily="@font/misans"
-        android:textColor="@color/text_secondary"
-        android:textSize="12sp" />
+        android:layout_marginStart="6dp"
+        android:layout_marginEnd="6dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/pkg_page_next"
+        style="@style/Widget.Levi.Button.Icon"
+        android:contentDescription="@string/pkg_page_next"
+        app:backgroundTint="@android:color/transparent"
+        app:icon="@drawable/ic_ui_arrow_forward" />
+
+    <!-- "Page x / y" for accessibility (hidden; the number buttons show the page). -->
+    <TextView
+        android:id="@+id/pkg_page_info"
         android:layout_width="0dp"
-        android:layout_height="36dp"
-        android:layout_weight="1"
-        android:background="@drawable/bg_mod_menu_toggle"
-        android:fontFamily="@font/misans"
-        android:minWidth="0dp"
-        android:minHeight="0dp"
-        android:paddingHorizontal="3dp"
-        android:text="@string/pkg_page_next"
-        android:textAllCaps="false"
-        android:textColor="@color/primary"
-        android:textSize="12sp" />
+        android:layout_height="0dp"
+        android:visibility="gone" />
 </LinearLayout>

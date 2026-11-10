@@ -19,12 +19,23 @@ public final class DynamicAnim {
 
     private static final long DIALOG_DISMISS_DURATION_MS = 160L;
 
+    /** Settings > Personalization > Layout and motion > Disable animations (or the system setting). */
+    private static boolean off() {
+        return org.levimc.launcher.util.UiSettings.animationsDisabled();
+    }
+
+    /** With animations disabled the spring starts at its target, so it ends on the first frame. */
+    private static SpringAnimation settle(SpringAnimation anim, float target) {
+        if (off()) anim.setStartValue(target);
+        return anim;
+    }
+
     public static SpringAnimation springAlphaTo(View view, float target) {
         SpringAnimation anim = new SpringAnimation(view, DynamicAnimation.ALPHA, target);
         anim.setSpring(new SpringForce(target)
                 .setDampingRatio(SpringForce.DAMPING_RATIO_NO_BOUNCY)
                 .setStiffness(SpringForce.STIFFNESS_LOW));
-        return anim;
+        return settle(anim, target);
     }
 
     public static SpringAnimation springTranslationYTo(View view, float target) {
@@ -32,7 +43,7 @@ public final class DynamicAnim {
         anim.setSpring(new SpringForce(target)
                 .setDampingRatio(SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY)
                 .setStiffness(SpringForce.STIFFNESS_LOW));
-        return anim;
+        return settle(anim, target);
     }
 
     public static SpringAnimation springTranslationXTo(View view, float target) {
@@ -40,7 +51,7 @@ public final class DynamicAnim {
         anim.setSpring(new SpringForce(target)
                 .setDampingRatio(SpringForce.DAMPING_RATIO_MEDIUM_BOUNCY)
                 .setStiffness(SpringForce.STIFFNESS_LOW));
-        return anim;
+        return settle(anim, target);
     }
 
     public static SpringAnimation springScaleXTo(View view, float target) {
@@ -48,7 +59,7 @@ public final class DynamicAnim {
         anim.setSpring(new SpringForce(target)
                 .setDampingRatio(SpringForce.DAMPING_RATIO_NO_BOUNCY)
                 .setStiffness(SpringForce.STIFFNESS_LOW));
-        return anim;
+        return settle(anim, target);
     }
 
     public static SpringAnimation springScaleYTo(View view, float target) {
@@ -56,14 +67,14 @@ public final class DynamicAnim {
         anim.setSpring(new SpringForce(target)
                 .setDampingRatio(SpringForce.DAMPING_RATIO_NO_BOUNCY)
                 .setStiffness(SpringForce.STIFFNESS_LOW));
-        return anim;
+        return settle(anim, target);
     }
 
     /**
      * Apply press-scale feedback to a view. Does not consume touch, keeping click works.
      */
     public static void applyPressScale(View view) {
-        if (view == null) return;
+        if (view == null || off()) return;
         view.setOnTouchListener((v, event) -> {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN: {
@@ -108,7 +119,7 @@ public final class DynamicAnim {
                 .alpha(0f)
                 .scaleX(0.94f)
                 .scaleY(0.94f)
-                .setDuration(DIALOG_DISMISS_DURATION_MS)
+                .setDuration(off() ? 0L : DIALOG_DISMISS_DURATION_MS)
                 .setInterpolator(new AccelerateInterpolator())
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
@@ -133,7 +144,7 @@ public final class DynamicAnim {
 
     // 对 RecyclerView 可见子项做阶梯式入场（淡入 + 上滑）
     public static void staggerRecyclerChildren(RecyclerView rv) {
-        if (rv == null) return;
+        if (rv == null || off()) return;
         rv.post(() -> {
             int count = rv.getChildCount();
             for (int i = 0; i < count; i++) {

@@ -48,12 +48,36 @@ public class PersonalizationManager {
     private static final String KEY_BG_POSTER_PATH = "bg_poster_path";
     private static final String KEY_BG_IMAGE_BLUR = "bg_image_blur";
     private static final String KEY_BG_IMAGE_BRIGHTNESS = "bg_image_brightness";
+    private static final String KEY_ACCENT_LIGHT = "accent_color_light";
+    private static final String KEY_ACCENT_DARK = "accent_color_dark";
+    private static final String KEY_BG_FIT_MODE = "bg_fit_mode";
+    private static final String KEY_BG_OPACITY = "bg_opacity";
+    private static final String KEY_BG_FOLDER = "bg_folder_uri";
+    private static final String KEY_BG_PLAY_ORDER = "bg_play_order";
+    private static final String KEY_BG_FOLDER_CURRENT = "bg_folder_current";
 
+    // Ranges shown by LeviLauncher for Windows (Settings > Personalization > Wallpaper).
     public static final int BG_BLUR_MIN = 0;
-    public static final int BG_BLUR_MAX = 25;
-    public static final int BG_BRIGHTNESS_MIN = 1;
-    public static final int BG_BRIGHTNESS_MAX = 150;
+    public static final int BG_BLUR_MAX = 50;
+    public static final int BG_BRIGHTNESS_MIN = 20;
+    public static final int BG_BRIGHTNESS_MAX = 100;
     public static final int BG_BRIGHTNESS_DEFAULT = 100;
+    public static final int BG_OPACITY_DEFAULT = 100;
+
+    public static final String FIT_SMART = "smart";
+    public static final String FIT_CENTER = "center";
+    public static final String FIT_FIT = "fit";
+    public static final String FIT_STRETCH = "stretch";
+    public static final String FIT_TILE = "tile";
+    public static final String FIT_TOP_LEFT = "top_left";
+    public static final String FIT_TOP_RIGHT = "top_right";
+    public static final String[] FIT_MODES = {FIT_SMART, FIT_CENTER, FIT_FIT, FIT_STRETCH, FIT_TILE,
+            FIT_TOP_LEFT, FIT_TOP_RIGHT};
+    public static final String ORDER_RANDOM = "random";
+    public static final String ORDER_SEQUENTIAL = "sequential";
+
+    /** View tag that keeps a view's own background when the wallpaper turns surfaces into glass. */
+    public static final String TAG_KEEP_BACKGROUND = "levi_keep_background";
 
     private static final AtomicInteger sChangeGeneration = new AtomicInteger();
     private static final AtomicInteger sBackgroundEffectGeneration = new AtomicInteger();
@@ -61,15 +85,7 @@ public class PersonalizationManager {
     private final SharedPreferences prefs;
     private final Context context;
 
-    private static final int GLASS_ALPHA_DARK = 50;
-    private static final int GLASS_R_DARK = 25;
-    private static final int GLASS_G_DARK = 25;
-    private static final int GLASS_B_DARK = 25;
 
-    private static final int GLASS_ALPHA_LIGHT = 50;
-    private static final int GLASS_R_LIGHT = 255;
-    private static final int GLASS_G_LIGHT = 255;
-    private static final int GLASS_B_LIGHT = 255;
 
     public PersonalizationManager(Context context) {
         this.context = context.getApplicationContext();
@@ -90,22 +106,117 @@ public class PersonalizationManager {
         }
     }
 
+    /** Theme color of the mode in use. Light and dark modes keep their own color, as on Windows. */
     public int getAccentColor() {
-        return prefs.getInt(KEY_ACCENT_COLOR, PRESET_COLORS[0]);
+        return getAccentColor(isDarkActive(context));
+    }
+
+    public int getAccentColor(boolean dark) {
+        String key = dark ? KEY_ACCENT_DARK : KEY_ACCENT_LIGHT;
+        if (prefs.contains(key)) return prefs.getInt(key, ThemePalette.DEFAULT_ACCENT);
+        // Before per-mode colors there was one color for both modes.
+        if (prefs.contains(KEY_ACCENT_COLOR)) return prefs.getInt(KEY_ACCENT_COLOR, ThemePalette.DEFAULT_ACCENT);
+        return ThemePalette.DEFAULT_ACCENT;
     }
 
     public void setAccentColor(int color) {
-        prefs.edit().putInt(KEY_ACCENT_COLOR, color).apply();
+        setAccentColor(isDarkActive(context), color);
+    }
+
+    public void setAccentColor(boolean dark, int color) {
+        prefs.edit().putInt(dark ? KEY_ACCENT_DARK : KEY_ACCENT_LIGHT, color | 0xFF000000).apply();
         sChangeGeneration.incrementAndGet();
     }
 
     public boolean hasCustomAccent() {
-        return prefs.contains(KEY_ACCENT_COLOR) && prefs.getInt(KEY_ACCENT_COLOR, 0) != 0;
+        return prefs.contains(KEY_ACCENT_LIGHT) || prefs.contains(KEY_ACCENT_DARK)
+                || (prefs.contains(KEY_ACCENT_COLOR) && prefs.getInt(KEY_ACCENT_COLOR, 0) != 0);
     }
 
     public void clearAccentColor() {
-        prefs.edit().remove(KEY_ACCENT_COLOR).apply();
+        prefs.edit().remove(KEY_ACCENT_COLOR).remove(KEY_ACCENT_LIGHT).remove(KEY_ACCENT_DARK).apply();
         sChangeGeneration.incrementAndGet();
+    }
+
+    /** Page title color for the current theme color (Windows brand-heading). */
+    public int getHeadingColor(Context ctx) {
+        boolean dark = isDarkMode(ctx);
+        return ThemePalette.heading(getAccentColor(dark), dark);
+    }
+
+    /**
+     * Dark mode as the launcher applies it: AppCompat's night mode, or the system setting when
+     * following the system. The application context does not carry AppCompat's night mode.
+     */
+    public static boolean isDarkActive(Context context) {
+        int mode = androidx.appcompat.app.AppCompatDelegate.getDefaultNightMode();
+        if (mode == androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES) return true;
+        if (mode == androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO) return false;
+        int night = context.getApplicationContext().getResources().getConfiguration().uiMode
+                & android.content.res.Configuration.UI_MODE_NIGHT_MASK;
+        return night == android.content.res.Configuration.UI_MODE_NIGHT_YES;
+    }
+
+    public static void bumpChange() {
+        sChangeGeneration.incrementAndGet();
+    }
+
+    public static void bumpBackgroundEffects() {
+        sBackgroundEffectGeneration.incrementAndGet();
+    }
+
+    public String getBackgroundFitMode() {
+        String mode = prefs.getString(KEY_BG_FIT_MODE, FIT_SMART);
+        for (String m : FIT_MODES) if (m.equals(mode)) return m;
+        return FIT_SMART;
+    }
+
+    public void setBackgroundFitMode(String mode) {
+        if (mode.equals(getBackgroundFitMode())) return;
+        prefs.edit().putString(KEY_BG_FIT_MODE, mode).apply();
+        sBackgroundEffectGeneration.incrementAndGet();
+    }
+
+    public int getBackgroundOpacity() {
+        return clamp(prefs.getInt(KEY_BG_OPACITY, BG_OPACITY_DEFAULT), 0, 100);
+    }
+
+    public void setBackgroundOpacity(int opacity) {
+        int clamped = clamp(opacity, 0, 100);
+        if (clamped == getBackgroundOpacity()) return;
+        prefs.edit().putInt(KEY_BG_OPACITY, clamped).apply();
+        sBackgroundEffectGeneration.incrementAndGet();
+    }
+
+    /** Folder the wallpaper is picked from (a document tree URI), or null for a single image. */
+    public String getBackgroundFolder() {
+        return prefs.getString(KEY_BG_FOLDER, null);
+    }
+
+    public void setBackgroundFolder(String treeUri) {
+        SharedPreferences.Editor editor = prefs.edit();
+        if (treeUri == null) editor.remove(KEY_BG_FOLDER).remove(KEY_BG_FOLDER_CURRENT);
+        else editor.putString(KEY_BG_FOLDER, treeUri);
+        editor.apply();
+    }
+
+    public String getBackgroundPlayOrder() {
+        return ORDER_SEQUENTIAL.equals(prefs.getString(KEY_BG_PLAY_ORDER, ORDER_RANDOM))
+                ? ORDER_SEQUENTIAL : ORDER_RANDOM;
+    }
+
+    public void setBackgroundPlayOrder(String order) {
+        prefs.edit().putString(KEY_BG_PLAY_ORDER,
+                ORDER_SEQUENTIAL.equals(order) ? ORDER_SEQUENTIAL : ORDER_RANDOM).apply();
+    }
+
+    /** Document id of the folder image shown now, used to pick the next one. */
+    public String getBackgroundFolderCurrent() {
+        return prefs.getString(KEY_BG_FOLDER_CURRENT, null);
+    }
+
+    public void setBackgroundFolderCurrent(String documentId) {
+        prefs.edit().putString(KEY_BG_FOLDER_CURRENT, documentId).apply();
     }
 
     public String getBackgroundImagePath() {
@@ -342,6 +453,20 @@ public class PersonalizationManager {
         }
         if (!applyBackgroundImageToView(bgView)) return;
 
+        boolean isDark = isDarkMode(activity);
+        View baseView = rootView.findViewWithTag("personalization_base");
+        if (baseView == null) {
+            baseView = new View(activity);
+            baseView.setTag("personalization_base");
+            rootView.addView(baseView, 0, new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        } else if (rootView.indexOfChild(baseView) > rootView.indexOfChild(background)) {
+            // The wallpaper view was re-created (image <-> animation); keep the base under it.
+            rootView.removeView(baseView);
+            rootView.addView(baseView, 0);
+        }
+        applyBaseLayer(baseView, isDark);
+
         View overlayView = rootView.findViewWithTag("personalization_overlay");
         if (overlayView == null) {
             overlayView = new View(activity);
@@ -353,16 +478,40 @@ public class PersonalizationManager {
             rootView.addView(overlayView, bgIndex + 1);
         }
 
-        boolean isDark = isDarkMode(activity);
-        overlayView.setBackgroundColor(isDark ? Color.argb(100, 0, 0, 0) : Color.argb(80, 255, 255, 255));
-        overlayView.setVisibility(View.VISIBLE);
+        applyOverlay(overlayView, isDark);
 
         makeChildBackgroundsTranslucent(rootView, activity);
+    }
+
+    /** Solid layer under the wallpaper (Windows "Base mode"): none, the theme color, or a custom color. */
+    private void applyBaseLayer(View baseView, boolean isDark) {
+        int page = ContextCompat.getColor(baseView.getContext(), R.color.background);
+        String mode = UiSettings.getBaseMode(context, isDark);
+        if (UiSettings.BASE_NONE.equals(mode)) {
+            baseView.setBackgroundColor(page);
+            return;
+        }
+        int color = UiSettings.BASE_THEME.equals(mode)
+                ? ThemePalette.shade(getAccentColor(isDark), isDark ? 900 : 50)
+                : UiSettings.getBaseColor(context, isDark);
+        baseView.setBackgroundColor(ThemePalette.mix(page, color, UiSettings.getBaseOpacity(context, isDark) / 100f));
+    }
+
+    /** Wallpaper scrim: the surface color at the material overlay opacity. */
+    private void applyOverlay(View overlayView, boolean isDark) {
+        int alpha = Math.round(UiSettings.getOverlayOpacity(context, isDark) * 2.55f);
+        overlayView.setBackgroundColor(isDark ? Color.argb(alpha, 24, 24, 27) : Color.argb(alpha, 255, 255, 255));
+        overlayView.setVisibility(View.VISIBLE);
     }
 
     public void refreshBackgroundEffects(Activity activity) {
         ViewGroup rootView = activity.findViewById(android.R.id.content);
         if (rootView == null) return;
+        boolean isDark = isDarkMode(activity);
+        View baseView = rootView.findViewWithTag("personalization_base");
+        if (baseView != null) applyBaseLayer(baseView, isDark);
+        View overlayView = rootView.findViewWithTag("personalization_overlay");
+        if (overlayView != null) applyOverlay(overlayView, isDark);
         ImageView bgView = findBackgroundPoster(rootView);
         if (bgView != null) refreshBackgroundImageView(bgView);
         LauncherBackgroundController.refreshEffects();
@@ -425,6 +574,8 @@ public class PersonalizationManager {
     }
 
     public void applyBackgroundImageEffects(ImageView bgView) {
+        applyFitMode(bgView);
+        bgView.setAlpha(getBackgroundOpacity() / 100f);
         int blurRadius = getBackgroundImageBlur();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (blurRadius > 0) {
@@ -448,6 +599,48 @@ public class PersonalizationManager {
                 0, 0, 0, 1, 0
         });
         bgView.setColorFilter(new ColorMatrixColorFilter(matrix));
+    }
+
+    /** Windows fit modes: smart (cover), center, fit (contain), stretch, tile, top left, top right. */
+    private void applyFitMode(ImageView bgView) {
+        String fit = getBackgroundFitMode();
+        Drawable d = bgView.getDrawable();
+        if (FIT_TILE.equals(fit) && d instanceof android.graphics.drawable.BitmapDrawable) {
+            android.graphics.drawable.BitmapDrawable tile = new android.graphics.drawable.BitmapDrawable(
+                    bgView.getResources(), ((android.graphics.drawable.BitmapDrawable) d).getBitmap());
+            tile.setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT);
+            bgView.setBackground(tile);
+            bgView.setImageAlpha(0);
+            return;
+        }
+        if (bgView.getBackground() instanceof android.graphics.drawable.BitmapDrawable) bgView.setBackground(null);
+        bgView.setImageAlpha(255);
+        switch (fit) {
+            case FIT_CENTER:
+                bgView.setScaleType(ImageView.ScaleType.CENTER);
+                break;
+            case FIT_FIT:
+                bgView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                break;
+            case FIT_STRETCH:
+                bgView.setScaleType(ImageView.ScaleType.FIT_XY);
+                break;
+            case FIT_TOP_LEFT:
+            case FIT_TOP_RIGHT:
+                bgView.setScaleType(ImageView.ScaleType.MATRIX);
+                bgView.post(() -> {
+                    Drawable drawable = bgView.getDrawable();
+                    if (drawable == null) return;
+                    android.graphics.Matrix m = new android.graphics.Matrix();
+                    if (FIT_TOP_RIGHT.equals(getBackgroundFitMode())) {
+                        m.setTranslate(bgView.getWidth() - drawable.getIntrinsicWidth(), 0);
+                    }
+                    bgView.setImageMatrix(m);
+                });
+                break;
+            default:
+                bgView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        }
     }
 
     private Bitmap createBlurredBitmap(Bitmap source, int radius) {
@@ -530,12 +723,21 @@ public class PersonalizationManager {
         return Math.max(min, Math.min(max, value));
     }
 
+    /** Surface color over a wallpaper: Windows interface material (surface RGB at the effective opacity). */
     private int getGlassColor(boolean isDark) {
-        if (isDark) {
-            return Color.argb(GLASS_ALPHA_DARK, GLASS_R_DARK, GLASS_G_DARK, GLASS_B_DARK);
-        } else {
-            return Color.argb(GLASS_ALPHA_LIGHT, GLASS_R_LIGHT, GLASS_G_LIGHT, GLASS_B_LIGHT);
-        }
+        // A fully transparent wallpaper counts as no wallpaper (Windows): solid surfaces.
+        if (getBackgroundOpacity() == 0) return isDark ? 0xFF18181B : 0xFFFFFFFF;
+        int opacity = UiSettings.getEffectiveSurfaceOpacity(context, isDark, getBackgroundImageBrightness(),
+                getBackgroundImageBlur(), getBackgroundOpacity());
+        int alpha = Math.round(opacity * 2.55f);
+        return isDark ? Color.argb(alpha, 24, 24, 27) : Color.argb(alpha, 255, 255, 255);
+    }
+
+    /** Chrome (navigation) color over a wallpaper: Windows NAVBAR_BG, the surface at 85%. */
+    public int getChromeGlassColor(Context ctx) {
+        boolean isDark = isDarkMode(ctx);
+        int alpha = Math.max(Color.alpha(getGlassColor(isDark)), 217);
+        return isDark ? Color.argb(alpha, 24, 24, 27) : Color.argb(alpha, 255, 255, 255);
     }
 
     private void makeChildBackgroundsTranslucent(ViewGroup parent, Activity activity) {
@@ -547,7 +749,12 @@ public class PersonalizationManager {
 
         for (int i = 0; i < parent.getChildCount(); i++) {
             View child = parent.getChildAt(i);
-            if ("personalization_bg".equals(child.getTag()) || "personalization_overlay".equals(child.getTag())) {
+            if ("personalization_bg".equals(child.getTag()) || "personalization_overlay".equals(child.getTag())
+                    || "personalization_base".equals(child.getTag())) {
+                continue;
+            }
+            if (TAG_KEEP_BACKGROUND.equals(child.getTag())) {
+                if (child instanceof ViewGroup) makeChildBackgroundsTranslucent((ViewGroup) child, activity);
                 continue;
             }
 
@@ -578,7 +785,14 @@ public class PersonalizationManager {
                         if (gdColor == surfColor || gdColor == bgColor || gdColor == surfVariantColor
                                 || isNearBlack(gdColor) || isNearWhite(gdColor)) {
                             GradientDrawable newGd = new GradientDrawable();
-                            newGd.setCornerRadius(dpToPx(activity, 12));
+                            float[] radii = null;
+                            try {
+                                radii = gd.getCornerRadii();
+                            } catch (Exception ignored) {
+                            }
+                            if (radii != null) newGd.setCornerRadii(radii);
+                            else newGd.setCornerRadius(gd.getCornerRadius());
+                            newGd.setShape(gd.getShape());
                             newGd.setColor(glassColor);
                             child.setBackground(newGd);
                         }
@@ -636,30 +850,21 @@ public class PersonalizationManager {
             com.google.android.material.switchmaterial.SwitchMaterial sw =
                     (com.google.android.material.switchmaterial.SwitchMaterial) view;
             try {
-                int[][] states = {{android.R.attr.state_checked}, {}};
-                sw.setThumbTintList(new ColorStateList(states, new int[]{accentColor, 0xFFAAAAAA}));
-                int trackChecked = Color.argb(100, Color.red(accentColor), Color.green(accentColor), Color.blue(accentColor));
-                sw.setTrackTintList(new ColorStateList(states, new int[]{trackChecked, 0xFF555555}));
+                applySwitchColors(sw, accentColor, ctx);
             } catch (Exception ignored) {}
         }
 
         if (view instanceof Switch && !(view instanceof com.google.android.material.switchmaterial.SwitchMaterial)) {
             Switch sw = (Switch) view;
             try {
-                int[][] states = {{android.R.attr.state_checked}, {}};
-                sw.setThumbTintList(new ColorStateList(states, new int[]{accentColor, 0xFFAAAAAA}));
-                int trackChecked = Color.argb(100, Color.red(accentColor), Color.green(accentColor), Color.blue(accentColor));
-                sw.setTrackTintList(new ColorStateList(states, new int[]{trackChecked, 0xFF555555}));
+                applySwitchColors(sw, accentColor, ctx);
             } catch (Exception ignored) {}
         }
 
         if (view instanceof androidx.appcompat.widget.SwitchCompat && !(view instanceof com.google.android.material.switchmaterial.SwitchMaterial)) {
             androidx.appcompat.widget.SwitchCompat sw = (androidx.appcompat.widget.SwitchCompat) view;
             try {
-                int[][] states = {{android.R.attr.state_checked}, {}};
-                sw.setThumbTintList(new ColorStateList(states, new int[]{accentColor, 0xFFAAAAAA}));
-                int trackChecked = Color.argb(100, Color.red(accentColor), Color.green(accentColor), Color.blue(accentColor));
-                sw.setTrackTintList(new ColorStateList(states, new int[]{trackChecked, 0xFF555555}));
+                applySwitchColors(sw, accentColor, ctx);
             } catch (Exception ignored) {}
         }
 
@@ -686,14 +891,28 @@ public class PersonalizationManager {
                 if (btn.getBackgroundTintList() != null) {
                     int currentTint = btn.getBackgroundTintList().getDefaultColor();
                     if (currentTint == defaultPrimary || currentTint == defaultSecondary || currentTint == defaultTertiary) {
+                        int label = ThemePalette.onAccent(accentColor);
                         btn.setBackgroundTintList(ColorStateList.valueOf(accentColor));
-                        btn.setTextColor(Color.WHITE);
+                        btn.setTextColor(label);
+                        if (btn instanceof com.google.android.material.button.MaterialButton) {
+                            ((com.google.android.material.button.MaterialButton) btn)
+                                    .setIconTint(ColorStateList.valueOf(label));
+                        }
                     }
                 }
             } catch (Exception ignored) {}
 
             if (btn.getCurrentTextColor() == defaultPrimary || btn.getCurrentTextColor() == defaultAccentText) {
-                btn.setTextColor(accentColor);
+                int fg = ThemePalette.foreground(accentColor, isDarkMode(ctx));
+                btn.setTextColor(fg);
+                if (btn instanceof com.google.android.material.button.MaterialButton) {
+                    com.google.android.material.button.MaterialButton mb =
+                            (com.google.android.material.button.MaterialButton) btn;
+                    mb.setIconTint(ColorStateList.valueOf(fg));
+                    if (mb.getStrokeColor() != null && mb.getStrokeColor().getDefaultColor() == defaultPrimary) {
+                        mb.setStrokeColor(ColorStateList.valueOf(accentColor));
+                    }
+                }
             }
 
             Drawable bg = btn.getBackground();
@@ -715,8 +934,14 @@ public class PersonalizationManager {
             TextView tv = (TextView) view;
             int textColor = tv.getCurrentTextColor();
 
-            if (textColor == defaultPrimary || textColor == defaultAccentText) {
+            if (textColor == defaultPrimary) {
                 tv.setTextColor(accentColor);
+            } else if (textColor == defaultAccentText) {
+                // Accent text and page titles use the readable variant (Windows brand-foreground/heading).
+                boolean dark = isDarkMode(ctx);
+                float sp = tv.getTextSize() / ctx.getResources().getDisplayMetrics().scaledDensity;
+                tv.setTextColor(sp >= 20 ? ThemePalette.heading(accentColor, dark)
+                        : ThemePalette.foreground(accentColor, dark));
             }
 
             try {
@@ -747,6 +972,32 @@ public class PersonalizationManager {
         }
     }
 
+    /** Windows (HeroUI) switch: white thumb, theme-color track when on, grey track when off. */
+    private void applySwitchColors(android.widget.CompoundButton sw, int accentColor, Context ctx) {
+        int[][] states = {{android.R.attr.state_checked}, {}};
+        int off = isDarkMode(ctx) ? 0xFF52525B : 0xFFD4D4D8;
+        ColorStateList thumb = new ColorStateList(states, new int[]{0xFFFFFFFF, 0xFFFFFFFF});
+        ColorStateList track = new ColorStateList(states, new int[]{accentColor, off});
+        if (sw instanceof androidx.appcompat.widget.SwitchCompat) {
+            androidx.appcompat.widget.SwitchCompat c = (androidx.appcompat.widget.SwitchCompat) sw;
+            c.setThumbTintList(thumb);
+            c.setTrackTintList(track);
+            c.setTrackTintMode(android.graphics.PorterDuff.Mode.SRC_IN);
+        } else if (sw instanceof Switch) {
+            Switch c = (Switch) sw;
+            c.setThumbTintList(thumb);
+            c.setTrackTintList(track);
+            c.setTrackTintMode(android.graphics.PorterDuff.Mode.SRC_IN);
+        }
+    }
+
+    /** Glass pass for views inflated after the page was set up (fragments, late content). */
+    public void applyGlassToTree(View root, Activity activity) {
+        if (!hasBackgroundImage() || LauncherBackgroundController.isMinecraftBlocked()) return;
+        applyGlassToView(root);
+        if (root instanceof ViewGroup) makeChildBackgroundsTranslucent((ViewGroup) root, activity);
+    }
+
     public void applyAccentToView(View view, Context context) {
         int accent = getAccentColor();
         if (accent == 0) return;
@@ -758,6 +1009,7 @@ public class PersonalizationManager {
     }
 
     public boolean isDarkMode(Context ctx) {
+        if (!(ctx instanceof Activity)) return isDarkActive(ctx);
         int nightModeFlags = ctx.getResources().getConfiguration().uiMode
                 & android.content.res.Configuration.UI_MODE_NIGHT_MASK;
         return nightModeFlags == android.content.res.Configuration.UI_MODE_NIGHT_YES;
@@ -822,27 +1074,7 @@ public class PersonalizationManager {
         return dp * context.getResources().getDisplayMetrics().density;
     }
 
-    public static final int[] PRESET_COLORS = {
-            0xFF26A69A, 0xFF42A5F5, 0xFF5C6BC0,
-            0xFFAB47BC, 0xFFEC407A, 0xFFEF5350,
-            0xFFFF7043, 0xFFFFA726, 0xFFFFCA28,
-            0xFF66BB6A, 0xFF26C6DA, 0xFF29B6F6,
-            0xFF7E57C2, 0xFFE91E63, 0xFFF44336
-    };
+    public static final int[] PRESET_COLORS = ThemePalette.PRESETS;
 
-    public static final int[] MORE_COLORS = {
-            0xFFFF9800, 0xFFF57C00, 0xFFE65100,
-            0xFFFF5722, 0xFFBF360C, 0xFFD32F2F,
-            0xFFC62828, 0xFFAD1457, 0xFF880E4F,
-            0xFFE91E63, 0xFFF06292, 0xFFCE93D8,
-            0xFF9C27B0, 0xFF7B1FA2, 0xFF4A148C,
-            0xFF5C6BC0, 0xFF3F51B5, 0xFF283593,
-            0xFF1A237E, 0xFF1565C0, 0xFF0D47A1,
-            0xFF0277BD, 0xFF00838F, 0xFF006064,
-            0xFF00796B, 0xFF00695C, 0xFF004D40,
-            0xFF2E7D32, 0xFF1B5E20, 0xFF33691E,
-            0xFF827717, 0xFF9E9E9E, 0xFF757575,
-            0xFF616161, 0xFF455A64, 0xFF37474F,
-            0xFF4AE0A0, 0xFFCDDC39, 0xFF8BC34A
-    };
+    public static final int[] MORE_COLORS = ThemePalette.MORE;
 }

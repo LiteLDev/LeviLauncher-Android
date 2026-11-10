@@ -1,52 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Pagination under the CurseForge results (Windows PagePagination). -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:gravity="center"
     android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:paddingHorizontal="14dp"
     android:paddingTop="10dp"
-    android:paddingBottom="16dp">
+    android:paddingBottom="6dp">
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_prev_page"
-        android:layout_width="0dp"
-        android:layout_height="36dp"
-        android:layout_weight="1"
-        android:minWidth="0dp"
-        android:minHeight="0dp"
-        android:paddingHorizontal="3dp"
-        android:background="@drawable/bg_mod_menu_toggle"
-        android:text="@string/previous"
-        android:textColor="@color/primary"
-        android:textSize="12sp"
-        android:textAllCaps="false"
-        android:fontFamily="@font/misans"
-        android:enabled="false" />
+        style="@style/Widget.Levi.Button.Icon"
+        android:contentDescription="@string/previous"
+        android:enabled="false"
+        app:icon="@drawable/ic_ui_arrow_back" />
 
     <TextView
         android:id="@+id/tv_page_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="12dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="14dp"
         android:text="@string/pagination_page_one"
-        android:textSize="12sp"
-        android:fontFamily="@font/misans"
-        android:textColor="@color/text_secondary" />
+        android:textAppearance="@style/TextAppearance.Levi.Body"
+        android:textStyle="bold" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_next_page"
-        android:layout_width="0dp"
-        android:layout_height="36dp"
-        android:layout_weight="1"
-        android:minWidth="0dp"
-        android:minHeight="0dp"
-        android:paddingHorizontal="3dp"
-        android:background="@drawable/bg_mod_menu_toggle"
-        android:text="@string/next"
-        android:textColor="@color/primary"
-        android:textSize="12sp"
-        android:textAllCaps="false"
-        android:fontFamily="@font/misans"
-        android:enabled="false" />
+        style="@style/Widget.Levi.Button.Icon"
+        android:contentDescription="@string/next"
+        android:enabled="false"
+        app:icon="@drawable/ic_ui_arrow_forward" />
 </LinearLayout>

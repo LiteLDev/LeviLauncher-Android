@@ -1,37 +1,26 @@
 package org.levimc.launcher.ui.activities;
 
 import android.content.Intent;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
-import android.widget.PopupMenu;
 import android.widget.ProgressBar;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.button.MaterialButton;
 
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.curseforge.CurseForgeClient;
 import org.levimc.launcher.core.curseforge.models.Content;
 import org.levimc.launcher.core.curseforge.models.ContentSearchResponse;
 import org.levimc.launcher.ui.adapter.CurseForgeContentAdapter;
-import org.levimc.launcher.util.PersonalizationManager;
+import org.levimc.launcher.ui.widget.CatalogSelect;
 import org.levimc.launcher.util.UIHelper;
+import org.levimc.launcher.util.UiSettings;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,18 +31,25 @@ public class CurseForgeActivity extends BaseActivity {
     private static final int PAGE_SIZE = 20;
 
     private EditText searchBox;
-    private RadioGroup categoryGroup;
-    private MaterialButton btnSort;
+    private CatalogSelect classSelect;
+    private CatalogSelect versionSelect;
+    private CatalogSelect sortSelect;
     private RecyclerView recyclerView;
     private ProgressBar loadingProgress;
+    private View emptyState;
     private TextView emptyMessage;
+    private View retryButton;
     private CurseForgeContentAdapter adapter;
     private CurseForgeClient client;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private int currentPage = 1;
     private int totalPages = 1;
     private int requestSequence;
+    private Category currentCategory;
     private SortOption currentSort;
+    /** Empty means all versions. */
+    private String currentVersion = "";
+    private final List<String> gameVersions = new ArrayList<>();
 
     private static class Category {
         final String name;
@@ -83,38 +79,36 @@ public class CurseForgeActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_curseforge);
+        setContentView(UiSettings.useTwoPane(this)
+                ? R.layout.activity_curseforge : R.layout.activity_curseforge_stacked);
         client = CurseForgeClient.getInstance();
         setupData();
         initViews();
         loadContent();
+        loadGameVersions();
     }
 
     private void setupData() {
-        categories.add(new Category("All", 0));
+        categories.add(new Category(getString(R.string.catalog_cf_all_classes), 0));
         categories.add(new Category("Addons", 4984));
         categories.add(new Category("Maps", 6913));
         categories.add(new Category("Skins", 6925));
         categories.add(new Category("Textures", 6929));
         categories.add(new Category("Scripts", 6940));
 
-        sortOptions.add(new SortOption("Popular", CurseForgeClient.SORT_POPULARITY, "desc"));
-        sortOptions.add(new SortOption("Downloads", CurseForgeClient.SORT_TOTAL_DOWNLOADS, "desc"));
-        sortOptions.add(new SortOption("Recently updated", CurseForgeClient.SORT_LAST_UPDATED, "desc"));
-        sortOptions.add(new SortOption("Name", CurseForgeClient.SORT_NAME, "asc"));
-    }
-
-    private int dp(float value) {
-        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, getResources().getDisplayMetrics()));
+        sortOptions.add(new SortOption(getString(R.string.catalog_cf_sort_popular), CurseForgeClient.SORT_POPULARITY, "desc"));
+        sortOptions.add(new SortOption(getString(R.string.catalog_cf_sort_downloads), CurseForgeClient.SORT_TOTAL_DOWNLOADS, "desc"));
+        sortOptions.add(new SortOption(getString(R.string.catalog_cf_sort_updated), CurseForgeClient.SORT_LAST_UPDATED, "desc"));
+        sortOptions.add(new SortOption(getString(R.string.catalog_cf_sort_name), CurseForgeClient.SORT_NAME, "asc"));
     }
 
     private void initViews() {
         searchBox = findViewById(R.id.search_box);
-        categoryGroup = findViewById(R.id.category_group);
-        btnSort = findViewById(R.id.btn_sort);
         recyclerView = findViewById(R.id.mods_recycler);
         loadingProgress = findViewById(R.id.loading_progress);
+        emptyState = findViewById(R.id.empty_state);
         emptyMessage = findViewById(R.id.empty_message);
+        retryButton = findViewById(R.id.cf_retry);
 
         adapter = new CurseForgeContentAdapter(this::onContentClick, new CurseForgeContentAdapter.OnPageChangeListener() {
             @Override
@@ -139,100 +133,102 @@ public class CurseForgeActivity extends BaseActivity {
 
         searchBox.setOnEditorActionListener((view, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                currentPage = 1;
-                loadContent();
-                UIHelper.hideKeyboard(this);
-                searchBox.clearFocus();
+                runSearch();
                 return true;
             }
             return false;
         });
+        findViewById(R.id.btn_search).setOnClickListener(v -> runSearch());
+        retryButton.setOnClickListener(v -> {
+            loadContent();
+            if (gameVersions.isEmpty()) loadGameVersions();
+        });
 
-        PersonalizationManager personalization = new PersonalizationManager(this);
-        int accentColor = personalization.hasCustomAccent()
-                ? personalization.getAccentColor()
-                : ContextCompat.getColor(this, R.color.primary);
-        int onSurface = ContextCompat.getColor(this, R.color.on_surface);
-        int surfaceVariant = ContextCompat.getColor(this, R.color.surface_variant);
-        int textOnAccent = Color.luminance(accentColor) > 0.42f ? Color.BLACK : Color.WHITE;
-
-        ColorStateList chipText = new ColorStateList(
-                new int[][]{new int[]{android.R.attr.state_checked}, new int[]{}},
-                new int[]{textOnAccent, onSurface});
-
-        for (int i = 0; i < categories.size(); i++) {
-            Category category = categories.get(i);
-            RadioButton chip = new RadioButton(this);
-            chip.setId(View.generateViewId());
-            chip.setTag(category);
-            chip.setText(category.name);
-            chip.setTextColor(chipText);
-            chip.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f);
-            chip.setAllCaps(false);
-            chip.setButtonDrawable(android.R.color.transparent);
-            chip.setGravity(android.view.Gravity.CENTER);
-            chip.setMinHeight(dp(32));
-            chip.setMinimumWidth(0);
-            chip.setPadding(dp(12), dp(6), dp(12), dp(6));
-
-            GradientDrawable checked = new GradientDrawable();
-            checked.setCornerRadius(dp(12));
-            checked.setColor(accentColor);
-            GradientDrawable unchecked = new GradientDrawable();
-            unchecked.setCornerRadius(dp(12));
-            unchecked.setColor(surfaceVariant);
-            StateListDrawable state = new StateListDrawable();
-            state.addState(new int[]{android.R.attr.state_checked}, checked);
-            state.addState(new int[]{}, unchecked);
-            chip.setBackground(state);
-
-            RadioGroup.LayoutParams params = new RadioGroup.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT, dp(32));
-            params.setMarginEnd(dp(7));
-            categoryGroup.addView(chip, params);
-            if (i == 0) chip.setChecked(true);
-        }
-
-        categoryGroup.setOnCheckedChangeListener((group, checkedId) -> {
+        List<String> classNames = new ArrayList<>();
+        for (Category category : categories) classNames.add(category.name);
+        currentCategory = categories.get(0);
+        classSelect = new CatalogSelect(findViewById(R.id.cf_select_class), getString(R.string.catalog_cf_class));
+        classSelect.setItems(classNames, 0);
+        classSelect.setOnPick(index -> {
+            currentCategory = categories.get(index);
             currentPage = 1;
             loadContent();
         });
 
+        List<String> sortNames = new ArrayList<>();
+        for (SortOption option : sortOptions) sortNames.add(option.name);
         currentSort = sortOptions.get(0);
-        btnSort.setText(currentSort.name);
-        btnSort.setOnClickListener(view -> {
-            PopupMenu menu = new PopupMenu(this, view);
-            for (int i = 0; i < sortOptions.size(); i++) {
-                menu.getMenu().add(0, i, i, sortOptions.get(i).name);
-            }
-            menu.setOnMenuItemClickListener(item -> {
-                currentSort = sortOptions.get(item.getItemId());
-                btnSort.setText(currentSort.name);
-                currentPage = 1;
-                loadContent();
-                return true;
-            });
-            menu.show();
+        sortSelect = new CatalogSelect(findViewById(R.id.btn_sort), getString(R.string.catalog_cf_sort));
+        sortSelect.setItems(sortNames, 0);
+        sortSelect.setOnPick(index -> {
+            currentSort = sortOptions.get(index);
+            currentPage = 1;
+            loadContent();
         });
+
+        versionSelect = new CatalogSelect(findViewById(R.id.cf_select_version), getString(R.string.catalog_cf_game_version));
+        bindVersions();
+        versionSelect.setOnPick(index -> {
+            currentVersion = index == 0 ? "" : gameVersions.get(index - 1);
+            currentPage = 1;
+            loadContent();
+        });
+    }
+
+    private void runSearch() {
+        currentPage = 1;
+        loadContent();
+        UIHelper.hideKeyboard(this);
+        searchBox.clearFocus();
+    }
+
+    private void bindVersions() {
+        List<String> items = new ArrayList<>();
+        items.add(getString(R.string.catalog_cf_all_versions));
+        items.addAll(gameVersions);
+        int index = currentVersion.isEmpty() ? 0 : gameVersions.indexOf(currentVersion) + 1;
+        versionSelect.setItems(items, Math.max(0, index));
+        versionSelect.setEnabled(!gameVersions.isEmpty());
+    }
+
+    private void loadGameVersions() {
+        client.getGameVersions(new CurseForgeClient.CurseForgeCallback<List<String>>() {
+            @Override
+            public void onSuccess(List<String> result) {
+                handler.post(() -> {
+                    if (isFinishing() || isDestroyed()) return;
+                    gameVersions.clear();
+                    if (result != null) gameVersions.addAll(result);
+                    bindVersions();
+                });
+            }
+
+            @Override
+            public void onError(Throwable error) {
+                // The version filter stays at all versions (disabled); searching still works.
+            }
+        });
+    }
+
+    private void showEmpty(CharSequence message, boolean retry) {
+        emptyMessage.setText(message);
+        retryButton.setVisibility(retry ? View.VISIBLE : View.GONE);
+        emptyState.setVisibility(View.VISIBLE);
     }
 
     private void loadContent() {
         String query = searchBox.getText().toString().trim();
-        int checkedId = categoryGroup.getCheckedRadioButtonId();
-        Category category = null;
-        if (checkedId != -1) {
-            View selected = categoryGroup.findViewById(checkedId);
-            if (selected != null) category = (Category) selected.getTag();
-        }
+        Category category = currentCategory;
+        String version = currentVersion;
 
         SortOption sort = currentSort;
         int request = ++requestSequence;
         int requestedPage = currentPage;
         loadingProgress.setVisibility(View.VISIBLE);
-        emptyMessage.setVisibility(View.GONE);
+        emptyState.setVisibility(View.GONE);
         recyclerView.setVisibility(adapter.getItemCount() > 0 ? View.VISIBLE : View.INVISIBLE);
 
-        client.searchContent(query, category != null ? category.id : 0, "",
+        client.searchContent(query, category != null ? category.id : 0, version,
                 (requestedPage - 1) * PAGE_SIZE, PAGE_SIZE,
                 sort != null ? sort.field : CurseForgeClient.SORT_POPULARITY,
                 sort != null ? sort.order : "desc",
@@ -250,14 +246,13 @@ public class CurseForgeActivity extends BaseActivity {
                                 }
                                 adapter.setContents(result.data, requestedPage, totalPages);
                                 boolean empty = result.data.isEmpty();
-                                emptyMessage.setText(R.string.no_mods_found);
-                                emptyMessage.setVisibility(empty ? View.VISIBLE : View.GONE);
+                                if (empty) showEmpty(getString(R.string.catalog_cf_no_results), false);
                                 recyclerView.setVisibility(empty ? View.GONE : View.VISIBLE);
                                 if (!empty) recyclerView.scrollToPosition(0);
                             } else {
                                 adapter.setContents(Collections.emptyList(), 1, 1);
                                 recyclerView.setVisibility(View.GONE);
-                                emptyMessage.setVisibility(View.VISIBLE);
+                                showEmpty(getString(R.string.catalog_cf_no_results), false);
                             }
                         });
                     }
@@ -269,8 +264,7 @@ public class CurseForgeActivity extends BaseActivity {
                             loadingProgress.setVisibility(View.GONE);
                             if (adapter.getItemCount() == 0) {
                                 recyclerView.setVisibility(View.GONE);
-                                emptyMessage.setText(getString(R.string.error_message_format, error.getMessage()));
-                                emptyMessage.setVisibility(View.VISIBLE);
+                                showEmpty(getString(R.string.error_message_format, error.getMessage()), true);
                             } else {
                                 recyclerView.setVisibility(View.VISIBLE);
                                 android.widget.Toast.makeText(CurseForgeActivity.this,

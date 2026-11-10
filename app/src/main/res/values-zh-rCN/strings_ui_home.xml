@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_manage">管理</string>
+    <string name="home_view_all">查看全部</string>
+    <string name="home_mods_empty">尚未安装模组</string>
+    <string name="home_mods_none_enabled">未启用任何模组</string>
+    <string name="home_content_download">内容下载</string>
+    <string name="home_launch_options">更多启动选项</string>
+</resources>

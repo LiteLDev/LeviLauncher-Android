@@ -1,6 +1,7 @@
 package org.levimc.launcher.ui.activities;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.card.MaterialCardView;
@@ -16,6 +18,7 @@ import com.google.android.material.card.MaterialCardView;
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.news.NewsItem;
 import org.levimc.launcher.ui.animation.DynamicAnim;
+import org.levimc.launcher.ui.widget.UiKit;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -65,8 +68,7 @@ final class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.Holder> {
         holder.unread.setVisibility(unreadIds.contains(item.id) ? View.VISIBLE : View.GONE);
         holder.important.setVisibility(item.important ? View.VISIBLE : View.GONE);
         holder.action.setVisibility(TextUtils.isEmpty(item.url) ? View.GONE : View.VISIBLE);
-        holder.card.setStrokeWidth(item.important ? dp(holder.itemView, 1) : 0);
-        holder.card.setStrokeColor(holder.itemView.getContext().getColor(R.color.primary));
+        styleReadMore(holder.action);
 
         View.OnClickListener open = v -> {
             if (TextUtils.isEmpty(item.url)) return;
@@ -96,6 +98,19 @@ final class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.Holder> {
 
     private static int dp(View view, int value) {
         return (int) (value * view.getResources().getDisplayMetrics().density);
+    }
+
+    private static void styleReadMore(TextView action) {
+        int color = UiKit.accentText(action.getContext());
+        action.setTextColor(color);
+        Drawable icon = ContextCompat.getDrawable(action.getContext(), R.drawable.ic_ui_open_in_new);
+        if (icon != null) {
+            icon = icon.mutate();
+            int size = dp(action, 16);
+            icon.setBounds(0, 0, size, size);
+            icon.setTint(color);
+        }
+        action.setCompoundDrawablesRelative(null, null, icon, null);
     }
 
     static final class Holder extends RecyclerView.ViewHolder {

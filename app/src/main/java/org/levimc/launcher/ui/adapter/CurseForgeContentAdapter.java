@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -65,7 +64,7 @@ public class CurseForgeContentAdapter extends RecyclerView.Adapter<RecyclerView.
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ContentViewHolder) {
-            ((ContentViewHolder) holder).bind(contents.get(position), listener);
+            ((ContentViewHolder) holder).bind(contents.get(position), position == contents.size() - 1, listener);
         } else if (holder instanceof FooterViewHolder) {
             ((FooterViewHolder) holder).bind(currentPage, totalPages, pageChangeListener);
         }
@@ -94,7 +93,11 @@ public class CurseForgeContentAdapter extends RecyclerView.Adapter<RecyclerView.
         final TextView title;
         final TextView description;
         final TextView author;
+        final TextView categoryTag;
+        final TextView downloadsTag;
         final TextView metadata;
+        final View viewButton;
+        final View divider;
 
         ContentViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -102,45 +105,42 @@ public class CurseForgeContentAdapter extends RecyclerView.Adapter<RecyclerView.
             title = itemView.findViewById(R.id.mod_title);
             description = itemView.findViewById(R.id.mod_description);
             author = itemView.findViewById(R.id.mod_author);
+            categoryTag = itemView.findViewById(R.id.mod_tag_category);
+            downloadsTag = itemView.findViewById(R.id.mod_tag_downloads);
             metadata = itemView.findViewById(R.id.mod_metadata);
-            PersonalizationManager personalization = new PersonalizationManager(itemView.getContext());
-            if (personalization.hasCustomAccent()) {
-                metadata.setTextColor(personalization.getAccentColor());
-            }
-            personalization.applyGlassToView(itemView);
+            viewButton = itemView.findViewById(R.id.mod_view);
+            divider = itemView.findViewById(R.id.mod_divider);
+            new PersonalizationManager(itemView.getContext()).applyAccentToView(itemView, itemView.getContext());
         }
 
-        void bind(Content content, OnContentClickListener listener) {
+        void bind(Content content, boolean last, OnContentClickListener listener) {
             Context context = itemView.getContext();
             title.setText(content.name != null ? content.name : "");
             description.setText(content.summary != null ? content.summary : "");
             description.setVisibility(content.summary == null || content.summary.isEmpty() ? View.GONE : View.VISIBLE);
 
             if (content.authors != null && !content.authors.isEmpty() && content.authors.get(0) != null) {
-                author.setText(context.getString(R.string.mod_author_byline, content.authors.get(0).name));
+                author.setText("| " + context.getString(R.string.pkg_by_author, content.authors.get(0).name));
                 author.setVisibility(View.VISIBLE);
             } else {
                 author.setText("");
                 author.setVisibility(View.GONE);
             }
 
-            StringBuilder meta = new StringBuilder();
-            double downloads = content.downloadCount;
-            if (downloads >= 1000000) {
-                meta.append(String.format(Locale.getDefault(), "%.1fM", downloads / 1000000.0));
-            } else if (downloads >= 1000) {
-                meta.append(String.format(Locale.getDefault(), "%.1fK", downloads / 1000.0));
+            if (content.categories != null && !content.categories.isEmpty() && content.categories.get(0) != null
+                    && content.categories.get(0).name != null) {
+                categoryTag.setText(content.categories.get(0).name);
+                categoryTag.setVisibility(View.VISIBLE);
             } else {
-                meta.append((long) downloads);
+                categoryTag.setVisibility(View.GONE);
             }
-            meta.append(" downloads");
-            if (content.categories != null && !content.categories.isEmpty() && content.categories.get(0) != null) {
-                meta.append("  ·  ").append(content.categories.get(0).name);
-            }
+            downloadsTag.setText(context.getString(R.string.catalog_cf_downloads, formatCount(content.downloadCount)));
             if (content.dateModified != null && content.dateModified.length() >= 10) {
-                meta.append("  ·  ").append(content.dateModified, 0, 10);
+                metadata.setText(content.dateModified.substring(0, 10));
+                metadata.setVisibility(View.VISIBLE);
+            } else {
+                metadata.setVisibility(View.GONE);
             }
-            metadata.setText(meta.toString());
 
             String url = content.logo != null ? content.logo.thumbnailUrl : null;
             if (url != null && !url.isEmpty()) {
@@ -154,13 +154,25 @@ public class CurseForgeContentAdapter extends RecyclerView.Adapter<RecyclerView.
                 Glide.with(icon).clear(icon);
                 icon.setImageResource(R.drawable.ic_minecraft_cube);
             }
-            itemView.setOnClickListener(v -> listener.onContentClick(content));
+            divider.setVisibility(last ? View.GONE : View.VISIBLE);
+            View.OnClickListener open = v -> listener.onContentClick(content);
+            itemView.findViewById(R.id.cf_row).setOnClickListener(open);
+            viewButton.setOnClickListener(open);
+        }
+
+        private static String formatCount(double count) {
+            if (count >= 1000000) {
+                return String.format(Locale.getDefault(), "%.1fM", count / 1000000.0);
+            } else if (count >= 1000) {
+                return String.format(Locale.getDefault(), "%.1fK", count / 1000.0);
+            }
+            return String.valueOf((long) count);
         }
     }
 
     static class FooterViewHolder extends RecyclerView.ViewHolder {
-        final Button btnPrev;
-        final Button btnNext;
+        final View btnPrev;
+        final View btnNext;
         final TextView tvPageInfo;
 
         FooterViewHolder(@NonNull View itemView) {
@@ -168,12 +180,6 @@ public class CurseForgeContentAdapter extends RecyclerView.Adapter<RecyclerView.
             btnPrev = itemView.findViewById(R.id.btn_prev_page);
             btnNext = itemView.findViewById(R.id.btn_next_page);
             tvPageInfo = itemView.findViewById(R.id.tv_page_info);
-            PersonalizationManager personalization = new PersonalizationManager(itemView.getContext());
-            if (personalization.hasCustomAccent()) {
-                int accent = personalization.getAccentColor();
-                btnPrev.setTextColor(accent);
-                btnNext.setTextColor(accent);
-            }
         }
 
         void bind(int page, int total, OnPageChangeListener listener) {

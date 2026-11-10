@@ -1,0 +1,181 @@
+package org.levimc.launcher.ui.widget;
+
+import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.util.AttributeSet;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.widget.TextViewCompat;
+
+import org.levimc.launcher.R;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Segmented tabs as in LeviLauncher for Windows (HeroUI Tabs): a grey track, the selected
+ * segment is a raised white (dark: zinc) pill. Each segment is at least 40dp tall for touch.
+ *
+ * <pre>
+ * control.setItems(getString(R.string.a), getString(R.string.b));
+ * control.setOnSegmentSelectedListener(index -> ...);
+ * control.setSelectedIndex(0, false);
+ * </pre>
+ */
+public class SegmentedControl extends LinearLayout {
+    public interface OnSegmentSelectedListener {
+        void onSegmentSelected(int index);
+    }
+
+    private final List<TextView> segments = new ArrayList<>();
+    private int selected = -1;
+    private boolean equalWidth = true;
+    private boolean vertical;
+    private float textSizeSp = 14f;
+    @Nullable
+    private Typeface baseTypeface;
+    @Nullable
+    private OnSegmentSelectedListener listener;
+
+    public SegmentedControl(Context context) {
+        this(context, null);
+    }
+
+    public SegmentedControl(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+        setOrientation(HORIZONTAL);
+        setBackgroundResource(R.drawable.bg_ui_segment_track);
+        int pad = dp(4);
+        setPadding(pad, pad, pad, pad);
+        setMinimumHeight(dp(48));
+        setGravity(Gravity.CENTER_VERTICAL);
+    }
+
+    /** True (default): segments share the width. False: each segment wraps its label (scrollable rows). */
+    public void setEqualWidth(boolean equalWidth) {
+        this.equalWidth = equalWidth;
+        for (TextView t : segments) t.setLayoutParams(segmentParams());
+    }
+
+    /**
+     * Vertical: segments are stacked full width with left-aligned labels, for tab lists in the left
+     * panel of two-pane pages (landscape phones are too short for a header plus horizontal tabs).
+     */
+    public void setVertical(boolean vertical) {
+        this.vertical = vertical;
+        setOrientation(vertical ? VERTICAL : HORIZONTAL);
+        setGravity(vertical ? Gravity.NO_GRAVITY : Gravity.CENTER_VERTICAL);
+        for (TextView t : segments) {
+            t.setGravity(vertical ? Gravity.CENTER_VERTICAL | Gravity.START : Gravity.CENTER);
+            t.setMinHeight(dp(vertical ? 44 : 40));
+            t.setLayoutParams(segmentParams());
+        }
+    }
+
+    public void setTextSizeSp(float sp) {
+        textSizeSp = sp;
+        for (TextView t : segments) t.setTextSize(TypedValue.COMPLEX_UNIT_SP, sp);
+    }
+
+    public void setItems(CharSequence... labels) {
+        removeAllViews();
+        segments.clear();
+        for (int i = 0; i < labels.length; i++) addSegment(labels[i], 0);
+        if (labels.length > 0) setSelectedIndex(Math.max(0, Math.min(selected, labels.length - 1)), false);
+    }
+
+    /** Adds a segment with an optional leading icon (0 for none). Returns its index. */
+    public int addSegment(CharSequence label, int iconRes) {
+        TextView t = new TextView(getContext());
+        t.setText(label);
+        t.setGravity(vertical ? Gravity.CENTER_VERTICAL | Gravity.START : Gravity.CENTER);
+        t.setSingleLine(true);
+        t.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        t.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSp);
+        if (baseTypeface == null) baseTypeface = ResourcesCompat.getFont(getContext(), R.font.misans);
+        t.setTypeface(baseTypeface);
+        t.setMinHeight(dp(vertical ? 44 : 40));
+        t.setPadding(dp(14), 0, dp(14), 0);
+        if (iconRes != 0) {
+            Drawable d = ContextCompat.getDrawable(getContext(), iconRes);
+            if (d != null) {
+                d.setBounds(0, 0, dp(16), dp(16));
+                t.setCompoundDrawablesRelative(d, null, null, null);
+                t.setCompoundDrawablePadding(dp(6));
+            }
+        }
+        final int index = segments.size();
+        t.setOnClickListener(v -> {
+            if (index != selected) setSelectedIndex(index, true);
+        });
+        segments.add(t);
+        addView(t, segmentParams());
+        applyState();
+        return index;
+    }
+
+    private LayoutParams segmentParams() {
+        if (vertical) return new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        return equalWidth
+                ? new LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f)
+                : new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+    }
+
+    public void setOnSegmentSelectedListener(@Nullable OnSegmentSelectedListener listener) {
+        this.listener = listener;
+    }
+
+    public int getSelectedIndex() {
+        return selected;
+    }
+
+    public int getSegmentCount() {
+        return segments.size();
+    }
+
+    public TextView getSegment(int index) {
+        return segments.get(index);
+    }
+
+    public void setSelectedIndex(int index, boolean notify) {
+        if (index < 0 || index >= segments.size()) return;
+        selected = index;
+        applyState();
+        if (notify && listener != null) listener.onSegmentSelected(index);
+    }
+
+    private void applyState() {
+        int active = ContextCompat.getColor(getContext(), R.color.text_primary);
+        int inactive = ContextCompat.getColor(getContext(), R.color.text_secondary);
+        for (int i = 0; i < segments.size(); i++) {
+            TextView t = segments.get(i);
+            boolean on = i == selected;
+            t.setBackgroundResource(on ? R.drawable.bg_ui_segment_selected : 0);
+            t.setElevation(on ? dp(1) : 0);
+            t.setTextColor(on ? active : inactive);
+            t.setTypeface(Typeface.create(baseTypeface, on ? Typeface.BOLD : Typeface.NORMAL));
+            TextViewCompat.setCompoundDrawableTintList(t, ColorStateList.valueOf(on ? active : inactive));
+            t.setSelected(on);
+        }
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        for (View v : segments) v.setEnabled(enabled);
+        setAlpha(enabled ? 1f : 0.5f);
+    }
+
+    private int dp(float v) {
+        return Math.round(v * getResources().getDisplayMetrics().density);
+    }
+}

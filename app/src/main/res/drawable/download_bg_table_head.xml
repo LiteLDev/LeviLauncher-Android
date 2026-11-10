@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Header row of the version table: strip fill with the card's top corners. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/ui_strip" />
+    <corners android:topLeftRadius="19dp" android:topRightRadius="19dp"
+        android:bottomLeftRadius="0dp" android:bottomRightRadius="0dp" />
+</shape>

@@ -146,7 +146,7 @@ public class WorldsAdapter extends RecyclerView.Adapter<WorldsAdapter.WorldViewH
                 bound.worldDescription.setText(bound.itemView.getContext().getString(R.string.world_meta, world.getGameMode(), world.getFormattedSize()));
             }
         });
-        holder.worldLastPlayed.setText(holder.itemView.getContext().getString(R.string.world_last_played, world.getFormattedLastModified()));
+        holder.worldLastPlayed.setText(world.getFormattedLastModified());
         holder.itemView.setActivated(selected);
         holder.editButton.setVisibility(selectionMode ? View.GONE : View.VISIBLE);
         holder.overflowButton.setVisibility(selectionMode ? View.GONE : View.VISIBLE);

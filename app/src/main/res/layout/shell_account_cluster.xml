@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Right side of the navigation: news (with unread dot) and the account avatar.
+     Signed out, the avatar is a person icon that opens sign-in (as on Windows). -->
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <FrameLayout
+        android:id="@+id/nav_news_container"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="6dp"
+        android:background="@drawable/bg_shell_icon_button"
+        android:clickable="true"
+        android:contentDescription="@string/news_title"
+        android:focusable="true"
+        android:tooltipText="@string/news_title">
+
+        <ImageView
+            android:id="@+id/nav_news_button"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_nav_news"
+            app:tint="@color/ui_muted" />
+
+        <View
+            android:id="@+id/nav_news_badge"
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/bg_news_unread_dot"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <ImageView
+        android:id="@+id/nav_sign_in_button"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_shell_avatar"
+        android:contentDescription="@string/nav_sign_in_account"
+        android:padding="10dp"
+        android:src="@drawable/ic_ui_person"
+        android:tooltipText="@string/nav_sign_in_account"
+        android:visibility="gone"
+        app:tint="@color/text_primary" />
+
+    <FrameLayout
+        android:id="@+id/nav_account_avatar_container"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:contentDescription="@string/nav_account"
+        android:tooltipText="@string/nav_account"
+        android:visibility="gone">
+
+        <com.microsoft.xbox.idp.toolkit.CircleImageView
+            android:id="@+id/nav_account_avatar"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:layout_gravity="center"
+            android:contentDescription="@string/xbox_avatar"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_minecraft_cube" />
+
+        <ProgressBar
+            android:id="@+id/nav_avatar_progress"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:indeterminate="true"
+            android:visibility="gone" />
+    </FrameLayout>
+</merge>

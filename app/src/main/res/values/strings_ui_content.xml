@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="content_ui_storage_location">Storage</string>
+    <string name="content_ui_storage">Storage</string>
+    <string name="content_ui_game_version">Game version</string>
+    <string name="content_ui_refresh">Refresh</string>
+    <string name="content_ui_multi_select">Multi-select</string>
+    <string name="content_ui_worlds_title">Worlds</string>
+    <string name="content_ui_screenshots">Screenshots</string>
+    <string name="content_ui_add_server">Add server</string>
+    <string name="content_ui_search_worlds">Search worlds…</string>
+    <string name="content_ui_sort_name">Name</string>
+    <string name="content_ui_sort_time">Modified</string>
+    <string name="content_ui_sort_asc">Ascending</string>
+    <string name="content_ui_sort_desc">Descending</string>
+    <string name="content_ui_sort_format">%1$s / %2$s</string>
+    <string name="content_ui_strip_label">%1$s:</string>
+</resources>

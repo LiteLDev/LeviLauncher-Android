@@ -35,10 +35,12 @@ public class ContentManager {
         public final int worlds;
         public final int resourcePacks;
         public final int skinPacks;
-        ContentCounts(int worlds, int resourcePacks, int skinPacks) {
+        public final int behaviorPacks;
+        ContentCounts(int worlds, int resourcePacks, int skinPacks, int behaviorPacks) {
             this.worlds = worlds;
             this.resourcePacks = resourcePacks;
             this.skinPacks = skinPacks;
+            this.behaviorPacks = behaviorPacks;
         }
     }
     
@@ -106,7 +108,8 @@ public class ContentManager {
             serversLiveData.setValue(java.util.Collections.emptyList());
             String key = countKey(selected);
             countsLiveData.setValue(new ContentCounts(countPreferences.getInt(key + "w", 0),
-                    countPreferences.getInt(key + "r", 0), countPreferences.getInt(key + "s", 0)));
+                    countPreferences.getInt(key + "r", 0), countPreferences.getInt(key + "s", 0),
+                    countPreferences.getInt(key + "b", 0)));
         };
         if (android.os.Looper.myLooper() == android.os.Looper.getMainLooper()) clear.run();
         else mainHandler.post(clear);
@@ -163,10 +166,12 @@ public class ContentManager {
             File[] root = locations;
             ContentCounts counts = new ContentCounts(worldManager.countWorlds(root[0]),
                     resourcePackManager.countPacks(root[1], ResourcePackItem.PackType.RESOURCE_PACK),
-                    resourcePackManager.countPacks(root[3], ResourcePackItem.PackType.SKIN_PACK));
+                    resourcePackManager.countPacks(root[3], ResourcePackItem.PackType.SKIN_PACK),
+                    resourcePackManager.countPacks(root[2], ResourcePackItem.PackType.BEHAVIOR_PACK));
             String key = countKey(root);
             countPreferences.edit().putInt(key + "w", counts.worlds)
-                    .putInt(key + "r", counts.resourcePacks).putInt(key + "s", counts.skinPacks).apply();
+                    .putInt(key + "r", counts.resourcePacks).putInt(key + "s", counts.skinPacks)
+                    .putInt(key + "b", counts.behaviorPacks).apply();
             return counts;
         }, countsLiveData::setValue);
     }
@@ -183,6 +188,7 @@ public class ContentManager {
 
     public void refreshBehaviorPacks() {
         requestRefresh(2, refreshExecutor, resourcePackManager::getBehaviorPacks, behaviorPacksLiveData::setValue);
+        refreshCounts();
     }
 
     public void refreshSkinPacks() {

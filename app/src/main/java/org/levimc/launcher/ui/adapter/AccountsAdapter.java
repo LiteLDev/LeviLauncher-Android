@@ -2,11 +2,9 @@ package org.levimc.launcher.ui.adapter;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -14,8 +12,11 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
+
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.auth.MsftAccountStore;
+import org.levimc.launcher.ui.widget.UiKit;
 import org.levimc.launcher.util.AccountTextUtils;
 import org.levimc.launcher.util.PersonalizationManager;
 
@@ -62,12 +63,10 @@ public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.Accoun
             holder.activeBadge.setVisibility(View.VISIBLE);
             holder.btnUse.setEnabled(false);
             holder.btnUse.setText(R.string.ms_activated);
-            holder.btnUse.setAlpha(0.6f);
         } else {
             holder.activeBadge.setVisibility(View.GONE);
             holder.btnUse.setEnabled(true);
             holder.btnUse.setText(R.string.ms_set_active);
-            holder.btnUse.setAlpha(1.0f);
         }
 
         holder.btnUse.setOnClickListener(v -> {
@@ -79,18 +78,23 @@ public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.Accoun
 
         new PersonalizationManager(holder.itemView.getContext())
                 .applyAccentToView(holder.itemView, holder.itemView.getContext());
-        applyButtonAccent(holder);
+        applyAccent(holder, a.active);
     }
 
-    private void applyButtonAccent(@NonNull AccountViewHolder holder) {
+    private void applyAccent(@NonNull AccountViewHolder holder, boolean active) {
         Context context = holder.itemView.getContext();
-        int accent = new PersonalizationManager(context).getAccentColor();
-        if (accent == 0) {
-            accent = ContextCompat.getColor(context, R.color.primary);
+        UiKit.tintSoftAccent(holder.activeBadge, 7);
+        if (active) {
+            holder.itemView.setBackground(UiKit.selectedRing(context, 16));
+            // Already-active account: quiet secondary look instead of a dimmed primary button.
+            holder.btnUse.setBackgroundTintList(ColorStateList.valueOf(
+                    ContextCompat.getColor(context, R.color.ui_default)));
+            holder.btnUse.setTextColor(ContextCompat.getColor(context, R.color.text_secondary));
+        } else {
+            holder.itemView.setBackgroundResource(R.drawable.bg_ui_card_inner);
+            new PersonalizationManager(context).applyGlassToView(holder.itemView);
+            UiKit.applyPrimary(holder.btnUse);
         }
-        ColorStateList tint = ColorStateList.valueOf(accent);
-        holder.btnUse.setBackgroundTintList(tint);
-        holder.btnUse.setTextColor(Color.WHITE);
     }
 
     @Override
@@ -102,7 +106,7 @@ public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.Accoun
         TextView title;
         TextView subtitle;
         TextView activeBadge;
-        Button btnUse;
+        MaterialButton btnUse;
         ImageButton btnDelete;
 
         public AccountViewHolder(@NonNull View itemView) {

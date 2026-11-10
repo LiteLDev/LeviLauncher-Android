@@ -1,126 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- A catalogue package card of the Browse tab (BrowseFragment.Adapter). -->
+<!-- A catalogue package row of the Browse tab (BrowseFragment.Adapter): 64dp logo, name | author, description,
+     availability + meta, tags, and an Install button (opens the package page to pick a version). -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="4dp"
-    android:layout_marginVertical="4dp"
-    android:background="@drawable/bg_cf_item"
-    android:clickable="true"
-    android:focusable="true"
-    android:foreground="?android:attr/selectableItemBackground"
-    android:orientation="horizontal"
-    android:paddingHorizontal="11dp"
-    android:paddingVertical="10dp">
-
-    <ImageView
-        android:id="@+id/pkg_pkg_icon"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:background="@drawable/bg_cf_icon"
-        android:clipToOutline="true"
-        android:importantForAccessibility="no"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_minecraft_cube" />
+    android:orientation="vertical">
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:id="@+id/pkg_pkg_row"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="11dp"
-        android:layout_weight="1"
-        android:orientation="vertical">
+        android:background="@drawable/bg_ui_row"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:minHeight="80dp"
+        android:orientation="horizontal"
+        android:paddingStart="6dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="6dp"
+        android:paddingBottom="12dp">
+
+        <ImageView
+            android:id="@+id/pkg_pkg_icon"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:background="@drawable/bg_cf_icon"
+            android:clipToOutline="true"
+            android:importantForAccessibility="no"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_minecraft_cube" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:layout_marginStart="14dp"
+            android:layout_marginEnd="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/pkg_pkg_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
+                    tools:text="LHolo" />
+
+                <!-- "| by owner", linked to https://github.com/owner -->
+                <TextView
+                    android:id="@+id/pkg_pkg_author"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackground"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:textAppearance="@style/TextAppearance.Levi.Caption"
+                    android:textSize="13sp"
+                    tools:text="| by LiteLDev" />
+
+                <ImageView
+                    android:id="@+id/pkg_pkg_open"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/pkg_open_project"
+                    android:padding="7dp"
+                    android:src="@drawable/ic_ui_open_in_new"
+                    app:tint="@color/text_secondary" />
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/pkg_pkg_name"
-                android:layout_width="wrap_content"
+                android:id="@+id/pkg_pkg_description"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
-                android:fontFamily="@font/misans"
-                android:maxLines="1"
-                android:textColor="@color/on_surface"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                tools:text="LHolo" />
-
-            <!-- "by owner", linked to https://github.com/owner -->
-            <TextView
-                android:id="@+id/pkg_pkg_author"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:layout_weight="1"
-                android:background="?attr/selectableItemBackground"
-                android:ellipsize="end"
-                android:fontFamily="@font/misans"
-                android:maxLines="1"
+                android:maxLines="2"
+                android:textAppearance="@style/TextAppearance.Levi.Body"
                 android:textColor="@color/text_secondary"
-                android:textSize="11sp"
-                tools:text="| by LiteLDev" />
+                android:textSize="13sp"
+                tools:text="Floating holograms" />
 
-            <ImageView
-                android:id="@+id/pkg_pkg_open"
-                android:layout_width="28dp"
-                android:layout_height="28dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/pkg_open_project"
-                android:padding="5dp"
-                android:src="@drawable/ic_internet"
-                app:tint="@color/text_secondary" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/pkg_pkg_badge"
+                    style="@style/PkgChip"
+                    tools:text="No Android build" />
+
+                <TextView
+                    android:id="@+id/pkg_pkg_meta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:textAppearance="@style/TextAppearance.Levi.Caption"
+                    tools:text="★ 23 · 2026-11-08 · Copyleft (GPL-3.0)" />
+            </LinearLayout>
+
+            <!-- Featured tags (sprite, name, raw tags in grey), then the other tags (PkgUi.bindTags). -->
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/pkg_pkg_tags"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                app:chipSpacingHorizontal="6dp"
+                app:chipSpacingVertical="4dp" />
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/pkg_pkg_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:ellipsize="end"
-            android:fontFamily="@font/misans"
-            android:maxLines="2"
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp"
-            tools:text="Floating holograms" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/pkg_pkg_badge"
-                style="@style/PkgChip"
-                android:textStyle="bold"
-                tools:text="No Android build" />
-
-            <TextView
-                android:id="@+id/pkg_pkg_meta"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:ellipsize="end"
-                android:fontFamily="@font/misans"
-                android:maxLines="1"
-                android:textColor="@color/text_secondary"
-                android:textSize="10sp"
-                tools:text="★ 23 · 2026-11-08 · Copyleft (GPL-3.0)" />
-        </LinearLayout>
-
-        <!-- Featured tags (sprite, name, raw tags in grey), then the other tags (PkgUi.bindTags). -->
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/pkg_pkg_tags"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            app:chipSpacingHorizontal="4dp"
-            app:chipSpacingVertical="4dp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/pkg_pkg_install"
+            style="@style/Widget.Levi.Button.Outline"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:minWidth="72dp"
+            android:text="@string/pkg_install" />
     </LinearLayout>
+
+    <View
+        android:id="@+id/pkg_pkg_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider" />
 </LinearLayout>

@@ -2,7 +2,7 @@ package org.levimc.launcher.ui.activities;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -12,19 +12,17 @@ import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.TooltipCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,9 +37,11 @@ import org.levimc.launcher.core.play.PlayException;
 import org.levimc.launcher.core.versions.GameVersion;
 import org.levimc.launcher.core.versions.VersionManager;
 import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
+import org.levimc.launcher.ui.widget.SegmentedControl;
+import org.levimc.launcher.ui.widget.UiKit;
 import org.levimc.launcher.util.ApkImportManager;
-import org.levimc.launcher.util.PersonalizationManager;
 import org.levimc.launcher.util.StorageAccess;
+import org.levimc.launcher.util.UiSettings;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -76,7 +76,7 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
     private TextView subtitle;
     private TextView status;
     private MaterialButton accountButton;
-    private ImageButton refreshButton;
+    private MaterialButton refreshButton;
     private EditText search;
     private View previewRow;
     private SwitchMaterial previewSwitch;
@@ -87,17 +87,20 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
     private MaterialButton emptyAction;
     private ReleaseAdapter adapter;
 
-    private int accent;
+    private ColorStateList accentTint;
     private int typeFilter = TYPE_ALL;
     private int statusFilter = STATUS_ALL;
     private long latestVersionCode;
     private boolean refreshing;
     private boolean updatingPreviewSwitch;
+    /** Read once: changing the setting recreates the page. */
+    private boolean twoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game_download);
+        twoPane = UiSettings.useTwoPane(this);
+        setContentView(twoPane ? R.layout.activity_game_download : R.layout.activity_game_download_stacked);
         downloads = GameDownloads.get(this);
 
         apkImportManager = new ApkImportManager(this, null);
@@ -125,11 +128,12 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
         emptyText = findViewById(R.id.game_download_empty_text);
         emptyAction = findViewById(R.id.game_download_empty_action);
 
-        accent = new PersonalizationManager(this).getAccentColor();
-        tintFilled(accountButton);
-        tintFilled(emptyAction);
-        tintOutlined(findViewById(R.id.game_download_by_code));
-        tintOutlined(findViewById(R.id.game_download_local_install));
+        accentTint = ColorStateList.valueOf(UiKit.accent(this));
+        progress.setIndeterminateTintList(accentTint);
+        UiKit.applyPrimary(emptyAction);
+        View byCode = findViewById(R.id.game_download_by_code);
+        TooltipCompat.setTooltipText(byCode, byCode.getContentDescription());
+        TooltipCompat.setTooltipText(refreshButton, refreshButton.getContentDescription());
 
         adapter = new ReleaseAdapter();
         recycler.setLayoutManager(new LinearLayoutManager(this));
@@ -143,7 +147,7 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
         });
         findViewById(R.id.game_download_local_install).setOnClickListener(
                 v -> apkImportLauncher.launch(StorageAccess.downloadsPicker(false)));
-        findViewById(R.id.game_download_by_code).setOnClickListener(v -> showVersionCodeDialog());
+        byCode.setOnClickListener(v -> showVersionCodeDialog());
         previewSwitch.setOnCheckedChangeListener((button, checked) -> {
             if (!updatingPreviewSwitch) setPreviewChannel(checked);
         });
@@ -153,15 +157,18 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
             @Override public void afterTextChanged(Editable s) { applyFilters(); }
         });
-        setupSpinner(findViewById(R.id.game_download_type), new String[]{
-                getString(R.string.game_download_type_all),
+        setupFilter(findViewById(R.id.game_download_type), new String[]{
+                getString(R.string.download_ui_filter_all),
                 getString(R.string.game_download_type_release),
                 getString(R.string.game_download_type_preview)}, position -> {
             typeFilter = position;
             applyFilters();
         });
-        setupSpinner(findViewById(R.id.game_download_status_filter), new String[]{
-                getString(R.string.game_download_status_all),
+        SegmentedControl statusFilterControl = findViewById(R.id.game_download_status_filter);
+        // The side panel is too narrow for "Downloaded" / "Not downloaded" side by side.
+        if (twoPane) statusFilterControl.setVertical(true);
+        setupFilter(statusFilterControl, new String[]{
+                getString(R.string.download_ui_filter_all),
                 getString(R.string.game_download_status_downloaded),
                 getString(R.string.game_download_status_not_downloaded)}, position -> {
             statusFilter = position;
@@ -198,37 +205,41 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
         super.onDestroy();
     }
 
-    /** Filled buttons follow the launcher's accent color, as on the other pages. */
-    private void tintFilled(MaterialButton button) {
-        if (accent == 0 || button == null) return;
-        button.setBackgroundTintList(ColorStateList.valueOf(accent));
-        button.setTextColor(Color.WHITE);
+    /** Secondary (grey) button colors, used when a button stops being the primary action. */
+    private void applySecondary(MaterialButton button) {
+        int label = getColor(R.color.text_primary);
+        button.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.ui_default)));
+        button.setTextColor(label);
+        button.setIconTint(ColorStateList.valueOf(label));
     }
 
-    private void tintOutlined(MaterialButton button) {
-        if (accent == 0 || button == null) return;
-        button.setStrokeColor(ColorStateList.valueOf(accent));
-        button.setTextColor(accent);
+    /** Soft colored tag: the theme color for 0, otherwise the given color; a plain grey tag for null. */
+    private void styleTag(TextView tag, Integer color) {
+        if (color == null) {
+            tag.setBackgroundResource(R.drawable.bg_ui_tag);
+            tag.setTextColor(getColor(R.color.text_secondary));
+        } else if (color == 0) {
+            UiKit.tintSoftAccent(tag, 7);
+        } else {
+            GradientDrawable bg = new GradientDrawable();
+            bg.setCornerRadius(UiKit.dp(this, 7));
+            bg.setColor(UiKit.alpha(color, UiKit.isDark(this) ? 48 : 30));
+            tag.setBackground(bg);
+            tag.setTextColor(color);
+        }
     }
 
     private interface OnSelected {
         void onSelected(int position);
     }
 
-    private void setupSpinner(Spinner spinner, String[] labels, OnSelected listener) {
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, labels);
-        spinnerAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
-        spinner.setAdapter(spinnerAdapter);
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                listener.onSelected(position);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
+    private void setupFilter(SegmentedControl control, String[] labels, OnSelected listener) {
+        // Two-pane: full-width filters in the side panel; stacked: compact pills in the header row.
+        control.setEqualWidth(twoPane);
+        control.setTextSizeSp(13);
+        control.setItems(labels);
+        control.setSelectedIndex(0, false);
+        control.setOnSegmentSelectedListener(listener::onSelected);
     }
 
     // ---- Account ----
@@ -238,10 +249,12 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
         if (email == null) {
             subtitle.setText(R.string.game_download_subtitle_signed_out);
             accountButton.setText(R.string.game_download_google_sign_in);
+            UiKit.applyPrimary(accountButton);
             previewRow.setVisibility(View.GONE);
         } else {
             subtitle.setText(getString(R.string.game_download_subtitle_signed_in, email));
             accountButton.setText(R.string.game_download_google_account);
+            applySecondary(accountButton);
         }
         updateEmptyState();
     }
@@ -446,7 +459,7 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
         input.setHint(R.string.game_download_by_code_hint);
         input.setSingleLine(true);
-        input.setTextColor(getColor(R.color.on_surface));
+        input.setTextColor(getColor(R.color.text_primary));
         input.setHintTextColor(getColor(R.color.text_secondary));
         FrameLayout container = new FrameLayout(this);
         int padding = (int) (4 * getResources().getDisplayMetrics().density);
@@ -550,7 +563,7 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
 
         @Override
         public void onBindViewHolder(@NonNull ReleaseHolder holder, int position) {
-            holder.bind(visible.get(position));
+            holder.bind(visible.get(position), position == 0);
         }
 
         @Override
@@ -560,6 +573,7 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
     }
 
     private final class ReleaseHolder extends RecyclerView.ViewHolder {
+        final View divider;
         final TextView name;
         final TextView type;
         final TextView latest;
@@ -575,6 +589,7 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
 
         ReleaseHolder(View view) {
             super(view);
+            divider = view.findViewById(R.id.game_release_divider);
             name = view.findViewById(R.id.game_release_name);
             type = view.findViewById(R.id.game_release_type);
             latest = view.findViewById(R.id.game_release_latest);
@@ -587,11 +602,36 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
             progressBar = view.findViewById(R.id.game_release_progress);
             progressText = view.findViewById(R.id.game_release_progress_text);
             error = view.findViewById(R.id.game_release_error);
-            tintFilled(action);
-            tintOutlined(secondary);
+            progressBar.setProgressTintList(accentTint);
+            progressBar.setIndeterminateTintList(accentTint);
+            styleTag(latest, 0);
+            if (twoPane) {
+                // Narrow table: no Type/Status columns; their chips go under the name and meta.
+                ViewGroup chips = view.findViewById(R.id.game_release_chips);
+                moveChip(type, chips, 6);
+                moveChip(state, chips, 0);
+                chips.setVisibility(View.VISIBLE);
+                view.findViewById(R.id.game_release_type_col).setVisibility(View.GONE);
+                view.findViewById(R.id.game_release_state_col).setVisibility(View.GONE);
+                View actions = view.findViewById(R.id.game_release_actions);
+                ViewGroup.LayoutParams lp = actions.getLayoutParams();
+                lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+                actions.setLayoutParams(lp);
+            }
+            TooltipCompat.setTooltipText(delete, delete.getContentDescription());
+            TooltipCompat.setTooltipText(secondary, secondary.getContentDescription());
         }
 
-        void bind(GameRelease release) {
+        private void moveChip(TextView chip, ViewGroup target, int marginEndDp) {
+            ((ViewGroup) chip.getParent()).removeView(chip);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            lp.setMarginEnd(Math.round(UiKit.dp(GameDownloadActivity.this, marginEndDp)));
+            target.addView(chip, lp);
+        }
+
+        void bind(GameRelease release, boolean first) {
+            divider.setVisibility(first ? View.GONE : View.VISIBLE);
             GameDownloads.Task task = downloads.task(release.versionCode);
             GameDownloads.Downloaded downloaded = downloads.downloaded(release.versionCode);
             String versionName = downloaded != null && !TextUtils.isEmpty(downloaded.versionName)
@@ -603,17 +643,19 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
             boolean knownName = !TextUtils.isEmpty(versionName);
             type.setVisibility(knownName ? View.VISIBLE : View.GONE);
             type.setText(shown.isPreview() ? R.string.game_download_type_preview : R.string.game_download_type_release);
+            styleTag(type, shown.isPreview() ? UiKit.ORANGE : 0);
             latest.setVisibility(release.versionCode == latestVersionCode ? View.VISIBLE : View.GONE);
 
             boolean installed = knownName && installedVersionNames.contains(versionName);
             if (installed) {
-                state.setVisibility(View.VISIBLE);
                 state.setText(R.string.game_download_state_installed);
+                styleTag(state, 0);
             } else if (downloaded != null) {
-                state.setVisibility(View.VISIBLE);
                 state.setText(R.string.game_download_state_downloaded);
+                styleTag(state, UiKit.BLUE);
             } else {
-                state.setVisibility(View.GONE);
+                state.setText(R.string.game_download_status_not_downloaded);
+                styleTag(state, null);
             }
 
             long size = downloaded != null && downloaded.size > 0 ? downloaded.size : release.size;
@@ -631,15 +673,17 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
             if (active) {
                 bindProgress(task);
                 action.setText(R.string.cancel);
+                applySecondary(action);
                 action.setOnClickListener(v -> downloads.cancel(release.versionCode));
             } else if (downloaded != null) {
                 action.setText(R.string.install);
+                UiKit.applyPrimary(action);
                 action.setOnClickListener(v -> install(shown));
                 secondary.setVisibility(View.VISIBLE);
-                secondary.setText(R.string.game_download_redownload);
                 secondary.setOnClickListener(v -> startDownload(release.versionCode, versionName));
             } else {
                 action.setText(failed ? R.string.game_download_retry : R.string.game_download_download);
+                UiKit.applyPrimary(action);
                 action.setOnClickListener(v -> startDownload(release.versionCode, versionName));
             }
             if (failed) {

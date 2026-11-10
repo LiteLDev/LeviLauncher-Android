@@ -2,344 +2,229 @@
 <!-- Package manager card of SettingsActivity (third-party components tab), driven by SettingsCard.
      Ordered like LeviLauncher's (Windows) components tab: package manager + clean cache, then the
      mirror switch, then the GitHub proxy; Android-only package rows sit with the package manager. -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/pkg_settings_card"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/card_background"
-    android:orientation="vertical"
-    android:padding="16dp">
+    style="@style/settings_Card">
 
-    <!-- Package manager + clean cache -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+    <LinearLayout style="@style/settings_CardBody">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+        <!-- Package manager + clean cache -->
+        <LinearLayout style="@style/settings_Row">
 
-            <TextView
+            <LinearLayout style="@style/settings_RowText">
+
+                <TextView
+                    style="@style/settings_RowTitle"
+                    android:text="@string/pkg_settings_title" />
+
+                <TextView
+                    style="@style/settings_RowDesc"
+                    android:text="@string/pkg_settings_desc" />
+
+                <TextView
+                    android:id="@+id/pkg_settings_cache_size"
+                    style="@style/settings_RowDesc"
+                    android:text="@string/pkg_settings_cache_size_computing" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/pkg_settings_cache_clean"
+                style="@style/Widget.Levi.Button.Secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/misans"
-                android:text="@string/pkg_settings_title"
-                android:textColor="@color/on_surface"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:fontFamily="@font/misans"
-                android:text="@string/pkg_settings_desc"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/pkg_settings_cache_size"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:fontFamily="@font/misans"
-                android:text="@string/pkg_settings_cache_size_computing"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
+                android:text="@string/pkg_settings_cache_clean" />
         </LinearLayout>
 
-        <Button
-            android:id="@+id/pkg_settings_cache_clean"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:layout_marginStart="12dp"
-            android:backgroundTint="@color/primary"
-            android:fontFamily="@font/misans"
-            android:paddingHorizontal="16dp"
-            android:text="@string/pkg_settings_cache_clean"
-            android:textAllCaps="false"
-            android:textColor="@color/on_primary"
-            android:textSize="12sp" />
-    </LinearLayout>
-
-    <org.levimc.launcher.ui.packages.TaskProgressView
-        android:id="@+id/pkg_settings_cache_progress"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:visibility="gone" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginBottom="14dp"
-        android:alpha="0.3"
-        android:background="@color/divider" />
-
-    <!-- Catalogue -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:layout_width="0dp"
+        <org.levimc.launcher.ui.packages.TaskProgressView
+            android:id="@+id/pkg_settings_cache_progress"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:layout_marginBottom="12dp"
+            android:visibility="gone" />
 
-            <TextView
+        <View style="@style/settings_Divider" />
+
+        <!-- Catalogue -->
+        <LinearLayout style="@style/settings_Row">
+
+            <LinearLayout style="@style/settings_RowText">
+
+                <TextView
+                    style="@style/settings_RowTitle"
+                    android:text="@string/pkg_settings_catalog_title" />
+
+                <TextView
+                    android:id="@+id/pkg_settings_catalog_age"
+                    style="@style/settings_RowDesc"
+                    android:text="@string/pkg_checking" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/pkg_settings_catalog_refresh"
+                style="@style/Widget.Levi.Button.Secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/misans"
-                android:text="@string/pkg_settings_catalog_title"
-                android:textColor="@color/on_surface"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/pkg_settings_catalog_age"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:fontFamily="@font/misans"
-                android:text="@string/pkg_checking"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
+                android:text="@string/pkg_settings_catalog_refresh" />
         </LinearLayout>
 
-        <Button
-            android:id="@+id/pkg_settings_catalog_refresh"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:layout_marginStart="12dp"
-            android:backgroundTint="@color/primary"
-            android:fontFamily="@font/misans"
-            android:paddingHorizontal="16dp"
-            android:text="@string/pkg_settings_catalog_refresh"
-            android:textAllCaps="false"
-            android:textColor="@color/on_primary"
-            android:textSize="12sp" />
-    </LinearLayout>
+        <View style="@style/settings_Divider" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginBottom="14dp"
-        android:alpha="0.3"
-        android:background="@color/divider" />
+        <!-- Package scripts -->
+        <LinearLayout style="@style/settings_Row">
 
-    <!-- Package scripts -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+            <LinearLayout style="@style/settings_RowText">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+                <TextView
+                    style="@style/settings_RowTitle"
+                    android:text="@string/pkg_settings_scripts_title" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/misans"
-                android:text="@string/pkg_settings_scripts_title"
-                android:textColor="@color/on_surface"
-                android:textSize="15sp"
-                android:textStyle="bold" />
+                <TextView
+                    style="@style/settings_RowDesc"
+                    android:text="@string/pkg_settings_scripts_desc" />
+            </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:fontFamily="@font/misans"
-                android:text="@string/pkg_settings_scripts_desc"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/pkg_settings_scripts_switch"
+                style="@style/settings_Switch" />
         </LinearLayout>
 
-        <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/pkg_settings_scripts_switch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:thumbTint="@color/primary"
-            android:trackTint="#555555" />
-    </LinearLayout>
+        <View style="@style/settings_Divider" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginBottom="14dp"
-        android:alpha="0.3"
-        android:background="@color/divider" />
+        <!-- Mirror -->
+        <LinearLayout style="@style/settings_Row">
 
-    <!-- Mirror -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+            <LinearLayout style="@style/settings_RowText">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+                <TextView
+                    style="@style/settings_RowTitle"
+                    android:text="@string/pkg_settings_mirror_title" />
 
-            <TextView
+                <TextView
+                    style="@style/settings_RowDesc"
+                    android:text="@string/pkg_settings_mirror_desc" />
+            </LinearLayout>
+
+            <FrameLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/misans"
-                android:text="@string/pkg_settings_mirror_title"
-                android:textColor="@color/on_surface"
-                android:textSize="15sp"
-                android:textStyle="bold" />
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:fontFamily="@font/misans"
-                android:text="@string/pkg_settings_mirror_desc"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
+                <Spinner
+                    android:id="@+id/pkg_settings_mirror_spinner"
+                    style="@style/Widget.Levi.Input"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:minWidth="140dp"
+                    android:paddingEnd="36dp" />
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginEnd="12dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_ui_expand_more"
+                    app:tint="@color/text_secondary" />
+            </FrameLayout>
         </LinearLayout>
 
-        <Spinner
-            android:id="@+id/pkg_settings_mirror_spinner"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:layout_marginStart="12dp"
-            android:background="@drawable/bg_spinner_outline"
-            android:minWidth="120dp" />
-    </LinearLayout>
+        <View style="@style/settings_Divider" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="14dp"
-        android:layout_marginBottom="14dp"
-        android:alpha="0.3"
-        android:background="@color/divider" />
-
-    <!-- GitHub proxy: title and description on the left, preset picker on the right (as on Windows) -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
+        <!-- GitHub proxy: title and description on the left, preset picker on the right (as on Windows) -->
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            style="@style/settings_Row"
+            android:paddingBottom="4dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/misans"
-                android:text="@string/pkg_settings_proxy_title"
-                android:textColor="@color/on_surface"
-                android:textSize="15sp"
-                android:textStyle="bold" />
+            <LinearLayout style="@style/settings_RowText">
 
-            <TextView
+                <TextView
+                    style="@style/settings_RowTitle"
+                    android:text="@string/pkg_settings_proxy_title" />
+
+                <TextView
+                    style="@style/settings_RowDesc"
+                    android:text="@string/pkg_settings_proxy_desc" />
+            </LinearLayout>
+
+            <FrameLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:fontFamily="@font/misans"
-                android:text="@string/pkg_settings_proxy_desc"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
+                android:layout_height="wrap_content">
+
+                <Spinner
+                    android:id="@+id/pkg_settings_proxy_preset"
+                    style="@style/Widget.Levi.Input"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:minWidth="180dp"
+                    android:paddingEnd="36dp"
+                    android:contentDescription="@string/pkg_settings_proxy_title" />
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginEnd="12dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_ui_expand_more"
+                    app:tint="@color/text_secondary" />
+            </FrameLayout>
         </LinearLayout>
 
-        <Spinner
-            android:id="@+id/pkg_settings_proxy_preset"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/pkg_settings_proxy_input"
+                style="@style/Widget.Levi.Input"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:hint="@string/pkg_settings_proxy_hint"
+                android:imeOptions="actionDone"
+                android:importantForAutofill="no"
+                android:inputType="textUri" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/pkg_settings_proxy_reset"
+                style="@style/Widget.Levi.Button.Secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/reset" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/pkg_settings_proxy_save"
+                style="@style/Widget.Levi.Button.Primary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/save" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/pkg_settings_proxy_source"
             android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:layout_marginStart="12dp"
-            android:background="@drawable/bg_spinner_outline"
-            android:contentDescription="@string/pkg_settings_proxy_title"
-            android:minWidth="160dp" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textAppearance="@style/TextAppearance.Levi.Caption"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/pkg_settings_proxy_error"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:fontFamily="@font/misans"
+            android:textColor="@color/error"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="12dp" />
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <EditText
-            android:id="@+id/pkg_settings_proxy_input"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_weight="1"
-            android:background="@drawable/bg_search_field_light"
-            android:fontFamily="@font/misans"
-            android:hint="@string/pkg_settings_proxy_hint"
-            android:imeOptions="actionDone"
-            android:importantForAutofill="no"
-            android:inputType="textUri"
-            android:paddingHorizontal="12dp"
-            android:singleLine="true"
-            android:textColor="@color/on_surface"
-            android:textColorHint="@color/text_secondary"
-            android:textSize="13sp" />
-
-        <Button
-            android:id="@+id/pkg_settings_proxy_reset"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:layout_marginStart="8dp"
-            android:fontFamily="@font/misans"
-            android:paddingHorizontal="14dp"
-            android:text="@string/reset"
-            android:textAllCaps="false"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/pkg_settings_proxy_save"
-            android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:layout_marginStart="8dp"
-            android:backgroundTint="@color/primary"
-            android:fontFamily="@font/misans"
-            android:paddingHorizontal="16dp"
-            android:text="@string/save"
-            android:textAllCaps="false"
-            android:textColor="@color/on_primary"
-            android:textSize="12sp" />
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/pkg_settings_proxy_source"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:fontFamily="@font/misans"
-        android:textColor="@color/text_secondary"
-        android:textSize="11sp" />
-
-    <TextView
-        android:id="@+id/pkg_settings_proxy_error"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:fontFamily="@font/misans"
-        android:textColor="@color/error"
-        android:textSize="12sp"
-        android:visibility="gone" />
-</LinearLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import org.levimc.launcher.R;
@@ -28,6 +29,7 @@ import org.levimc.launcher.core.packages.LeviLamina;
 import org.levimc.launcher.core.packages.PackageService;
 import org.levimc.launcher.core.packages.engine.Cancel;
 import org.levimc.launcher.settings.FeatureSettings;
+import org.levimc.launcher.ui.widget.UiKit;
 
 import java.lang.ref.WeakReference;
 import java.text.DateFormat;
@@ -110,14 +112,11 @@ public final class SettingsCard {
 
     public void applyAccent() {
         int accent = PkgUi.accent(activity);
-        ColorStateList tint = ColorStateList.valueOf(accent);
-        cacheCleanButton.setBackgroundTintList(tint);
-        proxySave.setBackgroundTintList(tint);
-        catalogRefresh.setBackgroundTintList(tint);
-        int[][] states = {{android.R.attr.state_checked}, {}};
-        scriptsSwitch.setThumbTintList(new ColorStateList(states, new int[]{accent, 0xFFAAAAAA}));
-        int trackChecked = Color.argb(100, Color.red(accent), Color.green(accent), Color.blue(accent));
-        scriptsSwitch.setTrackTintList(new ColorStateList(states, new int[]{trackChecked, 0xFF555555}));
+        // Clean cache and refresh are secondary buttons; only Save is the filled theme-color action.
+        if (proxySave instanceof MaterialButton) {
+            UiKit.applyPrimary((MaterialButton) proxySave);
+        }
+        new org.levimc.launcher.util.PersonalizationManager(activity).applyAccentToView(scriptsSwitch, activity);
     }
 
     // #region Cache

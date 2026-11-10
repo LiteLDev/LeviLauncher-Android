@@ -1,26 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="4dp"
-    android:background="@drawable/bg_rounded_card"
+    android:layout_margin="6dp"
+    android:background="@drawable/content_bg_item_card"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="10dp">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/screenshot_image"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:scaleType="centerCrop"
+        android:layout_height="180dp"
+        android:background="@drawable/content_bg_thumb"
         android:contentDescription="@null"
-        android:background="#1E1E1E" />
+        android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/LeviContentThumbnailShape" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingStart="4dp">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -32,9 +35,11 @@
                 android:id="@+id/screenshot_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
                 android:fontFamily="@font/misans"
+                android:maxLines="1"
                 android:text="@string/screenshot_name_placeholder"
-                android:textColor="@color/on_surface"
+                android:textColor="@color/text_primary"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -43,50 +48,27 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:fontFamily="@font/misans"
+                android:maxLines="1"
                 android:text="@string/screenshot_date_placeholder"
-                android:textColor="@color/on_surface"
-                android:textSize="11sp" />
-
+                android:textAppearance="@style/TextAppearance.Levi.Caption" />
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/screenshot_save_button"
+            style="@style/Widget.Levi.Button.Icon"
+            android:layout_marginStart="8dp"
+            android:contentDescription="@string/save"
+            android:tooltipText="@string/save"
+            app:icon="@drawable/ic_ui_download" />
 
-            <Button
-                android:id="@+id/screenshot_save_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:backgroundTint="@color/primary"
-                android:fontFamily="@font/misans"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
-                android:paddingHorizontal="14dp"
-                android:paddingVertical="6dp"
-                android:text="@string/save"
-                android:textAllCaps="false"
-                android:textColor="@color/on_primary"
-                android:textSize="11sp" />
-
-            <Button
-                android:id="@+id/screenshot_delete_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/error"
-                android:fontFamily="@font/misans"
-                android:minWidth="0dp"
-                android:minHeight="0dp"
-                android:paddingHorizontal="14dp"
-                android:paddingVertical="6dp"
-                android:text="@string/delete"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                android:textSize="11sp" />
-        </LinearLayout>
-
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/screenshot_delete_button"
+            style="@style/Widget.Levi.Button.Icon"
+            android:layout_marginStart="8dp"
+            android:contentDescription="@string/delete"
+            android:tooltipText="@string/delete"
+            app:backgroundTint="@color/ui_danger_soft"
+            app:icon="@drawable/ic_ui_delete"
+            app:iconTint="@color/ui_danger" />
     </LinearLayout>
-
 </LinearLayout>

@@ -1,61 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="4dp"
-    android:background="@drawable/bg_rounded_card"
-    android:orientation="vertical"
+    android:layout_marginHorizontal="6dp"
+    android:layout_marginVertical="6dp"
+    android:background="@drawable/content_bg_item_card"
+    android:gravity="center_vertical"
+    android:minHeight="72dp"
+    android:orientation="horizontal"
     android:padding="12dp">
 
+    <FrameLayout
+        android:id="@+id/server_chip"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:background="@drawable/bg_ui_icon_chip">
+
+        <ImageView
+            android:id="@+id/server_icon"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_ui_server" />
+    </FrameLayout>
+
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:layout_marginStart="14dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/server_name"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:ellipsize="end"
+            android:fontFamily="@font/misans"
+            android:maxLines="1"
+            android:text="@string/server_name_placeholder"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp"
+            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/server_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/misans"
-                android:text="@string/server_name_placeholder"
-                android:textColor="@color/on_surface"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/server_ip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:fontFamily="@font/misans"
-                android:text="play.example.com"
-                android:textColor="@color/on_surface"
-                android:textSize="12sp" />
-
-        </LinearLayout>
-
-        <Button
-            android:id="@+id/server_delete_button"
+        <TextView
+            android:id="@+id/server_ip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/error"
-            android:fontFamily="@font/misans"
-            android:minWidth="0dp"
-            android:minHeight="0dp"
-            android:paddingHorizontal="14dp"
-            android:paddingVertical="6dp"
-            android:text="@string/delete"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            android:textSize="11sp" />
-
+            android:layout_marginTop="3dp"
+            android:maxLines="1"
+            android:text="play.example.com"
+            android:textAppearance="@style/TextAppearance.Levi.Caption" />
     </LinearLayout>
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/server_delete_button"
+        style="@style/Widget.Levi.Button.Icon"
+        android:layout_marginStart="8dp"
+        android:contentDescription="@string/delete"
+        android:tooltipText="@string/delete"
+        app:backgroundTint="@color/ui_danger_soft"
+        app:icon="@drawable/ic_ui_delete"
+        app:iconTint="@color/ui_danger" />
 </LinearLayout>

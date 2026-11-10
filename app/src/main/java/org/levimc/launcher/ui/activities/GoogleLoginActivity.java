@@ -1,6 +1,7 @@
 package org.levimc.launcher.ui.activities;
 
 import android.annotation.SuppressLint;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.play.PlayClient;
 import org.levimc.launcher.core.play.PlayException;
+import org.levimc.launcher.ui.widget.UiKit;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -52,6 +54,12 @@ public class GoogleLoginActivity extends BaseActivity {
         working = findViewById(R.id.google_login_working);
         ProgressBar progress = findViewById(R.id.google_login_progress);
         webView = findViewById(R.id.google_login_web);
+        // Clip Google's page to the card's rounded corners.
+        ((View) webView.getParent().getParent()).setClipToOutline(true);
+        ColorStateList accent = ColorStateList.valueOf(UiKit.accent(this));
+        progress.setProgressTintList(accent);
+        progress.setIndeterminateTintList(accent);
+        ((ProgressBar) findViewById(R.id.google_login_working_progress)).setIndeterminateTintList(accent);
 
         CookieManager cookies = CookieManager.getInstance();
         cookies.removeAllCookies(null);

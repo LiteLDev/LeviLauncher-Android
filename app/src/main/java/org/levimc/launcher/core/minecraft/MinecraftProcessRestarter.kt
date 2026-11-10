@@ -106,6 +106,8 @@ class LauncherRestartActivity : BaseActivity() {
 
     override fun shouldSkipNavBar(): Boolean = true
 
+    override fun avoidsCutoutWithoutShell(): Boolean = false
+
     override fun onCreate(savedInstanceState: android.os.Bundle?) {
         super.onCreate(savedInstanceState)
         registerCloseReceiver()
