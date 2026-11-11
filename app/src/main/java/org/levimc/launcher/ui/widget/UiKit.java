@@ -82,17 +82,17 @@ public final class UiKit {
         if (view instanceof TextView) ((TextView) view).setTextColor(accentText(view.getContext()));
     }
 
-    /**
-     * Colored square behind an icon (Windows icon chip): light = 500 at 12% on white,
-     * dark = 900 at 35%; the icon uses the 500 color.
-     */
     public static void tintIconChip(View chip, ImageView icon, int color) {
         Context ctx = chip.getContext();
-        boolean dark = isDark(ctx);
+        PersonalizationManager personalization = new PersonalizationManager(ctx);
+        boolean dark = personalization.isDarkMode(ctx);
+        float opacity = dark ? 0.55f : 0.12f;
+        if (personalization.hasBackgroundImage()) {
+            opacity = Math.min(opacity, Color.alpha(personalization.getEffectiveSurfaceColor()) / 255f);
+        }
         GradientDrawable gd = new GradientDrawable();
         gd.setCornerRadius(dp(ctx, 10));
-        gd.setColor(dark ? ThemePalette.withAlpha(ThemePalette.shade(color, 900), 0.55f)
-                : ThemePalette.withAlpha(color, 0.12f));
+        gd.setColor(ThemePalette.withAlpha(dark ? ThemePalette.shade(color, 900) : color, opacity));
         chip.setBackground(gd);
         if (icon != null) icon.setImageTintList(ColorStateList.valueOf(color));
     }

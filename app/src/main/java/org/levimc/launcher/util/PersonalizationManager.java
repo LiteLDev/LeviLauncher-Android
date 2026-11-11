@@ -15,6 +15,8 @@ import android.graphics.Shader;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.InsetDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -480,7 +482,7 @@ public class PersonalizationManager {
 
         applyOverlay(overlayView, isDark);
 
-        makeChildBackgroundsTranslucent(rootView, activity);
+        makeChildBackgroundsTranslucent(rootView, getWallpaperSurfaceColor());
     }
 
     /** Solid layer under the wallpaper (Windows "Base mode"): none, the theme color, or a custom color. */
@@ -497,10 +499,11 @@ public class PersonalizationManager {
         baseView.setBackgroundColor(ThemePalette.mix(page, color, UiSettings.getBaseOpacity(context, isDark) / 100f));
     }
 
-    /** Wallpaper scrim: the surface color at the material overlay opacity. */
     private void applyOverlay(View overlayView, boolean isDark) {
-        int alpha = Math.round(UiSettings.getOverlayOpacity(context, isDark) * 2.55f);
-        overlayView.setBackgroundColor(isDark ? Color.argb(alpha, 24, 24, 27) : Color.argb(alpha, 255, 255, 255));
+        boolean legacy = UiSettings.MATERIAL_BALANCED.equals(UiSettings.getMaterialPreset(context, isDark));
+        int alpha = legacy ? (isDark ? 100 : 80)
+                : Math.round(UiSettings.getOverlayOpacity(context, isDark) * 2.55f);
+        overlayView.setBackgroundColor(isDark ? Color.argb(alpha, 0, 0, 0) : Color.argb(alpha, 255, 255, 255));
         overlayView.setVisibility(View.VISIBLE);
     }
 
@@ -723,107 +726,35 @@ public class PersonalizationManager {
         return Math.max(min, Math.min(max, value));
     }
 
-    /** Surface color over a wallpaper: Windows interface material (surface RGB at the effective opacity). */
     private int getGlassColor(boolean isDark) {
-        // A fully transparent wallpaper counts as no wallpaper (Windows): solid surfaces.
-        if (getBackgroundOpacity() == 0) return isDark ? 0xFF18181B : 0xFFFFFFFF;
+        if (getBackgroundOpacity() == 0) return isDark ? 0xFF151518 : 0xFFF1F8E9;
         int opacity = UiSettings.getEffectiveSurfaceOpacity(context, isDark, getBackgroundImageBrightness(),
                 getBackgroundImageBlur(), getBackgroundOpacity());
-        int alpha = Math.round(opacity * 2.55f);
-        return isDark ? Color.argb(alpha, 24, 24, 27) : Color.argb(alpha, 255, 255, 255);
+        int alpha = UiSettings.MATERIAL_BALANCED.equals(UiSettings.getMaterialPreset(context, isDark))
+                ? 50 : Math.round(opacity * 2.55f);
+        return isDark ? Color.argb(alpha, 25, 25, 25) : Color.argb(alpha, 255, 255, 255);
     }
 
-    /** Chrome (navigation) color over a wallpaper: Windows NAVBAR_BG, the surface at 85%. */
+    private int getWallpaperSurfaceColor() {
+        return getGlassColor(isDarkActive(context));
+    }
+
     public int getChromeGlassColor(Context ctx) {
         boolean isDark = isDarkMode(ctx);
-        int alpha = Math.max(Color.alpha(getGlassColor(isDark)), 217);
-        return isDark ? Color.argb(alpha, 24, 24, 27) : Color.argb(alpha, 255, 255, 255);
+        if (getBackgroundOpacity() == 0) return ContextCompat.getColor(ctx, R.color.ui_chrome);
+        int alpha = UiSettings.MATERIAL_BALANCED.equals(UiSettings.getMaterialPreset(context, isDark))
+                ? (isDark ? 90 : 110) : Color.alpha(getGlassColor(isDark));
+        return isDark ? Color.argb(alpha, 25, 25, 25) : Color.argb(alpha, 255, 255, 255);
     }
 
-    private void makeChildBackgroundsTranslucent(ViewGroup parent, Activity activity) {
-        int bgColor = ContextCompat.getColor(activity, R.color.background);
-        int surfColor = ContextCompat.getColor(activity, R.color.surface);
-        int surfVariantColor = ContextCompat.getColor(activity, R.color.surface_variant);
-        boolean isDark = isDarkMode(activity);
-        int glassColor = getGlassColor(isDark);
-
+    private void makeChildBackgroundsTranslucent(ViewGroup parent, int glassColor) {
         for (int i = 0; i < parent.getChildCount(); i++) {
             View child = parent.getChildAt(i);
             if ("personalization_bg".equals(child.getTag()) || "personalization_overlay".equals(child.getTag())
-                    || "personalization_base".equals(child.getTag())) {
-                continue;
-            }
-            if (TAG_KEEP_BACKGROUND.equals(child.getTag())) {
-                if (child instanceof ViewGroup) makeChildBackgroundsTranslucent((ViewGroup) child, activity);
-                continue;
-            }
-
-            if (child instanceof CardView) {
-                CardView cv = (CardView) child;
-                int cardColor = cv.getCardBackgroundColor().getDefaultColor();
-                if (cardColor == surfColor || cardColor == bgColor || cardColor == surfVariantColor
-                        || isNearBlack(cardColor) || isNearWhite(cardColor)) {
-                    cv.setCardBackgroundColor(glassColor);
-                }
-                makeChildBackgroundsTranslucent((ViewGroup) child, activity);
-                continue;
-            }
-
-            Drawable bg = child.getBackground();
-            if (bg instanceof ColorDrawable) {
-                int color = ((ColorDrawable) bg).getColor();
-                if (color == bgColor || isNearBlack(color)) {
-                    child.setBackgroundColor(Color.TRANSPARENT);
-                } else if (color == surfColor || color == surfVariantColor || isNearWhite(color)) {
-                    child.setBackgroundColor(glassColor);
-                }
-            } else if (bg instanceof GradientDrawable) {
-                GradientDrawable gd = (GradientDrawable) bg;
-                try {
-                    if (gd.getColor() != null) {
-                        int gdColor = gd.getColor().getDefaultColor();
-                        if (gdColor == surfColor || gdColor == bgColor || gdColor == surfVariantColor
-                                || isNearBlack(gdColor) || isNearWhite(gdColor)) {
-                            GradientDrawable newGd = new GradientDrawable();
-                            float[] radii = null;
-                            try {
-                                radii = gd.getCornerRadii();
-                            } catch (Exception ignored) {
-                            }
-                            if (radii != null) newGd.setCornerRadii(radii);
-                            else newGd.setCornerRadius(gd.getCornerRadius());
-                            newGd.setShape(gd.getShape());
-                            newGd.setColor(glassColor);
-                            child.setBackground(newGd);
-                        }
-                    }
-                } catch (Exception ignored) {}
-            } else if (bg instanceof StateListDrawable) {
-                StateListDrawable sld = (StateListDrawable) bg;
-                boolean modified = false;
-                for (int si = 0; si < sld.getStateCount(); si++) {
-                    Drawable stateDrawable = sld.getStateDrawable(si);
-                    if (stateDrawable instanceof GradientDrawable) {
-                        GradientDrawable sgd = (GradientDrawable) stateDrawable;
-                        try {
-                            if (sgd.getColor() != null) {
-                                int sgdColor = sgd.getColor().getDefaultColor();
-                                if (sgdColor == surfColor || sgdColor == bgColor || sgdColor == surfVariantColor
-                                        || isNearBlack(sgdColor) || isNearWhite(sgdColor)) {
-                                    sgd.setColor(glassColor);
-                                    modified = true;
-                                }
-                            }
-                        } catch (Exception ignored) {}
-                    }
-                }
-                if (modified) {
-                    sld.invalidateSelf();
-                }
-            }
-
+                    || "personalization_base".equals(child.getTag())) continue;
+            applyGlassToView(child, glassColor);
             if (child instanceof ViewGroup) {
-                makeChildBackgroundsTranslucent((ViewGroup) child, activity);
+                makeChildBackgroundsTranslucent((ViewGroup) child, glassColor);
             }
         }
     }
@@ -994,8 +925,9 @@ public class PersonalizationManager {
     /** Glass pass for views inflated after the page was set up (fragments, late content). */
     public void applyGlassToTree(View root, Activity activity) {
         if (!hasBackgroundImage() || LauncherBackgroundController.isMinecraftBlocked()) return;
-        applyGlassToView(root);
-        if (root instanceof ViewGroup) makeChildBackgroundsTranslucent((ViewGroup) root, activity);
+        int glassColor = getWallpaperSurfaceColor();
+        applyGlassToView(root, glassColor);
+        if (root instanceof ViewGroup) makeChildBackgroundsTranslucent((ViewGroup) root, glassColor);
     }
 
     public void applyAccentToView(View view, Context context) {
@@ -1017,55 +949,90 @@ public class PersonalizationManager {
 
     public int getEffectiveSurfaceColor() {
         if (hasBackgroundImage()) {
-            return getGlassColor(isDarkMode(context));
+            return getWallpaperSurfaceColor();
         }
         return ContextCompat.getColor(context, R.color.surface);
     }
 
     public void applyGlassToView(View view) {
         if (!hasBackgroundImage()) return;
-        boolean isDark = isDarkMode(context);
-        int glassColor = getGlassColor(isDark);
-        int surfColor = ContextCompat.getColor(context, R.color.surface);
-        int bgColor = ContextCompat.getColor(context, R.color.background);
-        int surfVariantColor = ContextCompat.getColor(context, R.color.surface_variant);
+        applyGlassToView(view, getWallpaperSurfaceColor());
+    }
 
-        Drawable bg = view.getBackground();
-        if (bg instanceof GradientDrawable) {
-            GradientDrawable gd = (GradientDrawable) bg;
-            try {
-                if (gd.getColor() != null) {
-                    int gdColor = gd.getColor().getDefaultColor();
-                    if (gdColor == surfColor || gdColor == bgColor || gdColor == surfVariantColor
-                            || isNearBlack(gdColor) || isNearWhite(gdColor)) {
-                        gd.setColor(glassColor);
-                    }
-                }
-            } catch (Exception ignored) {}
-        } else if (bg instanceof StateListDrawable) {
-            StateListDrawable sld = (StateListDrawable) bg;
-            for (int si = 0; si < sld.getStateCount(); si++) {
-                Drawable stateDrawable = sld.getStateDrawable(si);
-                if (stateDrawable instanceof GradientDrawable) {
-                    GradientDrawable sgd = (GradientDrawable) stateDrawable;
-                    try {
-                        if (sgd.getColor() != null) {
-                            int sgdColor = sgd.getColor().getDefaultColor();
-                            if (sgdColor == surfColor || sgdColor == bgColor || sgdColor == surfVariantColor
-                                    || isNearBlack(sgdColor) || isNearWhite(sgdColor)) {
-                                sgd.setColor(glassColor);
-                            }
-                        }
-                    } catch (Exception ignored) {}
+    private void applyGlassToView(View view, int glassColor) {
+        if (TAG_KEEP_BACKGROUND.equals(view.getTag())) return;
+        Context ctx = view.getContext();
+        if (view instanceof CardView) {
+            CardView card = (CardView) view;
+            int color = card.getCardBackgroundColor().getDefaultColor();
+            if (isSurfaceColor(color, ctx)) {
+                card.setCardBackgroundColor(glassColor);
+            }
+            return;
+        }
+
+        ColorStateList tint = view.getBackgroundTintList();
+        if (tint != null) {
+            if (isSurfaceColor(tint.getDefaultColor(), ctx)) {
+                view.setBackgroundTintList(ColorStateList.valueOf(glassColor));
+            }
+            return;
+        }
+        Drawable background = view.getBackground();
+        if (background != null) applyGlassToDrawable(background.mutate(), ctx, glassColor);
+    }
+
+    private boolean isSurfaceColor(int color, Context ctx) {
+        if (Color.alpha(color) <= 200) {
+            return color == ContextCompat.getColor(ctx, R.color.ui_card_surface);
+        }
+        return color == ContextCompat.getColor(ctx, R.color.background)
+                || color == ContextCompat.getColor(ctx, R.color.surface)
+                || color == ContextCompat.getColor(ctx, R.color.surface_variant)
+                || color == ContextCompat.getColor(ctx, R.color.ui_chrome)
+                || color == ContextCompat.getColor(ctx, R.color.ui_default)
+                || color == ContextCompat.getColor(ctx, R.color.ui_input)
+                || color == ContextCompat.getColor(ctx, R.color.ui_strip)
+                || isNearBlack(color) || isNearWhite(color);
+    }
+
+    private void applyGlassToDrawable(Drawable drawable, Context ctx, int glassColor) {
+        if (drawable instanceof ColorDrawable) {
+            ColorDrawable colorDrawable = (ColorDrawable) drawable;
+            int color = colorDrawable.getColor();
+            if (isSurfaceColor(color, ctx)) {
+                colorDrawable.setColor(color == ContextCompat.getColor(ctx, R.color.background) || isNearBlack(color)
+                        ? Color.TRANSPARENT : glassColor);
+            }
+        } else if (drawable instanceof GradientDrawable) {
+            GradientDrawable gradient = (GradientDrawable) drawable;
+            ColorStateList colors = gradient.getColor();
+            if (colors != null && isSurfaceColor(colors.getDefaultColor(), ctx)) {
+                gradient.setColor(glassColor);
+            }
+        } else if (drawable instanceof StateListDrawable) {
+            StateListDrawable states = (StateListDrawable) drawable;
+            for (int i = 0; i < states.getStateCount(); i++) {
+                Drawable state = states.getStateDrawable(i);
+                if (state != null) applyGlassToDrawable(state, ctx, glassColor);
+            }
+            states.invalidateSelf();
+        } else if (drawable instanceof InsetDrawable) {
+            Drawable inset = ((InsetDrawable) drawable).getDrawable();
+            if (inset != null) applyGlassToDrawable(inset, ctx, glassColor);
+        } else if (drawable instanceof LayerDrawable) {
+            LayerDrawable layers = (LayerDrawable) drawable;
+            for (int i = 0; i < layers.getNumberOfLayers(); i++) {
+                if (layers.getId(i) != android.R.id.mask) {
+                    applyGlassToDrawable(layers.getDrawable(i), ctx, glassColor);
                 }
             }
-            sld.invalidateSelf();
-        } else if (view instanceof CardView) {
-            CardView cv = (CardView) view;
-            int cardColor = cv.getCardBackgroundColor().getDefaultColor();
-            if (cardColor == surfColor || cardColor == bgColor || cardColor == surfVariantColor
-                    || isNearBlack(cardColor) || isNearWhite(cardColor)) {
-                cv.setCardBackgroundColor(glassColor);
+        } else if (drawable instanceof com.google.android.material.shape.MaterialShapeDrawable) {
+            com.google.android.material.shape.MaterialShapeDrawable shape =
+                    (com.google.android.material.shape.MaterialShapeDrawable) drawable;
+            ColorStateList fill = shape.getFillColor();
+            if (fill != null && isSurfaceColor(fill.getDefaultColor(), ctx)) {
+                shape.setFillColor(ColorStateList.valueOf(glassColor));
             }
         }
     }

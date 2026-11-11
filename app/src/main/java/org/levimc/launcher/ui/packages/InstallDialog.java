@@ -148,7 +148,7 @@ public final class InstallDialog extends Dialog implements DefaultLifecycleObser
 
         int accent = PkgUi.accent(getContext());
         primaryButton.setBackgroundTintList(ColorStateList.valueOf(accent));
-        primaryButton.setTextColor(Color.luminance(accent) > 0.42f ? Color.BLACK : Color.WHITE);
+        primaryButton.setTextColor(org.levimc.launcher.util.ThemePalette.onAccent(accent));
         DynamicAnim.applyPressScale(primaryButton);
         DynamicAnim.applyPressScale(cancelButton);
         cancelButton.setOnClickListener(v -> {

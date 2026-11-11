@@ -324,6 +324,7 @@ public class SettingsActivity extends BaseActivity {
             } else {
                 nav.setBackgroundTintList(secondaryFill);
                 nav.setTextColor(secondaryText);
+                nav.setIconTint(secondaryText);
             }
             personalizeGroups[i].setVisibility(i == index ? View.VISIBLE : View.GONE);
         }

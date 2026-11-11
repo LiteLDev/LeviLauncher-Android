@@ -35,6 +35,7 @@ import org.levimc.launcher.ui.widget.SegmentedControl;
 import org.levimc.launcher.ui.widget.UiKit;
 import org.levimc.launcher.util.InstanceBackupManager;
 import org.levimc.launcher.util.InstanceShortcutManager;
+import org.levimc.launcher.util.InstanceIcons;
 import org.levimc.launcher.util.UiSettings;
 
 import java.io.File;
@@ -331,16 +332,9 @@ public class InstanceSettingsActivity extends BaseActivity {
 
     private void updateShortcutIconPreview() {
         if (shortcutIconPreview == null) return;
-        Bitmap bitmap = InstanceShortcutManager.loadIconBitmap(this, shortcutIconUri);
-        if (bitmap != null) {
-            shortcutIconPreview.setImageBitmap(bitmap);
-            shortcutIconPreview.setVisibility(View.VISIBLE);
-            if (shortcutIconPlaceholder != null) shortcutIconPlaceholder.setVisibility(View.GONE);
-        } else {
-            shortcutIconPreview.setImageDrawable(null);
-            shortcutIconPreview.setVisibility(View.GONE);
-            if (shortcutIconPlaceholder != null) shortcutIconPlaceholder.setVisibility(View.VISIBLE);
-        }
+        InstanceIcons.bindUri(shortcutIconPreview, shortcutIconUri);
+        shortcutIconPreview.setVisibility(View.VISIBLE);
+        if (shortcutIconPlaceholder != null) shortcutIconPlaceholder.setVisibility(View.GONE);
     }
 
     /**

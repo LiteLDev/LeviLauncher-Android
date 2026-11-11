@@ -1171,7 +1171,7 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
             showResults = new MaterialButton(ctx);
             showResults.setAllCaps(false);
             showResults.setBackgroundTintList(ColorStateList.valueOf(accent));
-            showResults.setTextColor(Color.luminance(accent) > 0.42f ? Color.BLACK : Color.WHITE);
+            showResults.setTextColor(org.levimc.launcher.util.ThemePalette.onAccent(accent));
             showResults.setOnClickListener(v -> dialog.dismiss());
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.WRAP_CONTENT);

@@ -115,7 +115,7 @@ public final class InstanceShortcutManager {
         if (customIcon != null) {
             builder.setIcon(Icon.createWithAdaptiveBitmap(customIcon));
         } else {
-            builder.setIcon(Icon.createWithResource(context, R.mipmap.ic_launcher));
+            builder.setIcon(Icon.createWithResource(context, R.drawable.ic_minecraft_cube));
         }
         return builder.build();
     }

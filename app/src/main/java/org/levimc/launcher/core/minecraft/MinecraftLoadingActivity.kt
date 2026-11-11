@@ -17,6 +17,7 @@ import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.view.ViewTreeObserver
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.ScrollView
 import android.widget.TextView
@@ -25,6 +26,7 @@ import org.levimc.launcher.R
 import org.levimc.launcher.ui.activities.BaseActivity
 import org.levimc.launcher.ui.dialogs.CustomAlertDialog
 import org.levimc.launcher.util.PersonalizationManager
+import org.levimc.launcher.util.InstanceIcons
 import org.levimc.launcher.util.LauncherBackgroundController
 import java.text.SimpleDateFormat
 import java.util.ArrayDeque
@@ -65,6 +67,10 @@ class MinecraftLoadingActivity : BaseActivity(), MinecraftRuntimePreparer.Progre
             window.decorView.post { hideSystemUi() }
         }
         setContentView(R.layout.activity_minecraft_loading)
+        InstanceIcons.bind(
+            findViewById<ImageView>(R.id.minecraftLaunchLogo),
+            MinecraftRuntimePreparer.resolveGameVersion(intent)
+        )
         hideSystemUi()
 
         progressBar = findViewById(R.id.minecraftLaunchProgress)

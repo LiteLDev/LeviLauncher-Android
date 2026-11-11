@@ -152,7 +152,7 @@
         android:id="@+id/nav_divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/ui_border" />
+        android:background="@color/divider" />
 
     <FrameLayout
         android:id="@+id/shell_content"

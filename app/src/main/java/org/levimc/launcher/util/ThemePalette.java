@@ -111,6 +111,6 @@ public final class ThemePalette {
 
     /** Label color on a filled accent button. */
     public static int onAccent(int accent) {
-        return contrast(accent, 0xFFF4F4F5) >= 2.2 ? 0xFFF4F4F5 : 0xFF18181B;
+        return Color.WHITE;
     }
 }

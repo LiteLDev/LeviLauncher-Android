@@ -285,8 +285,7 @@
                             android:alpha="0.55"
                             android:contentDescription="@string/no_layers_title"
                             android:padding="6dp"
-                            android:src="@drawable/ic_minecraft_cube"
-                            android:tint="@color/text_secondary" />
+                            android:src="@drawable/ic_minecraft_cube" />
 
                         <TextView
                             android:layout_width="wrap_content"

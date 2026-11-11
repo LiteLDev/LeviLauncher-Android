@@ -2,8 +2,10 @@ package org.levimc.launcher.ui.widget;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -17,6 +19,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.TextViewCompat;
 
 import org.levimc.launcher.R;
+import org.levimc.launcher.util.PersonalizationManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -134,16 +137,16 @@ public class SegmentedControl extends LinearLayout {
     }
 
     private void applyTrack() {
+        setBackground(null);
         if (vertical) {
-            setBackgroundResource(R.drawable.bg_ui_segment_track);
             int pad = dp(4);
             setPadding(pad, pad, pad, pad);
             setMinimumHeight(dp(48));
         } else {
-            setBackground(null);
             setPadding(0, 0, 0, 0);
             setMinimumHeight(0);
         }
+        new PersonalizationManager(getContext()).applyGlassToView(this);
     }
 
     public void setOnSegmentSelectedListener(@Nullable OnSegmentSelectedListener listener) {
@@ -170,18 +173,26 @@ public class SegmentedControl extends LinearLayout {
     }
 
     private void applyState() {
-        int active = ContextCompat.getColor(getContext(), R.color.text_primary);
+        int active = Color.WHITE;
         int inactive = ContextCompat.getColor(getContext(), R.color.text_secondary);
+        PersonalizationManager personalization = new PersonalizationManager(getContext());
         for (int i = 0; i < segments.size(); i++) {
             TextView t = segments.get(i);
             boolean on = i == selected;
-            t.setBackgroundResource(on ? R.drawable.bg_ui_segment_selected
-                    : vertical ? 0 : R.drawable.bg_ui_segment_track);
-            t.setElevation(on ? dp(1) : 0);
+            if (on) {
+                GradientDrawable background = new GradientDrawable();
+                background.setCornerRadius(dp(16));
+                background.setColor(UiKit.accent(getContext()));
+                t.setBackground(background);
+            } else {
+                t.setBackgroundResource(R.drawable.bg_tab_unselected);
+            }
+            t.setElevation(0);
             t.setTextColor(on ? active : inactive);
             t.setTypeface(Typeface.create(baseTypeface, on ? Typeface.BOLD : Typeface.NORMAL));
             TextViewCompat.setCompoundDrawableTintList(t, ColorStateList.valueOf(on ? active : inactive));
             t.setSelected(on);
+            personalization.applyGlassToView(t);
         }
     }
 

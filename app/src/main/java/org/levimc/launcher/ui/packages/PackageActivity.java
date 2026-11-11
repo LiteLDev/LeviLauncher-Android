@@ -162,7 +162,7 @@ public class PackageActivity extends BaseActivity {
 
         MaterialButton install = findViewById(R.id.pkg_pkg_btn_install);
         install.setBackgroundTintList(ColorStateList.valueOf(accent));
-        int onAccent = Color.luminance(accent) > 0.42f ? Color.BLACK : Color.WHITE;
+        int onAccent = org.levimc.launcher.util.ThemePalette.onAccent(accent);
         install.setTextColor(onAccent);
         install.setIconTint(ColorStateList.valueOf(onAccent));
         install.setOnClickListener(v -> selectTab(true));
@@ -521,7 +521,7 @@ public class PackageActivity extends BaseActivity {
         all.addAll(games);
         int onSurface = getColor(R.color.on_surface);
         int surfaceVariant = getColor(R.color.surface_variant);
-        int textOnAccent = Color.luminance(accent) > 0.42f ? Color.BLACK : Color.WHITE;
+        int textOnAccent = org.levimc.launcher.util.ThemePalette.onAccent(accent);
         ColorStateList chipText = new ColorStateList(
                 new int[][]{new int[]{android.R.attr.state_checked}, new int[]{}},
                 new int[]{textOnAccent, onSurface});

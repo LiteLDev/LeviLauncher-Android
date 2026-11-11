@@ -14,8 +14,8 @@
         android:id="@+id/minecraftLaunchLogo"
         android:layout_width="58dp"
         android:layout_height="58dp"
-        android:contentDescription="@string/splash_logo_desc"
-        android:src="@drawable/ic_leaf_logo"
+        android:contentDescription="@string/minecraft"
+        android:src="@drawable/ic_minecraft_cube"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

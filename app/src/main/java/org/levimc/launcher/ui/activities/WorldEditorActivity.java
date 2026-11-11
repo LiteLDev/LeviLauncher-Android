@@ -566,7 +566,9 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
                         WorldUi.ripple(this, WorldUi.color(this, R.color.surface_variant), 12));
                 ImageView icon = new ImageView(this);
                 icon.setImageResource(icons[j]);
-                icon.setImageTintList(ColorStateList.valueOf(WorldUi.accent(this)));
+                if (icons[j] != R.drawable.ic_minecraft_cube) {
+                    icon.setImageTintList(ColorStateList.valueOf(WorldUi.accent(this)));
+                }
                 tile.addView(icon, new LinearLayout.LayoutParams(dp(24), dp(24)));
                 TextView label = WorldUi.text(this, names[j], 11, false);
                 label.setGravity(Gravity.CENTER);

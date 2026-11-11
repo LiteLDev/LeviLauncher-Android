@@ -143,28 +143,29 @@ public final class UiSettings {
         }
     }
 
-    /** Interface opacity 0..100 (Windows surfaceOpacity). */
     public static int getSurfaceOpacity(Context context, boolean dark) {
-        return clamp(prefs(context).getInt("material_surface_" + mode(dark),
-                presetSurface(getMaterialPreset(context, dark))), 0, 100);
+        String preset = getMaterialPreset(context, dark);
+        if (!MATERIAL_CUSTOM.equals(preset)) return presetSurface(preset);
+        return clamp(prefs(context).getInt("material_surface_" + mode(dark), 20), 0, 100);
     }
 
-    /** Wallpaper overlay 0..80 (Windows overlayOpacity). */
     public static int getOverlayOpacity(Context context, boolean dark) {
-        return clamp(prefs(context).getInt("material_overlay_" + mode(dark), dark ? 18 : 8), 0, 80);
+        int opacity = dark ? 39 : 31;
+        if (!MATERIAL_CUSTOM.equals(getMaterialPreset(context, dark))) return opacity;
+        return clamp(prefs(context).getInt("material_overlay_" + mode(dark), opacity), 0, 80);
     }
 
     public static boolean getReadability(Context context, boolean dark) {
-        return prefs(context).getBoolean("material_readability_" + mode(dark),
-                !MATERIAL_CLEAR.equals(getMaterialPreset(context, dark)));
+        return MATERIAL_CUSTOM.equals(getMaterialPreset(context, dark))
+                && prefs(context).getBoolean("material_readability_" + mode(dark), false);
     }
 
     public static void applyMaterialPreset(Context context, boolean dark, String preset) {
         prefs(context).edit()
                 .putString("material_preset_" + mode(dark), preset)
                 .putInt("material_surface_" + mode(dark), presetSurface(preset))
-                .putInt("material_overlay_" + mode(dark), dark ? 18 : 8)
-                .putBoolean("material_readability_" + mode(dark), !MATERIAL_CLEAR.equals(preset))
+                .putInt("material_overlay_" + mode(dark), dark ? 39 : 31)
+                .putBoolean("material_readability_" + mode(dark), false)
                 .apply();
         PersonalizationManager.bumpChange();
     }
@@ -182,9 +183,9 @@ public final class UiSettings {
 
     private static int presetSurface(String preset) {
         switch (preset) {
-            case MATERIAL_CLEAR: return 35;
+            case MATERIAL_CLEAR: return 10;
             case MATERIAL_SOLID: return 100;
-            default: return 60;
+            default: return 20;
         }
     }
 

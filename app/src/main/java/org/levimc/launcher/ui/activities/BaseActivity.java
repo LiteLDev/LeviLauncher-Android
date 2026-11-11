@@ -233,11 +233,16 @@ public class BaseActivity extends AppCompatActivity {
             View root = findViewById(R.id.shell_root);
             View bar = findViewById(R.id.nav_bar_root);
             View content = findViewById(R.id.shell_content);
-            if (navbar) {
-                if (root != null) root.setBackgroundColor(Color.TRANSPARENT);
-                if (bar != null) bar.setBackgroundColor(chrome);
-            } else {
-                if (root != null) root.setBackgroundColor(chrome);
+            if (root != null) root.setBackgroundColor(Color.TRANSPARENT);
+            if (bar != null) bar.setBackgroundColor(chrome);
+            View divider = findViewById(R.id.nav_divider);
+            if (divider != null) {
+                divider.setBackgroundColor(pm.isDarkMode(this)
+                        ? Color.argb(40, 255, 255, 255) : Color.argb(40, 0, 0, 0));
+            }
+            if (!navbar) {
+                View rail = findViewById(R.id.nav_rail);
+                if (rail != null) rail.setBackgroundColor(chrome);
                 if (content != null) {
                     GradientDrawable frame = new GradientDrawable();
                     float r = 20f * getResources().getDisplayMetrics().density;

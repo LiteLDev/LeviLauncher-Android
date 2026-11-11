@@ -5,17 +5,18 @@
 
     <!-- Cards -->
     <style name="Widget.Levi.Card" parent="Widget.MaterialComponents.CardView">
-        <item name="cardBackgroundColor">@color/surface</item>
+        <item name="cardBackgroundColor">@color/ui_card_surface</item>
         <item name="cardCornerRadius">8dp</item>
         <item name="cardElevation">0dp</item>
         <item name="strokeColor">@color/ui_card_stroke</item>
-        <item name="strokeWidth">0dp</item>
+        <item name="strokeWidth">1dp</item>
         <item name="contentPadding">0dp</item>
     </style>
 
     <style name="Widget.Levi.Card.Inner">
+        <item name="cardBackgroundColor">@color/surface</item>
         <item name="cardCornerRadius">12dp</item>
-        <item name="strokeColor">@color/ui_border</item>
+        <item name="strokeColor">@color/ui_inner_card_stroke</item>
         <item name="strokeWidth">1dp</item>
     </style>
 
