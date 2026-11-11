@@ -430,6 +430,12 @@ public class BaseActivity extends AppCompatActivity {
         int accent = pm.getAccentColor(dark);
         float density = getResources().getDisplayMetrics().density;
         if (navbar) {
+            int iconSize = getResources().getDimensionPixelSize(R.dimen.levi_navbar_icon_size);
+            android.graphics.drawable.Drawable[] icons = tab.getCompoundDrawablesRelative();
+            for (android.graphics.drawable.Drawable icon : icons) {
+                if (icon != null) icon.setBounds(0, 0, iconSize, iconSize);
+            }
+            tab.setCompoundDrawablesRelative(icons[0], icons[1], icons[2], icons[3]);
             // As in v1.6.1: no pill behind the active tab; it is bold in the primary text color and
             // the other tabs use the secondary text color.
             int text = ContextCompat.getColor(this, active ? R.color.text_primary : R.color.text_secondary);
@@ -606,6 +612,11 @@ public class BaseActivity extends AppCompatActivity {
         if (!navBarInjected) return;
         activeNavTabId = activeTabId;
         for (int id : NAV_TAB_IDS) styleNavTab(findViewById(id), id == activeTabId);
+        View activeTab = findViewById(activeTabId);
+        if (activeTab != null && UiSettings.useTopNavbar(this)) {
+            androidx.core.view.OneShotPreDrawListener.add(activeTab, () -> activeTab.requestRectangleOnScreen(
+                    new android.graphics.Rect(0, 0, activeTab.getWidth(), activeTab.getHeight()), true));
+        }
         placeRailIndicator();
     }
 
