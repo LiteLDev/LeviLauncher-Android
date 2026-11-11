@@ -41,7 +41,6 @@ import org.levimc.launcher.ui.widget.SegmentedControl;
 import org.levimc.launcher.ui.widget.UiKit;
 import org.levimc.launcher.util.ApkImportManager;
 import org.levimc.launcher.util.StorageAccess;
-import org.levimc.launcher.util.UiSettings;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -93,14 +92,11 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
     private long latestVersionCode;
     private boolean refreshing;
     private boolean updatingPreviewSwitch;
-    /** Read once: changing the setting recreates the page. */
-    private boolean twoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        twoPane = UiSettings.useTwoPane(this);
-        setContentView(twoPane ? R.layout.activity_game_download : R.layout.activity_game_download_stacked);
+        setContentView(R.layout.activity_game_download);
         downloads = GameDownloads.get(this);
 
         apkImportManager = new ApkImportManager(this, null);
@@ -165,8 +161,6 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
             applyFilters();
         });
         SegmentedControl statusFilterControl = findViewById(R.id.game_download_status_filter);
-        // The side panel is too narrow for "Downloaded" / "Not downloaded" side by side.
-        if (twoPane) statusFilterControl.setVertical(true);
         setupFilter(statusFilterControl, new String[]{
                 getString(R.string.download_ui_filter_all),
                 getString(R.string.game_download_status_downloaded),
@@ -234,8 +228,7 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
     }
 
     private void setupFilter(SegmentedControl control, String[] labels, OnSelected listener) {
-        // Two-pane: full-width filters in the side panel; stacked: compact pills in the header row.
-        control.setEqualWidth(twoPane);
+        control.setEqualWidth(false);
         control.setTextSizeSp(13);
         control.setItems(labels);
         control.setSelectedIndex(0, false);
@@ -616,29 +609,8 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
             progressBar.setProgressTintList(accentTint);
             progressBar.setIndeterminateTintList(accentTint);
             styleTag(latest, 0);
-            if (twoPane) {
-                // Narrow table: no Type/Status columns; their chips go under the name and meta.
-                ViewGroup chips = view.findViewById(R.id.game_release_chips);
-                moveChip(type, chips, 6);
-                moveChip(state, chips, 0);
-                chips.setVisibility(View.VISIBLE);
-                view.findViewById(R.id.game_release_type_col).setVisibility(View.GONE);
-                view.findViewById(R.id.game_release_state_col).setVisibility(View.GONE);
-                View actions = view.findViewById(R.id.game_release_actions);
-                ViewGroup.LayoutParams lp = actions.getLayoutParams();
-                lp.width = ViewGroup.LayoutParams.WRAP_CONTENT;
-                actions.setLayoutParams(lp);
-            }
             TooltipCompat.setTooltipText(delete, delete.getContentDescription());
             TooltipCompat.setTooltipText(secondary, secondary.getContentDescription());
-        }
-
-        private void moveChip(TextView chip, ViewGroup target, int marginEndDp) {
-            ((ViewGroup) chip.getParent()).removeView(chip);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            lp.setMarginEnd(Math.round(UiKit.dp(GameDownloadActivity.this, marginEndDp)));
-            target.addView(chip, lp);
         }
 
         void bind(GameRelease release, boolean first) {

@@ -6,7 +6,6 @@ import android.graphics.Region;
 import android.os.Build;
 import android.view.DisplayCutout;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowInsets;
 
 import androidx.annotation.Nullable;
@@ -18,18 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Keeps controls clear of the front camera without shrinking the screen. Backgrounds, the
- * navigation chrome and the wallpaper stay full screen; only what would sit under the camera moves:
- * <ul>
- *   <li>the rail item at the camera's height moves below it (the rail scrolls if space runs out),</li>
- *   <li>top bar items move aside only if the camera reaches into the bar,</li>
- *   <li>the page gets extra room on the camera side only for the part of the camera that reaches
- *       past the page's own margins.</li>
- * </ul>
- * The camera area is the cutout's real outline (API 31+) or its bounding rectangle, and it is
- * recomputed whenever the insets change, e.g. when the phone is turned to the other landscape side.
- */
 public final class CutoutAvoider {
     private CutoutAvoider() {
     }
@@ -42,13 +29,11 @@ public final class CutoutAvoider {
      */
     private static final float PAGE_CLEARANCE_DP = 30f;
 
-    /** For the launcher shell (sidebar or top navbar layout). */
-    public static void attachToShell(View shell, @Nullable Runnable afterLayout) {
+    public static void attachToShell(View shell) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
         View bar = shell.findViewById(R.id.nav_bar_root);
-        ViewGroup railItems = shell.findViewById(R.id.nav_rail_items);
         View content = shell.findViewById(R.id.shell_content);
-        Base base = new Base(bar, content, railItems);
+        Base base = new Base(bar, content);
         String[] applied = {null};
         shell.setOnApplyWindowInsetsListener((v, insets) -> {
             List<Rect> holes = holes(insets);
@@ -64,10 +49,8 @@ public final class CutoutAvoider {
                 for (Rect hole : holes) {
                     boolean left = hole.centerX() < v.getWidth() / 2;
                     if (bar != null) changed |= avoidInBar(bar, hole, left, gap);
-                    if (railItems != null) changed |= avoidInRail(railItems, hole, gap);
                     if (content != null) changed |= avoidInPage(content, hole, left, gap, Math.round(PAGE_CLEARANCE_DP * density));
                 }
-                if (afterLayout != null) afterLayout.run();
                 return changed;
             });
             return insets;
@@ -78,7 +61,7 @@ public final class CutoutAvoider {
     /** For full-screen pages without the shell: only the page's own margin on the camera side grows. */
     public static void attachToPage(View root) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
-        Base base = new Base(null, root, null);
+        Base base = new Base(null, root);
         String[] applied = {null};
         root.setOnApplyWindowInsetsListener((v, insets) -> {
             List<Rect> holes = holes(insets);
@@ -158,22 +141,6 @@ public final class CutoutAvoider {
         return true;
     }
 
-    /** Pushes the first rail item that the camera covers (and the items after it) below the camera. */
-    private static boolean avoidInRail(ViewGroup items, Rect hole, int gap) {
-        for (int i = 0; i < items.getChildCount(); i++) {
-            View child = items.getChildAt(i);
-            if (child.getVisibility() != View.VISIBLE || child.getWidth() == 0 || child.getHeight() == 0) continue;
-            Rect c = windowRect(child);
-            if (hole.right <= c.left - gap || hole.left >= c.right + gap) continue;
-            if (!overlapsVertically(hole, c, gap)) continue;
-            ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) child.getLayoutParams();
-            lp.topMargin += hole.bottom + gap - c.top;
-            child.setLayoutParams(lp);
-            return true;
-        }
-        return false;
-    }
-
     /** Grows the page's margin on the camera side by the part of the camera beyond its clearance. */
     private static boolean avoidInPage(View page, Rect hole, boolean left, int gap, int clearance) {
         Rect p = windowRect(page);
@@ -190,22 +157,12 @@ public final class CutoutAvoider {
         return true;
     }
 
-    /** Original paddings and rail margins, restored before every recomputation. */
     private static final class Base {
         private final Map<View, int[]> paddings = new HashMap<>();
-        private final Map<View, Integer> margins = new HashMap<>();
 
-        Base(@Nullable View bar, @Nullable View content, @Nullable ViewGroup railItems) {
+        Base(@Nullable View bar, @Nullable View content) {
             for (View v : new View[]{bar, content}) {
                 if (v != null) paddings.put(v, new int[]{v.getPaddingLeft(), v.getPaddingTop(), v.getPaddingRight(), v.getPaddingBottom()});
-            }
-            if (railItems != null) {
-                for (int i = 0; i < railItems.getChildCount(); i++) {
-                    View c = railItems.getChildAt(i);
-                    if (c.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-                        margins.put(c, ((ViewGroup.MarginLayoutParams) c.getLayoutParams()).topMargin);
-                    }
-                }
             }
         }
 
@@ -213,13 +170,6 @@ public final class CutoutAvoider {
             for (Map.Entry<View, int[]> e : paddings.entrySet()) {
                 int[] p = e.getValue();
                 e.getKey().setPadding(p[0], p[1], p[2], p[3]);
-            }
-            for (Map.Entry<View, Integer> e : margins.entrySet()) {
-                ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) e.getKey().getLayoutParams();
-                if (lp.topMargin != e.getValue()) {
-                    lp.topMargin = e.getValue();
-                    e.getKey().setLayoutParams(lp);
-                }
             }
         }
     }

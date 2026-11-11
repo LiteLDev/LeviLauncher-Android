@@ -48,7 +48,6 @@ import org.levimc.launcher.ui.adapter.WorldsAdapter;
 import org.levimc.launcher.ui.animation.DynamicAnim;
 import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
 import org.levimc.launcher.util.LauncherStorage;
-import org.levimc.launcher.util.UiSettings;
 
 import android.provider.MediaStore;
 import android.provider.DocumentsContract;
@@ -134,11 +133,7 @@ public class ContentListActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Personalization: two-pane (side panel + list) or the Windows-style stacked layout (header card on top).
-        // Both variants share the view ids below, so one code path drives either.
-        View root = getLayoutInflater().inflate(UiSettings.useTwoPane(this)
-                ? R.layout.activity_content_list
-                : R.layout.activity_content_list_stacked, null);
+        View root = getLayoutInflater().inflate(R.layout.activity_content_list, null);
         binding = new ContentListViews(root);
         setContentView(root);
 
@@ -317,20 +312,6 @@ public class ContentListActivity extends BaseActivity {
         updateSortLabel();
         updateInfoStrip();
         updateSelectionToolbar();
-    }
-
-    @Override
-    protected CharSequence getBreadcrumbTitle() {
-        // Called from BaseActivity while the shell is built, before contentType is assigned.
-        int type = getIntent() != null ? getIntent().getIntExtra(EXTRA_CONTENT_TYPE, TYPE_WORLDS) : TYPE_WORLDS;
-        return switch (type) {
-            case TYPE_SKIN_PACKS -> getString(R.string.skin_packs_category);
-            case TYPE_RESOURCE_PACKS -> getString(R.string.resource_packs_category);
-            case TYPE_BEHAVIOR_PACKS -> getString(R.string.behavior_packs_category);
-            case TYPE_SCREENSHOTS -> getString(R.string.content_ui_screenshots);
-            case TYPE_SERVERS -> getString(R.string.servers_category);
-            default -> getString(R.string.worlds_category);
-        };
     }
 
     private void updateInfoStrip() {
@@ -1720,7 +1701,6 @@ public class ContentListActivity extends BaseActivity {
         }
     }
 
-    /** Views shared by activity_content_list (two-pane) and activity_content_list_stacked. */
     private static final class ContentListViews {
         final View root;
         final LinearLayout normalToolbar;

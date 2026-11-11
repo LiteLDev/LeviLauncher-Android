@@ -1,107 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Browse tab of PackagesActivity (Windows LIP page), two-pane: the left card holds the title, tabs, search, the
-     four selects and the actions; the catalogue fills the right card (pagination is the list's footer item). -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:baselineAligned="false"
-    android:orientation="horizontal"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <com.google.android.material.card.MaterialCardView
-        style="@style/Widget.Levi.Card"
-        android:layout_width="@dimen/levi_side_panel_width"
-        android:layout_height="match_parent">
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp"
+        app:liftOnScroll="false">
 
-        <androidx.core.widget.NestedScrollView
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.Levi.Card"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fillViewport="true"
-            android:scrollbars="none">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="12dp"
+            app:layout_scrollFlags="scroll|enterAlways">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="18dp">
-
-                <include layout="@layout/catalog_pkg_header_lead" />
-
-                <EditText
-                    android:id="@+id/pkg_search_box"
-                    style="@style/Widget.Levi.Input"
-                    android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    android:layout_marginTop="12dp"
-                    android:drawableStart="@drawable/ic_ui_search"
-                    android:hint="@string/pkg_search_hint"
-                    android:imeOptions="actionSearch"
-                    android:importantForAutofill="no"
-                    android:inputType="text" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/pkg_btn_search"
-                    style="@style/Widget.Levi.Button.Primary"
-                    android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    android:layout_marginTop="10dp"
-                    android:text="@string/pkg_search"
-                    app:icon="@drawable/ic_ui_search"
-                    app:iconGravity="textStart" />
-
-                <TextView
-                    style="@style/CatalogFieldLabel"
-                    android:layout_marginTop="14dp"
-                    android:text="@string/pkg_game_version_label" />
-
-                <TextView
-                    android:id="@+id/pkg_spinner_game"
-                    style="@style/CatalogSelect"
-                    android:layout_width="match_parent" />
-
-                <TextView
-                    style="@style/CatalogFieldLabel"
-                    android:layout_marginTop="12dp"
-                    android:text="@string/pkg_ll_version_label" />
-
-                <TextView
-                    android:id="@+id/pkg_spinner_ll"
-                    style="@style/CatalogSelect"
-                    android:layout_width="match_parent" />
-
-                <TextView
-                    style="@style/CatalogFieldLabel"
-                    android:layout_marginTop="12dp"
-                    android:text="@string/pkg_sort_by" />
-
-                <!-- Relevance / Stars / Updated / Newest (levimc.org's sorts) -->
-                <TextView
-                    android:id="@+id/pkg_spinner_sort"
-                    style="@style/CatalogSelect"
-                    android:layout_width="match_parent" />
-
-                <TextView
-                    style="@style/CatalogFieldLabel"
-                    android:layout_marginTop="12dp"
-                    android:text="@string/catalog_order" />
-
-                <TextView
-                    android:id="@+id/pkg_spinner_order"
-                    style="@style/CatalogSelect"
-                    android:layout_width="match_parent" />
+                android:paddingStart="18dp"
+                android:paddingTop="16dp"
+                android:paddingEnd="18dp"
+                android:paddingBottom="16dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <!-- Tags, License, Dependencies and Author (BrowseFragment.FiltersSheet) -->
+                    <include layout="@layout/catalog_pkg_header_lead" />
+
+                    <EditText
+                        android:id="@+id/pkg_search_box"
+                        style="@style/Widget.Levi.Input"
+                        android:layout_width="0dp"
+                        android:layout_height="44dp"
+                        android:layout_marginStart="14dp"
+                        android:layout_weight="1"
+                        android:drawableStart="@drawable/ic_ui_search"
+                        android:hint="@string/pkg_search_hint"
+                        android:imeOptions="actionSearch"
+                        android:importantForAutofill="no"
+                        android:inputType="text" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/pkg_btn_search"
+                        style="@style/Widget.Levi.Button.Primary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="44dp"
+                        android:layout_marginStart="10dp"
+                        android:text="@string/pkg_search"
+                        app:icon="@drawable/ic_ui_search" />
+
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/pkg_btn_filters"
                         style="@style/Widget.Levi.Button.Icon"
+                        android:layout_marginStart="8dp"
                         android:contentDescription="@string/pkg_filters"
                         app:icon="@drawable/ic_ui_filter" />
 
@@ -120,28 +80,102 @@
                         app:icon="@drawable/ic_ui_code" />
                 </LinearLayout>
 
-                <!-- The facet filters in effect, each removable (tap); wraps to more lines in the narrow panel. -->
-                <FrameLayout
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/CatalogFieldLabel"
+                            android:text="@string/pkg_game_version_label" />
+
+                        <TextView
+                            android:id="@+id/pkg_spinner_game"
+                            style="@style/CatalogSelect"
+                            android:layout_width="match_parent" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/CatalogFieldLabel"
+                            android:text="@string/pkg_ll_version_label" />
+
+                        <TextView
+                            android:id="@+id/pkg_spinner_ll"
+                            style="@style/CatalogSelect"
+                            android:layout_width="match_parent" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/CatalogFieldLabel"
+                            android:text="@string/pkg_sort_by" />
+
+                        <TextView
+                            android:id="@+id/pkg_spinner_sort"
+                            style="@style/CatalogSelect"
+                            android:layout_width="match_parent" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/CatalogFieldLabel"
+                            android:text="@string/catalog_order" />
+
+                        <TextView
+                            android:id="@+id/pkg_spinner_order"
+                            style="@style/CatalogSelect"
+                            android:layout_width="match_parent" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <HorizontalScrollView
                     android:id="@+id/pkg_active_filters_scroll"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
+                    android:scrollbars="none"
                     android:visibility="gone">
 
                     <com.google.android.material.chip.ChipGroup
                         android:id="@+id/pkg_active_filters"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:chipSpacingHorizontal="6dp"
-                        app:chipSpacingVertical="4dp"
-                        app:singleLine="false" />
-                </FrameLayout>
+                        app:singleLine="true" />
+                </HorizontalScrollView>
 
                 <TextView
                     android:id="@+id/pkg_mapping_hint"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="8dp"
                     android:fontFamily="@font/misans"
                     android:text="@string/pkg_mapping_unavailable_hint"
                     android:textColor="@color/ui_warning"
@@ -159,15 +193,15 @@
                     android:textSize="12sp"
                     android:visibility="gone" />
             </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
-    </com.google.android.material.card.MaterialCardView>
+        </com.google.android.material.card.MaterialCardView>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <com.google.android.material.card.MaterialCardView
         style="@style/Widget.Levi.Card"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/levi_pane_gap"
-        android:layout_weight="1">
+        android:layout_marginBottom="16dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <FrameLayout
             android:layout_width="match_parent"
@@ -191,17 +225,15 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:padding="20dp"
+                android:padding="24dp"
                 android:visibility="gone">
 
                 <TextView
                     android:id="@+id/pkg_empty_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:ellipsize="end"
                     android:gravity="center"
-                    android:maxLines="6"
-                    android:maxWidth="480dp"
+                    android:maxWidth="520dp"
                     android:textAppearance="@style/TextAppearance.Levi.Body"
                     android:textColor="@color/text_secondary" />
 
@@ -222,4 +254,4 @@
                 android:visibility="gone" />
         </FrameLayout>
     </com.google.android.material.card.MaterialCardView>
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

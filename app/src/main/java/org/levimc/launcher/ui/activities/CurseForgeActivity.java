@@ -20,7 +20,6 @@ import org.levimc.launcher.core.curseforge.models.ContentSearchResponse;
 import org.levimc.launcher.ui.adapter.CurseForgeContentAdapter;
 import org.levimc.launcher.ui.widget.CatalogSelect;
 import org.levimc.launcher.util.UIHelper;
-import org.levimc.launcher.util.UiSettings;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -79,8 +78,7 @@ public class CurseForgeActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(UiSettings.useTwoPane(this)
-                ? R.layout.activity_curseforge : R.layout.activity_curseforge_stacked);
+        setContentView(R.layout.activity_curseforge);
         client = CurseForgeClient.getInstance();
         setupData();
         initViews();

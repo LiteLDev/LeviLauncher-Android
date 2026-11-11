@@ -36,7 +36,6 @@ import org.levimc.launcher.ui.widget.UiKit;
 import org.levimc.launcher.util.InstanceBackupManager;
 import org.levimc.launcher.util.InstanceShortcutManager;
 import org.levimc.launcher.util.InstanceIcons;
-import org.levimc.launcher.util.UiSettings;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -57,7 +56,6 @@ public class InstanceSettingsActivity extends BaseActivity {
     private static final String ICON_DIR = "instance_icons";
 
     private SegmentedControl tabs;
-    private boolean twoPane;
     private View sectionGeneral, sectionLaunchOptions, sectionLoader, sectionManagement;
 
     private EditText editName;
@@ -77,9 +75,7 @@ public class InstanceSettingsActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        twoPane = UiSettings.useTwoPane(this);
-        setContentView(twoPane ? R.layout.activity_instance_settings
-                : R.layout.activity_instance_settings_stacked);
+        setContentView(R.layout.activity_instance_settings);
 
         shortcutIconPicker = registerForActivityResult(new ActivityResultContracts.OpenDocument(), uri -> {
             if (uri == null) return;
@@ -111,7 +107,6 @@ public class InstanceSettingsActivity extends BaseActivity {
                     }
                 });
 
-
         version = getIntent().getParcelableExtra("version");
         if (version == null) {
             finish();
@@ -139,7 +134,6 @@ public class InstanceSettingsActivity extends BaseActivity {
 
     private void initViews() {
         tabs = findViewById(R.id.instance_tabs);
-        if (twoPane) tabs.setVertical(true);
         tabs.setItems(getString(R.string.instance_tab_general),
                 getString(R.string.instance_tab_launch_options),
                 getString(R.string.instance_tab_loader),
@@ -237,14 +231,7 @@ public class InstanceSettingsActivity extends BaseActivity {
         String type = version.isInstalled ? getString(R.string.tag_installed) : getString(R.string.tag_custom);
         String info = getString(R.string.instances_ui_info_name,
                 version.directoryName != null ? version.directoryName : "—");
-        TextView status = findViewById(R.id.instance_status);
-        if (status != null) {
-            instanceInfo.setText(info);
-            status.setText(type);
-        } else {
-            // The stacked layout has no separate status line.
-            instanceInfo.setText(info + " · " + type);
-        }
+        instanceInfo.setText(info + " · " + type);
 
         String currentName = version.versionCode != null ? version.versionCode : "";
         if (version.displayName != null && !version.displayName.isEmpty()) {
@@ -280,10 +267,6 @@ public class InstanceSettingsActivity extends BaseActivity {
         }
         if (loaderSection != null) {
             loaderSection.setVisible(index == TAB_LOADER);
-        }
-        if (twoPane) {
-            View scroll = findViewById(R.id.instance_settings_scroll);
-            if (scroll != null) scroll.scrollTo(0, 0);
         }
     }
 

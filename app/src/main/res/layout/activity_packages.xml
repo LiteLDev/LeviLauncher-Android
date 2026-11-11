@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- PackagesActivity: "LeviMC Mods". Each tab fragment draws its own two-pane layout (left panel starting with
-     catalog_pkg_header_lead, results card on the right) with the page padding; the activity only hosts them. -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/pkg_fragment_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp" />

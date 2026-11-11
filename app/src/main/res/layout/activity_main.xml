@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Home page (Windows LauncherPage): header card with the instance selector and the launch button,
-     then the Mods / Content management / Content download cards. -->
-<org.levimc.launcher.ui.widget.HomeDashboardLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<org.levimc.launcher.ui.widget.HomeDashboardLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root_layout"
     android:layout_width="match_parent"
@@ -25,7 +24,7 @@
             android:paddingStart="15dp"
             android:paddingTop="15dp"
             android:paddingEnd="15dp"
-            android:paddingBottom="12dp">
+            android:paddingBottom="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -50,9 +49,6 @@
                         android:textColor="@color/accent_text"
                         android:textSize="28sp"
                         android:textStyle="bold" />
-
-                    <!-- Subtitle and the loader chip share the second line, so the chip stays reachable
-                         when the instance cluster leaves little room for the title. -->
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -67,7 +63,6 @@
                             android:text="@string/bedrock_edition"
                             android:textColor="@color/text_primary"
                             android:textSize="14sp" />
-
                         <TextView
                             android:id="@+id/loader_chip"
                             style="@style/Widget.Levi.Tag.Accent"
@@ -85,14 +80,12 @@
                             android:visibility="gone" />
                     </LinearLayout>
                 </LinearLayout>
-
                 <ProgressBar
                     android:id="@+id/progress_loader"
                     style="?android:attr/progressBarStyleSmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:visibility="gone" />
-
                 <LinearLayout
                     android:id="@+id/select_version_button"
                     android:layout_width="wrap_content"
@@ -116,7 +109,6 @@
                         android:importantForAccessibility="no"
                         android:scaleType="fitCenter"
                         android:src="@drawable/ic_minecraft_cube" />
-
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -130,7 +122,6 @@
                             android:text="@string/current_instance"
                             android:textColor="@color/text_secondary"
                             android:textSize="10sp" />
-
                         <TextView
                             android:id="@+id/text_minecraft_version"
                             android:layout_width="wrap_content"
@@ -144,7 +135,6 @@
                             android:textSize="13sp"
                             android:textStyle="bold" />
                     </LinearLayout>
-
                     <ImageView
                         android:layout_width="16dp"
                         android:layout_height="16dp"
@@ -153,7 +143,6 @@
                         android:src="@drawable/ic_ui_expand_more"
                         app:tint="@color/text_primary" />
                 </LinearLayout>
-
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/home_instance_settings_button"
                     style="@style/Widget.Levi.Button.Icon"
@@ -164,8 +153,6 @@
                     android:tooltipText="@string/instance_settings_title"
                     app:icon="@drawable/ic_nav_settings"
                     app:iconSize="18dp" />
-
-                <!-- Split launch button: the main part launches, the chevron opens more launch options. -->
                 <LinearLayout
                     android:id="@+id/home_launch_group"
                     android:layout_width="wrap_content"
@@ -196,14 +183,12 @@
                         app:iconPadding="6dp"
                         app:iconSize="18dp"
                         app:rippleColor="#33FFFFFF" />
-
                     <View
                         android:id="@+id/home_launch_divider"
                         android:layout_width="1dp"
                         android:layout_height="20dp"
                         android:alpha="0.4"
                         android:background="@color/on_primary" />
-
                     <ImageView
                         android:id="@+id/home_launch_menu_button"
                         android:layout_width="32dp"
@@ -219,50 +204,49 @@
                         app:tint="@color/on_primary" />
                 </LinearLayout>
             </LinearLayout>
-
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1" />
-
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/divider" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <LinearLayout
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:layout_weight="1"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp">
 
-                <ImageView
-                    android:layout_width="14dp"
-                    android:layout_height="14dp"
-                    android:importantForAccessibility="no"
-                    android:src="@drawable/ic_ui_lightbulb"
-                    app:tint="@color/text_secondary" />
-
-                <TextView
-                    android:id="@+id/tip_text"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:layout_weight="1"
-                    android:ellipsize="end"
-                    android:fontFamily="@font/misans"
-                    android:singleLine="true"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp" />
-            </LinearLayout>
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:layout_gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_ui_lightbulb"
+                        app:tint="@color/text_secondary" />
+                    <TextView
+                        android:id="@+id/tip_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:fontFamily="@font/misans"
+                        android:singleLine="true"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="12sp" />
+                </LinearLayout>
+            </FrameLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -271,7 +255,6 @@
         android:baselineAligned="false"
         android:orientation="horizontal">
 
-        <!-- Mods: the whole card opens the mods page. -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/mod_card"
             style="@style/Widget.Levi.Card"
@@ -295,7 +278,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:minHeight="26dp">
 
                     <FrameLayout
                         android:id="@+id/home_mods_chip"
@@ -311,7 +295,6 @@
                             android:importantForAccessibility="no"
                             android:src="@drawable/ic_ui_puzzle" />
                     </FrameLayout>
-
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -323,31 +306,30 @@
                         android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
                         android:textSize="14sp"
                         android:textStyle="bold" />
-
                     <TextView
                         android:id="@+id/manage_mods_button"
                         android:layout_width="wrap_content"
                         android:layout_height="26dp"
+                        android:layout_marginStart="8dp"
                         android:background="@drawable/bg_ui_row"
                         android:drawableEnd="@drawable/ic_ui_chevron_right"
                         android:drawablePadding="2dp"
                         android:drawableTint="@color/text_secondary"
                         android:fontFamily="@font/misans"
                         android:gravity="center_vertical"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="10dp"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="0dp"
                         android:text="@string/home_manage"
                         android:textColor="@color/text_secondary"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
+                        android:textSize="11sp"
+                        android:clickable="true"
+                        android:focusable="true" />
                 </LinearLayout>
-
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="8dp"
                     android:background="@color/divider" />
-
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -369,7 +351,6 @@
                             android:layout_height="wrap_content"
                             android:orientation="vertical" />
                     </ScrollView>
-
                     <LinearLayout
                         android:id="@+id/home_mods_empty"
                         android:layout_width="match_parent"
@@ -384,7 +365,6 @@
                             android:importantForAccessibility="no"
                             android:src="@drawable/ic_ui_puzzle"
                             app:tint="@color/ui_muted" />
-
                         <TextView
                             android:id="@+id/home_mods_empty_text"
                             android:layout_width="wrap_content"
@@ -398,8 +378,6 @@
                 </FrameLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-
-        <!-- Content management -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/content_mgmt_card"
             style="@style/Widget.Levi.Card"
@@ -422,7 +400,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:minHeight="26dp">
 
                     <FrameLayout
                         android:id="@+id/home_content_chip"
@@ -438,7 +417,6 @@
                             android:importantForAccessibility="no"
                             android:src="@drawable/ic_content" />
                     </FrameLayout>
-
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -450,7 +428,6 @@
                         android:textAppearance="@style/TextAppearance.Levi.SectionTitle"
                         android:textSize="14sp"
                         android:textStyle="bold" />
-
                     <TextView
                         android:id="@+id/content_view_all"
                         android:layout_width="wrap_content"
@@ -465,13 +442,11 @@
                         android:textColor="@color/text_secondary"
                         android:textSize="11sp" />
                 </LinearLayout>
-
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="8dp"
                     android:background="@color/divider" />
-
                 <ScrollView
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -512,7 +487,6 @@
                                     android:scaleType="fitCenter"
                                     android:src="@drawable/ic_ui_globe" />
                             </FrameLayout>
-
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -523,7 +497,6 @@
                                 android:text="@string/worlds_category"
                                 android:textAppearance="@style/TextAppearance.Levi.Body"
                                 android:textSize="13sp" />
-
                             <TextView
                                 android:id="@+id/content_worlds_count"
                                 android:layout_width="wrap_content"
@@ -533,7 +506,6 @@
                                 android:textColor="@color/text_primary"
                                 android:textSize="13sp"
                                 android:textStyle="bold" />
-
                             <ImageView
                                 android:layout_width="14dp"
                                 android:layout_height="14dp"
@@ -542,7 +514,6 @@
                                 android:src="@drawable/ic_ui_chevron_right"
                                 app:tint="@color/text_secondary" />
                         </LinearLayout>
-
                         <LinearLayout
                             android:id="@+id/content_resource_packs_row"
                             android:layout_width="match_parent"
@@ -570,7 +541,6 @@
                                     android:scaleType="fitCenter"
                                     android:src="@drawable/ic_ui_image" />
                             </FrameLayout>
-
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -581,7 +551,6 @@
                                 android:text="@string/resource_packs_category"
                                 android:textAppearance="@style/TextAppearance.Levi.Body"
                                 android:textSize="13sp" />
-
                             <TextView
                                 android:id="@+id/content_resource_packs_count"
                                 android:layout_width="wrap_content"
@@ -591,7 +560,6 @@
                                 android:textColor="@color/text_primary"
                                 android:textSize="13sp"
                                 android:textStyle="bold" />
-
                             <ImageView
                                 android:layout_width="14dp"
                                 android:layout_height="14dp"
@@ -600,7 +568,6 @@
                                 android:src="@drawable/ic_ui_chevron_right"
                                 app:tint="@color/text_secondary" />
                         </LinearLayout>
-
                         <LinearLayout
                             android:id="@+id/content_skin_packs_row"
                             android:layout_width="match_parent"
@@ -628,7 +595,6 @@
                                     android:scaleType="fitCenter"
                                     android:src="@drawable/ic_tshirt" />
                             </FrameLayout>
-
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -639,7 +605,6 @@
                                 android:text="@string/skin_packs_category"
                                 android:textAppearance="@style/TextAppearance.Levi.Body"
                                 android:textSize="13sp" />
-
                             <TextView
                                 android:id="@+id/content_skin_packs_count"
                                 android:layout_width="wrap_content"
@@ -649,7 +614,6 @@
                                 android:textColor="@color/text_primary"
                                 android:textSize="13sp"
                                 android:textStyle="bold" />
-
                             <ImageView
                                 android:layout_width="14dp"
                                 android:layout_height="14dp"
@@ -658,14 +622,10 @@
                                 android:src="@drawable/ic_ui_chevron_right"
                                 app:tint="@color/text_secondary" />
                         </LinearLayout>
-
                     </LinearLayout>
                 </ScrollView>
-
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-
-        <!-- Content download -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/misc_card"
             style="@style/Widget.Levi.Card"
@@ -687,7 +647,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:minHeight="26dp">
 
                     <FrameLayout
                         android:id="@+id/home_download_chip"
@@ -703,7 +664,6 @@
                             android:importantForAccessibility="no"
                             android:src="@drawable/ic_ui_cloud_download" />
                     </FrameLayout>
-
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -716,13 +676,11 @@
                         android:textSize="14sp"
                         android:textStyle="bold" />
                 </LinearLayout>
-
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="8dp"
                     android:background="@color/divider" />
-
                 <ScrollView
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -763,7 +721,6 @@
                                     android:scaleType="fitCenter"
                                     android:src="@drawable/ic_qa_curseforge" />
                             </FrameLayout>
-
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -774,7 +731,6 @@
                                 android:text="@string/curseforge_title"
                                 android:textAppearance="@style/TextAppearance.Levi.Body"
                                 android:textSize="13sp" />
-
                             <ImageView
                                 android:layout_width="16dp"
                                 android:layout_height="16dp"
@@ -782,7 +738,6 @@
                                 android:src="@drawable/ic_ui_chevron_right"
                                 app:tint="@color/text_secondary" />
                         </LinearLayout>
-
                         <LinearLayout
                             android:id="@+id/misc_pkg_row"
                             android:layout_width="match_parent"
@@ -810,7 +765,6 @@
                                     android:scaleType="fitCenter"
                                     android:src="@drawable/ic_modules" />
                             </FrameLayout>
-
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -821,7 +775,6 @@
                                 android:text="@string/pkg_title_mods"
                                 android:textAppearance="@style/TextAppearance.Levi.Body"
                                 android:textSize="13sp" />
-
                             <ImageView
                                 android:layout_width="16dp"
                                 android:layout_height="16dp"
@@ -829,7 +782,6 @@
                                 android:src="@drawable/ic_ui_chevron_right"
                                 app:tint="@color/text_secondary" />
                         </LinearLayout>
-
                         <LinearLayout
                             android:id="@+id/misc_external_mods_row"
                             android:layout_width="match_parent"
@@ -857,7 +809,6 @@
                                     android:scaleType="fitCenter"
                                     android:src="@drawable/ic_plugin" />
                             </FrameLayout>
-
                             <TextView
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
@@ -868,7 +819,6 @@
                                 android:text="@string/external_mods"
                                 android:textAppearance="@style/TextAppearance.Levi.Body"
                                 android:textSize="13sp" />
-
                             <ImageView
                                 android:layout_width="16dp"
                                 android:layout_height="16dp"
@@ -876,10 +826,8 @@
                                 android:src="@drawable/ic_ui_chevron_right"
                                 app:tint="@color/text_secondary" />
                         </LinearLayout>
-
                     </LinearLayout>
                 </ScrollView>
-
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </LinearLayout>

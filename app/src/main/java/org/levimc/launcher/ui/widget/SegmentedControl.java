@@ -42,7 +42,6 @@ public class SegmentedControl extends LinearLayout {
     private final List<TextView> segments = new ArrayList<>();
     private int selected = -1;
     private boolean equalWidth = true;
-    private boolean vertical;
     private float textSizeSp = 13f;
     @Nullable
     private Typeface baseTypeface;
@@ -56,8 +55,6 @@ public class SegmentedControl extends LinearLayout {
     public SegmentedControl(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setOrientation(HORIZONTAL);
-        // Horizontal (the default, stacked pages): v1.6.1 tab pills, separate 32dp pills with 8dp gaps
-        // and no track. Vertical (two-pane side panel) keeps the track.
         setGravity(Gravity.CENTER_VERTICAL);
         applyTrack();
     }
@@ -66,24 +63,6 @@ public class SegmentedControl extends LinearLayout {
     public void setEqualWidth(boolean equalWidth) {
         this.equalWidth = equalWidth;
         for (TextView t : segments) t.setLayoutParams(segmentParams());
-    }
-
-    /**
-     * Vertical: segments are stacked full width with left-aligned labels, for tab lists in the left
-     * panel of two-pane pages (landscape phones are too short for a header plus horizontal tabs).
-     */
-    public void setVertical(boolean vertical) {
-        this.vertical = vertical;
-        setOrientation(vertical ? VERTICAL : HORIZONTAL);
-        setGravity(vertical ? Gravity.NO_GRAVITY : Gravity.CENTER_VERTICAL);
-        applyTrack();
-        for (TextView t : segments) {
-            t.setGravity(vertical ? Gravity.CENTER_VERTICAL | Gravity.START : Gravity.CENTER);
-            t.setMinHeight(dp(vertical ? 44 : 32));
-            t.setPadding(dp(vertical ? 14 : 16), 0, dp(vertical ? 14 : 16), 0);
-            t.setLayoutParams(segmentParams());
-        }
-        applyState();
     }
 
     public void setTextSizeSp(float sp) {
@@ -102,14 +81,14 @@ public class SegmentedControl extends LinearLayout {
     public int addSegment(CharSequence label, int iconRes) {
         TextView t = new TextView(getContext());
         t.setText(label);
-        t.setGravity(vertical ? Gravity.CENTER_VERTICAL | Gravity.START : Gravity.CENTER);
+        t.setGravity(Gravity.CENTER);
         t.setSingleLine(true);
         t.setEllipsize(android.text.TextUtils.TruncateAt.END);
         t.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSizeSp);
         if (baseTypeface == null) baseTypeface = ResourcesCompat.getFont(getContext(), R.font.misans);
         t.setTypeface(baseTypeface);
-        t.setMinHeight(dp(vertical ? 44 : 32));
-        t.setPadding(dp(vertical ? 14 : 16), 0, dp(vertical ? 14 : 16), 0);
+        t.setMinHeight(dp(32));
+        t.setPadding(dp(16), 0, dp(16), 0);
         if (iconRes != 0) {
             Drawable d = ContextCompat.getDrawable(getContext(), iconRes);
             if (d != null) {
@@ -129,7 +108,6 @@ public class SegmentedControl extends LinearLayout {
     }
 
     private LayoutParams segmentParams() {
-        if (vertical) return new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         // v1.6.1 tab pills size to their label, 8dp apart.
         LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
         lp.setMarginEnd(dp(8));
@@ -138,14 +116,8 @@ public class SegmentedControl extends LinearLayout {
 
     private void applyTrack() {
         setBackground(null);
-        if (vertical) {
-            int pad = dp(4);
-            setPadding(pad, pad, pad, pad);
-            setMinimumHeight(dp(48));
-        } else {
-            setPadding(0, 0, 0, 0);
-            setMinimumHeight(0);
-        }
+        setPadding(0, 0, 0, 0);
+        setMinimumHeight(0);
         new PersonalizationManager(getContext()).applyGlassToView(this);
     }
 

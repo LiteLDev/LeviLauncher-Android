@@ -11,14 +11,12 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -41,21 +39,14 @@ import org.levimc.launcher.util.LanguageManager;
 import org.levimc.launcher.util.PersonalizationManager;
 import org.levimc.launcher.util.LauncherBackgroundController;
 import org.levimc.launcher.util.ThemeManager;
-import org.levimc.launcher.util.ThemePalette;
-import org.levimc.launcher.util.UiSettings;
 import org.levimc.launcher.util.WallpaperFolder;
-import org.levimc.launcher.ui.widget.UiKit;
 
 import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import androidx.activity.OnBackPressedCallback;
-
-import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -71,10 +62,7 @@ public class BaseActivity extends AppCompatActivity {
     private int appliedThemeGeneration = -1;
     private int appliedPersonalizationGeneration = -1;
     private int appliedBackgroundEffectGeneration = -1;
-    private int appliedLayoutGeneration = -1;
     private boolean navBarInjected = false;
-    private int activeNavTabId = View.NO_ID;
-    private boolean finishingByBack;
     private final Handler scheduleHandler = new Handler(Looper.getMainLooper());
     private final Runnable scheduleCheck = new Runnable() {
         @Override
@@ -87,11 +75,8 @@ public class BaseActivity extends AppCompatActivity {
         }
     };
 
-    /** Pages left with Back, for the Forward button (Windows browser-style history). */
-    private static final ArrayDeque<Intent> sForwardHistory = new ArrayDeque<>();
     /** Page classes alive in the task, so breadcrumbs only jump to pages that can be restored. */
     private static final Set<Class<?>> sLivePages = new HashSet<>();
-    private static final String EXTRA_FROM_FORWARD = "org.levimc.launcher.extra.FROM_FORWARD";
     private final OkHttpClient navAvatarClient = new OkHttpClient();
     private final ExecutorService navAccountExecutor = Executors.newSingleThreadExecutor();
     private ActivityResultLauncher<Intent> navAccountLoginLauncher;
@@ -123,25 +108,8 @@ public class BaseActivity extends AppCompatActivity {
         appliedThemeGeneration = ThemeManager.getThemeChangeGeneration();
         appliedPersonalizationGeneration = PersonalizationManager.getChangeGeneration();
         appliedBackgroundEffectGeneration = PersonalizationManager.getBackgroundEffectGeneration();
-        appliedLayoutGeneration = UiSettings.getLayoutGeneration();
-        UiSettings.refreshAnimations(this);
         super.onCreate(savedInstanceState);
         sLivePages.add(getClass());
-        if (savedInstanceState == null && !getIntent().getBooleanExtra(EXTRA_FROM_FORWARD, false)) {
-            sForwardHistory.clear();
-        }
-        // Lowest-priority back handler: pages' own callbacks run first. Marks a back navigation so
-        // finish() can offer the page to the Forward button.
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                finishingByBack = true;
-                setEnabled(false);
-                getOnBackPressedDispatcher().onBackPressed();
-                setEnabled(true);
-                if (!isFinishing()) finishingByBack = false;
-            }
-        });
         navAccountLoginLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> handleNavAccountLoginResult(result.getResultCode(), result.getData()));
@@ -174,34 +142,28 @@ public class BaseActivity extends AppCompatActivity {
             return;
         }
 
-        boolean navbar = UiSettings.useTopNavbar(this);
-        View shell = LayoutInflater.from(this).inflate(
-                navbar ? R.layout.shell_navbar : R.layout.shell_sidebar, null, false);
+        View shell = LayoutInflater.from(this).inflate(R.layout.shell_navbar, null, false);
         FrameLayout holder = shell.findViewById(R.id.shell_content);
         holder.addView(contentView, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        if (!UiSettings.animationsDisabled()) {
-            // The page fades in inside the static shell. Starting from partly visible avoids a blank
-            // page area for the first frames, which reads as a flash when switching pages.
-            contentView.setAlpha(0.4f);
-            contentView.setTranslationY(6f * getResources().getDisplayMetrics().density);
-        }
+        // The page fades in inside the static shell. Starting from partly visible avoids a blank
+        // page area for the first frames, which reads as a flash when switching pages.
+        contentView.setAlpha(0.4f);
+        contentView.setTranslationY(6f * getResources().getDisplayMetrics().density);
 
         super.setContentView(shell);
-        org.levimc.launcher.ui.widget.CutoutAvoider.attachToShell(shell, this::placeRailIndicator);
+        org.levimc.launcher.ui.widget.CutoutAvoider.attachToShell(shell);
         navBarInjected = true;
         setupBaseNavBar();
 
         applyPersonalization();
         WallpaperFolder.rotateOnLaunch(this);
 
-        if (!UiSettings.animationsDisabled()) {
-            contentView.post(() -> {
-                DynamicAnim.springAlphaTo(contentView, 1f).start();
-                DynamicAnim.springTranslationYTo(contentView, 0f).start();
-            });
-        }
+        contentView.post(() -> {
+            DynamicAnim.springAlphaTo(contentView, 1f).start();
+            DynamicAnim.springTranslationYTo(contentView, 0f).start();
+        });
     }
 
     private void applyPersonalization() {
@@ -225,33 +187,18 @@ public class BaseActivity extends AppCompatActivity {
 
     private void setupBaseNavBar() {
         PersonalizationManager pm = new PersonalizationManager(this);
-        boolean navbar = UiSettings.useTopNavbar(this);
 
         // Over a wallpaper the chrome becomes translucent (Windows NAVBAR_BG) and the page area clear.
         if (pm.hasBackgroundImage()) {
             int chrome = pm.getChromeGlassColor(this);
             View root = findViewById(R.id.shell_root);
             View bar = findViewById(R.id.nav_bar_root);
-            View content = findViewById(R.id.shell_content);
             if (root != null) root.setBackgroundColor(Color.TRANSPARENT);
             if (bar != null) bar.setBackgroundColor(chrome);
             View divider = findViewById(R.id.nav_divider);
             if (divider != null) {
                 divider.setBackgroundColor(pm.isDarkMode(this)
                         ? Color.argb(40, 255, 255, 255) : Color.argb(40, 0, 0, 0));
-            }
-            if (!navbar) {
-                View rail = findViewById(R.id.nav_rail);
-                if (rail != null) rail.setBackgroundColor(chrome);
-                if (content != null) {
-                    GradientDrawable frame = new GradientDrawable();
-                    float r = 20f * getResources().getDisplayMetrics().density;
-                    frame.setCornerRadii(new float[]{r, r, 0, 0, 0, 0, 0, 0});
-                    frame.setColor(Color.TRANSPARENT);
-                    frame.setStroke(Math.max(1, Math.round(getResources().getDisplayMetrics().density)),
-                            ContextCompat.getColor(this, R.color.ui_border));
-                    content.setBackground(new android.graphics.drawable.InsetDrawable(frame, 0, 0, -4, -4));
-                }
             }
         }
 
@@ -260,15 +207,6 @@ public class BaseActivity extends AppCompatActivity {
         View backButton = findViewById(R.id.nav_back_button);
         if (backButton != null) {
             backButton.setOnClickListener(v -> getOnBackPressedDispatcher().onBackPressed());
-        }
-        View forwardButton = findViewById(R.id.nav_forward_button);
-        if (forwardButton != null) {
-            forwardButton.setOnClickListener(v -> {
-                Intent next = sForwardHistory.pollFirst();
-                if (next == null) return;
-                next.putExtra(EXTRA_FROM_FORWARD, true);
-                startActivity(next);
-            });
         }
         refreshHistoryButtons();
 
@@ -314,12 +252,6 @@ public class BaseActivity extends AppCompatActivity {
         bindNavTab(R.id.nav_tab_about, AboutActivity.class);
         bindNavTab(R.id.nav_tab_settings, SettingsActivity.class);
 
-        View railScroll = findViewById(R.id.nav_rail_scroll);
-        if (railScroll != null) {
-            railScroll.setOnScrollChangeListener((v, x, y, oldX, oldY) -> placeRailIndicator());
-        }
-
-        refreshBreadcrumbs();
         refreshNavAccountUI();
         refreshNewsBadge();
     }
@@ -345,154 +277,26 @@ public class BaseActivity extends AppCompatActivity {
             back.setEnabled(canBack);
             back.setAlpha(canBack ? 1f : 0.35f);
         }
-        View forward = findViewById(R.id.nav_forward_button);
-        if (forward != null) {
-            boolean canForward = !sForwardHistory.isEmpty();
-            forward.setEnabled(canForward);
-            forward.setAlpha(canForward ? 1f : 0.35f);
-        }
-    }
-
-    /** Title of this page in the breadcrumbs. Pages with a dynamic title (a world, a mod) override it. */
-    @Nullable
-    protected CharSequence getBreadcrumbTitle() {
-        NavRoutes.Route route = NavRoutes.get(getClass());
-        return route != null ? getString(route.title) : getTitle();
-    }
-
-    /** Rebuilds the breadcrumbs, e.g. after the page title changed. */
-    protected void refreshBreadcrumbs() {
-        LinearLayout crumbs = findViewById(R.id.nav_breadcrumbs);
-        if (crumbs == null) return;
-        TextView appName = findViewById(R.id.nav_app_name);
-        for (int i = crumbs.getChildCount() - 1; i >= 0; i--) {
-            if (crumbs.getChildAt(i) != appName) crumbs.removeViewAt(i);
-        }
-        if (this instanceof MainActivity) {
-            if (appName != null) appName.setVisibility(View.VISIBLE);
-            return;
-        }
-        if (appName != null) appName.setVisibility(View.GONE);
-
-        java.util.List<Class<? extends android.app.Activity>> chain = new java.util.ArrayList<>();
-        NavRoutes.Route route = NavRoutes.get(getClass());
-        Class<? extends android.app.Activity> parent = route != null ? route.parent : MainActivity.class;
-        while (parent != null && chain.size() < 6) {
-            chain.add(0, parent);
-            NavRoutes.Route r = NavRoutes.get(parent);
-            parent = r != null ? r.parent : null;
-        }
-        float density = getResources().getDisplayMetrics().density;
-        int muted = ContextCompat.getColor(this, R.color.text_secondary);
-        for (Class<? extends android.app.Activity> page : chain) {
-            NavRoutes.Route r = NavRoutes.get(page);
-            TextView crumb = makeCrumb(r != null ? getString(r.title) : page.getSimpleName(), false);
-            boolean reachable = r != null && (r.standalone || sLivePages.contains(page));
-            if (reachable) {
-                crumb.setBackgroundResource(R.drawable.bg_shell_icon_button);
-                crumb.setOnClickListener(v -> {
-                    Intent intent = new Intent(this, page);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                    startActivity(intent);
-                });
-            }
-            crumbs.addView(crumb);
-            ImageView chevron = new ImageView(this);
-            chevron.setImageResource(R.drawable.ic_ui_chevron_right);
-            chevron.setImageTintList(ColorStateList.valueOf(muted));
-            int size = Math.round(16 * density);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(size, size);
-            lp.setMarginStart(Math.round(2 * density));
-            lp.setMarginEnd(Math.round(2 * density));
-            crumbs.addView(chevron, lp);
-        }
-        CharSequence title = getBreadcrumbTitle();
-        crumbs.addView(makeCrumb(title != null ? title : "", true));
-    }
-
-    private TextView makeCrumb(CharSequence text, boolean current) {
-        TextView t = new TextView(this);
-        t.setText(text);
-        t.setSingleLine(true);
-        t.setTextSize(14);
-        t.setTypeface(androidx.core.content.res.ResourcesCompat.getFont(this, R.font.misans),
-                current ? Typeface.BOLD : Typeface.NORMAL);
-        t.setTextColor(ContextCompat.getColor(this, current ? R.color.text_primary : R.color.text_secondary));
-        float density = getResources().getDisplayMetrics().density;
-        int padH = Math.round(6 * density);
-        t.setPadding(padH, 0, padH, 0);
-        t.setGravity(android.view.Gravity.CENTER_VERTICAL);
-        t.setMinHeight(Math.round(40 * density));
-        return t;
     }
 
     private void styleNavTab(@Nullable View view, boolean active) {
         if (!(view instanceof TextView)) return;
         TextView tab = (TextView) view;
-        boolean navbar = UiSettings.useTopNavbar(this);
-        PersonalizationManager pm = new PersonalizationManager(this);
-        boolean dark = pm.isDarkMode(this);
-        int accent = pm.getAccentColor(dark);
-        float density = getResources().getDisplayMetrics().density;
-        if (navbar) {
-            int iconSize = getResources().getDimensionPixelSize(R.dimen.levi_navbar_icon_size);
-            android.graphics.drawable.Drawable[] icons = tab.getCompoundDrawablesRelative();
-            for (android.graphics.drawable.Drawable icon : icons) {
-                if (icon != null) icon.setBounds(0, 0, iconSize, iconSize);
-            }
-            tab.setCompoundDrawablesRelative(icons[0], icons[1], icons[2], icons[3]);
-            // As in v1.6.1: no pill behind the active tab; it is bold in the primary text color and
-            // the other tabs use the secondary text color.
-            int text = ContextCompat.getColor(this, active ? R.color.text_primary : R.color.text_secondary);
-            tab.setTextColor(text);
-            tab.setTypeface(Typeface.create(tab.getTypeface(), active ? Typeface.BOLD : Typeface.NORMAL));
-            TextViewCompat.setCompoundDrawableTintList(tab, ColorStateList.valueOf(text));
-            android.util.TypedValue ripple = new android.util.TypedValue();
-            getTheme().resolveAttribute(android.R.attr.selectableItemBackground, ripple, true);
-            tab.setBackgroundResource(ripple.resourceId);
-        } else {
-            int icon = active ? ThemePalette.foreground(accent, dark) : ContextCompat.getColor(this, R.color.ui_muted);
-            TextViewCompat.setCompoundDrawableTintList(tab, ColorStateList.valueOf(icon));
-            if (active) {
-                GradientDrawable bg = new GradientDrawable();
-                bg.setCornerRadius(12 * density);
-                bg.setColor(ThemePalette.withAlpha(accent, 0.10f));
-                tab.setBackground(bg);
-            } else {
-                tab.setBackgroundResource(R.drawable.bg_shell_icon_button);
-            }
+        int iconSize = getResources().getDimensionPixelSize(R.dimen.levi_navbar_icon_size);
+        android.graphics.drawable.Drawable[] icons = tab.getCompoundDrawablesRelative();
+        for (android.graphics.drawable.Drawable icon : icons) {
+            if (icon != null) icon.setBounds(0, 0, iconSize, iconSize);
         }
-    }
-
-    /** Moves the 4dp accent pill next to the active rail item (Windows Sidebar indicator). */
-    private void placeRailIndicator() {
-        View indicator = findViewById(R.id.nav_rail_indicator);
-        if (indicator == null) return;
-        View tab = activeNavTabId != View.NO_ID ? findViewById(activeNavTabId) : null;
-        if (tab == null) {
-            indicator.setVisibility(View.INVISIBLE);
-            return;
-        }
-        indicator.setBackgroundTintList(ColorStateList.valueOf(new PersonalizationManager(this).getAccentColor(
-                new PersonalizationManager(this).isDarkMode(this))));
-        View rail = findViewById(R.id.nav_rail);
-        // Placed right before the next draw (after layout), so the pill never shows up a frame late.
-        tab.getViewTreeObserver().addOnPreDrawListener(new android.view.ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                tab.getViewTreeObserver().removeOnPreDrawListener(this);
-                // Window coordinates: the rail scrolls and items may be moved away from the camera.
-                int[] tabLoc = new int[2];
-                int[] railLoc = new int[2];
-                tab.getLocationInWindow(tabLoc);
-                (rail != null ? rail : (View) indicator.getParent()).getLocationInWindow(railLoc);
-                float y = tabLoc[1] - railLoc[1] + (tab.getHeight() - indicator.getHeight()) / 2f;
-                indicator.setTranslationY(y);
-                indicator.setVisibility(View.VISIBLE);
-                return true;
-            }
-        });
-        tab.invalidate();
+        tab.setCompoundDrawablesRelative(icons[0], icons[1], icons[2], icons[3]);
+        // As in v1.6.1: no pill behind the active tab; it is bold in the primary text color and
+        // the other tabs use the secondary text color.
+        int text = ContextCompat.getColor(this, active ? R.color.text_primary : R.color.text_secondary);
+        tab.setTextColor(text);
+        tab.setTypeface(Typeface.create(tab.getTypeface(), active ? Typeface.BOLD : Typeface.NORMAL));
+        TextViewCompat.setCompoundDrawableTintList(tab, ColorStateList.valueOf(text));
+        android.util.TypedValue ripple = new android.util.TypedValue();
+        getTheme().resolveAttribute(android.R.attr.selectableItemBackground, ripple, true);
+        tab.setBackgroundResource(ripple.resourceId);
     }
 
     private void refreshNewsBadge() {
@@ -615,14 +419,12 @@ public class BaseActivity extends AppCompatActivity {
 
     protected void setActiveNavTab(int activeTabId) {
         if (!navBarInjected) return;
-        activeNavTabId = activeTabId;
         for (int id : NAV_TAB_IDS) styleNavTab(findViewById(id), id == activeTabId);
         View activeTab = findViewById(activeTabId);
-        if (activeTab != null && UiSettings.useTopNavbar(this)) {
+        if (activeTab != null) {
             androidx.core.view.OneShotPreDrawListener.add(activeTab, () -> activeTab.requestRectangleOnScreen(
                     new android.graphics.Rect(0, 0, activeTab.getWidth(), activeTab.getHeight()), true));
         }
-        placeRailIndicator();
     }
 
     @Override
@@ -645,16 +447,12 @@ public class BaseActivity extends AppCompatActivity {
         int currentGen = ThemeManager.getThemeChangeGeneration();
         int currentPGen = PersonalizationManager.getChangeGeneration();
         if (new ThemeManager(this).refreshScheduledMode()) currentGen = ThemeManager.getThemeChangeGeneration();
-        int currentLayout = UiSettings.getLayoutGeneration();
-        if (appliedThemeGeneration != currentGen || appliedPersonalizationGeneration != currentPGen
-                || appliedLayoutGeneration != currentLayout) {
+        if (appliedThemeGeneration != currentGen || appliedPersonalizationGeneration != currentPGen) {
             appliedThemeGeneration = currentGen;
             appliedPersonalizationGeneration = currentPGen;
-            appliedLayoutGeneration = currentLayout;
             recreate();
             return;
         }
-        UiSettings.refreshAnimations(this);
         refreshHistoryButtons();
         scheduleHandler.removeCallbacks(scheduleCheck);
         scheduleHandler.postDelayed(scheduleCheck, 60_000L);
@@ -766,13 +564,6 @@ public class BaseActivity extends AppCompatActivity {
 
     @Override
     public void finish() {
-        if (finishingByBack && navBarInjected && !isTaskRoot()) {
-            Intent again = new Intent(getIntent());
-            again.removeExtra(EXTRA_FROM_FORWARD);
-            again.setFlags(0);
-            sForwardHistory.addFirst(again);
-            while (sForwardHistory.size() > 20) sForwardHistory.pollLast();
-        }
         boolean keepBackground = !isTaskRoot() && (navBarInjected || hasLauncherBackground());
         if (!isTaskRoot()) LauncherBackgroundController.navigating(this);
         super.finish();
@@ -836,8 +627,6 @@ public class BaseActivity extends AppCompatActivity {
     private void prepareBackgroundNavigation(Intent intent) {
         if (isLauncherNavigation(intent)) {
             LauncherBackgroundController.navigating(this);
-            // Between launcher pages the shell (rail, top bar) stays where it is, as on Windows: no window
-            // cross-fade, only the page content fades in. A window animation would fade the whole shell.
             if (navBarInjected || hasLauncherBackground()) intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
         }
     }

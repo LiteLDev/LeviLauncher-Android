@@ -53,7 +53,6 @@ import org.levimc.launcher.ui.animation.DynamicAnim;
 import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
 import org.levimc.launcher.ui.views.ContentActionPopup;
 import org.levimc.launcher.util.UIHelper;
-import org.levimc.launcher.util.UiSettings;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -138,8 +137,7 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(UiSettings.useTwoPane(requireContext())
-                ? R.layout.fragment_pkg_installed : R.layout.fragment_pkg_installed_stacked, container, false);
+        return inflater.inflate(R.layout.fragment_pkg_installed, container, false);
     }
 
     @Override
@@ -223,11 +221,7 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
             query = s.toString();
             render();
         }));
-        if (UiSettings.useTwoPane(requireContext())) {
-            filterTabs.setVertical(true);
-        } else {
-            filterTabs.setEqualWidth(false);
-        }
+        filterTabs.setEqualWidth(false);
         filterTabs.setItems(getString(R.string.pkg_installed_filter_all),
                 getString(R.string.pkg_installed_filter_explicit),
                 getString(R.string.pkg_installed_filter_dependency));

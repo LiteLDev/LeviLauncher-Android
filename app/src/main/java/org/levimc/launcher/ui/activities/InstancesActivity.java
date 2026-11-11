@@ -44,7 +44,6 @@ import org.levimc.launcher.ui.widget.UiKit;
 import org.levimc.launcher.util.InstanceBackupManager;
 import org.levimc.launcher.util.InstanceIcons;
 import org.levimc.launcher.util.StorageAccess;
-import org.levimc.launcher.util.UiSettings;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -87,13 +86,11 @@ public class InstancesActivity extends BaseActivity {
     private ActivityResultLauncher<Intent> backupImportResultLauncher;
     private ActivityResultLauncher<Intent> instanceSettingsLauncher;
     private boolean firstResume = true;
-    private boolean twoPane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        twoPane = UiSettings.useTwoPane(this);
-        setContentView(twoPane ? R.layout.activity_instances : R.layout.activity_instances_stacked);
+        setContentView(R.layout.activity_instances);
         setupNavBar();
 
         versionManager = VersionManager.get(this);
@@ -154,7 +151,6 @@ public class InstancesActivity extends BaseActivity {
 
         GridLayoutManager layoutManager = new GridLayoutManager(this, 1);
         recyclerView.setLayoutManager(layoutManager);
-        // The column count follows the grid's own width (the right pane in two-pane mode), not the screen's.
         recyclerView.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
             int span = calculateSpanCount(r - l - v.getPaddingLeft() - v.getPaddingRight());
             if (span != layoutManager.getSpanCount()) {
@@ -212,7 +208,7 @@ public class InstancesActivity extends BaseActivity {
     private int calculateSpanCount(int widthPx) {
         float width = widthPx / getResources().getDisplayMetrics().density;
         float cardMinWidth = 240f;
-        return Math.max(twoPane ? 1 : 2, (int) (width / cardMinWidth));
+        return Math.max(2, (int) (width / cardMinWidth));
     }
 
     private void loadVersions() {
@@ -863,8 +859,7 @@ public class InstancesActivity extends BaseActivity {
             int backgroundColor = UiKit.color(ctx, R.color.surface);
             int outlineColor = UiKit.color(ctx, R.color.outline);
             if (hasBackgroundImage) {
-                backgroundColor = UiSettings.MATERIAL_BALANCED.equals(UiSettings.getMaterialPreset(ctx, isDark))
-                        && pm.getBackgroundOpacity() > 0
+                backgroundColor = pm.getBackgroundOpacity() > 0
                         ? (isDark ? Color.argb(CARD_GLASS_ALPHA_DARK, 18, 20, 24)
                                 : Color.argb(CARD_GLASS_ALPHA_LIGHT, 255, 255, 255))
                         : pm.getEffectiveSurfaceColor();

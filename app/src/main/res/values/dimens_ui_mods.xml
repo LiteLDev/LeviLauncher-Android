@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Version column of the mods table (header and item_mod rows); narrower below 1000dp so the
-         name column keeps room in the two-pane right panel. -->
     <dimen name="mods_col_version_width">96dp</dimen>
 </resources>

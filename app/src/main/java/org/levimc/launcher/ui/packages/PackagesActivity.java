@@ -21,7 +21,6 @@ import org.levimc.launcher.core.versions.VersionManager;
 import org.levimc.launcher.ui.activities.BaseActivity;
 import org.levimc.launcher.ui.widget.SegmentedControl;
 import org.levimc.launcher.util.PersonalizationManager;
-import org.levimc.launcher.util.UiSettings;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -60,8 +59,7 @@ public class PackagesActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(UiSettings.useTwoPane(this)
-                ? R.layout.activity_packages : R.layout.activity_packages_stacked);
+        setContentView(R.layout.activity_packages);
 
         target = PackagesActivity.Instances.selected(this);
         if (savedInstanceState != null) {
@@ -135,7 +133,7 @@ public class PackagesActivity extends BaseActivity {
     void bindHeader(View root, int index) {
         SegmentedControl tabs = root.findViewById(R.id.pkg_header_tabs);
         if (tabs != null) {
-            tabs.setEqualWidth(UiSettings.useTwoPane(this));
+            tabs.setEqualWidth(false);
             tabs.setItems(getString(R.string.pkg_tab_browse), getString(R.string.pkg_tab_installed));
             tabs.setSelectedIndex(index, false);
             tabs.setOnSegmentSelectedListener(i -> selectTab(i == 1 ? TAB_INSTALLED : TAB_BROWSE));

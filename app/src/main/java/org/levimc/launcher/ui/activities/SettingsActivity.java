@@ -50,6 +50,7 @@ import org.levimc.launcher.ui.dialogs.LogcatOverlayManager;
 import org.levimc.launcher.ui.dialogs.SimpleTextWatcher;
 import org.levimc.launcher.ui.packages.SettingsCard;
 import org.levimc.launcher.ui.widget.SegmentedControl;
+import org.levimc.launcher.ui.widget.SettingsNavigationView;
 import org.levimc.launcher.ui.widget.UiKit;
 import org.levimc.launcher.util.GithubReleaseUpdater;
 import org.levimc.launcher.util.LanguageManager;
@@ -75,22 +76,21 @@ public class SettingsActivity extends BaseActivity {
     public static final String EXTRA_SEARCH = "org.levimc.launcher.settings.SEARCH";
 
     private static final String PAGE_PREFS = "settings_page_prefs";
-    private static final String KEY_SELECTED_TAB = "selected_tab_index";
-    private static final String KEY_PERSONALIZE_SECTION = "personalize_section_index";
+    private static final String KEY_SELECTED_TAB = "selected_tab_index_v2";
+    private static final String KEY_LEGACY_TAB = "selected_tab_index";
+    private static final String KEY_PERSONALIZE_SECTION = "personalize_section_index_v2";
+    private static final String KEY_LEGACY_PERSONALIZE_SECTION = "personalize_section_index";
     private static final String KEY_WAS_DARK = "settings_was_dark";
     private static final String KEY_EDIT_DARK = "edit_dark";
-    private static final String KEY_MATERIAL_DARK = "material_dark";
     private static final String ROW_TAG = "settings_row";
 
     private static final int TAB_PERSONALIZE = 1;
-    private static final int SECTION_WALLPAPER = 2;
+    private static final int SECTION_WALLPAPER = 1;
 
     // Order of the Windows "外观模式" tabs.
     private static final int[] THEME_MODES = {ThemeManager.MODE_LIGHT, ThemeManager.MODE_DARK,
             ThemeManager.MODE_SCHEDULE, ThemeManager.MODE_SUN, ThemeManager.MODE_FOLLOW_SYSTEM};
     private static final String[] BASE_MODES = {UiSettings.BASE_NONE, UiSettings.BASE_THEME, UiSettings.BASE_COLOR};
-    private static final String[] MATERIAL_PRESETS = {UiSettings.MATERIAL_BALANCED, UiSettings.MATERIAL_CLEAR,
-            UiSettings.MATERIAL_SOLID};
     private static final int[] FIT_LABELS = {R.string.settings_ui_fit_smart, R.string.settings_ui_fit_center,
             R.string.settings_ui_fit_fit, R.string.settings_ui_fit_stretch, R.string.settings_ui_fit_tile,
             R.string.settings_ui_fit_top_left, R.string.settings_ui_fit_top_right};
@@ -113,10 +113,9 @@ public class SettingsActivity extends BaseActivity {
 
     private ScrollView scrollView;
     private LinearLayout scrollContent;
-    private SegmentedControl settingsTabs;
-    private boolean twoPane;
+    private SettingsNavigationView settingsTabs;
     private View[] sections;
-    private MaterialButton[] personalizeNavs;
+    private SettingsNavigationView personalizeTabs;
     private View[] personalizeGroups;
     private int selectedTabIndex = 0;
     private int personalizeSectionIndex = 0;
@@ -144,9 +143,7 @@ public class SettingsActivity extends BaseActivity {
     private int folderImageCount = -1;
     private int thumbnailRequest;
 
-    // Material
-    private boolean materialDark;
-    private boolean bindingMaterial;
+    private boolean wallpaperSurfaceVisible;
 
     private TextView preloaderSigsLastUpdateText;
     private MaterialButton preloaderSigsUpdateButton;
@@ -155,8 +152,7 @@ public class SettingsActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        twoPane = UiSettings.useTwoPane(this);
-        setContentView(twoPane ? R.layout.activity_settings : R.layout.activity_settings_stacked);
+        setContentView(R.layout.activity_settings);
 
         DynamicAnim.applyPressScaleRecursively(findViewById(android.R.id.content));
         setActiveNavTab(R.id.nav_tab_settings);
@@ -165,20 +161,28 @@ public class SettingsActivity extends BaseActivity {
         themeManager = new ThemeManager(this);
         pagePrefs = getSharedPreferences(PAGE_PREFS, MODE_PRIVATE);
 
-        // Windows remembers the last settings tab and appearance section.
-        selectedTabIndex = pagePrefs.getInt(KEY_SELECTED_TAB, 0);
-        personalizeSectionIndex = pagePrefs.getInt(KEY_PERSONALIZE_SECTION, 0);
+        selectedTabIndex = pagePrefs.contains(KEY_SELECTED_TAB)
+                ? pagePrefs.getInt(KEY_SELECTED_TAB, 0)
+                : migrateTabIndex(pagePrefs.getInt(KEY_LEGACY_TAB, 0));
+        personalizeSectionIndex = pagePrefs.contains(KEY_PERSONALIZE_SECTION)
+                ? pagePrefs.getInt(KEY_PERSONALIZE_SECTION, 0)
+                : migratePersonalizeSection(pagePrefs.getInt(KEY_LEGACY_PERSONALIZE_SECTION, 0));
         boolean dark = isDark();
-        editDark = dark;
-        materialDark = dark;
+        editDark = pagePrefs.getBoolean(KEY_WAS_DARK, dark) == dark
+                ? pagePrefs.getBoolean(KEY_EDIT_DARK, dark) : dark;
         if (savedInstanceState != null) {
-            selectedTabIndex = savedInstanceState.getInt(KEY_SELECTED_TAB, selectedTabIndex);
-            personalizeSectionIndex = savedInstanceState.getInt(KEY_PERSONALIZE_SECTION, personalizeSectionIndex);
+            selectedTabIndex = savedInstanceState.containsKey(KEY_SELECTED_TAB)
+                    ? savedInstanceState.getInt(KEY_SELECTED_TAB, selectedTabIndex)
+                    : migrateTabIndex(savedInstanceState.getInt(KEY_LEGACY_TAB,
+                            pagePrefs.getInt(KEY_LEGACY_TAB, 0)));
+            personalizeSectionIndex = savedInstanceState.containsKey(KEY_PERSONALIZE_SECTION)
+                    ? savedInstanceState.getInt(KEY_PERSONALIZE_SECTION, personalizeSectionIndex)
+                    : migratePersonalizeSection(savedInstanceState.getInt(KEY_LEGACY_PERSONALIZE_SECTION,
+                            pagePrefs.getInt(KEY_LEGACY_PERSONALIZE_SECTION, 0)));
             // Keep the light/dark editing tabs across a recreate, but start from the applied mode
             // again when the appearance mode itself changed (as Windows does).
             if (savedInstanceState.getBoolean(KEY_WAS_DARK, dark) == dark) {
                 editDark = savedInstanceState.getBoolean(KEY_EDIT_DARK, dark);
-                materialDark = savedInstanceState.getBoolean(KEY_MATERIAL_DARK, dark);
             }
         }
 
@@ -210,9 +214,7 @@ public class SettingsActivity extends BaseActivity {
         setupBasicSection();
         pkgSettingsSection = new SettingsCard(this, findViewById(R.id.pkg_settings_card));
         setupThemeSection();
-        setupLayoutSection();
         setupWallpaperSection();
-        setupMaterialSection();
         setupUpdatesSection();
         setupAboutSection();
 
@@ -231,7 +233,6 @@ public class SettingsActivity extends BaseActivity {
         outState.putInt(KEY_SELECTED_TAB, selectedTabIndex);
         outState.putInt(KEY_PERSONALIZE_SECTION, personalizeSectionIndex);
         outState.putBoolean(KEY_EDIT_DARK, editDark);
-        outState.putBoolean(KEY_MATERIAL_DARK, materialDark);
         outState.putBoolean(KEY_WAS_DARK, isDark());
     }
 
@@ -249,44 +250,56 @@ public class SettingsActivity extends BaseActivity {
         scrollView = findViewById(R.id.settings_scroll);
         scrollContent = findViewById(R.id.settings_scroll_content);
         settingsTabs = findViewById(R.id.settings_tabs);
-        if (twoPane) settingsTabs.setVertical(true);
+        settingsTabs.setVertical(true);
         settingsTabs.setItems(
                 getString(R.string.settings_tab_basic),
                 getString(R.string.settings_tab_personalize),
                 getString(R.string.settings_tab_components),
-                getString(R.string.settings_tab_others),
                 getString(R.string.settings_tab_privacy),
                 getString(R.string.settings_ui_tab_updates),
                 getString(R.string.settings_tab_about));
+        View categoryBody = (View) settingsTabs.getParent();
+        ScrollView categoryScroll = (ScrollView) categoryBody.getParent();
+        View.OnLayoutChangeListener fitNavigation = (v, l, t, r, b, oldL, oldT, oldR, oldB) -> {
+            int availableHeight = categoryScroll.getHeight() - categoryScroll.getPaddingTop()
+                    - categoryScroll.getPaddingBottom() - settingsTabs.getTop() - categoryBody.getPaddingBottom();
+            settingsTabs.fitVerticalHeight(availableHeight);
+        };
+        categoryScroll.addOnLayoutChangeListener(fitNavigation);
+        settingsTabs.addOnLayoutChangeListener(fitNavigation);
         settingsTabs.setOnSegmentSelectedListener(index -> {
             selectTab(index, true);
-            // The right pane keeps its scroll position across sections; start each one at the top.
-            if (twoPane) scrollView.scrollTo(0, 0);
+            scrollView.scrollTo(0, 0);
         });
 
         sections = new View[]{
                 findViewById(R.id.section_basic),
                 findViewById(R.id.section_personalize),
                 findViewById(R.id.section_components),
-                findViewById(R.id.section_others),
                 findViewById(R.id.section_privacy),
                 findViewById(R.id.section_updates),
                 findViewById(R.id.section_about)};
 
-        personalizeNavs = new MaterialButton[]{
-                findViewById(R.id.personalize_nav_theme),
-                findViewById(R.id.personalize_nav_layout),
-                findViewById(R.id.personalize_nav_wallpaper),
-                findViewById(R.id.personalize_nav_material)};
+        personalizeTabs = findViewById(R.id.personalize_tabs);
+        personalizeTabs.setItems(
+                getString(R.string.settings_ui_section_theme),
+                getString(R.string.settings_ui_section_wallpaper));
         personalizeGroups = new View[]{
                 findViewById(R.id.personalize_theme_group),
-                findViewById(R.id.personalize_layout_group),
-                findViewById(R.id.personalize_wallpaper_group),
-                findViewById(R.id.personalize_material_group)};
-        for (int i = 0; i < personalizeNavs.length; i++) {
-            final int index = i;
-            personalizeNavs[i].setOnClickListener(v -> selectPersonalizeSection(index));
-        }
+                findViewById(R.id.personalize_wallpaper_group)};
+        personalizeTabs.setOnSegmentSelectedListener(index -> {
+            selectPersonalizeSection(index);
+            scrollView.scrollTo(0, 0);
+        });
+    }
+
+    private static int migrateTabIndex(int index) {
+        if (index == 3) return 0;
+        return index > 3 ? index - 1 : index;
+    }
+
+    private static int migratePersonalizeSection(int index) {
+        return index == 2 ? SECTION_WALLPAPER : 0;
     }
 
     private void selectTab(int index, boolean animate) {
@@ -296,9 +309,10 @@ public class SettingsActivity extends BaseActivity {
         settingsTabs.setSelectedIndex(index, false);
         for (int i = 0; i < sections.length; i++) {
             View section = sections[i];
+            section.animate().cancel();
             if (i == index) {
                 section.setVisibility(View.VISIBLE);
-                if (animate && !UiSettings.animationsDisabled()) {
+                if (animate) {
                     section.setAlpha(0f);
                     section.animate().alpha(1f).setDuration(200).start();
                 } else {
@@ -310,22 +324,13 @@ public class SettingsActivity extends BaseActivity {
         }
     }
 
-    /** Personalization sub-sections, a button row as on Windows: selected = primary, others secondary. */
     private void selectPersonalizeSection(int index) {
         if (index < 0 || index >= personalizeGroups.length) index = 0;
+        clearHighlight();
         personalizeSectionIndex = index;
         pagePrefs.edit().putInt(KEY_PERSONALIZE_SECTION, index).apply();
-        ColorStateList secondaryFill = ColorStateList.valueOf(getColor(R.color.ui_default));
-        ColorStateList secondaryText = ColorStateList.valueOf(getColor(R.color.text_primary));
-        for (int i = 0; i < personalizeNavs.length; i++) {
-            MaterialButton nav = personalizeNavs[i];
-            if (i == index) {
-                UiKit.applyPrimary(nav);
-            } else {
-                nav.setBackgroundTintList(secondaryFill);
-                nav.setTextColor(secondaryText);
-                nav.setIconTint(secondaryText);
-            }
+        personalizeTabs.setSelectedIndex(index, false);
+        for (int i = 0; i < personalizeGroups.length; i++) {
             personalizeGroups[i].setVisibility(i == index ? View.VISIBLE : View.GONE);
         }
         if (index == SECTION_WALLPAPER) updateBgImageUI();
@@ -373,8 +378,8 @@ public class SettingsActivity extends BaseActivity {
                 }
             }
             if (tab == TAB_PERSONALIZE) {
-                for (int i = 0; i < personalizeNavs.length; i++) {
-                    if (personalizeNavs[i].getText().toString().toLowerCase(Locale.getDefault()).contains(query)) {
+                for (int i = 0; i < personalizeGroups.length; i++) {
+                    if (personalizeTabs.getSegment(i).getText().toString().toLowerCase(Locale.getDefault()).contains(query)) {
                         jumpTo(tab, i, null);
                         return;
                     }
@@ -559,28 +564,12 @@ public class SettingsActivity extends BaseActivity {
 
     private void setupThemeSection() {
         themeModeTabs = findViewById(R.id.theme_mode_tabs);
-        // In the narrow right pane of the two-pane layout the five labels only fit without their icons:
-        // there the control fills the row with equal, compact segments instead of scrolling sideways.
-        boolean icons = !twoPane;
-        themeModeTabs.addSegment(getString(R.string.settings_ui_mode_light), icons ? R.drawable.ic_sun : 0);
-        themeModeTabs.addSegment(getString(R.string.settings_ui_mode_dark), icons ? R.drawable.ic_moon : 0);
-        themeModeTabs.addSegment(getString(R.string.settings_ui_mode_schedule), icons ? R.drawable.ic_ui_schedule : 0);
-        themeModeTabs.addSegment(getString(R.string.settings_ui_mode_sun), icons ? R.drawable.ic_ui_sunrise : 0);
-        themeModeTabs.addSegment(getString(R.string.settings_ui_mode_system), icons ? R.drawable.ic_ui_monitor : 0);
-        if (twoPane) {
-            themeModeTabs.setEqualWidth(true);
-            themeModeTabs.setTextSizeSp(13f);
-            int pad = Math.round(6 * getResources().getDisplayMetrics().density);
-            for (int i = 0; i < themeModeTabs.getSegmentCount(); i++) {
-                themeModeTabs.getSegment(i).setPadding(pad, 0, pad, 0);
-            }
-            if (themeModeTabs.getParent() instanceof android.widget.HorizontalScrollView) {
-                ((android.widget.HorizontalScrollView) themeModeTabs.getParent()).setFillViewport(true);
-            }
-            android.view.ViewGroup.LayoutParams lp = themeModeTabs.getLayoutParams();
-            lp.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-            themeModeTabs.setLayoutParams(lp);
-        }
+        themeModeTabs.setEqualWidth(false);
+        themeModeTabs.addSegment(getString(R.string.settings_ui_mode_light), R.drawable.ic_sun);
+        themeModeTabs.addSegment(getString(R.string.settings_ui_mode_dark), R.drawable.ic_moon);
+        themeModeTabs.addSegment(getString(R.string.settings_ui_mode_schedule), R.drawable.ic_ui_schedule);
+        themeModeTabs.addSegment(getString(R.string.settings_ui_mode_sun), R.drawable.ic_ui_sunrise);
+        themeModeTabs.addSegment(getString(R.string.settings_ui_mode_system), R.drawable.ic_ui_monitor);
         int mode = themeManager.getCurrentMode();
         themeModeTabs.setSelectedIndex(themeModeIndex(mode), false);
         themeModeTabs.setOnSegmentSelectedListener(index -> {
@@ -598,17 +587,17 @@ public class SettingsActivity extends BaseActivity {
         UiKit.tintIconChip(findViewById(R.id.theme_sunrise_chip), findViewById(R.id.theme_sunrise_icon), UiKit.AMBER);
         UiKit.tintIconChip(findViewById(R.id.theme_sunset_chip), findViewById(R.id.theme_sunset_icon), UiKit.INDIGO);
 
-        View bar = findViewById(R.id.mode_config_bar);
-        bar.setBackground(roundRect(UiKit.accent(this), 2));
-
         SegmentedControl editTabs = findViewById(R.id.edit_mode_tabs);
         editTabs.setEqualWidth(false);
         editTabs.setItems(getString(R.string.settings_ui_mode_light), getString(R.string.settings_ui_mode_dark));
         editTabs.setSelectedIndex(editDark ? 1 : 0, false);
         editTabs.setOnSegmentSelectedListener(index -> {
             editDark = index == 1;
+            pagePrefs.edit().putBoolean(KEY_EDIT_DARK, editDark).putBoolean(KEY_WAS_DARK, isDark()).apply();
             refreshEditMode();
         });
+
+        pagePrefs.edit().putBoolean(KEY_EDIT_DARK, editDark).putBoolean(KEY_WAS_DARK, isDark()).apply();
 
         presetGrid = findViewById(R.id.color_preset_grid);
         moreGrid = findViewById(R.id.color_more_grid);
@@ -711,7 +700,7 @@ public class SettingsActivity extends BaseActivity {
         icon.setImageResource(editDark ? R.drawable.ic_moon : R.drawable.ic_sun);
         icon.setImageTintList(ColorStateList.valueOf(editDark ? UiKit.INDIGO : UiKit.AMBER));
         ((TextView) findViewById(R.id.edit_mode_title))
-                .setText(editDark ? R.string.settings_ui_mode_dark : R.string.settings_ui_mode_light);
+                .setText(editDark ? R.string.settings_ui_dark_colors : R.string.settings_ui_light_colors);
         rebuildSwatches();
         refreshBaseUI();
     }
@@ -894,30 +883,6 @@ public class SettingsActivity extends BaseActivity {
 
     // #endregion
 
-    // #region Layout and motion
-
-    private void setupLayoutSection() {
-        SwitchMaterial navbar = findViewById(R.id.switch_top_navbar);
-        navbar.setChecked(UiSettings.useTopNavbar(this));
-        navbar.setOnCheckedChangeListener((btn, checked) -> {
-            UiSettings.setLayoutMode(this, checked ? UiSettings.LAYOUT_NAVBAR : UiSettings.LAYOUT_SIDEBAR);
-            recreate();
-        });
-
-        SwitchMaterial twoPaneSwitch = findViewById(R.id.switch_two_pane);
-        twoPaneSwitch.setChecked(twoPane);
-        twoPaneSwitch.setOnCheckedChangeListener((btn, checked) -> {
-            UiSettings.setTwoPane(this, checked);
-            recreate();
-        });
-
-        SwitchMaterial animations = findViewById(R.id.switch_disable_animations);
-        animations.setChecked(UiSettings.isAnimationsDisabledSetting(this));
-        animations.setOnCheckedChangeListener((btn, checked) -> UiSettings.setAnimationsDisabled(this, checked));
-    }
-
-    // #endregion
-
     // #region Wallpaper
 
     private void setupWallpaperSection() {
@@ -992,6 +957,8 @@ public class SettingsActivity extends BaseActivity {
         bgImageBrightnessValue = findViewById(R.id.bg_image_brightness_value);
         bgImageOpacityValue = findViewById(R.id.bg_image_opacity_value);
 
+        wallpaperSurfaceVisible = personalizationManager.hasBackgroundImage()
+                && personalizationManager.getBackgroundOpacity() > 0;
         blurSeek.setMax(PersonalizationManager.BG_BLUR_MAX);
         blurSeek.setProgress(personalizationManager.getBackgroundImageBlur());
         updateBgImageBlurValue(blurSeek.getProgress());
@@ -1004,13 +971,11 @@ public class SettingsActivity extends BaseActivity {
                 if (personalizationManager.supportsRealtimeBackgroundBlur()) {
                     personalizationManager.refreshBackgroundEffects(SettingsActivity.this);
                 }
-                updateMaterialStatus();
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 personalizationManager.refreshBackgroundEffects(SettingsActivity.this);
-                onWallpaperEffectReleased();
             }
         });
 
@@ -1025,12 +990,6 @@ public class SettingsActivity extends BaseActivity {
                 if (!fromUser) return;
                 personalizationManager.setBackgroundImageBrightness(progress);
                 personalizationManager.refreshBackgroundColorEffects(SettingsActivity.this);
-                updateMaterialStatus();
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                onWallpaperEffectReleased();
             }
         });
 
@@ -1044,12 +1003,13 @@ public class SettingsActivity extends BaseActivity {
                 if (!fromUser) return;
                 personalizationManager.setBackgroundOpacity(progress);
                 personalizationManager.refreshBackgroundColorEffects(SettingsActivity.this);
-                updateMaterialStatus();
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                onWallpaperEffectReleased();
+                boolean visible = personalizationManager.hasBackgroundImage()
+                        && personalizationManager.getBackgroundOpacity() > 0;
+                if (visible != wallpaperSurfaceVisible) recreate();
             }
         });
     }
@@ -1098,11 +1058,7 @@ public class SettingsActivity extends BaseActivity {
         updateNextButton();
 
         loadThumbnail(hasImage);
-        View noImage = findViewById(R.id.material_no_image);
-        if (noImage != null) {
-            noImage.setVisibility(hasImage && personalizationManager.getBackgroundOpacity() > 0
-                    ? View.GONE : View.VISIBLE);
-        }
+
     }
 
     /** "primary:Pictures/Wallpapers" style path of a document tree. */
@@ -1269,137 +1225,12 @@ public class SettingsActivity extends BaseActivity {
 
     // #endregion
 
-    // #region Material
-
-    private void setupMaterialSection() {
-        SegmentedControl modeTabs = findViewById(R.id.material_mode_tabs);
-        modeTabs.setEqualWidth(false);
-        modeTabs.setItems(getString(R.string.settings_ui_mode_light), getString(R.string.settings_ui_mode_dark));
-        modeTabs.setSelectedIndex(materialDark ? 1 : 0, false);
-        modeTabs.setOnSegmentSelectedListener(index -> {
-            materialDark = index == 1;
-            refreshMaterialUI();
-        });
-
-        SimpleSeekListener sliderListener = new SimpleSeekListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                updateMaterialValues();
-                if (!fromUser || bindingMaterial) return;
-                saveMaterialFromControls();
-                // The wallpaper overlay can follow the slider live; the surfaces update on release.
-                if (materialDark == isDark()) personalizationManager.refreshBackgroundEffects(SettingsActivity.this);
-                updateMaterialStatus();
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                onMaterialChanged();
-            }
-        };
-        ((SeekBar) findViewById(R.id.seek_material_opacity)).setOnSeekBarChangeListener(sliderListener);
-        ((SeekBar) findViewById(R.id.seek_material_overlay)).setOnSeekBarChangeListener(sliderListener);
-
-        SwitchMaterial readability = findViewById(R.id.switch_material_readability);
-        readability.setOnCheckedChangeListener((btn, checked) -> {
-            if (bindingMaterial) return;
-            saveMaterialFromControls();
-            onMaterialChanged();
-        });
-
-        findViewById(R.id.material_reset).setOnClickListener(v -> {
-            UiSettings.applyMaterialPreset(this, materialDark, UiSettings.MATERIAL_BALANCED);
-            onMaterialChanged();
-        });
-
-        refreshMaterialUI();
-    }
-
-    private void saveMaterialFromControls() {
-        UiSettings.setMaterial(this, materialDark,
-                ((SeekBar) findViewById(R.id.seek_material_opacity)).getProgress(),
-                ((SeekBar) findViewById(R.id.seek_material_overlay)).getProgress(),
-                ((SwitchMaterial) findViewById(R.id.switch_material_readability)).isChecked());
-    }
-
-    /**
-     * Wallpaper brightness, blur and opacity feed readability protection, which sets the surface
-     * opacity of every page: rebuild this page and let the others rebuild on resume.
-     */
-    private void onWallpaperEffectReleased() {
-        if (!personalizationManager.hasBackgroundImage()) return;
-        PersonalizationManager.bumpChange();
-        recreate();
-    }
-
-    /** Material is only visible over a wallpaper; then the page is rebuilt with the new surfaces. */
-    private void onMaterialChanged() {
-        if (materialDark == isDark() && personalizationManager.hasBackgroundImage()) recreate();
-        else refreshMaterialUI();
-    }
-
-    private void refreshMaterialUI() {
-        bindingMaterial = true;
-        ((SeekBar) findViewById(R.id.seek_material_opacity)).setProgress(UiSettings.getSurfaceOpacity(this, materialDark));
-        ((SeekBar) findViewById(R.id.seek_material_overlay)).setProgress(UiSettings.getOverlayOpacity(this, materialDark));
-        ((SwitchMaterial) findViewById(R.id.switch_material_readability))
-                .setChecked(UiSettings.getReadability(this, materialDark));
-        bindingMaterial = false;
-        updateMaterialValues();
-
-        // A fresh control shows no selection for a custom (slider-edited) material, as on Windows.
-        FrameLayout holder = findViewById(R.id.material_preset_holder);
-        holder.removeAllViews();
-        SegmentedControl presets = new SegmentedControl(this);
-        presets.addSegment(getString(R.string.settings_ui_material_balanced), 0);
-        presets.addSegment(getString(R.string.settings_ui_material_clear), 0);
-        presets.addSegment(getString(R.string.settings_ui_material_solid), 0);
-        String preset = UiSettings.getMaterialPreset(this, materialDark);
-        for (int i = 0; i < MATERIAL_PRESETS.length; i++) {
-            if (MATERIAL_PRESETS[i].equals(preset)) presets.setSelectedIndex(i, false);
-        }
-        presets.setOnSegmentSelectedListener(index -> {
-            UiSettings.applyMaterialPreset(this, materialDark, MATERIAL_PRESETS[index]);
-            onMaterialChanged();
-        });
-        holder.addView(presets, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-        updateMaterialStatus();
-    }
-
-    private void updateMaterialValues() {
-        setValueText(R.id.material_opacity_value, R.string.settings_ui_value_percent,
-                ((SeekBar) findViewById(R.id.seek_material_opacity)).getProgress());
-        setValueText(R.id.material_overlay_value, R.string.settings_ui_value_percent,
-                ((SeekBar) findViewById(R.id.seek_material_overlay)).getProgress());
-    }
-
-    private void updateMaterialStatus() {
-        TextView status = findViewById(R.id.material_status);
-        if (status == null) return;
-        PersonalizationManager pm = personalizationManager;
-        int surface = UiSettings.getSurfaceOpacity(this, materialDark);
-        int effective = UiSettings.getEffectiveSurfaceOpacity(this, materialDark,
-                pm.getBackgroundImageBrightness(), pm.getBackgroundImageBlur(), pm.getBackgroundOpacity());
-        boolean hasImage = pm.hasBackgroundImage() && pm.getBackgroundOpacity() > 0;
-        if (hasImage && effective > surface) {
-            status.setText(getString(R.string.settings_ui_material_protected_opacity, effective));
-        } else {
-            status.setText(UiSettings.getReadability(this, materialDark)
-                    ? R.string.settings_ui_material_protected : R.string.settings_ui_material_unprotected);
-        }
-    }
-
-    // #endregion
-
     @Override
     protected void onResume() {
         super.onResume();
         if (personalizationManager != null) {
             updateBgImageUI();
             setBackgroundImportState(LauncherBackgroundController.isImporting());
-            updateMaterialStatus();
         }
         if (pkgSettingsSection != null) {
             pkgSettingsSection.onResume();

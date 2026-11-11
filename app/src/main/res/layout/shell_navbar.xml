@@ -1,7 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Top navigation layout, as LeviLauncher for Windows "navbar" mode (Settings > Personalization >
-     Layout and motion > Use top navigation bar): back, logo and name, icon + label tabs in the
-     middle, theme toggle, news and account on the right. BaseActivity puts the page into @id/shell_content. -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/shell_root"

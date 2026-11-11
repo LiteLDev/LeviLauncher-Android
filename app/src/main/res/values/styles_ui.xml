@@ -184,22 +184,6 @@
         <item name="android:minHeight">48dp</item>
     </style>
 
-    <!-- Navigation: 48x48 icon-only rail item (Windows Sidebar item). -->
-    <style name="Widget.Levi.RailItem" parent="">
-        <item name="android:layout_width">48dp</item>
-        <item name="android:layout_height">48dp</item>
-        <item name="android:layout_marginTop">4dp</item>
-        <item name="android:layout_marginBottom">4dp</item>
-        <item name="android:gravity">center</item>
-        <item name="android:paddingTop">13dp</item>
-        <item name="android:drawablePadding">0dp</item>
-        <item name="android:drawableTint">@color/ui_muted</item>
-        <item name="android:textSize">0sp</item>
-        <item name="android:background">@drawable/bg_shell_icon_button</item>
-        <item name="android:clickable">true</item>
-        <item name="android:focusable">true</item>
-    </style>
-
     <!-- Navigation: icon + label tab of the top navigation bar (Windows GlobalNavbar item). -->
     <style name="Widget.Levi.NavbarItem" parent="">
         <item name="android:layout_width">wrap_content</item>

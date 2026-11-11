@@ -40,7 +40,6 @@ import org.levimc.launcher.ui.views.MainViewModel;
 import org.levimc.launcher.ui.views.MainViewModelFactory;
 import org.levimc.launcher.ui.widget.UiKit;
 import org.levimc.launcher.util.PersonalizationManager;
-import org.levimc.launcher.util.UiSettings;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -74,8 +73,7 @@ public final class ExternalModsActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(UiSettings.useTwoPane(this)
-                ? R.layout.activity_external_mods : R.layout.activity_external_mods_stacked);
+        setContentView(R.layout.activity_external_mods);
 
         VersionManager versionManager = VersionManager.get(this);
         GameVersion selectedVersion = versionManager.getSelectedVersion();

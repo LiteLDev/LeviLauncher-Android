@@ -185,9 +185,11 @@ public class PersonalizationManager {
 
     public void setBackgroundOpacity(int opacity) {
         int clamped = clamp(opacity, 0, 100);
-        if (clamped == getBackgroundOpacity()) return;
+        int previous = getBackgroundOpacity();
+        if (clamped == previous) return;
         prefs.edit().putInt(KEY_BG_OPACITY, clamped).apply();
         sBackgroundEffectGeneration.incrementAndGet();
+        if ((previous == 0) != (clamped == 0)) sChangeGeneration.incrementAndGet();
     }
 
     /** Folder the wallpaper is picked from (a document tree URI), or null for a single image. */
@@ -500,9 +502,7 @@ public class PersonalizationManager {
     }
 
     private void applyOverlay(View overlayView, boolean isDark) {
-        boolean legacy = UiSettings.MATERIAL_BALANCED.equals(UiSettings.getMaterialPreset(context, isDark));
-        int alpha = legacy ? (isDark ? 100 : 80)
-                : Math.round(UiSettings.getOverlayOpacity(context, isDark) * 2.55f);
+        int alpha = isDark ? 100 : 80;
         overlayView.setBackgroundColor(isDark ? Color.argb(alpha, 0, 0, 0) : Color.argb(alpha, 255, 255, 255));
         overlayView.setVisibility(View.VISIBLE);
     }
@@ -727,11 +727,9 @@ public class PersonalizationManager {
     }
 
     private int getGlassColor(boolean isDark) {
+        // A fully transparent wallpaper counts as no wallpaper (Windows): solid surfaces.
         if (getBackgroundOpacity() == 0) return isDark ? 0xFF151518 : 0xFFF1F8E9;
-        int opacity = UiSettings.getEffectiveSurfaceOpacity(context, isDark, getBackgroundImageBrightness(),
-                getBackgroundImageBlur(), getBackgroundOpacity());
-        int alpha = UiSettings.MATERIAL_BALANCED.equals(UiSettings.getMaterialPreset(context, isDark))
-                ? 50 : Math.round(opacity * 2.55f);
+        int alpha = 50;
         return isDark ? Color.argb(alpha, 25, 25, 25) : Color.argb(alpha, 255, 255, 255);
     }
 
@@ -742,8 +740,7 @@ public class PersonalizationManager {
     public int getChromeGlassColor(Context ctx) {
         boolean isDark = isDarkMode(ctx);
         if (getBackgroundOpacity() == 0) return ContextCompat.getColor(ctx, R.color.ui_chrome);
-        int alpha = UiSettings.MATERIAL_BALANCED.equals(UiSettings.getMaterialPreset(context, isDark))
-                ? (isDark ? 90 : 110) : Color.alpha(getGlassColor(isDark));
+        int alpha = isDark ? 90 : 110;
         return isDark ? Color.argb(alpha, 25, 25, 25) : Color.argb(alpha, 255, 255, 255);
     }
 
