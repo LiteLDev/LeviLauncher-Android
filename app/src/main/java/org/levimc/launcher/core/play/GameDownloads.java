@@ -61,6 +61,7 @@ public final class GameDownloads {
         public volatile long bytesDone;
         public volatile long bytesTotal;
         public volatile long bytesPerSecond;
+        public final long accountGeneration;
         public volatile PlayException.Kind errorKind;
         public volatile String error;
         volatile boolean cancelled;
@@ -69,11 +70,12 @@ public final class GameDownloads {
         Task(long versionCode, String versionName) {
             this.versionCode = versionCode;
             this.versionName = versionName;
+            this.accountGeneration = PlayAccountStore.generation();
         }
 
         public boolean isActive() {
-            return state == State.QUEUED || state == State.RESOLVING
-                    || state == State.DOWNLOADING || state == State.VERIFYING;
+            return !cancelled && (state == State.QUEUED || state == State.RESOLVING
+                    || state == State.DOWNLOADING || state == State.VERIFYING);
         }
 
         public int percent() {
@@ -139,6 +141,32 @@ public final class GameDownloads {
         listeners.remove(listener);
     }
 
+    public List<Task> tasks() {
+        synchronized (tasks) {
+            return new ArrayList<>(tasks.values());
+        }
+    }
+
+    public void clearAccountCatalog() {
+        for (Task task : tasks()) cancel(task.versionCode);
+        synchronized (tasks) {
+            tasks.clear();
+        }
+        synchronized (this) {
+            offerType = 1;
+            writeKnown(new ArrayList<>());
+        }
+    }
+
+    public boolean rememberListing(GameRelease release, int offer, long generation) {
+        synchronized (PlayAccountStore.class) {
+            if (generation != PlayAccountStore.generation() || PlayAccountStore.load(context) == null) return false;
+            setOfferType(offer);
+            if (release != null) remember(release);
+            return true;
+        }
+    }
+
     public Task task(long versionCode) {
         return tasks.get(versionCode);
     }
@@ -199,8 +227,24 @@ public final class GameDownloads {
 
     /** Every build the page knows of: those Play has offered, plus those downloaded. */
     public synchronized List<GameRelease> knownReleases() {
+        return collectReleases(true);
+    }
+
+    public synchronized List<GameRelease> catalogReleases() {
+        List<GameRelease> releases = readKnown();
+        Collections.sort(releases, GameRelease::compareNewestFirst);
+        return releases;
+    }
+
+    public synchronized List<GameRelease> downloadedReleases() {
+        return collectReleases(false);
+    }
+
+    private List<GameRelease> collectReleases(boolean includeCatalog) {
         Map<Long, GameRelease> byCode = new LinkedHashMap<>();
-        for (GameRelease release : readKnown()) byCode.put(release.versionCode, release);
+        if (includeCatalog) {
+            for (GameRelease release : readKnown()) byCode.put(release.versionCode, release);
+        }
         File[] dirs = downloadsRoot().listFiles();
         if (dirs != null) {
             String prefix = MINECRAFT_PACKAGE + "-";
@@ -292,7 +336,9 @@ public final class GameDownloads {
     public Task start(long versionCode, String versionName) {
         synchronized (tasks) {
             Task existing = tasks.get(versionCode);
-            if (existing != null && existing.isActive()) return existing;
+            if (existing != null && existing.isActive()
+                    && existing.accountGeneration == PlayAccountStore.generation()) return existing;
+            if (existing != null) cancel(versionCode);
             Task task = new Task(versionCode, versionName);
             tasks.put(versionCode, task);
             notifyChanged(task);
@@ -327,6 +373,7 @@ public final class GameDownloads {
         }
         File dir = downloadDir(task.versionCode);
         try {
+            checkCancelled(task);
             task.state = State.RESOLVING;
             notifyChanged(task);
             PlayClient client = new PlayClient(context);
@@ -336,7 +383,6 @@ public final class GameDownloads {
             if (!dir.exists() && !dir.mkdirs()) throw new IOException("Cannot create " + dir);
             // A previous, finished download of the same build is replaced only once this one completes.
             File manifest = new File(dir, MANIFEST);
-            if (manifest.exists() && !manifest.delete()) throw new IOException("Cannot replace " + manifest);
 
             long total = 0;
             for (PlayClient.DeliveryFile file : delivery.files) total += Math.max(0, file.size);
@@ -366,20 +412,27 @@ public final class GameDownloads {
             downloaded.size = total;
             downloaded.downloadedAt = System.currentTimeMillis();
             downloaded.files = names;
-            removeStrayFiles(dir, names);
-            writeManifest(manifest, downloaded);
-            remember(new GameRelease(task.versionCode, task.versionName, total, 0));
-
-            task.bytesDone = task.bytesTotal;
-            task.state = State.DONE;
+            synchronized (PlayAccountStore.class) {
+                checkCancelled(task);
+                removeStrayFiles(dir, names);
+                writeManifest(manifest, downloaded);
+                remember(new GameRelease(task.versionCode, task.versionName, total, 0));
+                task.bytesDone = task.bytesTotal;
+                task.state = State.DONE;
+            }
             notifyChanged(task);
         } catch (CancelledException e) {
             task.state = State.CANCELLED;
             notifyChanged(task);
         } catch (PlayException e) {
-            fail(task, e.kind, e.getMessage());
+            if (wasCancelled(task)) {
+                task.state = State.CANCELLED;
+                notifyChanged(task);
+            } else {
+                fail(task, e.kind, e.getMessage());
+            }
         } catch (Exception e) {
-            if (task.cancelled) {
+            if (wasCancelled(task)) {
                 task.state = State.CANCELLED;
                 notifyChanged(task);
             } else {
@@ -541,7 +594,11 @@ public final class GameDownloads {
     }
 
     private static void checkCancelled(Task task) throws CancelledException {
-        if (task.cancelled) throw new CancelledException();
+        if (wasCancelled(task)) throw new CancelledException();
+    }
+
+    private static boolean wasCancelled(Task task) {
+        return task.cancelled || task.accountGeneration != PlayAccountStore.generation();
     }
 
     private void notifyChanged(Task task) {

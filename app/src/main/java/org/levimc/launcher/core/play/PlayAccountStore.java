@@ -29,9 +29,11 @@ public final class PlayAccountStore {
     private static final String KEY_ALIAS = "levilauncher_play_account";
     private static final String FILE_NAME = "play_account.bin";
     private static final Gson GSON = new Gson();
+    private static long sessionGeneration;
 
     /** Everything a signed-in session needs; tokens other than [aasToken] are re-minted when lost. */
     public static final class Account {
+        public transient long sessionGeneration;
         public String email;
         public String aasToken;
         public String gsfId;
@@ -60,6 +62,7 @@ public final class PlayAccountStore {
             byte[] plain = decrypt(sealed);
             Account account = GSON.fromJson(new String(plain, StandardCharsets.UTF_8), Account.class);
             if (account == null || account.email == null || account.aasToken == null) return null;
+            account.sessionGeneration = sessionGeneration;
             return account;
         } catch (Exception e) {
             Log.w(TAG, "The saved Google account could not be read", e);
@@ -67,7 +70,26 @@ public final class PlayAccountStore {
         }
     }
 
+    public static synchronized long generation() {
+        return sessionGeneration;
+    }
+
+    public static synchronized boolean isCurrent(Account account) {
+        return account != null && account.sessionGeneration == sessionGeneration;
+    }
+
+    public static synchronized void signIn(Context context, Account account, long expectedGeneration) throws Exception {
+        if (expectedGeneration != sessionGeneration) throw new IllegalStateException("Google Play session changed");
+        write(context, account);
+        account.sessionGeneration = ++sessionGeneration;
+    }
+
     public static synchronized void save(Context context, Account account) throws Exception {
+        if (!isCurrent(account)) throw new IllegalStateException("Google Play session changed");
+        write(context, account);
+    }
+
+    private static void write(Context context, Account account) throws Exception {
         byte[] sealed = encrypt(GSON.toJson(account).getBytes(StandardCharsets.UTF_8));
         AtomicFile file = new AtomicFile(file(context));
         FileOutputStream out = null;
@@ -82,6 +104,7 @@ public final class PlayAccountStore {
     }
 
     public static synchronized void clear(Context context) {
+        sessionGeneration++;
         new AtomicFile(file(context)).delete();
         try {
             KeyStore keyStore = KeyStore.getInstance("AndroidKeyStore");

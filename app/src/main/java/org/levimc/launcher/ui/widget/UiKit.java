@@ -82,6 +82,10 @@ public final class UiKit {
         if (view instanceof TextView) ((TextView) view).setTextColor(accentText(view.getContext()));
     }
 
+    /**
+     * Colored square behind an icon (Windows icon chip): light = 500 at 12% on white,
+     * dark = 900 at 35%; the icon uses the 500 color.
+     */
     public static void tintIconChip(View chip, ImageView icon, int color) {
         Context ctx = chip.getContext();
         PersonalizationManager personalization = new PersonalizationManager(ctx);

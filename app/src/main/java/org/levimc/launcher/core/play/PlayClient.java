@@ -93,8 +93,13 @@ public final class PlayClient {
         return account == null ? null : account.email;
     }
 
+    public static long sessionGeneration() {
+        return PlayAccountStore.generation();
+    }
+
     public static void signOut(Context context) {
         PlayAccountStore.clear(context);
+        GameDownloads.get(context).clearAccountCatalog();
     }
 
     /**
@@ -102,6 +107,10 @@ public final class PlayClient {
      * AAS token and saves the account. Returns the account's email address.
      */
     public static String signIn(Context context, String email, String oauthToken) throws PlayException {
+        return signIn(context, email, oauthToken, PlayAccountStore.generation());
+    }
+
+    public static String signIn(Context context, String email, String oauthToken, long expectedGeneration) throws PlayException {
         PlayDevice device = PlayDevice.get(context);
         FormBody.Builder form = new FormBody.Builder()
                 .add("lang", device.locale.toString().replace('_', '-'))
@@ -133,10 +142,11 @@ public final class PlayClient {
         account.email = TextUtils.isEmpty(accountEmail) ? email : accountEmail;
         account.aasToken = aasToken;
         try {
-            PlayAccountStore.save(context, account);
+            PlayAccountStore.signIn(context, account, expectedGeneration);
         } catch (Exception e) {
             throw new PlayException(PlayException.Kind.UNKNOWN, "The Google account could not be saved", e);
         }
+        GameDownloads.get(context).clearAccountCatalog();
         return account.email;
     }
 
@@ -280,13 +290,17 @@ public final class PlayClient {
     private Proto.Message callWithRetry(RequestFactory factory) throws PlayException {
         ensureSession();
         try {
-            return payload(execute(sign(factory.create()).build(), false));
+            byte[] response = execute(sign(factory.create()).build(), false);
+            requireCurrentAccount();
+            return payload(response);
         } catch (PlayException e) {
             if (e.kind != PlayException.Kind.UNAUTHORIZED) throw e;
             account.authToken = null;
             account.authTokenExpiry = 0;
             ensureSession();
-            return payload(execute(sign(factory.create()).build(), false));
+            byte[] response = execute(sign(factory.create()).build(), false);
+            requireCurrentAccount();
+            return payload(response);
         }
     }
 
@@ -319,26 +333,38 @@ public final class PlayClient {
         return builder;
     }
 
+    private void requireCurrentAccount() throws PlayException {
+        if (!PlayAccountStore.isCurrent(account)) {
+            throw new PlayException(PlayException.Kind.UNAUTHORIZED, "Google Play session changed");
+        }
+    }
+
     /** Checks the device in, uploads its configuration and mints a Play token, each only when missing. */
     private synchronized void ensureSession() throws PlayException {
+        requireCurrentAccount();
         boolean changed = false;
         if (TextUtils.isEmpty(account.gsfId) || !device.fingerprint.equals(account.deviceFingerprint)) {
             checkin();
+            requireCurrentAccount();
             account.deviceConfigToken = null;
             changed = true;
         }
         if (TextUtils.isEmpty(account.authToken) || System.currentTimeMillis() >= account.authTokenExpiry) {
             mintAuthToken();
+            requireCurrentAccount();
             changed = true;
         }
         if (TextUtils.isEmpty(account.deviceConfigToken)) {
             uploadDeviceConfig();
+            requireCurrentAccount();
             changed = true;
         }
+        requireCurrentAccount();
         if (changed) {
             try {
                 PlayAccountStore.save(context, account);
             } catch (Exception e) {
+                requireCurrentAccount();
                 Log.w(TAG, "The Play session could not be saved", e);
             }
         }

@@ -3,7 +3,6 @@ package org.levimc.launcher.ui.activities;
 import android.annotation.SuppressLint;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
@@ -38,6 +37,8 @@ public class GoogleLoginActivity extends BaseActivity {
     private WebView webView;
     private View working;
     private boolean exchanging;
+    private boolean completed;
+    private volatile boolean disposed;
 
     @Override
     protected boolean shouldSkipNavBar() {
@@ -62,7 +63,6 @@ public class GoogleLoginActivity extends BaseActivity {
         ((ProgressBar) findViewById(R.id.google_login_working_progress)).setIndeterminateTintList(accent);
 
         CookieManager cookies = CookieManager.getInstance();
-        cookies.removeAllCookies(null);
         cookies.setAcceptCookie(true);
         cookies.setAcceptThirdPartyCookies(webView, true);
 
@@ -82,6 +82,7 @@ public class GoogleLoginActivity extends BaseActivity {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageFinished(WebView view, String url) {
+                if (disposed || exchanging || isFinishing() || isDestroyed()) return;
                 String oauthToken = cookieValue(CookieManager.getInstance().getCookie(url), OAUTH_COOKIE);
                 if (oauthToken == null || exchanging) return;
                 view.evaluateJavascript(READ_EMAIL_JS, result -> {
@@ -91,28 +92,34 @@ public class GoogleLoginActivity extends BaseActivity {
                 });
             }
         });
-        webView.loadUrl(SIGN_IN_URL);
+        cookies.removeAllCookies(ignored -> {
+            cookies.flush();
+            if (!disposed && !isFinishing() && !isDestroyed()) webView.loadUrl(SIGN_IN_URL);
+        });
     }
 
     private void exchange(String email, String oauthToken) {
-        if (exchanging) return;
+        if (exchanging || disposed || isFinishing() || isDestroyed()) return;
         exchanging = true;
+        long generation = PlayClient.sessionGeneration();
         working.setVisibility(View.VISIBLE);
         webView.setVisibility(View.INVISIBLE);
         executor.execute(() -> {
             try {
-                String accountEmail = PlayClient.signIn(this, email, oauthToken);
+                PlayClient.signIn(this, email, oauthToken, generation);
                 runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
+                    completed = true;
                     clearCookies();
-                    Toast.makeText(this, getString(R.string.game_download_signed_in_as, accountEmail), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.game_download_connected, Toast.LENGTH_SHORT).show();
                     setResult(RESULT_OK);
                     finish();
                 });
             } catch (PlayException e) {
                 runOnUiThread(() -> {
                     clearCookies();
-                    Toast.makeText(this, getString(R.string.game_download_sign_in_failed,
-                            TextUtils.isEmpty(e.getMessage()) ? e.kind.name() : e.getMessage()), Toast.LENGTH_LONG).show();
+                    if (isFinishing() || isDestroyed()) return;
+                    Toast.makeText(this, R.string.game_download_sign_in_failed, Toast.LENGTH_LONG).show();
                     setResult(RESULT_CANCELED);
                     finish();
                 });
@@ -140,11 +147,14 @@ public class GoogleLoginActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        executor.shutdown();
+        disposed = true;
+        if (exchanging && !completed) PlayClient.signOut(this);
+        executor.shutdownNow();
         if (webView != null) {
             webView.stopLoading();
             webView.destroy();
         }
+        clearCookies();
         super.onDestroy();
     }
 }

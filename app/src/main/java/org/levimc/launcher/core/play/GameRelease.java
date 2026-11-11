@@ -5,7 +5,7 @@ import java.util.Locale;
 /** One Minecraft for Android build the download page can list. */
 public final class GameRelease {
     public static final String CHANNEL_RELEASE = "Release";
-    public static final String CHANNEL_PREVIEW = "Preview";
+    public static final String CHANNEL_BETA = "Beta";
 
     public long versionCode;
     public String versionName;
@@ -31,8 +31,8 @@ public final class GameRelease {
                 : versionName;
     }
 
-    public boolean isPreview() {
-        return CHANNEL_PREVIEW.equals(channel);
+    public boolean isBeta() {
+        return CHANNEL_BETA.equals(channel) || "Preview".equals(channel);
     }
 
     /**
@@ -44,7 +44,7 @@ public final class GameRelease {
         String[] parts = versionName.trim().split("\\.");
         if (parts.length >= 4) {
             try {
-                if (Integer.parseInt(parts[3]) >= 20) return CHANNEL_PREVIEW;
+                if (Integer.parseInt(parts[3]) >= 20) return CHANNEL_BETA;
             } catch (NumberFormatException ignored) {
             }
         }

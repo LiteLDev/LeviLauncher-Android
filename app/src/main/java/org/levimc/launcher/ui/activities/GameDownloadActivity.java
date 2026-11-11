@@ -1,20 +1,23 @@
 package org.levimc.launcher.ui.activities;
 
 import android.content.Intent;
+import android.content.ActivityNotFoundException;
+import android.net.Uri;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,144 +37,200 @@ import org.levimc.launcher.core.play.GameDownloads;
 import org.levimc.launcher.core.play.GameRelease;
 import org.levimc.launcher.core.play.PlayClient;
 import org.levimc.launcher.core.play.PlayException;
+import org.levimc.launcher.core.play.VersionCatalog;
 import org.levimc.launcher.core.versions.GameVersion;
 import org.levimc.launcher.core.versions.VersionManager;
 import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
+import org.levimc.launcher.ui.dialogs.SimpleTextWatcher;
 import org.levimc.launcher.ui.widget.SegmentedControl;
 import org.levimc.launcher.ui.widget.UiKit;
 import org.levimc.launcher.util.ApkImportManager;
+import org.levimc.launcher.util.PersonalizationManager;
 import org.levimc.launcher.util.StorageAccess;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
- * Lists the Minecraft builds the signed-in Google account can download from Google Play and
- * downloads and installs them as instances, mirroring LeviLauncher for Windows' download page.
- */
 public class GameDownloadActivity extends BaseActivity implements GameDownloads.Listener {
+    private static final int SOURCE_PLAY = 0;
+    private static final int SOURCE_VERSIONS = 1;
+    private static final int SOURCE_DOWNLOADED = 2;
     private static final int TYPE_ALL = 0;
     private static final int TYPE_RELEASE = 1;
-    private static final int TYPE_PREVIEW = 2;
+    private static final int TYPE_BETA = 2;
     private static final int STATUS_ALL = 0;
     private static final int STATUS_DOWNLOADED = 1;
     private static final int STATUS_NOT_DOWNLOADED = 2;
+    private static final String STATE_SOURCE = "download_source_v2";
+    private static final String STATE_TYPE = "download_type";
+    private static final String STATE_STATUS = "download_status";
+    private static final String STATE_QUERY = "download_query";
 
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private final List<GameRelease> allReleases = new ArrayList<>();
+    private final ExecutorService networkExecutor = Executors.newFixedThreadPool(2);
+    private final ExecutorService dataExecutor = Executors.newSingleThreadExecutor();
+    private final List<GameRelease> catalog = new ArrayList<>();
+    private final List<GameRelease> history = new ArrayList<>();
+    private final List<GameRelease> local = new ArrayList<>();
     private final List<GameRelease> visible = new ArrayList<>();
+    private final Map<Long, GameDownloads.Downloaded> downloadedFiles = new HashMap<>();
     private final Set<String> installedVersionNames = new HashSet<>();
 
     private GameDownloads downloads;
+    private VersionCatalog versionCatalog;
+    private PersonalizationManager personalization;
     private ApkImportManager apkImportManager;
     private ActivityResultLauncher<Intent> googleLoginLauncher;
     private ActivityResultLauncher<Intent> apkImportLauncher;
-
     private TextView subtitle;
     private TextView status;
+    private TextView count;
     private MaterialButton accountButton;
     private MaterialButton refreshButton;
+    private MaterialButton filterButton;
     private EditText search;
-    private View previewRow;
-    private SwitchMaterial previewSwitch;
-    private RecyclerView recycler;
+    private SegmentedControl sources;
+    private View versionSource;
+    private View betaRow;
+    private SwitchMaterial betaSwitch;
     private ProgressBar progress;
     private View empty;
+    private TextView emptyTitle;
     private TextView emptyText;
     private MaterialButton emptyAction;
     private ReleaseAdapter adapter;
-
     private ColorStateList accentTint;
-    private int typeFilter = TYPE_ALL;
-    private int statusFilter = STATUS_ALL;
+
+    private int sourceMode;
+    private int typeFilter;
+    private int statusFilter;
     private long latestVersionCode;
+    private long accountGeneration = -1;
+    private int catalogRequest;
+    private int dataRequest;
+    private int historyRequest;
+    private boolean signedIn;
+    private boolean remoteChecked;
     private boolean refreshing;
-    private boolean updatingPreviewSwitch;
+    private boolean loadingLocal;
+    private boolean updatingBetaSwitch;
+    private boolean changingBeta;
+    private boolean betaAvailable;
+    private boolean historyLoaded;
+    private boolean historyRefreshing;
+    private volatile boolean disposed;
+    private String catalogError;
+    private String historyError;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_download);
         downloads = GameDownloads.get(this);
+        versionCatalog = new VersionCatalog(this);
+        personalization = new PersonalizationManager(this);
+        if (savedInstanceState != null) {
+            int restored = savedInstanceState.containsKey(STATE_SOURCE) ? savedInstanceState.getInt(STATE_SOURCE, SOURCE_PLAY)
+                    : savedInstanceState.getInt("download_source", SOURCE_PLAY) == 1 ? SOURCE_DOWNLOADED : SOURCE_PLAY;
+            sourceMode = restored >= SOURCE_PLAY && restored <= SOURCE_DOWNLOADED ? restored : SOURCE_PLAY;
+            typeFilter = clampFilter(savedInstanceState.getInt(STATE_TYPE, TYPE_ALL));
+            statusFilter = clampFilter(savedInstanceState.getInt(STATE_STATUS, STATUS_ALL));
+        }
 
         apkImportManager = new ApkImportManager(this, null);
-        apkImportManager.setOnImportCompleteListener(this::refreshInstalled);
-        apkImportLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
+        apkImportManager.setOnImportCompleteListener(() -> {
+            refreshInstalled();
+            loadLocal();
+        });
+        apkImportLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
                 result -> apkImportManager.handleActivityResult(result.getResultCode(), result.getData()));
-        googleLoginLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    updateAccountUi();
-                    if (PlayClient.isSignedIn(this)) refreshFromPlay();
-                });
+        googleLoginLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            syncAccount(true);
+        });
 
         subtitle = findViewById(R.id.game_download_subtitle);
         status = findViewById(R.id.game_download_status);
+        count = findViewById(R.id.game_download_count);
         accountButton = findViewById(R.id.game_download_account);
         refreshButton = findViewById(R.id.game_download_refresh);
+        filterButton = findViewById(R.id.game_download_filters);
         search = findViewById(R.id.game_download_search);
-        previewRow = findViewById(R.id.game_download_preview_row);
-        previewSwitch = findViewById(R.id.game_download_preview_switch);
-        recycler = findViewById(R.id.game_download_recycler);
+        sources = findViewById(R.id.game_download_sources);
+        versionSource = findViewById(R.id.game_download_version_source);
+        betaRow = findViewById(R.id.game_download_beta_row);
+        betaSwitch = findViewById(R.id.game_download_beta_switch);
+        RecyclerView recycler = findViewById(R.id.game_download_recycler);
         progress = findViewById(R.id.game_download_progress);
         empty = findViewById(R.id.game_download_empty);
+        emptyTitle = findViewById(R.id.game_download_empty_title);
         emptyText = findViewById(R.id.game_download_empty_text);
         emptyAction = findViewById(R.id.game_download_empty_action);
-
         accentTint = ColorStateList.valueOf(UiKit.accent(this));
         progress.setIndeterminateTintList(accentTint);
         UiKit.applyPrimary(emptyAction);
-        View byCode = findViewById(R.id.game_download_by_code);
-        TooltipCompat.setTooltipText(byCode, byCode.getContentDescription());
-        TooltipCompat.setTooltipText(refreshButton, refreshButton.getContentDescription());
-
         adapter = new ReleaseAdapter();
         recycler.setLayoutManager(new LinearLayoutManager(this));
+        recycler.setItemAnimator(null);
         recycler.setAdapter(adapter);
 
+        sources.setEqualWidth(false);
+        sources.setItems(getString(R.string.game_download_source_play), getString(R.string.game_download_source_versions),
+                getString(R.string.game_download_source_local));
+        sources.setSelectedIndex(sourceMode, false);
+        sources.setOnSegmentSelectedListener(index -> {
+            sourceMode = index;
+            applyFilters();
+            if (sourceMode == SOURCE_VERSIONS && !historyLoaded) refreshHistory();
+        });
         accountButton.setOnClickListener(v -> onAccountClicked());
-        emptyAction.setOnClickListener(v -> onAccountClicked());
-        refreshButton.setOnClickListener(v -> {
-            loadLocal();
-            if (PlayClient.isSignedIn(this)) refreshFromPlay();
-        });
-        findViewById(R.id.game_download_local_install).setOnClickListener(
-                v -> apkImportLauncher.launch(StorageAccess.downloadsPicker(false)));
+        refreshButton.setOnClickListener(v -> reload());
+        filterButton.setOnClickListener(this::showFilters);
+        findViewById(R.id.game_download_import_apk).setOnClickListener(v -> importApk());
+        MaterialButton byCode = findViewById(R.id.game_download_by_code);
+        if (getResources().getConfiguration().screenWidthDp >= 600) byCode.setText(R.string.game_download_code_short);
         byCode.setOnClickListener(v -> showVersionCodeDialog());
-        previewSwitch.setOnCheckedChangeListener((button, checked) -> {
-            if (!updatingPreviewSwitch) setPreviewChannel(checked);
+        TooltipCompat.setTooltipText(byCode, getString(R.string.game_download_by_code));
+        TooltipCompat.setTooltipText(refreshButton, getString(R.string.game_download_refresh));
+        versionSource.setOnClickListener(v -> {
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(VersionCatalog.SOURCE_URL)));
+            } catch (ActivityNotFoundException error) {
+                Toast.makeText(this, R.string.game_download_browser_unavailable, Toast.LENGTH_SHORT).show();
+            }
         });
+        TooltipCompat.setTooltipText(versionSource, getString(R.string.game_download_version_source));
+        emptyAction.setOnClickListener(v -> onEmptyAction());
+        betaSwitch.setOnCheckedChangeListener((button, checked) -> {
+            if (!updatingBetaSwitch) setBetaChannel(checked);
+        });
+        search.setSaveEnabled(false);
+        search.addTextChangedListener(SimpleTextWatcher.after(s -> applyFilters()));
+        search.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId != EditorInfo.IME_ACTION_SEARCH && actionId != EditorInfo.IME_ACTION_DONE) return false;
+            InputMethodManager keyboard = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            if (keyboard != null) keyboard.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            search.clearFocus();
+            return true;
+        });
+        if (savedInstanceState != null) search.setText(savedInstanceState.getString(STATE_QUERY, ""));
+        syncAccount(true);
+        if (sourceMode == SOURCE_VERSIONS) refreshHistory();
+    }
 
-        search.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
-            @Override public void afterTextChanged(Editable s) { applyFilters(); }
-        });
-        setupFilter(findViewById(R.id.game_download_type), new String[]{
-                getString(R.string.download_ui_filter_all),
-                getString(R.string.game_download_type_release),
-                getString(R.string.game_download_type_preview)}, position -> {
-            typeFilter = position;
-            applyFilters();
-        });
-        SegmentedControl statusFilterControl = findViewById(R.id.game_download_status_filter);
-        setupFilter(statusFilterControl, new String[]{
-                getString(R.string.download_ui_filter_all),
-                getString(R.string.game_download_status_downloaded),
-                getString(R.string.game_download_status_not_downloaded)}, position -> {
-            statusFilter = position;
-            applyFilters();
-        });
-
-        updateAccountUi();
-        loadLocal();
-        if (PlayClient.isSignedIn(this)) refreshFromPlay();
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(STATE_SOURCE, sourceMode);
+        outState.putInt(STATE_TYPE, typeFilter);
+        outState.putInt(STATE_STATUS, statusFilter);
+        outState.putString(STATE_QUERY, search.getText().toString());
     }
 
     @Override
@@ -190,272 +249,440 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
     protected void onResume() {
         super.onResume();
         setActiveNavTab(R.id.nav_tab_download);
+        syncAccount(true);
+        if (!loadingLocal) loadLocal();
         refreshInstalled();
     }
 
     @Override
     protected void onDestroy() {
-        executor.shutdown();
+        disposed = true;
+        catalogRequest++;
+        dataRequest++;
+        historyRequest++;
+        versionCatalog.close();
+        networkExecutor.shutdownNow();
+        dataExecutor.shutdownNow();
         super.onDestroy();
     }
 
-    /** Secondary (grey) button colors, used when a button stops being the primary action. */
-    private void applySecondary(MaterialButton button) {
-        int label = getColor(R.color.text_primary);
-        button.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.ui_default)));
-        button.setTextColor(label);
-        button.setIconTint(ColorStateList.valueOf(label));
+    private static int clampFilter(int value) {
+        return value >= 0 && value <= 2 ? value : 0;
     }
 
-    /** Soft colored tag: the theme color for 0, otherwise the given color; a plain grey tag for null. */
-    private void styleTag(TextView tag, Integer color) {
-        if (color == null) {
-            tag.setBackgroundResource(R.drawable.bg_ui_tag);
-            tag.setTextColor(getColor(R.color.text_secondary));
-        } else if (color == 0) {
-            UiKit.tintSoftAccent(tag, 7);
-        } else {
-            GradientDrawable bg = new GradientDrawable();
-            bg.setCornerRadius(UiKit.dp(this, 7));
-            bg.setColor(UiKit.alpha(color, UiKit.isDark(this) ? 48 : 30));
-            tag.setBackground(bg);
-            tag.setTextColor(color);
+    private boolean current(long generation) {
+        return alive() && generation == PlayClient.sessionGeneration();
+    }
+
+    private boolean alive() {
+        return !disposed && !isFinishing() && !isDestroyed();
+    }
+
+    private void syncAccount(boolean checkRemote) {
+        if (disposed) return;
+        long generation = PlayClient.sessionGeneration();
+        boolean authenticated = PlayClient.isSignedIn(this);
+        boolean changed = generation != accountGeneration || signedIn != authenticated;
+        if (changed) {
+            accountGeneration = generation;
+            signedIn = authenticated;
+            catalogRequest++;
+            dataRequest++;
+            refreshing = false;
+            loadingLocal = false;
+            changingBeta = false;
+            remoteChecked = false;
+            catalogError = null;
+            latestVersionCode = 0;
+            betaAvailable = false;
+            catalog.clear();
+            betaRow.setVisibility(View.GONE);
+            betaSwitch.setEnabled(true);
+            updatingBetaSwitch = true;
+            betaSwitch.setChecked(false);
+            updatingBetaSwitch = false;
         }
-    }
-
-    private interface OnSelected {
-        void onSelected(int position);
-    }
-
-    private void setupFilter(SegmentedControl control, String[] labels, OnSelected listener) {
-        control.setEqualWidth(false);
-        control.setTextSizeSp(13);
-        control.setItems(labels);
-        control.setSelectedIndex(0, false);
-        control.setOnSegmentSelectedListener(listener::onSelected);
-    }
-
-    // ---- Account ----
-
-    private void updateAccountUi() {
-        String email = PlayClient.signedInEmail(this);
-        if (email == null) {
-            subtitle.setText(R.string.game_download_subtitle_signed_out);
-            accountButton.setText(R.string.game_download_google_sign_in);
-            UiKit.applyPrimary(accountButton);
-            previewRow.setVisibility(View.GONE);
-        } else {
-            subtitle.setText(getString(R.string.game_download_subtitle_signed_in, email));
-            accountButton.setText(R.string.game_download_google_account);
+        subtitle.setText(signedIn ? R.string.game_download_subtitle_signed_in : R.string.game_download_subtitle_signed_out);
+        int accountLabel = signedIn ? R.string.game_download_sign_out : R.string.game_download_google_sign_in;
+        accountButton.setContentDescription(getString(accountLabel));
+        TooltipCompat.setTooltipText(accountButton, getString(accountLabel));
+        accountButton.setText(signedIn ? R.string.game_download_sign_out : R.string.game_download_sign_in_short);
+        accountButton.setIconPadding(Math.round(UiKit.dp(this, signedIn ? 0 : 6)));
+        int padding = Math.round(UiKit.dp(this, 12));
+        accountButton.setPaddingRelative(padding, 0, padding, 0);
+        if (signedIn) {
+            accountButton.setIcon(null);
             applySecondary(accountButton);
+            accountButton.setBackgroundTintList(ColorStateList.valueOf(android.graphics.Color.TRANSPARENT));
+            accountButton.setStrokeColor(ColorStateList.valueOf(UiKit.alpha(getColor(R.color.text_secondary), 100)));
+            accountButton.setStrokeWidth(Math.max(1, Math.round(UiKit.dp(this, 1))));
+        } else {
+            accountButton.setIconResource(R.drawable.ic_ui_person);
+            accountButton.setStrokeWidth(0);
+            UiKit.applyPrimary(accountButton);
         }
-        updateEmptyState();
+        applyFilters();
+        if (changed) loadLocal();
+        if (checkRemote && signedIn && !remoteChecked) refreshFromPlay();
     }
 
     private void onAccountClicked() {
-        String email = PlayClient.signedInEmail(this);
-        if (email == null) {
+        syncAccount(false);
+        if (!signedIn) {
             googleLoginLauncher.launch(new Intent(this, GoogleLoginActivity.class));
             return;
         }
         new CustomAlertDialog(this)
                 .setTitleText(getString(R.string.game_download_google_account))
-                .setMessage(getString(R.string.game_download_sign_out_message, email))
+                .setMessage(getString(R.string.game_download_sign_out_message))
                 .setPositiveButton(getString(R.string.game_download_sign_out), v -> {
                     PlayClient.signOut(this);
-                    latestVersionCode = 0;
-                    setStatus(null);
-                    updateAccountUi();
-                    adapter.notifyDataSetChanged();
+                    syncAccount(false);
                 })
                 .setNegativeButton(getString(R.string.cancel), null)
                 .show();
     }
 
     private boolean requireSignIn() {
-        if (PlayClient.isSignedIn(this)) return true;
+        syncAccount(false);
+        if (signedIn) return true;
         Toast.makeText(this, R.string.game_download_sign_in_required, Toast.LENGTH_SHORT).show();
         googleLoginLauncher.launch(new Intent(this, GoogleLoginActivity.class));
         return false;
     }
 
-    // ---- Data ----
+    private void reload() {
+        syncAccount(false);
+        loadLocal();
+        if (sourceMode == SOURCE_VERSIONS) refreshHistory();
+        else if (sourceMode == SOURCE_PLAY && signedIn) refreshFromPlay();
+    }
 
-    private void loadLocal() {
-        executor.execute(() -> {
-            List<GameRelease> releases = downloads.knownReleases();
+    private void refreshHistory() {
+        if (!alive() || historyRefreshing) return;
+        historyRefreshing = true;
+        historyError = null;
+        boolean loadCache = !historyLoaded;
+        int request = ++historyRequest;
+        updateState();
+        networkExecutor.execute(() -> {
+            if (loadCache) {
+                List<GameRelease> cached = versionCatalog.cached();
+                runOnUiThread(() -> {
+                    if (!alive() || request != historyRequest) return;
+                    history.clear();
+                    history.addAll(cached);
+                    historyLoaded = true;
+                    applyFilters();
+                });
+            }
+            List<GameRelease> fresh = null;
+            boolean failed = false;
+            try {
+                fresh = versionCatalog.refresh();
+            } catch (java.io.IOException error) {
+                failed = true;
+            }
+            List<GameRelease> result = fresh;
+            boolean error = failed;
             runOnUiThread(() -> {
-                if (isFinishing() || isDestroyed()) return;
-                allReleases.clear();
-                allReleases.addAll(releases);
+                if (!alive() || request != historyRequest) return;
+                historyRefreshing = false;
+                historyLoaded = true;
+                if (result != null) {
+                    history.clear();
+                    history.addAll(result);
+                }
+                historyError = error ? getString(R.string.game_download_versions_refresh_failed) : null;
                 applyFilters();
             });
         });
+    }
+
+    private void loadLocal() {
+        if (disposed) return;
+        int request = ++dataRequest;
+        long generation = accountGeneration;
+        boolean includeCatalog = signedIn;
+        loadingLocal = true;
+        updateState();
+        dataExecutor.execute(() -> {
+            List<GameRelease> localReleases = downloads.downloadedReleases();
+            List<GameRelease> remoteReleases = includeCatalog ? downloads.catalogReleases() : new ArrayList<>();
+            Map<Long, GameDownloads.Downloaded> files = new HashMap<>();
+            for (GameRelease release : localReleases) {
+                GameDownloads.Downloaded item = downloads.downloaded(release.versionCode);
+                if (item != null) files.put(release.versionCode, item);
+            }
+            runOnUiThread(() -> {
+                if (!current(generation) || request != dataRequest) return;
+                loadingLocal = false;
+                local.clear();
+                local.addAll(localReleases);
+                downloadedFiles.clear();
+                downloadedFiles.putAll(files);
+                catalog.clear();
+                if (signedIn) catalog.addAll(remoteReleases);
+                mergeTasks();
+                applyFilters();
+            });
+        });
+    }
+
+    private void mergeTasks() {
+        if (!signedIn) return;
+        Map<Long, GameRelease> merged = new LinkedHashMap<>();
+        for (GameRelease release : catalog) merged.put(release.versionCode, release);
+        for (GameDownloads.Task task : downloads.tasks()) {
+            if (task.accountGeneration != accountGeneration || task.state == GameDownloads.State.CANCELLED) continue;
+            GameRelease existing = merged.get(task.versionCode);
+            if (existing == null || !TextUtils.isEmpty(task.versionName)) {
+                String name = TextUtils.isEmpty(task.versionName) && existing != null ? existing.versionName : task.versionName;
+                long size = task.bytesTotal > 0 || existing == null ? task.bytesTotal : existing.size;
+                merged.put(task.versionCode, new GameRelease(task.versionCode, name, size, existing != null ? existing.seenAt : 0));
+            }
+        }
+        catalog.clear();
+        catalog.addAll(merged.values());
+        catalog.sort(GameRelease::compareNewestFirst);
     }
 
     private void refreshFromPlay() {
-        if (refreshing) return;
+        if (!signedIn || refreshing || changingBeta || disposed) return;
         refreshing = true;
-        setStatus(getString(R.string.game_download_checking_play));
-        refreshButton.setEnabled(false);
-        if (allReleases.isEmpty()) progress.setVisibility(View.VISIBLE);
-        executor.execute(() -> {
-            PlayClient.AppDetails details = null;
-            PlayException error = null;
+        catalogError = null;
+        int request = ++catalogRequest;
+        long generation = accountGeneration;
+        updateState();
+        networkExecutor.execute(() -> {
+            PlayClient.AppDetails result = null;
+            PlayException problem = null;
             try {
-                details = new PlayClient(this).details(GameDownloads.MINECRAFT_PACKAGE);
-                downloads.setOfferType(details.offerType);
-                if (details.versionCode > 0) {
-                    downloads.remember(new GameRelease(details.versionCode, details.versionName,
-                            details.downloadSize, System.currentTimeMillis()));
+                result = new PlayClient(getApplicationContext()).details(GameDownloads.MINECRAFT_PACKAGE);
+                GameRelease release = result.versionCode > 0
+                        ? new GameRelease(result.versionCode, result.versionName, result.downloadSize, System.currentTimeMillis())
+                        : null;
+                if (!downloads.rememberListing(release, result.offerType, generation)) {
+                    throw new PlayException(PlayException.Kind.UNAUTHORIZED, "Google Play session changed");
                 }
-            } catch (PlayException e) {
-                error = e;
+            } catch (PlayException error) {
+                problem = error;
             }
-            List<GameRelease> releases = downloads.knownReleases();
-            PlayClient.AppDetails finalDetails = details;
-            PlayException finalError = error;
+            PlayClient.AppDetails details = result;
+            PlayException error = problem;
             runOnUiThread(() -> {
-                if (isFinishing() || isDestroyed()) return;
+                if (!current(generation) || request != catalogRequest) return;
                 refreshing = false;
-                refreshButton.setEnabled(true);
-                progress.setVisibility(View.GONE);
-                allReleases.clear();
-                allReleases.addAll(releases);
-                if (finalDetails != null) {
-                    latestVersionCode = finalDetails.versionCode;
-                    // Play lists the app but offers no build for this device profile (e.g. an emulator):
-                    // say so instead of leaving the list silently empty.
-                    setStatus(finalDetails.versionCode > 0 ? null
-                            : getString(R.string.download_ui_no_version_for_device));
-                    updatePreviewSwitch(finalDetails);
-                } else {
-                    setStatus(describe(finalError));
-                    if (finalError.kind == PlayException.Kind.UNAUTHORIZED) updateAccountUi();
+                remoteChecked = true;
+                if (error != null && error.kind == PlayException.Kind.UNAUTHORIZED) {
+                    PlayClient.signOut(this);
+                    syncAccount(false);
+                    catalogError = describe(error);
+                    updateState();
+                    return;
                 }
-                applyFilters();
+                if (details != null) {
+                    latestVersionCode = details.versionCode;
+                    catalogError = details.versionCode > 0 ? null : getString(R.string.download_ui_no_version_for_device);
+                    updateBetaSwitch(details);
+                } else {
+                    catalogError = describe(error);
+                }
+                loadLocal();
             });
         });
     }
 
-    private void updatePreviewSwitch(PlayClient.AppDetails details) {
-        boolean show = details.testingProgramAvailable || details.testingProgramSubscribed;
-        previewRow.setVisibility(show ? View.VISIBLE : View.GONE);
-        updatingPreviewSwitch = true;
-        previewSwitch.setChecked(details.testingProgramSubscribed);
-        updatingPreviewSwitch = false;
+    private void updateBetaSwitch(PlayClient.AppDetails details) {
+        betaAvailable = details.testingProgramAvailable || details.testingProgramSubscribed;
+        betaRow.setVisibility(sourceMode == SOURCE_PLAY && betaAvailable ? View.VISIBLE : View.GONE);
+        updatingBetaSwitch = true;
+        betaSwitch.setChecked(details.testingProgramSubscribed);
+        updatingBetaSwitch = false;
     }
 
-    private void setPreviewChannel(boolean join) {
-        previewSwitch.setEnabled(false);
-        executor.execute(() -> {
+    private void setBetaChannel(boolean join) {
+        if (!requireSignIn() || changingBeta) return;
+        changingBeta = true;
+        refreshing = false;
+        catalogRequest++;
+        long generation = accountGeneration;
+        betaSwitch.setEnabled(false);
+        updateState();
+        networkExecutor.execute(() -> {
+            boolean changed = false;
             String message;
-            boolean ok;
             try {
-                ok = new PlayClient(this).setTestingProgram(GameDownloads.MINECRAFT_PACKAGE, join);
-                message = getString(ok
-                        ? (join ? R.string.game_download_preview_joined : R.string.game_download_preview_left)
-                        : R.string.game_download_preview_failed);
-            } catch (PlayException e) {
-                ok = false;
-                message = describe(e);
+                changed = new PlayClient(getApplicationContext()).setTestingProgram(GameDownloads.MINECRAFT_PACKAGE, join);
+                message = getString(changed
+                        ? (join ? R.string.game_download_beta_joined : R.string.game_download_beta_left)
+                        : R.string.game_download_beta_failed);
+            } catch (PlayException error) {
+                message = describe(error);
             }
-            boolean success = ok;
-            String finalMessage = message;
+            boolean success = changed;
+            String result = message;
             runOnUiThread(() -> {
-                if (isFinishing() || isDestroyed()) return;
-                previewSwitch.setEnabled(true);
+                if (!current(generation)) return;
+                changingBeta = false;
+                betaSwitch.setEnabled(true);
                 if (!success) {
-                    updatingPreviewSwitch = true;
-                    previewSwitch.setChecked(!join);
-                    updatingPreviewSwitch = false;
+                    updatingBetaSwitch = true;
+                    betaSwitch.setChecked(!join);
+                    updatingBetaSwitch = false;
                 }
-                Toast.makeText(this, finalMessage, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, result, Toast.LENGTH_LONG).show();
+                remoteChecked = false;
+                refreshFromPlay();
             });
         });
     }
 
     private void refreshInstalled() {
-        installedVersionNames.clear();
-        VersionManager manager = VersionManager.get(this);
-        List<GameVersion> versions = new ArrayList<>();
-        if (manager.getInstalledVersions() != null) versions.addAll(manager.getInstalledVersions());
-        if (manager.getCustomVersions() != null) versions.addAll(manager.getCustomVersions());
-        for (GameVersion version : versions) {
-            if (version != null && version.versionCode != null) installedVersionNames.add(version.versionCode);
+        if (disposed) return;
+        dataExecutor.execute(() -> {
+            VersionManager manager = VersionManager.get(getApplicationContext());
+            Set<String> names = new HashSet<>();
+            List<GameVersion> versions = new ArrayList<>();
+            if (manager.getInstalledVersions() != null) versions.addAll(manager.getInstalledVersions());
+            if (manager.getCustomVersions() != null) versions.addAll(manager.getCustomVersions());
+            for (GameVersion version : versions) {
+                if (version != null && version.versionCode != null) names.add(version.versionCode);
+            }
+            runOnUiThread(() -> {
+                if (disposed || isFinishing() || isDestroyed()) return;
+                installedVersionNames.clear();
+                installedVersionNames.addAll(names);
+                adapter.notifyDataSetChanged();
+            });
+        });
+    }
+
+    private void showFilters(View anchor) {
+        PopupMenu menu = new PopupMenu(this, anchor);
+        SubMenu types = menu.getMenu().addSubMenu(R.string.game_download_filter_type);
+        int[] labels = {R.string.game_download_type_all, R.string.game_download_type_release, R.string.game_download_type_beta};
+        for (int i = 0; i < labels.length; i++) types.add(1, 100 + i, i, labels[i]).setCheckable(true).setChecked(i == typeFilter);
+        types.setGroupCheckable(1, true, true);
+        if (sourceMode != SOURCE_DOWNLOADED) {
+            SubMenu states = menu.getMenu().addSubMenu(R.string.game_download_filter_status);
+            int[] statuses = {R.string.game_download_status_all, R.string.game_download_status_downloaded, R.string.game_download_status_not_downloaded};
+            for (int i = 0; i < statuses.length; i++) states.add(2, 200 + i, i, statuses[i]).setCheckable(true).setChecked(i == statusFilter);
+            states.setGroupCheckable(2, true, true);
         }
-        adapter.notifyDataSetChanged();
+        menu.getMenu().add(0, 300, 10, R.string.game_download_filter_clear);
+        menu.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
+            if (id >= 100 && id < 103) typeFilter = id - 100;
+            else if (id >= 200 && id < 203) statusFilter = id - 200;
+            else if (id == 300) resetFilters();
+            else return false;
+            applyFilters();
+            return true;
+        });
+        menu.show();
+    }
+
+    private void resetFilters() {
+        typeFilter = TYPE_ALL;
+        statusFilter = STATUS_ALL;
+        search.setText("");
+        applyFilters();
+    }
+
+    private boolean hasFilters() {
+        return typeFilter != TYPE_ALL || (sourceMode != SOURCE_DOWNLOADED && statusFilter != STATUS_ALL)
+                || !search.getText().toString().trim().isEmpty();
     }
 
     private void applyFilters() {
         String query = search.getText().toString().trim().toLowerCase(Locale.ROOT);
         visible.clear();
-        for (GameRelease release : allReleases) {
-            if (typeFilter == TYPE_RELEASE && release.isPreview()) continue;
-            if (typeFilter == TYPE_PREVIEW && !release.isPreview()) continue;
-            boolean isDownloaded = downloads.downloaded(release.versionCode) != null;
-            if (statusFilter == STATUS_DOWNLOADED && !isDownloaded) continue;
-            if (statusFilter == STATUS_NOT_DOWNLOADED && isDownloaded) continue;
-            if (!query.isEmpty()
-                    && !release.displayName().toLowerCase(Locale.ROOT).contains(query)
-                    && !String.valueOf(release.versionCode).contains(query)) {
-                continue;
+        List<GameRelease> releases = sourceMode == SOURCE_DOWNLOADED ? local : sourceMode == SOURCE_VERSIONS ? history : catalog;
+        if (sourceMode != SOURCE_PLAY || signedIn) {
+            for (GameRelease release : releases) {
+                if (typeFilter == TYPE_RELEASE && release.isBeta()) continue;
+                if (typeFilter == TYPE_BETA && !release.isBeta()) continue;
+                if (sourceMode != SOURCE_DOWNLOADED) {
+                    boolean saved = downloadedFiles.containsKey(release.versionCode);
+                    if (statusFilter == STATUS_DOWNLOADED && !saved) continue;
+                    if (statusFilter == STATUS_NOT_DOWNLOADED && saved) continue;
+                }
+                if (!query.isEmpty() && !release.displayName().toLowerCase(Locale.ROOT).contains(query)
+                        && !String.valueOf(release.versionCode).contains(query)) continue;
+                visible.add(release);
             }
-            visible.add(release);
         }
         adapter.notifyDataSetChanged();
-        updateEmptyState();
+        count.setText(getResources().getQuantityString(R.plurals.game_download_version_count, visible.size(), visible.size()));
+        int filters = (typeFilter == TYPE_ALL ? 0 : 1) + (sourceMode != SOURCE_DOWNLOADED && statusFilter != STATUS_ALL ? 1 : 0);
+        filterButton.setText(filters == 0 ? getString(R.string.game_download_filters)
+                : getString(R.string.game_download_filters_active, filters));
+        updateState();
     }
 
-    private void updateEmptyState() {
-        if (emptyText == null) return;
-        boolean isEmpty = visible.isEmpty() && !(refreshing && allReleases.isEmpty());
-        empty.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
-        if (!isEmpty) return;
-        boolean signedIn = PlayClient.isSignedIn(this);
-        if (!signedIn) {
-            emptyText.setText(R.string.game_download_empty_signed_out);
-            emptyAction.setVisibility(View.VISIBLE);
-        } else {
-            CharSequence problem = status != null && status.getVisibility() == View.VISIBLE ? status.getText() : null;
-            if (allReleases.isEmpty() && !TextUtils.isEmpty(problem)) {
-                // The status line sits at the bottom of the side panel; with an empty list the reason
-                // belongs where the user looks, in the list area.
-                emptyText.setText(problem);
-            } else {
-                emptyText.setText(allReleases.isEmpty()
-                        ? R.string.game_download_empty_signed_in
-                        : R.string.game_download_empty_filtered);
-            }
+    private void updateState() {
+        if (emptyTitle == null) return;
+        boolean busy = sourceMode == SOURCE_VERSIONS ? historyRefreshing
+                : sourceMode == SOURCE_PLAY ? refreshing || (signedIn && loadingLocal) : loadingLocal;
+        progress.setVisibility(busy ? View.VISIBLE : View.GONE);
+        refreshButton.setEnabled(sourceMode == SOURCE_VERSIONS ? !historyRefreshing
+                : sourceMode == SOURCE_PLAY ? !refreshing && !loadingLocal && !changingBeta : !loadingLocal);
+        versionSource.setVisibility(sourceMode == SOURCE_VERSIONS ? View.VISIBLE : View.GONE);
+        betaRow.setVisibility(sourceMode == SOURCE_PLAY && signedIn && betaAvailable ? View.VISIBLE : View.GONE);
+        String message = sourceMode == SOURCE_VERSIONS ? historyError : sourceMode == SOURCE_PLAY ? catalogError : null;
+        boolean showError = !busy && !TextUtils.isEmpty(message);
+        status.setVisibility(showError && !visible.isEmpty() ? View.VISIBLE : View.GONE);
+        status.setText(showError ? message : "");
+        empty.setVisibility(visible.isEmpty() ? View.VISIBLE : View.GONE);
+        if (!visible.isEmpty()) return;
+        emptyAction.setVisibility(View.VISIBLE);
+        if (sourceMode == SOURCE_PLAY && !signedIn) {
+            emptyTitle.setText(R.string.game_download_empty_title_sign_in);
+            emptyText.setText(showError ? message : getString(R.string.game_download_empty_signed_out));
+            emptyAction.setText(R.string.game_download_google_sign_in);
+        } else if (busy) {
+            emptyTitle.setText(sourceMode == SOURCE_VERSIONS ? R.string.game_download_versions_loading
+                    : refreshing ? R.string.game_download_checking_play : R.string.game_download_loading_local);
+            emptyText.setText("");
             emptyAction.setVisibility(View.GONE);
+        } else if (hasFilters()) {
+            emptyTitle.setText(R.string.game_download_empty_title_filtered);
+            emptyText.setText(R.string.game_download_empty_filtered);
+            emptyAction.setText(R.string.game_download_filter_clear);
+        } else if (sourceMode == SOURCE_DOWNLOADED) {
+            emptyTitle.setText(R.string.game_download_empty_title_local);
+            emptyText.setText(R.string.game_download_empty_local);
+            emptyAction.setVisibility(View.GONE);
+        } else {
+            emptyTitle.setText(showError ? R.string.game_download_empty_title_error : R.string.game_download_empty_title_available);
+            emptyText.setText(showError ? message : getString(sourceMode == SOURCE_VERSIONS
+                    ? R.string.game_download_versions_empty : R.string.game_download_empty_signed_in));
+            emptyAction.setText(R.string.game_download_refresh);
         }
     }
 
-    private void setStatus(String text) {
-        status.setVisibility(TextUtils.isEmpty(text) ? View.GONE : View.VISIBLE);
-        status.setText(text);
-        updateEmptyState();
+    private void onEmptyAction() {
+        if (sourceMode == SOURCE_PLAY && !signedIn) onAccountClicked();
+        else if (hasFilters()) resetFilters();
+        else if (sourceMode != SOURCE_DOWNLOADED) reload();
+    }
+
+    private void importApk() {
+        apkImportLauncher.launch(StorageAccess.downloadsPicker(false));
     }
 
     private String describe(PlayException error) {
-        if (error == null) return null;
+        if (error == null) return getString(R.string.game_download_error_generic);
         switch (error.kind) {
-            case UNAUTHORIZED:
-                return getString(R.string.game_download_error_unauthorized);
-            case NOT_PURCHASED:
-                return getString(R.string.game_download_error_not_purchased);
-            case NOT_AVAILABLE:
-                return getString(R.string.game_download_error_not_available);
-            case RATE_LIMITED:
-                return getString(R.string.game_download_error_rate_limited);
-            case NETWORK:
-                return getString(R.string.game_download_error_network, String.valueOf(error.getMessage()));
-            default:
-                return getString(R.string.game_download_error_generic, String.valueOf(error.getMessage()));
+            case UNAUTHORIZED: return getString(R.string.game_download_error_unauthorized);
+            case NOT_PURCHASED: return getString(R.string.game_download_error_not_purchased);
+            case NOT_AVAILABLE: return getString(R.string.game_download_error_not_available);
+            case RATE_LIMITED: return getString(R.string.game_download_error_rate_limited);
+            case NETWORK: return getString(R.string.game_download_error_network);
+            default: return getString(R.string.game_download_error_generic);
         }
     }
-
-    // ---- Actions ----
 
     private void showVersionCodeDialog() {
         if (!requireSignIn()) return;
@@ -466,45 +693,41 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
         input.setTextColor(getColor(R.color.text_primary));
         input.setHintTextColor(getColor(R.color.text_secondary));
         FrameLayout container = new FrameLayout(this);
-        int padding = (int) (4 * getResources().getDisplayMetrics().density);
+        int padding = Math.round(UiKit.dp(this, 4));
         container.setPadding(padding, padding, padding, padding);
         container.addView(input);
-        new CustomAlertDialog(this)
+        CustomAlertDialog dialog = new CustomAlertDialog(this)
                 .setTitleText(getString(R.string.game_download_by_code))
                 .setMessage(getString(R.string.game_download_by_code_message))
                 .setCustomView(container)
-                .setPositiveButton(getString(R.string.game_download_download), v -> {
-                    long code;
-                    try {
-                        code = Long.parseLong(input.getText().toString().trim());
-                    } catch (NumberFormatException e) {
-                        Toast.makeText(this, R.string.game_download_by_code_invalid, Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    if (code <= 0) {
-                        Toast.makeText(this, R.string.game_download_by_code_invalid, Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    startDownload(code, null);
-                })
-                .setNegativeButton(getString(R.string.cancel), null)
-                .show();
+                .setPositiveButton(getString(R.string.game_download_download), null)
+                .setNegativeButton(getString(R.string.cancel), null);
+        dialog.show();
+        dialog.getPositiveButton().setOnClickListener(v -> {
+            long code;
+            try {
+                code = Long.parseLong(input.getText().toString().trim());
+                if (code <= 0) throw new NumberFormatException();
+            } catch (NumberFormatException error) {
+                input.setError(getString(R.string.game_download_by_code_invalid));
+                return;
+            }
+            if (!requireSignIn()) return;
+            dialog.dismiss();
+            resetFilters();
+            startDownload(code, null);
+        });
     }
 
-    private void startDownload(long versionCode, String versionName) {
+    private void startDownload(long code, String name) {
         if (!requireSignIn()) return;
-        downloads.start(versionCode, versionName);
-        boolean listed = false;
-        for (GameRelease release : allReleases) {
-            if (release.versionCode == versionCode) {
-                listed = true;
-                break;
-            }
+        if (sourceMode == SOURCE_DOWNLOADED) {
+            sourceMode = SOURCE_PLAY;
+            sources.setSelectedIndex(sourceMode, false);
         }
-        if (!listed) {
-            allReleases.add(0, new GameRelease(versionCode, versionName, 0, 0));
-            applyFilters();
-        }
+        downloads.start(code, name);
+        mergeTasks();
+        applyFilters();
     }
 
     private void install(GameRelease release) {
@@ -514,9 +737,8 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
             loadLocal();
             return;
         }
-        GameDownloads.Downloaded downloaded = downloads.downloaded(release.versionCode);
-        String name = downloaded != null && !TextUtils.isEmpty(downloaded.versionName)
-                ? downloaded.versionName : release.displayName();
+        GameDownloads.Downloaded item = downloadedFiles.get(release.versionCode);
+        String name = item != null && !TextUtils.isEmpty(item.versionName) ? item.versionName : release.displayName();
         apkImportManager.installDownloadedFiles(files, name);
     }
 
@@ -524,17 +746,12 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
         new CustomAlertDialog(this)
                 .setTitleText(getString(R.string.game_download_delete_title))
                 .setMessage(getString(R.string.game_download_delete_message, release.displayName()))
-                .setPositiveButton(getString(R.string.delete), v -> executor.execute(() -> {
+                .setPositiveButton(getString(R.string.delete), v -> dataExecutor.execute(() -> {
                     boolean deleted = downloads.delete(release.versionCode);
-                    List<GameRelease> releases = downloads.knownReleases();
                     runOnUiThread(() -> {
-                        if (isFinishing() || isDestroyed()) return;
-                        if (!deleted) {
-                            Toast.makeText(this, R.string.game_download_delete_failed, Toast.LENGTH_SHORT).show();
-                        }
-                        allReleases.clear();
-                        allReleases.addAll(releases);
-                        applyFilters();
+                        if (disposed || isFinishing() || isDestroyed()) return;
+                        if (!deleted) Toast.makeText(this, R.string.game_download_delete_failed, Toast.LENGTH_SHORT).show();
+                        loadLocal();
                     });
                 }))
                 .setNegativeButton(getString(R.string.cancel), null)
@@ -543,26 +760,40 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
 
     @Override
     public void onTaskChanged(GameDownloads.Task task) {
+        if (disposed || task.accountGeneration != accountGeneration || !current(accountGeneration)) return;
         if (task.state == GameDownloads.State.DONE) {
             loadLocal();
             return;
         }
-        for (int i = 0; i < visible.size(); i++) {
-            if (visible.get(i).versionCode == task.versionCode) {
-                adapter.notifyItemChanged(i, task);
-                return;
-            }
-        }
+        mergeTasks();
+        applyFilters();
     }
 
-    // ---- List ----
+    private void applySecondary(MaterialButton button) {
+        ColorStateList label = ColorStateList.valueOf(getColor(R.color.text_primary));
+        button.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.ui_default)));
+        button.setTextColor(label);
+        button.setIconTint(label);
+        personalization.applyGlassToView(button);
+    }
+
+    private void styleTag(TextView tag, int color) {
+        if (color == 0) {
+            UiKit.tintSoftAccent(tag, 6);
+            return;
+        }
+        GradientDrawable background = new GradientDrawable();
+        background.setCornerRadius(UiKit.dp(this, 6));
+        background.setColor(UiKit.alpha(color, UiKit.isDark(this) ? 38 : 25));
+        tag.setBackground(background);
+        tag.setTextColor(color);
+    }
 
     private final class ReleaseAdapter extends RecyclerView.Adapter<ReleaseHolder> {
         @NonNull
         @Override
         public ReleaseHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            return new ReleaseHolder(LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_game_download, parent, false));
+            return new ReleaseHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.item_game_download, parent, false));
         }
 
         @Override
@@ -583,8 +814,7 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
         final TextView latest;
         final TextView state;
         final TextView meta;
-        final MaterialButton delete;
-        final MaterialButton secondary;
+        final MaterialButton menu;
         final MaterialButton action;
         final View progressRow;
         final ProgressBar progressBar;
@@ -599,8 +829,7 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
             latest = view.findViewById(R.id.game_release_latest);
             state = view.findViewById(R.id.game_release_state);
             meta = view.findViewById(R.id.game_release_meta);
-            delete = view.findViewById(R.id.game_release_delete);
-            secondary = view.findViewById(R.id.game_release_secondary);
+            menu = view.findViewById(R.id.game_release_menu);
             action = view.findViewById(R.id.game_release_action);
             progressRow = view.findViewById(R.id.game_release_progress_row);
             progressBar = view.findViewById(R.id.game_release_progress);
@@ -609,97 +838,89 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
             progressBar.setProgressTintList(accentTint);
             progressBar.setIndeterminateTintList(accentTint);
             styleTag(latest, 0);
-            TooltipCompat.setTooltipText(delete, delete.getContentDescription());
-            TooltipCompat.setTooltipText(secondary, secondary.getContentDescription());
+            personalization.applyGlassToTree(view, GameDownloadActivity.this);
+            TooltipCompat.setTooltipText(menu, getString(R.string.game_download_version_actions));
         }
 
         void bind(GameRelease release, boolean first) {
             divider.setVisibility(first ? View.GONE : View.VISIBLE);
             GameDownloads.Task task = downloads.task(release.versionCode);
-            GameDownloads.Downloaded downloaded = downloads.downloaded(release.versionCode);
-            String versionName = downloaded != null && !TextUtils.isEmpty(downloaded.versionName)
-                    ? downloaded.versionName
-                    : (task != null && !TextUtils.isEmpty(task.versionName) ? task.versionName : release.versionName);
+            if (task != null && task.accountGeneration != accountGeneration) task = null;
+            GameDownloads.Downloaded item = downloadedFiles.get(release.versionCode);
+            String versionName = item != null && !TextUtils.isEmpty(item.versionName) ? item.versionName
+                    : task != null && !TextUtils.isEmpty(task.versionName) ? task.versionName : release.versionName;
             GameRelease shown = new GameRelease(release.versionCode, versionName, release.size, release.seenAt);
-
+            shown.channel = release.channel;
             name.setText(shown.displayName());
-            boolean knownName = !TextUtils.isEmpty(versionName);
-            type.setVisibility(knownName ? View.VISIBLE : View.GONE);
-            type.setText(shown.isPreview() ? R.string.game_download_type_preview : R.string.game_download_type_release);
-            styleTag(type, shown.isPreview() ? UiKit.ORANGE : 0);
-            latest.setVisibility(release.versionCode == latestVersionCode ? View.VISIBLE : View.GONE);
-
-            boolean installed = knownName && installedVersionNames.contains(versionName);
-            if (installed) {
-                state.setText(R.string.game_download_state_installed);
-                styleTag(state, 0);
-            } else if (downloaded != null) {
-                state.setText(R.string.game_download_state_downloaded);
-                styleTag(state, UiKit.BLUE);
-            } else {
-                state.setText(R.string.game_download_status_not_downloaded);
-                styleTag(state, null);
-            }
-
-            long size = downloaded != null && downloaded.size > 0 ? downloaded.size : release.size;
-            String metaText = getString(R.string.game_download_version_code, release.versionCode);
-            if (size > 0) metaText += " · " + Formatter.formatShortFileSize(GameDownloadActivity.this, size);
-            meta.setText(metaText);
-
+            type.setVisibility(TextUtils.isEmpty(versionName) ? View.GONE : View.VISIBLE);
+            type.setText(shown.isBeta() ? R.string.game_download_type_beta : R.string.game_download_type_release);
+            styleTag(type, shown.isBeta() ? UiKit.ORANGE : 0);
             boolean active = task != null && task.isActive();
             boolean failed = task != null && task.state == GameDownloads.State.FAILED;
+            boolean installed = !TextUtils.isEmpty(versionName) && installedVersionNames.contains(versionName);
+            latest.setVisibility(sourceMode == SOURCE_PLAY && release.versionCode == latestVersionCode
+                    && item == null && !installed ? View.VISIBLE : View.GONE);
+            state.setVisibility(!active && (installed || item != null) ? View.VISIBLE : View.GONE);
+            state.setText(installed ? R.string.game_download_state_installed : R.string.game_download_state_downloaded);
+            styleTag(state, installed ? 0 : UiKit.BLUE);
+            long size = item != null && item.size > 0 ? item.size : release.size;
+            String text = getString(R.string.game_download_version_code_short, release.versionCode);
+            if (size > 0) text += " · " + Formatter.formatShortFileSize(GameDownloadActivity.this, size);
+            meta.setText(text);
+            meta.setContentDescription(getString(R.string.game_download_version_code, release.versionCode));
             progressRow.setVisibility(active ? View.VISIBLE : View.GONE);
             error.setVisibility(failed ? View.VISIBLE : View.GONE);
-            delete.setVisibility(downloaded != null && !active ? View.VISIBLE : View.GONE);
-            secondary.setVisibility(View.GONE);
-
+            menu.setVisibility(!active && (item != null || failed) ? View.VISIBLE : View.GONE);
+            action.setEnabled(true);
             if (active) {
                 bindProgress(task);
                 action.setText(R.string.cancel);
                 applySecondary(action);
                 action.setOnClickListener(v -> downloads.cancel(release.versionCode));
-            } else if (downloaded != null) {
+            } else if (item != null) {
                 action.setText(R.string.install);
                 UiKit.applyPrimary(action);
                 action.setOnClickListener(v -> install(shown));
-                secondary.setVisibility(View.VISIBLE);
-                secondary.setOnClickListener(v -> startDownload(release.versionCode, versionName));
             } else {
-                action.setText(failed ? R.string.game_download_retry : R.string.game_download_download);
+                action.setText(!signedIn ? R.string.game_download_sign_in_short
+                        : failed ? R.string.game_download_retry : R.string.game_download_download);
                 UiKit.applyPrimary(action);
                 action.setOnClickListener(v -> startDownload(release.versionCode, versionName));
             }
-            if (failed) {
-                error.setText(task.errorKind != null
-                        ? describe(new PlayException(task.errorKind, task.error))
-                        : String.valueOf(task.error));
-            }
-            delete.setOnClickListener(v -> confirmDelete(release));
+            if (failed) error.setText(describe(new PlayException(task.errorKind != null ? task.errorKind : PlayException.Kind.UNKNOWN, "")));
+            menu.setOnClickListener(v -> {
+                PopupMenu actions = new PopupMenu(GameDownloadActivity.this, menu);
+                if (item != null) {
+                    if (signedIn) actions.getMenu().add(0, 1, 0, R.string.game_download_redownload);
+                    actions.getMenu().add(0, 2, 1, R.string.delete);
+                }
+                if (failed) actions.getMenu().add(0, 3, 2, R.string.game_download_dismiss_error);
+                actions.setOnMenuItemClickListener(option -> {
+                    if (option.getItemId() == 1) startDownload(release.versionCode, versionName);
+                    else if (option.getItemId() == 2) confirmDelete(shown);
+                    else if (option.getItemId() == 3) {
+                        downloads.dismiss(release.versionCode);
+                        loadLocal();
+                    } else return false;
+                    return true;
+                });
+                actions.show();
+            });
         }
 
         private void bindProgress(GameDownloads.Task task) {
-            switch (task.state) {
-                case QUEUED:
-                    progressBar.setIndeterminate(true);
-                    progressText.setText(R.string.game_download_queued);
-                    break;
-                case RESOLVING:
-                    progressBar.setIndeterminate(true);
-                    progressText.setText(R.string.game_download_resolving);
-                    break;
-                case VERIFYING:
-                    progressBar.setIndeterminate(true);
-                    progressText.setText(R.string.game_download_verifying);
-                    break;
-                default:
-                    progressBar.setIndeterminate(false);
-                    progressBar.setProgress(task.percent());
-                    progressText.setText(getString(R.string.game_download_progress,
-                            task.percent(),
-                            Formatter.formatShortFileSize(GameDownloadActivity.this, task.bytesDone),
-                            Formatter.formatShortFileSize(GameDownloadActivity.this, task.bytesTotal),
-                            Formatter.formatShortFileSize(GameDownloadActivity.this, task.bytesPerSecond)));
-                    break;
+            if (task.state == GameDownloads.State.QUEUED || task.state == GameDownloads.State.RESOLVING
+                    || task.state == GameDownloads.State.VERIFYING) {
+                progressBar.setIndeterminate(true);
+                progressText.setText(task.state == GameDownloads.State.QUEUED ? R.string.game_download_queued
+                        : task.state == GameDownloads.State.RESOLVING ? R.string.game_download_resolving : R.string.game_download_verifying);
+            } else {
+                progressBar.setIndeterminate(false);
+                progressBar.setProgress(task.percent());
+                progressText.setText(getString(R.string.game_download_progress, task.percent(),
+                        Formatter.formatShortFileSize(GameDownloadActivity.this, task.bytesDone),
+                        Formatter.formatShortFileSize(GameDownloadActivity.this, task.bytesTotal),
+                        Formatter.formatShortFileSize(GameDownloadActivity.this, task.bytesPerSecond)));
             }
         }
     }

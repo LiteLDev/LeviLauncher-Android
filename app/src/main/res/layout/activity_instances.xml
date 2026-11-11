@@ -118,25 +118,6 @@
                     app:iconSize="14dp"
                     app:icon="@drawable/ic_ui_upload" />
 
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="1dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_import_apk"
-                    style="@style/Widget.Levi.Button.Primary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="32dp"
-                    android:layout_marginStart="12dp"
-                    android:minHeight="32dp"
-                    android:paddingStart="14dp"
-                    android:paddingEnd="14dp"
-                    android:text="@string/import_apk"
-                    android:textSize="11sp"
-                    app:cornerRadius="16dp"
-                    app:iconPadding="6dp"
-                    app:iconSize="14dp"
-                    app:icon="@drawable/ic_ui_add" />
             </LinearLayout>
             </HorizontalScrollView>
         </LinearLayout>

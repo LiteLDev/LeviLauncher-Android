@@ -1,272 +1,312 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:paddingStart="16dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="8dp"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
-    <com.google.android.material.card.MaterialCardView
-        style="@style/Widget.Levi.Card"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:minHeight="40dp">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="18dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:maxLines="1"
-                        android:text="@string/game_download_title"
-                        android:textAppearance="@style/TextAppearance.Levi.PageTitle" />
-
-                    <TextView
-                        android:id="@+id/game_download_subtitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:ellipsize="end"
-                        android:maxLines="1"
-                        android:textAppearance="@style/TextAppearance.Levi.PageSubtitle" />
-                </LinearLayout>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/game_download_local_install"
-                    style="@style/Widget.Levi.Button.Secondary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="12dp"
-                    android:text="@string/game_download_local_install"
-                    app:icon="@drawable/ic_ui_upload" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/game_download_by_code"
-                    style="@style/Widget.Levi.Button.Icon"
-                    android:layout_marginStart="10dp"
-                    android:contentDescription="@string/game_download_by_code"
-                    app:icon="@drawable/ic_ui_code" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/game_download_refresh"
-                    style="@style/Widget.Levi.Button.Icon"
-                    android:layout_marginStart="10dp"
-                    android:contentDescription="@string/game_download_refresh"
-                    app:icon="@drawable/ic_ui_refresh" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/game_download_account"
-                    style="@style/Widget.Levi.Button.Primary"
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="10dp"
-                    android:text="@string/game_download_google_sign_in"
-                    app:icon="@drawable/ic_ui_person" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <EditText
-                    android:id="@+id/game_download_search"
-                    style="@style/Widget.Levi.Input"
-                    android:layout_width="0dp"
-                    android:layout_height="44dp"
-                    android:layout_weight="1"
-                    android:drawableStart="@drawable/ic_ui_search"
-                    android:hint="@string/download_ui_search_hint"
-                    android:imeOptions="actionSearch"
-                    android:importantForAutofill="no"
-                    android:inputType="text" />
-
-                <org.levimc.launcher.ui.widget.SegmentedControl
-                    android:id="@+id/game_download_type"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp" />
-
-                <org.levimc.launcher.ui.widget.SegmentedControl
-                    android:id="@+id/game_download_status_filter"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/game_download_preview_row"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_ui_strip"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingStart="14dp"
-                android:paddingEnd="10dp"
-                android:visibility="gone">
-
-                <TextView
-                    android:id="@+id/game_download_preview_text"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:paddingVertical="8dp"
-                    android:text="@string/game_download_preview_channel_hint"
-                    android:textAppearance="@style/TextAppearance.Levi.Caption" />
-
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:id="@+id/game_download_preview_switch"
-                    style="@style/Widget.Levi.Switch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:text="@string/game_download_preview_channel"
-                    android:textAppearance="@style/TextAppearance.Levi.Body"
-                    app:switchPadding="10dp" />
-            </LinearLayout>
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp">
 
             <TextView
-                android:id="@+id/game_download_status"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:textAppearance="@style/TextAppearance.Levi.Caption"
-                android:visibility="gone" />
+                android:textAppearance="@style/TextAppearance.Levi.Body"
+                android:text="@string/game_download_title"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:includeFontPadding="false"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:accessibilityHeading="true" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.Levi.Body"
+                android:text="@string/game_download_subtitle_signed_out"
+                android:id="@+id/game_download_subtitle"
+                android:textSize="11sp"
+                android:textColor="@color/text_secondary"
+                android:includeFontPadding="false"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:layout_marginTop="2dp" />
         </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/game_download_import_apk"
+            style="@style/Widget.Levi.Button.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:minHeight="36dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:text="@string/import_apk"
+            android:textSize="12sp"
+            app:icon="@drawable/ic_ui_add"
+            app:iconSize="16dp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/game_download_by_code"
+            style="@style/Widget.Levi.Button.Icon"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:minWidth="36dp"
+            android:minHeight="36dp"
+            android:layout_marginStart="6dp"
+            android:contentDescription="@string/game_download_by_code"
+            app:icon="@drawable/ic_ui_code"
+            app:iconPadding="6dp"
+            app:iconSize="18dp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textSize="12sp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/game_download_refresh"
+            style="@style/Widget.Levi.Button.Icon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:minWidth="36dp"
+            android:minHeight="36dp"
+            android:layout_marginStart="6dp"
+            android:contentDescription="@string/game_download_refresh"
+            app:icon="@drawable/ic_ui_refresh"
+            app:iconSize="18dp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/game_download_account"
+            style="@style/Widget.Levi.Button.Primary"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:minWidth="36dp"
+            android:minHeight="36dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:layout_marginStart="6dp"
+            android:text="@string/game_download_sign_in_short"
+            android:textSize="12sp"
+            android:contentDescription="@string/game_download_google_sign_in"
+            app:icon="@drawable/ic_ui_person"
+            app:iconPadding="6dp"
+            app:iconSize="18dp" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="8dp">
 
+        <EditText
+            android:id="@+id/game_download_search"
+            style="@style/Widget.Levi.Input"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:minHeight="36dp"
+            android:drawableStart="@drawable/ic_ui_search"
+            android:hint="@string/game_download_search_hint"
+            android:imeOptions="actionSearch|flagNoExtractUi"
+            android:importantForAutofill="no"
+            android:inputType="text" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/game_download_filters"
+            style="@style/Widget.Levi.Button.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:minHeight="36dp"
+            android:layout_marginStart="8dp"
+            android:text="@string/game_download_filters"
+            android:textSize="12sp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            app:icon="@drawable/ic_ui_filter"
+            app:iconSize="16dp" />
+    </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.Levi.Body"
+        android:id="@+id/game_download_status"
+        android:layout_marginTop="6dp"
+        android:textSize="12sp"
+        android:textColor="@color/text_secondary"
+        android:visibility="gone" />
     <com.google.android.material.card.MaterialCardView
         style="@style/Widget.Levi.Card"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="14dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:layout_marginTop="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <LinearLayout
+            <HorizontalScrollView
                 android:layout_width="match_parent"
-                android:layout_height="44dp"
-                android:background="@drawable/download_bg_table_head"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingHorizontal="16dp">
+                android:layout_height="40dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:fillViewport="true"
+                android:overScrollMode="never"
+                android:scrollbars="none">
 
-                <TextView
-                    style="@style/GameDownloadColumn"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:text="@string/download_ui_col_version" />
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
-                <TextView
-                    style="@style/GameDownloadColumn"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1.4"
-                    android:text="@string/download_ui_col_type" />
+                    <org.levimc.launcher.ui.widget.SegmentedControl
+                        android:id="@+id/game_download_sources"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp" />
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.Levi.Body"
+                        android:id="@+id/game_download_count"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:minWidth="48dp"
+                        android:gravity="end"
+                        android:singleLine="true"
+                        android:textSize="11sp"
+                        android:textColor="@color/text_secondary" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/game_download_version_source"
+                        style="@style/Widget.Levi.Button.Ghost"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:minHeight="32dp"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:text="@string/game_download_source_link"
+                        android:textSize="11sp"
+                        android:contentDescription="@string/game_download_version_source"
+                        android:visibility="gone"
+                        app:icon="@drawable/ic_ui_open_in_new"
+                        app:iconSize="14dp" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:id="@+id/game_download_beta_row"
+                        android:layout_marginStart="10dp"
+                        android:visibility="gone">
 
-                <TextView
-                    style="@style/GameDownloadColumn"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1.4"
-                    android:text="@string/download_ui_col_status" />
-
-                <TextView
-                    style="@style/GameDownloadColumn"
-                    android:layout_width="200dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="end"
-                    android:text="@string/download_ui_col_actions" />
-            </LinearLayout>
-
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/game_download_beta_switch"
+                            style="@style/Widget.Levi.Switch"
+                            android:layout_width="wrap_content"
+                            android:layout_height="32dp"
+                            android:minHeight="0dp"
+                            android:text="@string/game_download_beta_short"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_primary"
+                            android:contentDescription="@string/game_download_beta_channel_hint"
+                            app:switchPadding="6dp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </HorizontalScrollView>
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/divider" />
-
+            <ProgressBar
+                android:id="@+id/game_download_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:indeterminate="true"
+                android:indeterminateTint="@color/primary"
+                android:visibility="gone" />
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
-                android:minHeight="120dp">
+                android:layout_weight="1">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/game_download_recycler"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:clipToPadding="false"
-                    android:overScrollMode="never"
                     android:paddingBottom="4dp"
+                    android:overScrollMode="ifContentScrolls"
                     android:scrollbars="none" />
-
-                <ProgressBar
-                    android:id="@+id/game_download_progress"
-                    style="?android:attr/progressBarStyle"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_gravity="center"
-                    android:indeterminateTint="@color/primary"
-                    android:visibility="gone" />
-
-                <LinearLayout
+                <ScrollView
                     android:id="@+id/game_download_empty"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:padding="12dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fillViewport="true"
+                    android:overScrollMode="never"
+                    android:scrollbars="none"
                     android:visibility="gone">
 
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:contentDescription="@null"
-                        android:src="@drawable/ic_ui_cloud_download"
-                        app:tint="@color/ui_muted" />
-
-                    <TextView
-                        android:id="@+id/game_download_empty_text"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:maxWidth="360dp"
-                        android:textAppearance="@style/TextAppearance.Levi.Body"
-                        android:textColor="@color/text_secondary" />
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="16dp">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/game_download_empty_action"
-                        style="@style/Widget.Levi.Button.Primary"
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:layout_marginStart="16dp"
-                        android:text="@string/game_download_google_sign_in"
-                        app:icon="@drawable/ic_ui_person" />
-                </LinearLayout>
+                        <ImageView
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/ic_ui_cloud_download"
+                            app:tint="@color/text_secondary" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="@style/TextAppearance.Levi.Body"
+                            android:id="@+id/game_download_empty_title"
+                            android:layout_marginTop="10dp"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:gravity="center"
+                            android:includeFontPadding="false" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="@style/TextAppearance.Levi.Body"
+                            android:id="@+id/game_download_empty_text"
+                            android:layout_marginTop="6dp"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_secondary"
+                            android:gravity="center" />
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/game_download_empty_action"
+                            style="@style/Widget.Levi.Button.Primary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="36dp"
+                            android:minHeight="36dp"
+                            android:layout_marginTop="12dp"
+                            android:text="@string/game_download_google_sign_in"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+                </ScrollView>
             </FrameLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
