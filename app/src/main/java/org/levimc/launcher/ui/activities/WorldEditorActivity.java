@@ -126,8 +126,20 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
     }
 
     @Override
+    protected boolean avoidsCutoutWithoutShell() {
+        return false;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+            android.view.WindowManager.LayoutParams attributes = getWindow().getAttributes();
+            attributes.layoutInDisplayCutoutMode = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R
+                    ? android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+                    : android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+            getWindow().setAttributes(attributes);
+        }
         Object retained = getLastCustomNonConfigurationInstance();
         if (retained instanceof State) state = (State) retained;
         else {
@@ -289,6 +301,8 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
         status.setEllipsize(android.text.TextUtils.TruncateAt.END);
         root.addView(status, new LinearLayout.LayoutParams(-1, dp(24)));
         setContentView(root);
+        org.levimc.launcher.ui.widget.CutoutAvoider.attachToControls(root, header, mapPanel.getChildAt(0),
+                worldNbtButton, localPlayerButton, editorPanel, recordsPanel, status);
         tabs.addOnTabSelectedListener(
                 new TabLayout.OnTabSelectedListener() {
                     public void onTabSelected(TabLayout.Tab tab) {

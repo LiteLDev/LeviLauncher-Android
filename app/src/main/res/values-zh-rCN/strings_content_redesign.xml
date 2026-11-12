@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mods_empty_levimc">尚未安装 LeviMC 模组</string>
+    <string name="mods_empty_levimc_help">从 LeviMC 安装的模组会显示在这里。点击获取模组浏览目录。</string>
+    <string name="mods_empty_normal">尚未安装外部模组</string>
+    <string name="mods_empty_normal_help">从文件添加的模组会显示在这里。点击添加模组导入。</string>
+    <string name="content_import_here">直接导入</string>
+    <string name="content_import_here_hint">将一个或多个文件导入所选存储位置，无需启动 Minecraft。</string>
+    <string name="content_import_minecraft">启动并导入</string>
+    <string name="content_import_minecraft_hint">选择一个包或世界，打开 Minecraft 导入。</string>
+    <string name="content_import_single_file">请选择一个包或世界以使用 Minecraft 导入。</string>
+    <string name="content_ui_select">选择</string>
+    <string name="content_ui_clear_search">清除搜索</string>
+    <string name="content_category_count">%1$s %2$d</string>
+</resources>

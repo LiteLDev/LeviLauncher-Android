@@ -8,7 +8,6 @@ import android.os.Build;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -24,7 +23,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -48,6 +46,9 @@ import org.levimc.launcher.ui.adapter.WorldsAdapter;
 import org.levimc.launcher.ui.animation.DynamicAnim;
 import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
 import org.levimc.launcher.util.LauncherStorage;
+import org.levimc.launcher.ui.widget.ContentStorageSelector;
+import org.levimc.launcher.ui.widget.LauncherPopup;
+import org.levimc.launcher.ui.widget.UiKit;
 
 import android.provider.MediaStore;
 import android.provider.DocumentsContract;
@@ -152,7 +153,10 @@ public class ContentListActivity extends BaseActivity {
             currentStorageType = parseStorageType(savedType);
         }
 
-        if (savedInstanceState != null) pendingScreenshotPath = savedInstanceState.getString("pending_screenshot_path");
+        if (savedInstanceState != null) {
+            pendingScreenshotPath = savedInstanceState.getString("pending_screenshot_path");
+            currentStorageType = parseStorageType(savedInstanceState.getString("content_storage_type", currentStorageType.name()));
+        }
         setupActivityResultLaunchers();
         setupUI();
         restoreSelectionState(savedInstanceState);
@@ -300,7 +304,21 @@ public class ContentListActivity extends BaseActivity {
         });
         binding.selectButton.setOnClickListener(v -> enterSelectionMode());
         binding.selectionCancelButton.setOnClickListener(v -> exitSelectionMode());
-        binding.refreshButton.setOnClickListener(v -> loadContent());
+        UiKit.applyPrimary(binding.customFlatButton);
+        binding.emptyStateAction.setOnClickListener(v -> binding.searchEditText.setText(""));
+        binding.stripStorageValue.setOnClickListener(v -> ContentStorageSelector.show(
+                binding.stripStorageValue, versionManager.getSelectedVersion(), currentStorageType, type -> {
+                    exitSelectionMode();
+                    currentStorageType = type;
+                    getSharedPreferences("content_management", MODE_PRIVATE).edit()
+                            .putString("storage_type", type.name()).apply();
+                    worldsDirectory = getWorldsDirectoryForType(type);
+                    configureContentDirectories();
+                    updateInfoStrip();
+                    binding.contentRecyclerView.stopScroll();
+                    binding.contentRecyclerView.scrollToPosition(0);
+                    loadContent();
+                }));
         binding.sortButton.setOnClickListener(v -> showSortMenu());
         binding.selectAllButton.setOnClickListener(v -> selectAllVisible());
         binding.batchExportButton.setOnClickListener(v -> startBatchExport());
@@ -320,13 +338,9 @@ public class ContentListActivity extends BaseActivity {
                 ? ContentManagementActivity.instanceName(version) : getString(R.string.not_found_version));
         FeatureSettings.StorageType type = currentStorageType;
         if (version != null) type = LauncherStorage.normalizeContentStorageType(type, version.versionIsolation);
-        String label = switch (type) {
-            case INTERNAL -> getString(R.string.storage_internal);
-            case EXTERNAL -> getString(R.string.storage_external);
-            case VERSION_ISOLATION_INTERNAL -> getString(R.string.storage_version_isolation) + " (" + getString(R.string.storage_internal) + ")";
-            case VERSION_ISOLATION, VERSION_ISOLATION_EXTERNAL -> getString(R.string.storage_version_isolation) + " (" + getString(R.string.storage_external) + ")";
-        };
+        String label = ContentStorageSelector.label(this, type);
         binding.stripStorageValue.setText(label);
+        binding.stripStorageValue.setContentDescription(getString(R.string.content_ui_storage_location) + ": " + label);
     }
 
     private boolean supportsTimeSort() {
@@ -341,13 +355,14 @@ public class ContentListActivity extends BaseActivity {
     }
 
     private void updateSortLabel() {
-        binding.sortButton.setText(getString(R.string.content_ui_sort_format,
+        binding.sortButton.setContentDescription(getString(R.string.content_ui_sort_format,
                 getString(sortField == SORT_TIME ? R.string.content_ui_sort_time : R.string.content_ui_sort_name),
                 getString(sortAscending ? R.string.content_ui_sort_asc : R.string.content_ui_sort_desc)));
+        binding.sortButton.setText(sortField == SORT_TIME ? R.string.content_ui_sort_time : R.string.content_ui_sort_name);
     }
 
     private void showSortMenu() {
-        PopupMenu menu = new PopupMenu(this, binding.sortButton);
+        LauncherPopup menu = new LauncherPopup(binding.sortButton).section(getString(R.string.mods_sort));
         int fields = supportsTimeSort() ? 2 : 1;
         for (int field = 0; field < fields; field++) {
             for (int asc = 1; asc >= 0; asc--) {
@@ -355,21 +370,19 @@ public class ContentListActivity extends BaseActivity {
                 String label = getString(R.string.content_ui_sort_format,
                         getString(field == SORT_TIME ? R.string.content_ui_sort_time : R.string.content_ui_sort_name),
                         getString(asc == 1 ? R.string.content_ui_sort_asc : R.string.content_ui_sort_desc));
-                menu.getMenu().add(Menu.NONE, id, id, label);
+                menu.choice(id, label, field == sortField && (asc == 1) == sortAscending);
             }
         }
-        menu.setOnMenuItemClickListener(item -> {
-            sortField = item.getItemId() / 2;
-            sortAscending = item.getItemId() % 2 == 0;
+        menu.onSelect(id -> {
+            sortField = id / 2;
+            sortAscending = id % 2 == 0;
             getSharedPreferences("content_management", MODE_PRIVATE).edit()
                     .putInt("sort_field_" + contentType, sortField)
                     .putBoolean("sort_asc_" + contentType, sortAscending)
                     .apply();
             updateSortLabel();
             filterContent(binding.searchEditText.getText().toString());
-            return true;
-        });
-        menu.show();
+        }).show();
     }
 
     private <T> void applySort(List<T> items, java.util.function.Function<T, String> name, java.util.function.Function<T, File> file) {
@@ -403,26 +416,26 @@ public class ContentListActivity extends BaseActivity {
 
     private void filterContent(String query) {
         String rawQuery = query == null ? "" : query.trim();
-        String lowerQuery = rawQuery.toLowerCase();
+        String lowerQuery = rawQuery.toLowerCase(java.util.Locale.ROOT);
 
         if (contentType == TYPE_WORLDS && worldsAdapter != null) {
             List<WorldItem> filtered = lowerQuery.isEmpty() ? new ArrayList<>(allWorlds) : allWorlds.stream()
-                    .filter(world -> world.getWorldName() != null && world.getWorldName().toLowerCase().contains(lowerQuery))
+                    .filter(world -> world.getWorldName() != null && world.getWorldName().toLowerCase(java.util.Locale.ROOT).contains(lowerQuery))
                     .collect(Collectors.toList());
             applySort(filtered, WorldItem::getWorldName, WorldItem::getFile);
             worldsAdapter.updateWorlds(filtered);
             updateListState(filtered.size(), allWorlds.size(), rawQuery);
         } else if (contentType == TYPE_SERVERS && serversAdapter != null) {
             List<ServerItem> filtered = lowerQuery.isEmpty() ? new ArrayList<>(allServers) : allServers.stream()
-                    .filter(server -> (server.name != null && server.name.toLowerCase().contains(lowerQuery)) ||
-                            (server.ip != null && server.ip.toLowerCase().contains(lowerQuery)))
+                    .filter(server -> (server.name != null && server.name.toLowerCase(java.util.Locale.ROOT).contains(lowerQuery)) ||
+                            (server.ip != null && server.ip.toLowerCase(java.util.Locale.ROOT).contains(lowerQuery)))
                     .collect(Collectors.toList());
             applySort(filtered, server -> server.name, null);
             serversAdapter.updateData(filtered);
             updateListState(filtered.size(), allServers.size(), rawQuery);
         } else if (isPackType() && packsAdapter != null) {
             List<ResourcePackItem> filtered = lowerQuery.isEmpty() ? new ArrayList<>(allPacks) : allPacks.stream()
-                    .filter(pack -> pack.getPackName() != null && pack.getPackName().toLowerCase().contains(lowerQuery))
+                    .filter(pack -> pack.getPackName() != null && pack.getPackName().toLowerCase(java.util.Locale.ROOT).contains(lowerQuery))
                     .collect(Collectors.toList());
             applySort(filtered, ResourcePackItem::getPackName, ResourcePackItem::getFile);
             packsAdapter.updateResourcePacks(filtered);
@@ -958,7 +971,7 @@ public class ContentListActivity extends BaseActivity {
     }
 
     private void openCustomFlatWorld() {
-        if (worldsDirectory == null || !worldsDirectory.exists()) {
+        if (worldsDirectory == null || (!worldsDirectory.isDirectory() && !worldsDirectory.mkdirs())) {
             Toast.makeText(this, R.string.worlds_directory_unavailable, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -1256,6 +1269,7 @@ public class ContentListActivity extends BaseActivity {
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("pending_screenshot_path", pendingScreenshotPath);
+        outState.putString("content_storage_type", currentStorageType.name());
         outState.putBoolean(STATE_SELECTION_MODE, isSelectionMode());
         if (contentType == TYPE_WORLDS && worldsAdapter != null) outState.putStringArrayList(STATE_SELECTED_PATHS, worldsAdapter.getSelectedPaths());
         else if (isPackType() && packsAdapter != null) outState.putStringArrayList(STATE_SELECTED_PATHS, packsAdapter.getSelectedPaths());
@@ -1337,10 +1351,13 @@ public class ContentListActivity extends BaseActivity {
 
     private void updateListState(int visibleCount, int totalCount, String query) {
         binding.itemCountText.setText(String.valueOf(totalCount));
+        binding.selectButton.setEnabled(totalCount > 0);
+        binding.emptyStateAction.setVisibility(query != null && !query.trim().isEmpty() ? View.VISIBLE : View.GONE);
         boolean empty = visibleCount == 0;
         binding.emptyState.setVisibility(empty ? View.VISIBLE : View.GONE);
         binding.contentRecyclerView.setVisibility(empty ? View.GONE : View.VISIBLE);
         if (!empty) return;
+        binding.contentRecyclerView.stopScroll();
 
         if (query != null && !query.isEmpty()) {
             binding.emptyStateTitle.setText(getString(R.string.no_search_results, query));
@@ -1688,6 +1705,7 @@ public class ContentListActivity extends BaseActivity {
         if (skipInitialResumeRefresh) {
             skipInitialResumeRefresh = false;
         } else {
+            configureContentDirectories();
             updateInfoStrip();
             loadContent();
         }
@@ -1699,6 +1717,7 @@ public class ContentListActivity extends BaseActivity {
         if (structureExtractor != null) {
             structureExtractor.shutdown();
         }
+        if (screenshotsAdapter != null) screenshotsAdapter.shutdown();
     }
 
     private static final class ContentListViews {
@@ -1708,7 +1727,6 @@ public class ContentListActivity extends BaseActivity {
         final TextView itemCountText;
         final MaterialButton customFlatButton;
         final MaterialButton selectButton;
-        final MaterialButton refreshButton;
         final LinearLayout selectionToolbar;
         final MaterialButton selectionCancelButton;
         final TextView selectionCountText;
@@ -1722,7 +1740,8 @@ public class ContentListActivity extends BaseActivity {
         final TextView stripInstanceValue;
         final TextView stripStorageValue;
         final RecyclerView contentRecyclerView;
-        final LinearLayout emptyState;
+        final View emptyState;
+        final MaterialButton emptyStateAction;
         final ImageView emptyStateIcon;
         final TextView emptyStateTitle;
         final TextView emptyStateMessage;
@@ -1735,7 +1754,6 @@ public class ContentListActivity extends BaseActivity {
             itemCountText = a.findViewById(R.id.item_count_text);
             customFlatButton = a.findViewById(R.id.custom_flat_button);
             selectButton = a.findViewById(R.id.select_button);
-            refreshButton = a.findViewById(R.id.refresh_button);
             selectionToolbar = a.findViewById(R.id.selection_toolbar);
             selectionCancelButton = a.findViewById(R.id.selection_cancel_button);
             selectionCountText = a.findViewById(R.id.selection_count_text);
@@ -1750,6 +1768,7 @@ public class ContentListActivity extends BaseActivity {
             stripStorageValue = a.findViewById(R.id.strip_storage_value);
             contentRecyclerView = a.findViewById(R.id.content_recycler_view);
             emptyState = a.findViewById(R.id.empty_state);
+            emptyStateAction = a.findViewById(R.id.empty_state_action);
             emptyStateIcon = a.findViewById(R.id.empty_state_icon);
             emptyStateTitle = a.findViewById(R.id.empty_state_title);
             emptyStateMessage = a.findViewById(R.id.empty_state_message);

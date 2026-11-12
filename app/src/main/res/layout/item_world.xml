@@ -1,132 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/world_card"
-    android:layout_width="match_parent"
-    android:layout_height="84dp"
-    android:layout_marginHorizontal="4dp"
-    android:layout_marginVertical="3dp"
-    android:background="@drawable/bg_content_item"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:paddingHorizontal="10dp"
-    android:paddingVertical="8dp">
-
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/world_icon"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:background="@drawable/content_bg_thumb"
-        android:contentDescription="@null"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_world"
-        app:shapeAppearanceOverlay="@style/LeviContentThumbnailShape" />
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_marginStart="12dp"
-        android:layout_weight="1"
-        android:gravity="center_vertical"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/world_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:fontFamily="@font/misans"
-            android:maxLines="1"
-            android:text="@string/world_name_placeholder"
-            android:textColor="@color/text_primary"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_ui_storage"
-                app:tint="@color/text_secondary" />
-
-            <TextView
-                android:id="@+id/world_description"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@string/world_game_mode_survival_placeholder"
-                android:textAppearance="@style/TextAppearance.Levi.Caption" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/world_card" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginHorizontal="0dp" android:layout_marginVertical="4dp" android:background="@drawable/bg_content_item" android:gravity="center_vertical" android:orientation="horizontal" android:paddingHorizontal="12dp" android:paddingVertical="10dp" android:minHeight="76dp" android:foreground="?attr/selectableItemBackground" android:clickable="true" android:focusable="true">
+    <com.google.android.material.imageview.ShapeableImageView android:id="@+id/world_icon" android:layout_width="48dp" android:layout_height="48dp" android:background="@drawable/content_bg_thumb" android:contentDescription="@null" android:scaleType="centerCrop" android:src="@drawable/ic_world" app:shapeAppearanceOverlay="@style/LeviContentThumbnailShape" />
+    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_weight="1" android:gravity="center_vertical" android:orientation="vertical">
+        <TextView android:id="@+id/world_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:ellipsize="end" android:fontFamily="@font/misans" android:maxLines="2" android:text="@string/world_name_placeholder" android:textColor="@color/text_primary" android:textSize="14sp" android:textStyle="bold" android:includeFontPadding="false" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:gravity="center_vertical" android:orientation="horizontal">
+            <ImageView android:layout_width="15dp" android:layout_height="15dp" android:contentDescription="@null" android:src="@drawable/ic_ui_storage" app:tint="@color/text_secondary" />
+            <TextView android:id="@+id/world_description" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="5dp" android:ellipsize="end" android:maxLines="1" android:text="@string/world_game_mode_survival_placeholder" android:textAppearance="@style/TextAppearance.Levi.Caption" android:includeFontPadding="false" android:textSize="11sp" />
         </LinearLayout>
-
-        <!-- v1.6.1 stacks description and last-played on separate lines. -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="15dp"
-                android:layout_height="15dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_ui_schedule"
-                app:tint="@color/text_secondary" />
-
-            <TextView
-                android:id="@+id/world_last_played"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@string/world_last_played_placeholder"
-                android:textAppearance="@style/TextAppearance.Levi.Caption"
-                android:textSize="11sp" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:gravity="center_vertical" android:orientation="horizontal">
+            <ImageView android:layout_width="15dp" android:layout_height="15dp" android:contentDescription="@null" android:src="@drawable/ic_ui_schedule" app:tint="@color/text_secondary" />
+            <TextView android:id="@+id/world_last_played" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="5dp" android:ellipsize="end" android:maxLines="1" android:text="@string/world_last_played_placeholder" android:textAppearance="@style/TextAppearance.Levi.Caption" android:textSize="11sp" android:includeFontPadding="false" />
         </LinearLayout>
     </LinearLayout>
-
-    <ImageButton
-        android:id="@+id/world_edit_button"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@drawable/content_bg_icon_button"
-        android:contentDescription="@string/edit"
-        android:padding="9dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_edit"
-        android:tooltipText="@string/edit"
-        app:tint="@color/text_primary" />
-
-    <ImageButton
-        android:id="@+id/world_overflow_button"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@drawable/content_bg_icon_button"
-        android:contentDescription="@string/more_actions"
-        android:padding="8dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/ic_ui_more"
-        android:tooltipText="@string/more_actions"
-        app:tint="@color/text_primary" />
-
-    <ImageView
-        android:id="@+id/world_selection_indicator"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:background="@drawable/content_bg_icon_button"
-        android:contentDescription="@string/selected"
-        android:padding="7dp"
-        android:src="@drawable/ic_check"
-        android:visibility="gone"
-        app:tint="@color/accent_text" />
+    <ImageButton android:id="@+id/world_edit_button" android:layout_width="36dp" android:layout_height="36dp" android:background="@drawable/content_bg_icon_button" android:contentDescription="@string/edit" android:padding="8dp" android:scaleType="fitCenter" android:src="@drawable/ic_edit" android:tooltipText="@string/edit" app:tint="@color/text_primary" android:layout_marginStart="4dp" />
+    <ImageButton android:id="@+id/world_overflow_button" android:layout_width="36dp" android:layout_height="36dp" android:background="@drawable/content_bg_icon_button" android:contentDescription="@string/more_actions" android:padding="8dp" android:scaleType="fitCenter" android:src="@drawable/ic_ui_more" android:tooltipText="@string/more_actions" app:tint="@color/text_primary" android:layout_marginStart="4dp" />
+    <ImageView android:id="@+id/world_selection_indicator" android:layout_width="36dp" android:layout_height="36dp" android:background="@drawable/content_bg_icon_button" android:contentDescription="@string/selected" android:padding="7dp" android:src="@drawable/ic_check" android:visibility="gone" app:tint="@color/accent_text" />
 </LinearLayout>

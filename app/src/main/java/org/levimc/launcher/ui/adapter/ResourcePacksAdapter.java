@@ -146,6 +146,7 @@ public class ResourcePacksAdapter extends RecyclerView.Adapter<ResourcePacksAdap
             }
         });
         holder.packDescription.setText(pack.getDescription());
+        holder.packDescription.setVisibility(android.text.TextUtils.isEmpty(pack.getDescription()) ? View.GONE : View.VISIBLE);
         holder.itemView.setActivated(selected);
         holder.exportButton.setVisibility(selectionMode ? View.GONE : View.VISIBLE);
         holder.overflowButton.setVisibility(selectionMode ? View.GONE : View.VISIBLE);

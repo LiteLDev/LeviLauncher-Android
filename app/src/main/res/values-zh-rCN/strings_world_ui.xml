@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="content_import_preparing">正在准备 Minecraft 导入…</string>
+    <string name="content_import_failed">无法准备导入：%1$s</string>
+    <string name="world_workspace_title">世界编辑器</string>
+    <string name="world_workspace_map">地图</string>
+    <string name="world_workspace_nbt">NBT</string>
+    <string name="world_workspace_structures">结构</string>
+    <string name="world_workspace_tools">工具</string>
+    <string name="world_workspace_world_nbt">世界 NBT</string>
+    <string name="world_workspace_player_nbt">玩家 NBT</string>
+    <string name="flat_game_survival">生存</string>
+    <string name="flat_game_creative">创造</string>
+    <string name="flat_game_adventure">冒险</string>
+</resources>

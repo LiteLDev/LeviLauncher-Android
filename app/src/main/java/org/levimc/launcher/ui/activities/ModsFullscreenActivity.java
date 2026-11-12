@@ -223,7 +223,6 @@ public class ModsFullscreenActivity extends BaseActivity {
     private void resetFilters() {
         statusFilter = STATUS_ALL;
         sortMode = SORT_NONE;
-        filterTabs.setSelectedIndex(TAB_ALL, false);
         searchInput.setText("");
         updateSortHeader();
         applyFilters();
@@ -253,11 +252,13 @@ public class ModsFullscreenActivity extends BaseActivity {
         String query = searchInput.getText().toString().trim().toLowerCase(Locale.ROOT);
         int tab = filterTabs.getSelectedIndex();
         List<Mod> shown = new ArrayList<>();
+        int categoryCount = 0;
         for (Mod mod : allMods) {
-            if (statusFilter == STATUS_ENABLED && !mod.isEnabled()) continue;
-            if (statusFilter == STATUS_DISABLED && mod.isEnabled()) continue;
             if (tab == TAB_NORMAL && isLeviMcMod(mod)) continue;
             if (tab == TAB_LEVIMC && !isLeviMcMod(mod)) continue;
+            categoryCount++;
+            if (statusFilter == STATUS_ENABLED && !mod.isEnabled()) continue;
+            if (statusFilter == STATUS_DISABLED && mod.isEnabled()) continue;
             if (!query.isEmpty() && !matches(mod, query)) continue;
             shown.add(mod);
         }
@@ -276,9 +277,18 @@ public class ModsFullscreenActivity extends BaseActivity {
         boolean empty = shown.isEmpty();
         modsRecycler.setVisibility(empty ? View.GONE : View.VISIBLE);
         emptyView.setVisibility(empty ? View.VISIBLE : View.GONE);
-        emptyTitle.setText(loading ? R.string.mods_loading : allMods.isEmpty() ? R.string.mods_empty : R.string.mods_empty_filtered);
-        emptyText.setText(loading ? "" : getString(allMods.isEmpty() ? R.string.mods_empty_help : R.string.mods_empty_filter_help));
-        emptyAction.setVisibility(loading || allMods.isEmpty() ? View.GONE : View.VISIBLE);
+        int title = R.string.mods_empty_filtered;
+        int help = R.string.mods_empty_filter_help;
+        if (categoryCount == 0) {
+            title = tab == TAB_LEVIMC ? R.string.mods_empty_levimc
+                    : tab == TAB_NORMAL ? R.string.mods_empty_normal : R.string.mods_empty;
+            help = tab == TAB_LEVIMC ? R.string.mods_empty_levimc_help
+                    : tab == TAB_NORMAL ? R.string.mods_empty_normal_help : R.string.mods_empty_help;
+        }
+        emptyTitle.setText(loading ? R.string.mods_loading : title);
+        emptyText.setText(loading ? "" : getString(help));
+        boolean hasFilters = !query.isEmpty() || statusFilter != STATUS_ALL;
+        emptyAction.setVisibility(!loading && categoryCount > 0 && hasFilters ? View.VISIBLE : View.GONE);
         emptyAction.setText(R.string.mods_clear_filters);
     }
 

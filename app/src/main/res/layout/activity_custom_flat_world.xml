@@ -1,320 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <ImageView
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_marginEnd="12dp"
-                android:contentDescription="@string/custom_flat_world"
-                android:padding="5dp"
-                android:src="@drawable/ic_world"
-                android:tint="@color/primary" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/misans"
-                    android:text="@string/custom_flat_world"
-                    android:textColor="@color/on_surface"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:fontFamily="@font/misans"
-                    android:text="@string/custom_flat_world_subtitle"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp" />
-
-            </LinearLayout>
-
-            <FrameLayout
-                android:layout_width="184dp"
-                android:layout_height="44dp">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/create_world_button"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:fontFamily="@font/misans"
-                    android:ellipsize="end"
-                    android:gravity="center"
-                    android:maxLines="1"
-                    android:paddingHorizontal="16dp"
-                    android:text="@string/create_world"
-                    android:textAllCaps="false"
-                    android:textColor="@color/on_primary"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    app:backgroundTint="@color/primary"
-                    app:cornerRadius="10dp"
-                    app:icon="@drawable/ic_check"
-                    app:iconGravity="textStart"
-                    app:iconPadding="8dp"
-                    app:iconTint="@color/on_primary"
-                    />
-
-                <ProgressBar
-                    android:id="@+id/loading_progress"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center"
-                    android:visibility="gone" />
-
-            </FrameLayout>
-
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:paddingStart="16dp" android:paddingEnd="16dp" android:paddingTop="8dp" android:paddingBottom="8dp" android:focusable="true" android:focusableInTouchMode="true">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:minHeight="40dp">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:text="@string/custom_flat_world" android:textAppearance="@style/TextAppearance.Levi.Body" android:includeFontPadding="false" android:textSize="18sp" android:textStyle="bold" android:singleLine="true" android:ellipsize="end" android:layout_weight="1" />
+            <com.google.android.material.button.MaterialButton android:layout_width="wrap_content" android:layout_height="36dp" android:id="@+id/create_world_button" style="@style/Widget.Levi.Button.Primary" android:minHeight="36dp" android:text="@string/create_world" android:textSize="12sp" android:paddingStart="14dp" android:paddingEnd="14dp" app:icon="@drawable/ic_check" />
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="14dp"
-            android:layout_weight="1"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginEnd="7dp"
-                android:layout_weight="0.36"
-                android:background="@drawable/bg_rounded_card"
-                android:elevation="2dp"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/misans"
-                    android:text="@string/world_settings"
-                    android:textColor="@color/on_surface"
-                    android:textSize="17sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="3dp"
-                    android:fontFamily="@font/misans"
-                    android:text="@string/world_settings_hint"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="11sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="18dp"
-                    android:fontFamily="@font/misans"
-                    android:text="@string/world_name"
-                    android:textColor="@color/on_surface"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <EditText
-                    android:id="@+id/world_name_edit"
-                    android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    android:layout_marginTop="6dp"
-                    android:background="@drawable/bg_edit_text"
-                    android:fontFamily="@font/misans"
-                    android:hint="@string/enter_world_name"
-                    android:inputType="text"
-                    android:maxLines="1"
-                    android:paddingHorizontal="12dp"
-                    android:textColor="@color/on_surface"
-                    android:textColorHint="@color/text_secondary"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="@font/misans"
-                    android:text="@string/biome"
-                    android:textColor="@color/on_surface"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <Spinner
-                    android:id="@+id/biome_spinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    android:layout_marginTop="6dp"
-                    android:background="@drawable/bg_edit_text"
-                    android:popupBackground="@color/surface"
-                    android:spinnerMode="dropdown" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:fontFamily="@font/misans"
-                    android:text="@string/game_mode"
-                    android:textColor="@color/on_surface"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <Spinner
-                    android:id="@+id/game_mode_spinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="44dp"
-                    android:layout_marginTop="6dp"
-                    android:background="@drawable/bg_edit_text"
-                    android:popupBackground="@color/surface"
-                    android:spinnerMode="dropdown" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginStart="7dp"
-                android:layout_weight="0.64"
-                android:background="@drawable/bg_rounded_card"
-                android:elevation="2dp"
-                android:orientation="vertical"
-                android:padding="14dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/misans"
-                            android:text="@string/layers_title"
-                            android:textColor="@color/on_surface"
-                            android:textSize="17sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/layers_summary"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="3dp"
-                            android:fontFamily="@font/misans"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="11sp" />
-
+        <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:orientation="horizontal" android:gravity="center_vertical" android:layout_weight="1" android:layout_marginTop="8dp" android:baselineAligned="false">
+            <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="0.34" style="@style/Widget.Levi.ContentCard">
+                <ScrollView android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="false" android:scrollbars="none" android:overScrollMode="ifContentScrolls">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="12dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/world_settings" android:textAppearance="@style/TextAppearance.Levi.Body" android:includeFontPadding="false" android:textSize="14sp" android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/world_name" android:textAppearance="@style/TextAppearance.Levi.Body" android:includeFontPadding="false" android:textSize="11sp" android:textColor="@color/text_secondary" android:layout_marginTop="10dp" />
+                        <EditText android:layout_width="match_parent" android:layout_height="36dp" android:id="@+id/world_name_edit" style="@style/Widget.Levi.Input" android:minHeight="36dp" android:textSize="13sp" android:layout_marginTop="5dp" android:hint="@string/enter_world_name" android:imeOptions="actionDone|flagNoExtractUi" android:inputType="text" android:importantForAutofill="no" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/biome" android:textAppearance="@style/TextAppearance.Levi.Body" android:includeFontPadding="false" android:textSize="11sp" android:textColor="@color/text_secondary" android:layout_marginTop="10dp" />
+                        <TextView android:layout_width="match_parent" android:layout_height="36dp" android:id="@+id/biome_spinner" style="@style/CatalogSelect" android:minHeight="36dp" android:textSize="13sp" android:layout_marginTop="5dp" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/game_mode" android:textAppearance="@style/TextAppearance.Levi.Body" android:includeFontPadding="false" android:textSize="11sp" android:textColor="@color/text_secondary" android:layout_marginTop="10dp" />
+                        <TextView android:layout_width="match_parent" android:layout_height="36dp" android:id="@+id/game_mode_spinner" style="@style/CatalogSelect" android:minHeight="36dp" android:textSize="13sp" android:layout_marginTop="5dp" />
                     </LinearLayout>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/add_layer_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:fontFamily="@font/misans"
-                        android:minWidth="0dp"
-                        android:text="@string/add_layer_compact"
-                        android:textAllCaps="false"
-                        android:textColor="@color/on_primary"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        app:backgroundTint="@color/primary"
-                        app:cornerRadius="9dp"
-                        app:icon="@drawable/ic_add"
-                        app:iconGravity="textStart"
-                        app:iconSize="18dp"
-                        app:iconTint="@color/on_primary" />
-
+                </ScrollView>
+            </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.card.MaterialCardView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="0.66" android:layout_marginStart="12dp" style="@style/Widget.Levi.ContentCard">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="10dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:minHeight="32dp">
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:orientation="vertical" android:layout_weight="1">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/layers_title" android:textAppearance="@style/TextAppearance.Levi.Body" android:includeFontPadding="false" android:textSize="14sp" android:textStyle="bold" />
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:id="@+id/layers_summary" android:textAppearance="@style/TextAppearance.Levi.Caption" android:textSize="11sp" android:includeFontPadding="false" android:layout_marginTop="2dp" />
+                        </LinearLayout>
+                        <com.google.android.material.button.MaterialButton android:layout_width="wrap_content" android:layout_height="32dp" android:id="@+id/add_layer_button" style="@style/Widget.Levi.Button.Secondary" android:minHeight="32dp" android:text="@string/add_layer_compact" android:textSize="12sp" android:paddingStart="12dp" android:paddingEnd="12dp" app:icon="@drawable/ic_ui_add" app:iconSize="16dp" />
+                    </LinearLayout>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="6dp" android:background="@color/divider" />
+                    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:layout_marginTop="6dp">
+                        <androidx.recyclerview.widget.RecyclerView android:layout_width="match_parent" android:layout_height="match_parent" android:id="@+id/layers_recycler_view" android:clipToPadding="false" android:scrollbars="none" android:overScrollMode="ifContentScrolls" />
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:id="@+id/empty_layers_state" android:gravity="center" android:padding="12dp" android:visibility="gone">
+                            <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_minecraft_cube" android:importantForAccessibility="no" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/no_layers_title" android:textAppearance="@style/TextAppearance.Levi.Body" android:includeFontPadding="false" android:textSize="13sp" android:textStyle="bold" android:layout_marginTop="8dp" />
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/no_layers_hint" android:textAppearance="@style/TextAppearance.Levi.Body" android:includeFontPadding="false" android:textSize="11sp" android:textColor="@color/text_secondary" android:gravity="center" android:layout_marginTop="4dp" />
+                        </LinearLayout>
+                    </FrameLayout>
                 </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="12dp"
-                    android:background="@color/divider" />
-
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_weight="1">
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/layers_recycler_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:clipToPadding="false"
-                        android:paddingBottom="4dp" />
-
-                    <LinearLayout
-                        android:id="@+id/empty_layers_state"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        android:padding="24dp"
-                        android:visibility="gone">
-
-                        <ImageView
-                            android:layout_width="42dp"
-                            android:layout_height="42dp"
-                            android:alpha="0.55"
-                            android:contentDescription="@string/no_layers_title"
-                            android:padding="6dp"
-                            android:src="@drawable/ic_minecraft_cube" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:fontFamily="@font/misans"
-                            android:text="@string/no_layers_title"
-                            android:textColor="@color/on_surface"
-                            android:textSize="14sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="3dp"
-                            android:fontFamily="@font/misans"
-                            android:gravity="center"
-                            android:text="@string/no_layers_hint"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="11sp" />
-
-                    </LinearLayout>
-
-                </FrameLayout>
-
-            </LinearLayout>
-
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
-
     </LinearLayout>
-
+    <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent" android:id="@+id/loading_progress" android:background="#60000000" android:clickable="true" android:focusable="true" android:visibility="gone">
+        <ProgressBar android:layout_width="32dp" android:layout_height="32dp" android:layout_gravity="center" />
+    </FrameLayout>
 </FrameLayout>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="mods_empty_levimc">No LeviMC mods installed</string>
+    <string name="mods_empty_levimc_help">Mods installed from LeviMC appear here. Use Get mods to browse the catalog.</string>
+    <string name="mods_empty_normal">No external mods installed</string>
+    <string name="mods_empty_normal_help">Mods added from files appear here. Use Add mod to import one.</string>
+    <string name="content_import_here">Import here</string>
+    <string name="content_import_here_hint">Import one or more files into the selected storage without launching Minecraft.</string>
+    <string name="content_import_minecraft">Launch &amp; import</string>
+    <string name="content_import_minecraft_hint">Choose one pack or world and open Minecraft to import it.</string>
+    <string name="content_import_single_file">Choose one pack or world to import using Minecraft.</string>
+    <string name="content_ui_select">Select</string>
+    <string name="content_ui_clear_search">Clear search</string>
+    <string name="content_category_count">%1$s %2$d</string>
+</resources>

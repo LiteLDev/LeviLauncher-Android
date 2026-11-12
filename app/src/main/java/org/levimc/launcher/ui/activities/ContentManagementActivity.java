@@ -6,29 +6,29 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.Menu;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.widget.PopupMenu;
 
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.content.ContentImporter;
 import org.levimc.launcher.core.content.ContentManager;
-import org.levimc.launcher.core.content.ResourcePackManager;
 import org.levimc.launcher.core.content.ScreenshotManager;
 import org.levimc.launcher.core.content.ServerManager;
 import org.levimc.launcher.core.versions.GameVersion;
 import org.levimc.launcher.core.versions.VersionManager;
 import org.levimc.launcher.databinding.ActivityContentManagementBinding;
 import org.levimc.launcher.settings.FeatureSettings;
-import org.levimc.launcher.ui.animation.DynamicAnim;
 import org.levimc.launcher.ui.widget.UiKit;
+import org.levimc.launcher.ui.widget.LauncherPopup;
+import org.levimc.launcher.ui.widget.ContentStorageSelector;
+import org.levimc.launcher.core.minecraft.MinecraftImportIntents;
+import org.levimc.launcher.core.minecraft.MinecraftLauncher;
+import org.levimc.launcher.util.StorageAccess;
 import org.levimc.launcher.util.LauncherStorage;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -46,7 +46,11 @@ public class ContentManagementActivity extends BaseActivity {
     private FeatureSettings.StorageType currentStorageType = FeatureSettings.StorageType.INTERNAL;
     private SharedPreferences prefs;
     private ActivityResultLauncher<Intent> importLauncher;
+    private GameVersion importTarget;
+    private FeatureSettings.StorageType importStorageType;
+    private boolean importWithMinecraft;
     private org.levimc.launcher.ui.dialogs.LoadingDialog progressDialog;
+    private final ExecutorService minecraftImportExecutor = Executors.newSingleThreadExecutor();
     private final ExecutorService countExecutor = Executors.newSingleThreadExecutor();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private final AtomicLong countGeneration = new AtomicLong();
@@ -71,35 +75,62 @@ public class ContentManagementActivity extends BaseActivity {
         binding = ActivityContentManagementBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        DynamicAnim.applyPressScaleRecursively(binding.getRoot());
+
 
         setupActivityResultLaunchers();
         initializeManagers();
         setupUI();
-        loadCurrentVersion();
+        if (savedInstanceState != null) {
+            importTarget = savedInstanceState.getParcelable("content_import_target");
+            importStorageType = parseStorageType(savedInstanceState.getString("content_import_storage", "INTERNAL"));
+            importWithMinecraft = savedInstanceState.getBoolean("content_import_minecraft", false);
+        }
     }
 
     private void setupActivityResultLaunchers() {
         importLauncher = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(),
-            result -> {
-                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                new ActivityResultContracts.StartActivityForResult(), result -> {
+                    GameVersion target = importTarget;
+                    FeatureSettings.StorageType storage = importStorageType;
+                    boolean useMinecraft = importWithMinecraft;
+                    importTarget = null;
+                    if (result.getResultCode() != RESULT_OK || result.getData() == null || target == null) return;
                     Intent data = result.getData();
-                    List<Uri> uris = new ArrayList<>();
-                    if (data.getClipData() != null) {
-                        int count = data.getClipData().getItemCount();
-                        for (int i = 0; i < count; i++) {
-                            uris.add(data.getClipData().getItemAt(i).getUri());
+                    List<Uri> uris = StorageAccess.selectedUris(data);
+                    for (Uri uri : uris) StorageAccess.retainReadPermission(this, data, uri);
+                    if (uris.isEmpty()) return;
+                    if (useMinecraft) {
+                        if (uris.size() != 1) {
+                            Toast.makeText(this, R.string.content_import_single_file, Toast.LENGTH_SHORT).show();
+                            return;
                         }
-                    } else if (data.getData() != null) {
-                        uris.add(data.getData());
+                        launchMinecraftImport(uris.get(0), target);
+                    } else {
+                        handleImport(uris, target, storage);
                     }
-                    if (!uris.isEmpty()) {
-                        handleImport(uris);
+                });
+    }
+
+    private void launchMinecraftImport(Uri source, GameVersion target) {
+        showProgressDialog(getString(R.string.content_import_preparing));
+        minecraftImportExecutor.execute(() -> {
+            try {
+                Intent gameIntent = MinecraftImportIntents.prepareContentImport(this, source);
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
+                    hideProgressDialog();
+                    if (!MinecraftImportIntents.forwardToRunningMinecraft(this, gameIntent)) {
+                        new MinecraftLauncher(this).launch(gameIntent, target);
                     }
-                }
+                });
+            } catch (Exception error) {
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
+                    hideProgressDialog();
+                    Toast.makeText(this, getString(R.string.content_import_failed, error.getMessage()), Toast.LENGTH_LONG).show();
+                });
             }
-        );
+        });
     }
 
     private void initializeManagers() {
@@ -122,41 +153,51 @@ public class ContentManagementActivity extends BaseActivity {
 
     private void setupUI() {
         binding.editOptionsButton.setOnClickListener(v -> openOptionsEditor());
-        binding.importContentButton.setOnClickListener(v -> startImport());
-        binding.refreshButton.setOnClickListener(v -> {
-            updateStorageDirectories();
-            contentManager.refreshContent();
-        });
+        UiKit.applyPrimary(binding.importContentButton);
+        binding.importContentButton.setOnClickListener(v -> showImportMethods());
 
         setupStorageSelector();
         setupCategoryButtons();
         contentManager.getCountsLiveData().observe(this, counts -> {
             if (counts == null) return;
-            binding.worldsCount.setText(String.valueOf(counts.worlds));
-            binding.resourcePacksCount.setText(String.valueOf(counts.resourcePacks));
-            binding.skinPacksCount.setText(String.valueOf(counts.skinPacks));
+            binding.worldsCount.setText(getString(R.string.content_category_count, getString(R.string.worlds_category), counts.worlds));
+            binding.resourcePacksCount.setText(getString(R.string.content_category_count, getString(R.string.resource_packs_category), counts.resourcePacks));
+            binding.skinPacksCount.setText(getString(R.string.content_category_count, getString(R.string.skin_packs_category), counts.skinPacks));
+            binding.behaviorPacksCount.setText(getString(R.string.content_category_count, getString(R.string.behavior_packs_category), counts.behaviorPacks));
         });
     }
 
-    private void startImport() {
-        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
-        intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"application/zip", "application/octet-stream"});
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-        importLauncher.launch(Intent.createChooser(intent, getString(R.string.import_content_title)));
+    private void showImportMethods() {
+        new LauncherPopup(binding.importContentButton).width(360)
+                .section(getString(R.string.import_content))
+                .action(1, getString(R.string.content_import_here), getString(R.string.content_import_here_hint), R.drawable.ic_qa_import)
+                .action(2, getString(R.string.content_import_minecraft), getString(R.string.content_import_minecraft_hint), R.drawable.ic_nav_launch)
+                .onSelect(id -> startImport(id == 2)).show();
     }
 
-    private void handleImport(List<Uri> uris) {
-        GameVersion currentVersion = versionManager.getSelectedVersion();
+    private void startImport(boolean useMinecraft) {
+        importTarget = versionManager.getSelectedVersion();
+        if (importTarget == null) {
+            Toast.makeText(this, R.string.not_found_version, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        importStorageType = LauncherStorage.normalizeContentStorageType(currentStorageType, importTarget.versionIsolation);
+        importWithMinecraft = useMinecraft;
+        importLauncher.launch(StorageAccess.downloadsPicker(!useMinecraft));
+    }
+
+    private void handleImport(List<Uri> uris, GameVersion currentVersion, FeatureSettings.StorageType storageType) {
         if (currentVersion == null) {
             Toast.makeText(this, R.string.not_found_version, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        File worldsDir = getWorldsDirectory();
-        File resourcePacksDir = getPackDirectory("resource_packs");
-        File behaviorPacksDir = getPackDirectory("behavior_packs");
-        File skinPacksDir = getPackDirectory("skin_packs");
+        FeatureSettings.StorageType resolved = LauncherStorage.normalizeContentStorageType(storageType, currentVersion.versionIsolation);
+        File root = LauncherStorage.getContentGameDataDir(this, currentVersion.getStorageProfileId(), resolved);
+        File worldsDir = new File(root, "minecraftWorlds");
+        File resourcePacksDir = new File(root, "resource_packs");
+        File behaviorPacksDir = new File(root, "behavior_packs");
+        File skinPacksDir = new File(root, "skin_packs");
 
         showProgressDialog(getString(R.string.importing_content));
 
@@ -165,16 +206,21 @@ public class ContentManagementActivity extends BaseActivity {
                 @Override
                 public void onSuccess(String message) {
                     runOnUiThread(() -> {
+                        if (isFinishing() || isDestroyed()) {
+                            contentManager.refreshContent();
+                            return;
+                        }
                         hideProgressDialog();
                         Toast.makeText(ContentManagementActivity.this, message, Toast.LENGTH_SHORT).show();
-                        contentManager.refreshContent();
                         updateStorageDirectories();
+                        contentManager.refreshContent();
                     });
                 }
 
                 @Override
                 public void onError(String error) {
                     runOnUiThread(() -> {
+                        if (isFinishing() || isDestroyed()) return;
                         hideProgressDialog();
                         Toast.makeText(ContentManagementActivity.this, error, Toast.LENGTH_LONG).show();
                     });
@@ -186,50 +232,25 @@ public class ContentManagementActivity extends BaseActivity {
             });
     }
 
-    private File getPackDirectory(String packType) {
-        File gameDataDir = getGameDataDirForType(currentStorageType);
-        return gameDataDir == null ? null : new File(gameDataDir, packType);
-    }
-
-    private static final FeatureSettings.StorageType[] STORAGE_CHOICES = {
-            FeatureSettings.StorageType.INTERNAL,
-            FeatureSettings.StorageType.EXTERNAL,
-            FeatureSettings.StorageType.VERSION_ISOLATION_INTERNAL,
-            FeatureSettings.StorageType.VERSION_ISOLATION_EXTERNAL
-    };
-
     private void setupStorageSelector() {
         updateStorageLabel();
-        binding.storageValue.setOnClickListener(v -> {
-            PopupMenu menu = new PopupMenu(this, binding.storageValue);
-            for (int i = 0; i < STORAGE_CHOICES.length; i++) {
-                menu.getMenu().add(Menu.NONE, i, i, storageLabel(STORAGE_CHOICES[i]));
-            }
-            menu.setOnMenuItemClickListener(item -> {
-                FeatureSettings.StorageType newType = STORAGE_CHOICES[item.getItemId()];
-                if (newType != currentStorageType) {
-                    currentStorageType = newType;
+        binding.storageValue.setOnClickListener(v -> ContentStorageSelector.show(
+                binding.storageValue, versionManager.getSelectedVersion(), currentStorageType, type -> {
+                    currentStorageType = type;
                     saveStorageType();
                     updateStorageLabel();
                     updateStorageDirectories();
-                }
-                return true;
-            });
-            menu.show();
-        });
+                }));
     }
 
     private void updateStorageLabel() {
-        binding.storageValue.setText(storageLabel(currentStorageType));
+        String label = storageLabel(currentStorageType);
+        binding.storageValue.setText(label);
+        binding.storageValue.setContentDescription(getString(R.string.content_ui_storage_location) + ": " + label);
     }
 
     private String storageLabel(FeatureSettings.StorageType type) {
-        return switch (type) {
-            case INTERNAL -> getString(R.string.storage_internal);
-            case EXTERNAL -> getString(R.string.storage_external);
-            case VERSION_ISOLATION_INTERNAL -> getString(R.string.storage_version_isolation) + " (" + getString(R.string.storage_internal) + ")";
-            case VERSION_ISOLATION, VERSION_ISOLATION_EXTERNAL -> getString(R.string.storage_version_isolation) + " (" + getString(R.string.storage_external) + ")";
-        };
+        return ContentStorageSelector.label(this, type);
     }
 
     private void setupCategoryButtons() {
@@ -271,12 +292,9 @@ public class ContentManagementActivity extends BaseActivity {
         GameVersion currentVersion = versionManager.getSelectedVersion();
         if (currentVersion != null) {
             binding.instanceText.setText(instanceName(currentVersion));
-            binding.versionText.setText(currentVersion.versionCode != null && !currentVersion.versionCode.isEmpty()
-                    ? currentVersion.versionCode : "\u2014");
             updateStorageDirectories();
         } else {
             binding.instanceText.setText(getString(R.string.not_found_version));
-            binding.versionText.setText("\u2014");
             Toast.makeText(this, R.string.dialog_title_no_version, Toast.LENGTH_SHORT).show();
         }
     }
@@ -323,24 +341,15 @@ public class ContentManagementActivity extends BaseActivity {
 
         contentManager.configureStorageDirectories(worldsDir, resourcePacksDir, behaviorPacksDir, skinPacksDir, screenshotsDir, minecraftPeDir);
         contentManager.refreshCounts();
-        refreshExtraCounts(behaviorPacksDir, screenshotsDir, minecraftPeDir);
+        refreshExtraCounts(screenshotsDir, minecraftPeDir);
     }
 
-    /** Behavior packs, screenshots and servers are not in ContentManager's counts; count them off the UI thread. */
-    private void refreshExtraCounts(File behaviorPacksDir, File screenshotsDir, File minecraftPeDir) {
+    private void refreshExtraCounts(File screenshotsDir, File minecraftPeDir) {
         long generation = countGeneration.incrementAndGet();
         if (countExecutor.isShutdown()) return;
-        android.content.Context appContext = getApplicationContext();
         countExecutor.execute(() -> {
-            int behaviors = 0;
             int screenshots = 0;
             int servers = 0;
-            try {
-                ResourcePackManager packs = new ResourcePackManager(appContext);
-                packs.setPackDirectories(null, behaviorPacksDir, null);
-                behaviors = packs.getBehaviorPacks().size();
-            } catch (Exception ignored) {
-            }
             try {
                 ScreenshotManager shots = new ScreenshotManager();
                 shots.setScreenshotsDirectory(screenshotsDir);
@@ -353,14 +362,12 @@ public class ContentManagementActivity extends BaseActivity {
                 servers = serverManager.getServers().size();
             } catch (Exception ignored) {
             }
-            int behaviorCount = behaviors;
             int screenshotCount = screenshots;
             int serverCount = servers;
             mainHandler.post(() -> {
                 if (generation != countGeneration.get() || isFinishing() || isDestroyed()) return;
-                binding.behaviorPacksCount.setText(String.valueOf(behaviorCount));
-                binding.screenshotsCount.setText(String.valueOf(screenshotCount));
-                binding.serversCount.setText(String.valueOf(serverCount));
+                binding.screenshotsCount.setText(getString(R.string.content_category_count, getString(R.string.content_ui_screenshots), screenshotCount));
+                binding.serversCount.setText(getString(R.string.content_category_count, getString(R.string.servers_category), serverCount));
             });
         });
     }
@@ -427,13 +434,27 @@ public class ContentManagementActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        updateStorageDirectories();
+        loadStorageType();
+        updateStorageLabel();
+        loadCurrentVersion();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable("content_import_target", importTarget);
+        if (importStorageType != null) outState.putString("content_import_storage", importStorageType.name());
+        outState.putBoolean("content_import_minecraft", importWithMinecraft);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        countGeneration.incrementAndGet();
         countExecutor.shutdownNow();
+        minecraftImportExecutor.shutdown();
+        mainHandler.removeCallbacksAndMessages(null);
+        hideProgressDialog();
         if (contentImporter != null) {
             contentImporter.shutdown();
         }

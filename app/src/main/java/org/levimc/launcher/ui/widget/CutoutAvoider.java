@@ -82,6 +82,55 @@ public final class CutoutAvoider {
         root.requestApplyInsets();
     }
 
+    public static void attachToControls(View root, View... controls) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
+        Base base = new Base(controls);
+        java.util.concurrent.atomic.AtomicReference<List<Rect>> currentHoles =
+                new java.util.concurrent.atomic.AtomicReference<>(new ArrayList<>());
+        String[] applied = {null};
+        Runnable update = () -> {
+            if (!root.isAttachedToWindow() || root.getWidth() == 0) return;
+            StringBuilder signature = new StringBuilder(currentHoles.get().toString());
+            for (View control : controls) {
+                if (control != null) signature.append(control.isShown()).append(windowRect(control));
+            }
+            String next = signature.toString();
+            if (next.equals(applied[0])) return;
+            applied[0] = next;
+            base.restore();
+            beforeNextDraw(root, () -> {
+                int gap = Math.round(GAP_DP * root.getResources().getDisplayMetrics().density);
+                boolean changed = false;
+                for (View control : controls) {
+                    if (control == null || !control.isShown() || control.getWidth() == 0) continue;
+                    for (Rect hole : currentHoles.get()) {
+                        changed |= avoidInPage(control, hole, hole.centerX() < root.getWidth() / 2, gap, 0);
+                    }
+                }
+                return changed;
+            });
+        };
+        android.view.ViewTreeObserver.OnGlobalLayoutListener layout = update::run;
+        root.getViewTreeObserver().addOnGlobalLayoutListener(layout);
+        root.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+            @Override
+            public void onViewAttachedToWindow(View view) {
+            }
+
+            @Override
+            public void onViewDetachedFromWindow(View view) {
+                if (view.getViewTreeObserver().isAlive()) view.getViewTreeObserver().removeOnGlobalLayoutListener(layout);
+            }
+        });
+        root.setOnApplyWindowInsetsListener((view, insets) -> {
+            currentHoles.set(holes(insets));
+            applied[0] = null;
+            update.run();
+            return insets;
+        });
+        root.requestApplyInsets();
+    }
+
     /**
      * Runs {@code action} once the restored (unadjusted) layout is laid out, before it is drawn. When the
      * action moved something, that draw is skipped, so the first frame shown already avoids the camera.
@@ -161,7 +210,11 @@ public final class CutoutAvoider {
         private final Map<View, int[]> paddings = new HashMap<>();
 
         Base(@Nullable View bar, @Nullable View content) {
-            for (View v : new View[]{bar, content}) {
+            this(new View[]{bar, content});
+        }
+
+        Base(View... views) {
+            for (View v : views) {
                 if (v != null) paddings.put(v, new int[]{v.getPaddingLeft(), v.getPaddingTop(), v.getPaddingRight(), v.getPaddingBottom()});
             }
         }

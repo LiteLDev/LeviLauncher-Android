@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.Levi.ContentCard" parent="Widget.Levi.Card">
+        <item name="strokeWidth">1dp</item>
+        <item name="strokeColor">@color/content_card_outline</item>
+    </style>
+</resources>

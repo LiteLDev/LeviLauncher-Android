@@ -1,64 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="4dp"
-    android:background="@drawable/bg_content_item"
-    android:gravity="center_vertical"
-    android:orientation="horizontal"
-    android:padding="12dp">
-
-    <FrameLayout
-        android:id="@+id/server_chip"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
-        android:background="@drawable/bg_ui_icon_chip">
-
-        <ImageView
-            android:id="@+id/server_icon"
-            android:layout_width="22dp"
-            android:layout_height="22dp"
-            android:layout_gravity="center"
-            android:contentDescription="@null"
-            android:src="@drawable/ic_ui_server" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="0dp" android:background="@drawable/bg_content_item" android:gravity="center_vertical" android:orientation="horizontal" android:padding="12dp" android:layout_marginVertical="4dp" android:minHeight="72dp">
+    <FrameLayout android:id="@+id/server_chip" android:layout_width="40dp" android:layout_height="40dp" android:background="@drawable/bg_ui_icon_chip">
+        <ImageView android:id="@+id/server_icon" android:layout_width="22dp" android:layout_height="22dp" android:layout_gravity="center" android:contentDescription="@null" android:src="@drawable/ic_ui_server" />
     </FrameLayout>
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
-        android:layout_weight="1"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/server_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:fontFamily="@font/misans"
-            android:maxLines="1"
-            android:text="@string/server_name_placeholder"
-            android:textColor="@color/text_primary"
-            android:textSize="16sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/server_ip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:maxLines="1"
-            android:text="play.example.com"
-            android:textAppearance="@style/TextAppearance.Levi.Caption" />
+    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:layout_weight="1" android:orientation="vertical">
+        <TextView android:id="@+id/server_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:ellipsize="end" android:fontFamily="@font/misans" android:maxLines="2" android:text="@string/server_name_placeholder" android:textColor="@color/text_primary" android:textSize="14sp" android:textStyle="bold" />
+        <TextView android:id="@+id/server_ip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:maxLines="1" android:text="play.example.com" android:textAppearance="@style/TextAppearance.Levi.Caption" android:textSize="11sp" />
     </LinearLayout>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/server_delete_button"
-        style="@style/Widget.Levi.Button.Icon"
-        android:contentDescription="@string/delete"
-        android:tooltipText="@string/delete"
-        app:backgroundTint="@color/ui_danger_soft"
-        app:icon="@drawable/ic_ui_delete"
-        app:iconTint="@color/ui_danger" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/server_delete_button" style="@style/Widget.Levi.Button.Icon" android:contentDescription="@string/delete" android:tooltipText="@string/delete" app:backgroundTint="@color/ui_danger_soft" app:icon="@drawable/ic_ui_delete" app:iconTint="@color/ui_danger" android:layout_width="36dp" android:layout_height="36dp" />
 </LinearLayout>

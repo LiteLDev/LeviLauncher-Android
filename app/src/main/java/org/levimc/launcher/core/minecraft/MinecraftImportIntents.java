@@ -9,6 +9,10 @@ import android.net.Uri;
 import android.provider.OpenableColumns;
 
 import java.util.Locale;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import androidx.core.content.FileProvider;
 
 public final class MinecraftImportIntents {
     private MinecraftImportIntents() {}
@@ -30,6 +34,21 @@ public final class MinecraftImportIntents {
             }
         }
         return false;
+    }
+
+    public static Intent prepareContentImport(Context context, Uri source) throws IOException {
+        String name = resolveDisplayName(context, source);
+        if (name == null || name.trim().isEmpty()) name = source.getLastPathSegment();
+        File staged;
+        try (InputStream input = context.getContentResolver().openInputStream(source)) {
+            staged = MinecraftImportArchive.stage(input, name, context.getCacheDir());
+        }
+        Uri uri = FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", staged);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setDataAndType(uri, "application/octet-stream");
+        intent.setClipData(ClipData.newRawUri("Minecraft import", uri));
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        return intent;
     }
 
     public static boolean forwardToRunningMinecraft(Context context, Intent originalIntent) {

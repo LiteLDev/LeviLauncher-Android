@@ -1,72 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="4dp"
-    android:background="@drawable/bg_content_item"
-    android:orientation="vertical"
-    android:padding="8dp">
-
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/screenshot_image"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:background="@drawable/content_bg_thumb"
-        android:contentDescription="@null"
-        android:scaleType="centerCrop" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/screenshot_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:fontFamily="@font/misans"
-                android:maxLines="1"
-                android:text="@string/screenshot_name_placeholder"
-                android:textColor="@color/text_primary"
-                android:textSize="14sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/screenshot_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:maxLines="1"
-                android:text="@string/screenshot_date_placeholder"
-                android:textAppearance="@style/TextAppearance.Levi.Caption"
-                android:textSize="11sp" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_margin="4dp" android:background="@drawable/bg_content_item" android:orientation="vertical" android:padding="10dp">
+    <com.google.android.material.imageview.ShapeableImageView android:id="@+id/screenshot_image" android:layout_width="match_parent" android:layout_height="132dp" android:background="@drawable/content_bg_thumb" android:contentDescription="@null" android:scaleType="centerCrop" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:gravity="center_vertical" android:orientation="horizontal">
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+            <TextView android:id="@+id/screenshot_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:ellipsize="end" android:fontFamily="@font/misans" android:maxLines="2" android:text="@string/screenshot_name_placeholder" android:textColor="@color/text_primary" android:textSize="13sp" android:textStyle="bold" />
+            <TextView android:id="@+id/screenshot_date" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:maxLines="1" android:text="@string/screenshot_date_placeholder" android:textAppearance="@style/TextAppearance.Levi.Caption" android:textSize="11sp" />
         </LinearLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/screenshot_save_button"
-            style="@style/Widget.Levi.Button.Icon"
-            android:contentDescription="@string/save"
-            android:tooltipText="@string/save"
-            app:icon="@drawable/ic_ui_download" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/screenshot_delete_button"
-            style="@style/Widget.Levi.Button.Icon"
-            android:layout_marginStart="8dp"
-            android:contentDescription="@string/delete"
-            android:tooltipText="@string/delete"
-            app:backgroundTint="@color/ui_danger_soft"
-            app:icon="@drawable/ic_ui_delete"
-            app:iconTint="@color/ui_danger" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/screenshot_save_button" style="@style/Widget.Levi.Button.Icon" android:contentDescription="@string/save" android:tooltipText="@string/save" app:icon="@drawable/ic_ui_download" android:layout_width="32dp" android:layout_height="32dp" app:iconSize="16dp" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/screenshot_delete_button" style="@style/Widget.Levi.Button.Icon" android:layout_marginStart="8dp" android:contentDescription="@string/delete" android:tooltipText="@string/delete" app:backgroundTint="@color/ui_danger_soft" app:icon="@drawable/ic_ui_delete" app:iconTint="@color/ui_danger" android:layout_width="32dp" android:layout_height="32dp" app:iconSize="16dp" />
     </LinearLayout>
 </LinearLayout>

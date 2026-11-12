@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="content_import_preparing">Preparing Minecraft import…</string>
+    <string name="content_import_failed">Could not prepare import: %1$s</string>
+    <string name="world_workspace_title">World editor</string>
+    <string name="world_workspace_map">Map</string>
+    <string name="world_workspace_nbt">NBT</string>
+    <string name="world_workspace_structures">Structures</string>
+    <string name="world_workspace_tools">Tools</string>
+    <string name="world_workspace_world_nbt">World NBT</string>
+    <string name="world_workspace_player_nbt">Player NBT</string>
+    <string name="flat_game_survival">Survival</string>
+    <string name="flat_game_creative">Creative</string>
+    <string name="flat_game_adventure">Adventure</string>
+</resources>

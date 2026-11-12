@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +18,8 @@ import org.levimc.launcher.R;
 import org.levimc.launcher.core.content.FlatWorldGenerator;
 import org.levimc.launcher.core.content.FlatWorldGenerator.BlockLayer;
 import org.levimc.launcher.databinding.ActivityCustomFlatWorldBinding;
+import org.levimc.launcher.ui.widget.CatalogSelect;
+import org.levimc.launcher.ui.widget.UiKit;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ public class CustomFlatWorldActivity extends BaseActivity {
     private File worldsDirectory;
     private ExecutorService executor;
     private ItemTouchHelper itemTouchHelper;
+    private CatalogSelect biomeSelect, gameModeSelect;
 
     private static final String[] BIOME_NAMES = {
             "Plains", "Desert", "Mountains", "Forest", "Taiga", "Swamp", "River", "Nether Wastes",
@@ -67,19 +69,28 @@ public class CustomFlatWorldActivity extends BaseActivity {
         }
         worldsDirectory = new File(worldsPath);
         layers = new ArrayList<>(FlatWorldGenerator.getDefaultLayers());
+        if (savedInstanceState != null) {
+            ArrayList<String> names = savedInstanceState.getStringArrayList("flat_blocks");
+            int[] counts = savedInstanceState.getIntArray("flat_counts");
+            if (names != null && counts != null && names.size() == counts.length) {
+                layers.clear();
+                for (int i = 0; i < counts.length; i++) layers.add(new BlockLayer(names.get(i), Math.max(1, Math.min(256, counts[i]))));
+            }
+        }
         setupUI();
+        if (savedInstanceState != null) {
+            biomeSelect.setSelected(savedInstanceState.getInt("flat_biome", 0));
+            gameModeSelect.setSelected(savedInstanceState.getInt("flat_game_mode", 1));
+        }
     }
 
     private void setupUI() {
-        ArrayAdapter<String> biomeAdapter = new ArrayAdapter<>(this, R.layout.item_flat_spinner, BIOME_NAMES);
-        biomeAdapter.setDropDownViewResource(R.layout.item_flat_spinner_dropdown);
-        binding.biomeSpinner.setAdapter(biomeAdapter);
-
-        String[] gameModes = {"Survival", "Creative", "Adventure"};
-        ArrayAdapter<String> gameModeAdapter = new ArrayAdapter<>(this, R.layout.item_flat_spinner, gameModes);
-        gameModeAdapter.setDropDownViewResource(R.layout.item_flat_spinner_dropdown);
-        binding.gameModeSpinner.setAdapter(gameModeAdapter);
-        binding.gameModeSpinner.setSelection(1);
+        biomeSelect = new CatalogSelect(binding.biomeSpinner, getString(R.string.biome));
+        biomeSelect.setItems(java.util.Arrays.asList(BIOME_NAMES), 0);
+        gameModeSelect = new CatalogSelect(binding.gameModeSpinner, getString(R.string.game_mode));
+        gameModeSelect.setItems(java.util.Arrays.asList(getString(R.string.flat_game_survival),
+                getString(R.string.flat_game_creative), getString(R.string.flat_game_adventure)), 1);
+        UiKit.applyPrimary(binding.createWorldButton);
 
         layersAdapter = new LayersAdapter();
         binding.layersRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -199,9 +210,9 @@ public class CustomFlatWorldActivity extends BaseActivity {
         binding.createWorldButton.setAlpha(0.45f);
         binding.loadingProgress.setVisibility(View.VISIBLE);
 
-        int biomeIndex = binding.biomeSpinner.getSelectedItemPosition();
+        int biomeIndex = biomeSelect.getSelected();
         int biomeId = biomeIndex < BIOME_IDS.length ? BIOME_IDS[biomeIndex] : 1;
-        int gameMode = binding.gameModeSpinner.getSelectedItemPosition();
+        int gameMode = gameModeSelect.getSelected();
 
         List<BlockLayer> layersCopy = new ArrayList<>();
         for (BlockLayer layer : layers) {
@@ -227,6 +238,23 @@ public class CustomFlatWorldActivity extends BaseActivity {
                 });
             }
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (layers == null) return;
+        saveAllLayerValues();
+        ArrayList<String> names = new ArrayList<>();
+        int[] counts = new int[layers.size()];
+        for (int i = 0; i < layers.size(); i++) {
+            names.add(layers.get(i).blockName);
+            counts[i] = layers.get(i).count;
+        }
+        outState.putStringArrayList("flat_blocks", names);
+        outState.putIntArray("flat_counts", counts);
+        if (biomeSelect != null) outState.putInt("flat_biome", biomeSelect.getSelected());
+        if (gameModeSelect != null) outState.putInt("flat_game_mode", gameModeSelect.getSelected());
     }
 
     @Override
