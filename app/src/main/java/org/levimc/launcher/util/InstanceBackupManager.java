@@ -99,6 +99,7 @@ public class InstanceBackupManager {
         public String packageName;
         public boolean versionIsolation;
         public boolean launchVertically;
+        public boolean modMenuEnabled = true;
         public long createdAt;
     }
 
@@ -376,6 +377,7 @@ public class InstanceBackupManager {
         manifest.packageName = version.packageName;
         manifest.versionIsolation = version.versionIsolation;
         manifest.launchVertically = version.launchVertically;
+        manifest.modMenuEnabled = VersionManager.get(context).isInstanceModMenuEnabled(version);
         manifest.createdAt = System.currentTimeMillis();
         return manifest;
     }
@@ -932,6 +934,7 @@ public class InstanceBackupManager {
                     metadata.displayName = firstNonEmpty(manifest.instanceName, null);
                     metadata.versionIsolation = sharedRestoredIntoProfile || manifest.versionIsolation;
                     metadata.launchVertically = manifest.launchVertically;
+                    metadata.modMenuEnabled = manifest.modMenuEnabled;
                     metadata.installed = false;
                     metadata.packageName = null;
                 });

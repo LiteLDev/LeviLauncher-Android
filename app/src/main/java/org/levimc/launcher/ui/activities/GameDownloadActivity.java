@@ -10,14 +10,12 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.text.format.Formatter;
 import android.view.LayoutInflater;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,6 +42,7 @@ import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
 import org.levimc.launcher.ui.dialogs.SimpleTextWatcher;
 import org.levimc.launcher.ui.widget.SegmentedControl;
 import org.levimc.launcher.ui.widget.UiKit;
+import org.levimc.launcher.ui.widget.LauncherPopup;
 import org.levimc.launcher.util.ApkImportManager;
 import org.levimc.launcher.util.PersonalizationManager;
 import org.levimc.launcher.util.StorageAccess;
@@ -559,28 +558,22 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
     }
 
     private void showFilters(View anchor) {
-        PopupMenu menu = new PopupMenu(this, anchor);
-        SubMenu types = menu.getMenu().addSubMenu(R.string.game_download_filter_type);
-        int[] labels = {R.string.game_download_type_all, R.string.game_download_type_release, R.string.game_download_type_beta};
-        for (int i = 0; i < labels.length; i++) types.add(1, 100 + i, i, labels[i]).setCheckable(true).setChecked(i == typeFilter);
-        types.setGroupCheckable(1, true, true);
+        LauncherPopup menu = new LauncherPopup(anchor).width(330)
+                .group(getString(R.string.game_download_filter_type), new int[]{100, 101, 102},
+                        new CharSequence[]{getString(R.string.game_download_type_all), getString(R.string.game_download_type_release),
+                                getString(R.string.game_download_type_beta)}, typeFilter);
         if (sourceMode != SOURCE_DOWNLOADED) {
-            SubMenu states = menu.getMenu().addSubMenu(R.string.game_download_filter_status);
-            int[] statuses = {R.string.game_download_status_all, R.string.game_download_status_downloaded, R.string.game_download_status_not_downloaded};
-            for (int i = 0; i < statuses.length; i++) states.add(2, 200 + i, i, statuses[i]).setCheckable(true).setChecked(i == statusFilter);
-            states.setGroupCheckable(2, true, true);
+            menu.group(getString(R.string.game_download_filter_status), new int[]{200, 201, 202},
+                    new CharSequence[]{getString(R.string.game_download_status_all), getString(R.string.game_download_status_downloaded),
+                            getString(R.string.game_download_status_not_downloaded)}, statusFilter);
         }
-        menu.getMenu().add(0, 300, 10, R.string.game_download_filter_clear);
-        menu.setOnMenuItemClickListener(item -> {
-            int id = item.getItemId();
-            if (id >= 100 && id < 103) typeFilter = id - 100;
-            else if (id >= 200 && id < 203) statusFilter = id - 200;
-            else if (id == 300) resetFilters();
-            else return false;
-            applyFilters();
-            return true;
-        });
-        menu.show();
+        menu.divider().action(300, getString(R.string.game_download_filter_clear), R.drawable.ic_close)
+                .onSelect(id -> {
+                    if (id >= 100 && id < 103) typeFilter = id - 100;
+                    else if (id >= 200 && id < 203) statusFilter = id - 200;
+                    else if (id == 300) resetFilters();
+                    applyFilters();
+                }).show();
     }
 
     private void resetFilters() {
@@ -889,20 +882,19 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
             }
             if (failed) error.setText(describe(new PlayException(task.errorKind != null ? task.errorKind : PlayException.Kind.UNKNOWN, "")));
             menu.setOnClickListener(v -> {
-                PopupMenu actions = new PopupMenu(GameDownloadActivity.this, menu);
+                LauncherPopup actions = new LauncherPopup(menu);
                 if (item != null) {
-                    if (signedIn) actions.getMenu().add(0, 1, 0, R.string.game_download_redownload);
-                    actions.getMenu().add(0, 2, 1, R.string.delete);
+                    if (signedIn) actions.action(1, getString(R.string.game_download_redownload), R.drawable.ic_ui_download);
+                    actions.action(2, getString(R.string.delete), R.drawable.ic_ui_delete);
                 }
-                if (failed) actions.getMenu().add(0, 3, 2, R.string.game_download_dismiss_error);
-                actions.setOnMenuItemClickListener(option -> {
-                    if (option.getItemId() == 1) startDownload(release.versionCode, versionName);
-                    else if (option.getItemId() == 2) confirmDelete(shown);
-                    else if (option.getItemId() == 3) {
+                if (failed) actions.action(3, getString(R.string.game_download_dismiss_error), R.drawable.ic_close);
+                actions.onSelect(id -> {
+                    if (id == 1) startDownload(release.versionCode, versionName);
+                    else if (id == 2) confirmDelete(shown);
+                    else if (id == 3) {
                         downloads.dismiss(release.versionCode);
                         loadLocal();
-                    } else return false;
-                    return true;
+                    }
                 });
                 actions.show();
             });

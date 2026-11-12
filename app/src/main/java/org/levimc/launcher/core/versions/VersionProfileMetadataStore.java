@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class VersionProfileMetadataStore {
     public static final String PROFILE_FILE_NAME = "profile.json";
@@ -29,9 +30,22 @@ public class VersionProfileMetadataStore {
     private static final String LEGACY_VERSION_ISOLATION_FILE = "version_isolation.txt";
     private static final String LEGACY_LAUNCH_VERTICALLY_FILE = "launch_vertically.txt";
 
+    private static final ConcurrentHashMap<String, Object> PROFILE_LOCKS = new ConcurrentHashMap<>();
+
     private final Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
 
+    private static Object profileLock(File metadataDir) {
+        String key = metadataDir == null ? "" : metadataDir.getAbsoluteFile().toPath().normalize().toString();
+        return PROFILE_LOCKS.computeIfAbsent(key, ignored -> new Object());
+    }
+
     public VersionProfileMetadata loadOrCreate(File metadataDir, Defaults defaults) throws IOException {
+        synchronized (profileLock(metadataDir)) {
+            return loadLocked(metadataDir, defaults);
+        }
+    }
+
+    private VersionProfileMetadata loadLocked(File metadataDir, Defaults defaults) throws IOException {
         File profileFile = getProfileFile(metadataDir);
         JsonReadResult readResult = readJson(profileFile, defaults);
         if (readResult == null) {
@@ -41,7 +55,7 @@ public class VersionProfileMetadataStore {
         }
 
         VersionProfileMetadata metadata = readResult.metadata;
-        boolean changed = readResult.completedMissingFields || applyMissingDefaults(metadata, defaults);
+        boolean changed = applyMissingDefaults(metadata, defaults) || readResult.completedMissingFields;
         if (changed) {
             save(metadataDir, metadata);
         }
@@ -49,6 +63,12 @@ public class VersionProfileMetadataStore {
     }
 
     public void save(File metadataDir, VersionProfileMetadata metadata) throws IOException {
+        synchronized (profileLock(metadataDir)) {
+            saveLocked(metadataDir, metadata);
+        }
+    }
+
+    private void saveLocked(File metadataDir, VersionProfileMetadata metadata) throws IOException {
         if (metadataDir == null) {
             throw new IOException("metadataDir is null");
         }
@@ -87,10 +107,12 @@ public class VersionProfileMetadataStore {
     }
 
     public VersionProfileMetadata update(File metadataDir, Defaults defaults, Mutator mutator) throws IOException {
-        VersionProfileMetadata metadata = loadOrCreate(metadataDir, defaults);
-        mutator.mutate(metadata);
-        save(metadataDir, metadata);
-        return metadata;
+        synchronized (profileLock(metadataDir)) {
+            VersionProfileMetadata metadata = loadOrCreate(metadataDir, defaults);
+            mutator.mutate(metadata);
+            save(metadataDir, metadata);
+            return metadata;
+        }
     }
 
     public File getProfileFile(File metadataDir) {
@@ -115,6 +137,9 @@ public class VersionProfileMetadataStore {
                 }
                 if (!object.has("launchVertically")) {
                     metadata.launchVertically = defaults.launchVertically;
+                }
+                if (!object.has("modMenuEnabled") || object.get("modMenuEnabled").isJsonNull()) {
+                    metadata.modMenuEnabled = true;
                 }
                 if (!object.has("installed")) {
                     metadata.installed = defaults.installed;
@@ -201,6 +226,8 @@ public class VersionProfileMetadataStore {
                 || !object.has("displayName")
                 || !object.has("versionIsolation")
                 || !object.has("launchVertically")
+                || !object.has("modMenuEnabled")
+                || object.get("modMenuEnabled").isJsonNull()
                 || !object.has("installed")
                 || !object.has("packageName")
                 || !object.has("updatedAt");

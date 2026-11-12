@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="instance_mod_menu_title">In-game mod menu</string>
+    <string name="instance_mod_menu_description">Enable the launcher’s in-game mod menu for this instance.</string>
+    <string name="mod_detail_about">About this mod</string>
+</resources>

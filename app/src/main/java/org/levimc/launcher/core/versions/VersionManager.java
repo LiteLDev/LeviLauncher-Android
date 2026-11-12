@@ -518,6 +518,28 @@ public class VersionManager {
         } catch (Exception ignored) {}
     }
 
+    public boolean isInstanceModMenuEnabled(GameVersion version) {
+        if (version == null) return true;
+        return loadMetadata(
+                LauncherStorage.getProfileMetadataDir(context, getMetadataDirectoryName(version)),
+                metadataDefaults(version.isInstalled, version.directoryName, version.packageName, version.versionCode)
+        ).modMenuEnabled;
+    }
+
+    public boolean setInstanceModMenuEnabled(GameVersion version, boolean enabled) {
+        if (version == null) return false;
+        try {
+            metadataStore.update(
+                    LauncherStorage.getProfileMetadataDir(context, getMetadataDirectoryName(version)),
+                    metadataDefaults(version.isInstalled, version.directoryName, version.packageName, version.versionCode),
+                    metadata -> metadata.modMenuEnabled = enabled
+            );
+            return true;
+        } catch (Exception ignored) {
+            return false;
+        }
+    }
+
     public boolean setInstanceDisplayName(GameVersion version, String displayName) {
         if (version == null || displayName == null || displayName.trim().isEmpty()) return false;
         String value = displayName.trim();

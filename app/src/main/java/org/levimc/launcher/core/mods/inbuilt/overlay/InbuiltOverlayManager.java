@@ -5,6 +5,7 @@ import android.view.MotionEvent;
 import android.view.KeyEvent;
 
 import org.levimc.launcher.core.mods.inbuilt.ExternalModBridge;
+import org.levimc.launcher.core.minecraft.MinecraftLauncher;
 import org.levimc.launcher.core.mods.inbuilt.manager.InbuiltModManager;
 import org.levimc.launcher.core.mods.inbuilt.manager.MoreButtonsManager;
 import org.levimc.launcher.core.mods.inbuilt.model.MoreButtonConfig;
@@ -27,6 +28,7 @@ public class InbuiltOverlayManager {
 
     private static volatile InbuiltOverlayManager instance;
     private final Activity activity;
+    private final boolean modMenuEnabled;
     private final List<BaseOverlayButton> overlays = new ArrayList<>();
     private static final String[] KEYBIND_MOD_IDS = {
             ModIds.QUICK_DROP, ModIds.CAMERA_PERSPECTIVE, ModIds.TOGGLE_HUD,
@@ -69,6 +71,7 @@ public class InbuiltOverlayManager {
 
     public InbuiltOverlayManager(Activity activity) {
         this.activity = activity;
+        this.modMenuEnabled = activity.getIntent().getBooleanExtra(MinecraftLauncher.EXTRA_MOD_MENU_ENABLED, true);
         instance = this;
     }
 
@@ -96,8 +99,7 @@ public class InbuiltOverlayManager {
     }
 
     public void showModMenu() {
-        InbuiltModManager manager = InbuiltModManager.getInstance(activity);
-        if (!manager.isModMenuEnabled()) return;
+        if (!modMenuEnabled) return;
         activity.runOnUiThread(() -> {
             if (activity.isFinishing() || activity.isDestroyed()) return;
             releaseKeybinds();
@@ -123,7 +125,7 @@ public class InbuiltOverlayManager {
 
     public void toggleModMenuFromButton() {
         InbuiltModManager manager = InbuiltModManager.getInstance(activity);
-        if (!manager.isModMenuEnabled()) return;
+        if (!modMenuEnabled) return;
         if (manager.isPauseMenuOnly() &&
                 (!org.levimc.launcher.preloader.PreloaderInput.isPauseMenuOpen() ||
                         !org.levimc.launcher.preloader.PreloaderInput.isShowingMenu())) {
@@ -150,7 +152,7 @@ public class InbuiltOverlayManager {
 
     public void showEnabledOverlays() {
         InbuiltModManager manager = InbuiltModManager.getInstance(activity);
-        if (!manager.isModMenuEnabled()) return;
+        if (!modMenuEnabled) return;
 
         if (hudOverlay == null) {
             hudOverlay = new HudOverlay(activity);
@@ -771,7 +773,7 @@ public class InbuiltOverlayManager {
         if (action != KeyEvent.ACTION_DOWN || event.getRepeatCount() != 0
                 || (!event.hasNoModifiers() && !KeyEvent.isModifierKey(keyCode))) return false;
         InbuiltModManager manager = InbuiltModManager.getInstance(activity);
-        if (!manager.isModMenuEnabled() || keyCode == KeyEvent.KEYCODE_UNKNOWN
+        if (!modMenuEnabled || keyCode == KeyEvent.KEYCODE_UNKNOWN
                 || keyCode != manager.getModMenuKeybind() || moreButtonsEditorOpen
                 || PojavControls.isEditorOpen()) return false;
         if (manager.isPauseMenuOnly() && !isModMenuShowing()

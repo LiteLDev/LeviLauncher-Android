@@ -21,4 +21,25 @@
     <string name="mods_external_sort">Sort: %1$s</string>
     <string name="mods_external_author">by %1$s</string>
     <string name="mods_filter_packages">Package Mods</string>
+    <string name="mods_filters">Filters</string>
+    <string name="mods_filters_active">Filters (%1$d)</string>
+    <string name="mods_status">Status</string>
+    <string name="mods_status_all">All</string>
+    <string name="mods_status_enabled">Enabled</string>
+    <string name="mods_status_disabled">Disabled</string>
+    <string name="mods_sort">Sort mods</string>
+    <string name="mods_sort_load_order">Load order</string>
+    <string name="mods_sort_name_asc">Name: A–Z</string>
+    <string name="mods_sort_name_desc">Name: Z–A</string>
+    <string name="mods_ingame_menu_short">In-game menu</string>
+    <string name="mods_search_hint">Search mods or authors</string>
+    <string name="mods_loading">Loading mods…</string>
+    <string name="mods_empty_help">Add a mod from your device or browse Get mods.</string>
+    <string name="mods_empty_filter_help">Try a different search or clear the filters.</string>
+    <string name="mods_clear_filters">Clear filters</string>
+    <string name="mods_enable_mod">Enable %1$s</string>
+    <plurals name="mods_visible_count">
+        <item quantity="one">%1$d mod</item>
+        <item quantity="other">%1$d mods</item>
+    </plurals>
 </resources>

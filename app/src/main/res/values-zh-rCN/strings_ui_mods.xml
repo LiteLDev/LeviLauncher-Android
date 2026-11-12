@@ -21,4 +21,24 @@
     <string name="mods_external_sort">排序：%1$s</string>
     <string name="mods_external_author">作者 %1$s</string>
     <string name="mods_filter_packages">包管理模组</string>
+    <string name="mods_filters">筛选</string>
+    <string name="mods_filters_active">筛选（%1$d）</string>
+    <string name="mods_status">状态</string>
+    <string name="mods_status_all">全部</string>
+    <string name="mods_status_enabled">已启用</string>
+    <string name="mods_status_disabled">已禁用</string>
+    <string name="mods_sort">模组排序</string>
+    <string name="mods_sort_load_order">加载顺序</string>
+    <string name="mods_sort_name_asc">名称：A–Z</string>
+    <string name="mods_sort_name_desc">名称：Z–A</string>
+    <string name="mods_ingame_menu_short">游戏内菜单</string>
+    <string name="mods_search_hint">搜索模组或作者</string>
+    <string name="mods_loading">正在加载模组…</string>
+    <string name="mods_empty_help">从设备添加模组，或通过“获取模组”浏览。</string>
+    <string name="mods_empty_filter_help">尝试其他关键词或清除筛选。</string>
+    <string name="mods_clear_filters">清除筛选</string>
+    <string name="mods_enable_mod">启用 %1$s</string>
+    <plurals name="mods_visible_count">
+        <item quantity="other">%1$d 个模组</item>
+    </plurals>
 </resources>

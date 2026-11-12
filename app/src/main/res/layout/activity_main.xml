@@ -281,24 +281,9 @@
                     android:orientation="horizontal"
                     android:minHeight="26dp">
 
-                    <FrameLayout
-                        android:id="@+id/home_mods_chip"
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:background="@drawable/bg_ui_icon_chip">
-
-                        <ImageView
-                            android:id="@+id/home_mods_icon"
-                            android:layout_width="16dp"
-                            android:layout_height="16dp"
-                            android:layout_gravity="center"
-                            android:importantForAccessibility="no"
-                            android:src="@drawable/ic_ui_puzzle" />
-                    </FrameLayout>
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="6dp"
                         android:layout_weight="1"
                         android:ellipsize="end"
                         android:singleLine="true"

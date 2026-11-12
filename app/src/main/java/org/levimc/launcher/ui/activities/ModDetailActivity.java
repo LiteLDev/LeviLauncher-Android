@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.widget.Button;
 
 import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
-import android.widget.Switch;
+import android.widget.CompoundButton;
+import org.levimc.launcher.ui.widget.UiKit;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.View;
@@ -42,7 +42,6 @@ public class ModDetailActivity extends BaseActivity {
     private String modFilenameArg;
     private TextView modNameText;
     private TextView modAuthorText;
-    private TextView modVersionText;
     private TextView modDescriptionText;
     private TextView modStatusText;
     private ImageView modIconView;
@@ -50,12 +49,12 @@ public class ModDetailActivity extends BaseActivity {
     private MetaRow versionRow;
     private MetaRow minecraftVersionsRow;
     private MetaRow configFilesRow;
-    private Switch modSwitch;
+    private CompoundButton modSwitch;
     private Button configureButton;
-    private View headerContainer;
     private View infoContainer;
     private View actionsContainer;
     private TextView pkgChip;
+    private View packageActionsContainer;
     private Button pkgUpdateButton;
     private Button pkgPromoteButton;
     private Button pkgOpenPackageButton;
@@ -71,18 +70,12 @@ public class ModDetailActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mod_detail);
 
-        View root = findViewById(R.id.mod_detail_root);
-        if (root != null) {
-            DynamicAnim.applyPressScaleRecursively(root);
-        }
-
         if (getIntent().hasExtra("mod_filename") && getIntent().hasExtra("mod_position")) {
             modFilenameArg = getIntent().getStringExtra("mod_filename");
             modPosition = getIntent().getIntExtra("mod_position", -1);
             
             setupViewModel();
             setupViews();
-            runEnterAnimations();
             
             loadModDetails(modFilenameArg);
         } else {
@@ -98,7 +91,6 @@ public class ModDetailActivity extends BaseActivity {
     private void setupViews() {
         modNameText = findViewById(R.id.mod_name_detail);
         modAuthorText = findViewById(R.id.mod_author_detail);
-        modVersionText = findViewById(R.id.mod_version_detail);
         modDescriptionText = findViewById(R.id.mod_description_detail);
         modStatusText = findViewById(R.id.mod_status_text);
         modIconView = findViewById(R.id.mod_icon_detail);
@@ -107,15 +99,14 @@ public class ModDetailActivity extends BaseActivity {
         minecraftVersionsRow = MetaRow.bind(findViewById(R.id.mod_minecraft_versions_row));
         configFilesRow = MetaRow.bind(findViewById(R.id.mod_config_files_row));
         modSwitch = findViewById(R.id.mod_switch_detail);
-        headerContainer = findViewById(R.id.mod_detail_title);
         View heroContainer = findViewById(R.id.mod_detail_header_container);
         infoContainer = findViewById(R.id.mod_detail_info_container);
         actionsContainer = findViewById(R.id.mod_detail_actions_container);
 
-
         applyPersonalization(heroContainer);
 
         pkgChip = findViewById(R.id.mod_pkg_chip);
+        packageActionsContainer = findViewById(R.id.mod_pkg_actions);
         pkgUpdateButton = findViewById(R.id.pkg_update_button);
         pkgPromoteButton = findViewById(R.id.pkg_promote_button);
         pkgOpenPackageButton = findViewById(R.id.pkg_open_package_button);
@@ -145,6 +136,8 @@ public class ModDetailActivity extends BaseActivity {
         DynamicAnim.applyPressScale(deleteButton);
 
         configureButton = findViewById(R.id.configure_mod_button);
+        UiKit.applyPrimary((com.google.android.material.button.MaterialButton) configureButton);
+        UiKit.applyPrimary((com.google.android.material.button.MaterialButton) pkgUpdateButton);
         configureButton.setOnClickListener(v -> openModConfig());
         DynamicAnim.applyPressScale(configureButton);
 
@@ -193,11 +186,12 @@ public class ModDetailActivity extends BaseActivity {
 
             modNameText.setText(mod.getDisplayName());
             modAuthorText.setText(getString(R.string.mod_author_byline, author));
-            modVersionText.setText(getString(R.string.mod_version_chip, version));
             modStatusText.setText(mod.isEnabled() ? R.string.mod_status_enabled : R.string.mod_status_disabled);
             modSwitch.setChecked(mod.isEnabled());
+            modSwitch.setContentDescription(getString(R.string.mods_enable_mod, mod.getDisplayName()));
 
             String description = trimToNull(mod.getDescription());
+            findViewById(R.id.mod_description_heading).setVisibility(description == null ? View.GONE : View.VISIBLE);
             if (description == null) {
                 modDescriptionText.setVisibility(View.GONE);
             } else {
@@ -231,28 +225,22 @@ public class ModDetailActivity extends BaseActivity {
     }
 
     private void loadModIcon(Mod mod) {
-        if (modIconView == null) {
-            return;
-        }
-
+        if (modIconView == null) return;
+        Glide.with(this).clear(modIconView);
         String iconPath = trimToNull(mod.getIconPath());
-        if (iconPath == null) {
-            modIconView.setImageResource(R.drawable.ic_plugin);
+        File iconFile = iconPath == null ? null : new File(iconPath);
+        if (iconFile == null || !iconFile.isFile()) {
+            iconContainer.setVisibility(View.GONE);
+            modIconView.setImageDrawable(null);
             return;
         }
-
-        File iconFile = new File(iconPath);
-        if (!iconFile.isFile()) {
-            modIconView.setImageResource(R.drawable.ic_plugin);
-            return;
-        }
-
-        int radiusPx = Math.round(12f * getResources().getDisplayMetrics().density);
+        iconContainer.setVisibility(View.VISIBLE);
+        int radiusPx = Math.round(8f * getResources().getDisplayMetrics().density);
         Glide.with(this)
                 .load(iconFile)
                 .apply(RequestOptions.bitmapTransform(new RoundedCorners(radiusPx)))
-                .placeholder(R.drawable.ic_plugin)
-                .error(R.drawable.ic_plugin)
+                .placeholder(R.drawable.ic_ui_code)
+                .error(R.drawable.ic_ui_code)
                 .into(modIconView);
     }
 
@@ -295,28 +283,6 @@ public class ModDetailActivity extends BaseActivity {
         intent.putExtra(ModConfigActivity.EXTRA_MOD_NAME, currentMod.getDisplayName());
         intent.putExtra(ModConfigActivity.EXTRA_MOD_ROOT, currentMod.getModRootPath());
         startActivity(intent);
-    }
-
-    private void runEnterAnimations() {
-        float density = getResources().getDisplayMetrics().density;
-        float dy = 16f * density;
-        android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
-
-        View heroContainer = findViewById(R.id.mod_detail_header_container);
-        View[] cards = new View[]{headerContainer, heroContainer, infoContainer, actionsContainer};
-        for (int i = 0; i < cards.length; i++) {
-            View card = cards[i];
-            if (card == null) continue;
-            card.setAlpha(0f);
-            card.setTranslationY(dy);
-            final int delay = 100 + i * 80;
-            handler.postDelayed(() -> {
-                DynamicAnim.springAlphaTo(card, 1f).start();
-                DynamicAnim.springTranslationYTo(card, 0f).start();
-            }, delay);
-        }
-
-        // 不对 mod 名称做入场动画，保持静态
     }
 
     /**
@@ -367,6 +333,7 @@ public class ModDetailActivity extends BaseActivity {
     private void renderPackage() {
         InstalledFragment.Model.Row row = pkgRow;
         if (row == null) {
+            packageActionsContainer.setVisibility(View.GONE);
             pkgChip.setVisibility(View.GONE);
             pkgUpdateButton.setVisibility(View.GONE);
             pkgPromoteButton.setVisibility(View.GONE);
@@ -383,6 +350,8 @@ public class ModDetailActivity extends BaseActivity {
         pkgUpdateButton.setText(getString(R.string.pkg_installed_update_available, row.targetVersion));
         pkgPromoteButton.setVisibility(!row.explicit() && !row.leviLamina ? View.VISIBLE : View.GONE);
         pkgOpenPackageButton.setVisibility(row.hasPackagePage() ? View.VISIBLE : View.GONE);
+        packageActionsContainer.setVisibility(row.canUpdate() || (!row.explicit() && !row.leviLamina)
+                || row.hasPackagePage() ? View.VISIBLE : View.GONE);
     }
 
     @Override

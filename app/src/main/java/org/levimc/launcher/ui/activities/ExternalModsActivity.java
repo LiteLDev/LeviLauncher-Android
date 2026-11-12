@@ -16,7 +16,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.widget.PopupMenu;
 import androidx.core.widget.CompoundButtonCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -39,6 +38,7 @@ import org.levimc.launcher.ui.dialogs.InstallProgressDialog;
 import org.levimc.launcher.ui.views.MainViewModel;
 import org.levimc.launcher.ui.views.MainViewModelFactory;
 import org.levimc.launcher.ui.widget.UiKit;
+import org.levimc.launcher.ui.widget.LauncherPopup;
 import org.levimc.launcher.util.PersonalizationManager;
 
 import java.util.ArrayList;
@@ -160,16 +160,15 @@ public final class ExternalModsActivity extends BaseActivity {
 
         updateSortText();
         sort.setOnClickListener(v -> {
-            PopupMenu menu = new PopupMenu(this, v);
-            menu.getMenu().add(0, SORT_NEWEST, 0, R.string.external_mods_sort_newest);
-            menu.getMenu().add(0, SORT_NAME, 1, R.string.external_mods_sort_name);
-            menu.setOnMenuItemClickListener(item -> {
-                sortMode = item.getItemId();
-                updateSortText();
-                applyFilters();
-                return true;
-            });
-            menu.show();
+            new LauncherPopup(v)
+                    .section(getString(R.string.pkg_sort_by))
+                    .choice(SORT_NEWEST, getString(R.string.external_mods_sort_newest), sortMode == SORT_NEWEST)
+                    .choice(SORT_NAME, getString(R.string.external_mods_sort_name), sortMode == SORT_NAME)
+                    .onSelect(id -> {
+                        sortMode = id;
+                        updateSortText();
+                        applyFilters();
+                    }).show();
         });
         search.addTextChangedListener(new TextWatcher() {
             @Override

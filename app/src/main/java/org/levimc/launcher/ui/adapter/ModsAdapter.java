@@ -121,10 +121,15 @@ public class ModsAdapter extends RecyclerView.Adapter<ModsAdapter.ModViewHolder>
         }
 
         if (holder.configBadge != null) {
-            holder.configBadge.setVisibility(View.GONE);
+            holder.configBadge.setVisibility(mod.hasEditableConfig() ? View.VISIBLE : View.GONE);
         }
 
         bindPackage(holder, mod);
+        if (holder.badgesRow != null) {
+            InstalledFragment.Model.Row row = pkgRows.get(InstalledFragment.Model.folderKey(mod.getId()));
+            holder.badgesRow.setVisibility(row != null && row.canUpdate() ? View.VISIBLE : View.GONE);
+        }
+        holder.switchBtn.setContentDescription(holder.itemView.getContext().getString(R.string.mods_enable_mod, mod.getDisplayName()));
 
         holder.switchBtn.setOnCheckedChangeListener(null);
         holder.switchBtn.setChecked(mod.isEnabled());
@@ -140,11 +145,13 @@ public class ModsAdapter extends RecyclerView.Adapter<ModsAdapter.ModViewHolder>
         });
 
         if (holder.dragHandle != null) {
-            holder.dragHandle.setVisibility(reorderEnabled ? View.VISIBLE : View.INVISIBLE);
+            holder.dragHandle.setVisibility(reorderEnabled ? View.VISIBLE : View.GONE);
             holder.dragHandle.setOnTouchListener((v, event) -> {
                 if (event.getAction() == android.view.MotionEvent.ACTION_DOWN && itemTouchHelper != null
                         && reorderEnabled) {
+                    if (holder.getBindingAdapterPosition() == RecyclerView.NO_POSITION) return false;
                     itemTouchHelper.startDrag(holder);
+                    return true;
                 }
                 return false;
             });
@@ -161,7 +168,7 @@ public class ModsAdapter extends RecyclerView.Adapter<ModsAdapter.ModViewHolder>
 
         android.content.Context context = holder.itemView.getContext();
         org.levimc.launcher.util.PersonalizationManager pm = new org.levimc.launcher.util.PersonalizationManager(context);
-        pm.applyGlassToView(holder.itemView);
+        if (context instanceof android.app.Activity) pm.applyGlassToTree(holder.itemView, (android.app.Activity) context);
         pm.applyAccentToView(holder.itemView, context);
     }
 
@@ -249,6 +256,7 @@ public class ModsAdapter extends RecyclerView.Adapter<ModsAdapter.ModViewHolder>
         TextView configBadge;
         ImageView pkgBadge;
         View divider;
+        View badgesRow;
         TextView pkgUpdate;
         TextView authorText;
         TextView versionText;
@@ -258,6 +266,7 @@ public class ModsAdapter extends RecyclerView.Adapter<ModsAdapter.ModViewHolder>
         public ModViewHolder(@NonNull View itemView) {
             super(itemView);
             name = itemView.findViewById(R.id.mod_name);
+            badgesRow = itemView.findViewById(R.id.mod_badges);
             orderText = itemView.findViewById(R.id.mod_order);
             configBadge = itemView.findViewById(R.id.mod_config_badge);
             pkgBadge = itemView.findViewById(R.id.mod_pkg_badge);

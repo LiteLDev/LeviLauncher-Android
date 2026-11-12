@@ -1,7 +1,6 @@
 package org.levimc.launcher.ui.activities;
 
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -61,6 +60,7 @@ public class InstanceSettingsActivity extends BaseActivity {
     private EditText editName;
     private SwitchMaterial switchIsolation;
     private SwitchMaterial switchLaunchVertically;
+    private SwitchMaterial switchModMenu;
     private EditText editShortcutName;
     private ImageView shortcutIconPreview;
     private View shortcutIconPlaceholder;
@@ -71,6 +71,7 @@ public class InstanceSettingsActivity extends BaseActivity {
     private boolean populatingData;
     private String lastSavedInstanceName = "";
     private LoaderCard loaderSection;
+    private int currentTab = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +121,9 @@ public class InstanceSettingsActivity extends BaseActivity {
         String tab = getIntent().getStringExtra(PackagesActivity.Links.EXTRA_TAB);
         int initialTab = PackagesActivity.Links.TAB_LOADER.equals(tab) ? TAB_LOADER
                 : PackagesActivity.Links.TAB_MANAGEMENT.equals(tab) ? TAB_MANAGEMENT : TAB_GENERAL;
+        if (savedInstanceState != null) {
+            initialTab = Math.max(TAB_GENERAL, Math.min(TAB_MANAGEMENT, savedInstanceState.getInt("instance_settings_tab", initialTab)));
+        }
         tabs.setSelectedIndex(initialTab, false);
         selectTab(initialTab);
     }
@@ -134,17 +138,12 @@ public class InstanceSettingsActivity extends BaseActivity {
 
     private void initViews() {
         tabs = findViewById(R.id.instance_tabs);
+        tabs.setEqualWidth(false);
         tabs.setItems(getString(R.string.instance_tab_general),
                 getString(R.string.instance_tab_launch_options),
                 getString(R.string.instance_tab_loader),
                 getString(R.string.instance_tab_management));
         tabs.setOnSegmentSelectedListener(this::selectTab);
-
-        int accentText = UiKit.accentText(this);
-        ((TextView) findViewById(R.id.instance_auto_save_text)).setTextColor(accentText);
-        ((ImageView) findViewById(R.id.instance_auto_save_icon))
-                .setImageTintList(ColorStateList.valueOf(accentText));
-        UiKit.applyHeading(findViewById(R.id.instance_settings_title));
 
         sectionGeneral = findViewById(R.id.section_general);
         sectionLaunchOptions = findViewById(R.id.section_launch_options);
@@ -154,6 +153,7 @@ public class InstanceSettingsActivity extends BaseActivity {
         editName = findViewById(R.id.edit_instance_name);
         switchIsolation = findViewById(R.id.switch_version_isolation);
         switchLaunchVertically = findViewById(R.id.switch_launch_vertically);
+        switchModMenu = findViewById(R.id.switch_instance_mod_menu);
         editShortcutName = findViewById(R.id.edit_shortcut_name);
         shortcutIconPreview = findViewById(R.id.shortcut_icon_preview);
         shortcutIconPlaceholder = findViewById(R.id.instance_icon_placeholder);
@@ -168,6 +168,18 @@ public class InstanceSettingsActivity extends BaseActivity {
             if (populatingData) return;
             versionManager.setInstanceLaunchVertically(version, isChecked);
             setResult(RESULT_OK);
+        });
+
+        switchModMenu.setOnCheckedChangeListener((button, checked) -> {
+            if (populatingData) return;
+            if (versionManager.setInstanceModMenuEnabled(version, checked)) {
+                setResult(RESULT_OK);
+            } else {
+                populatingData = true;
+                switchModMenu.setChecked(versionManager.isInstanceModMenuEnabled(version));
+                populatingData = false;
+                Toast.makeText(this, R.string.instance_settings_auto_save_failed, Toast.LENGTH_SHORT).show();
+            }
         });
 
         editName.addTextChangedListener(new TextWatcher() {
@@ -225,14 +237,8 @@ public class InstanceSettingsActivity extends BaseActivity {
     }
 
     private void populateData() {
-        TextView instanceInfo = findViewById(R.id.instance_info);
         TextView versionTag = findViewById(R.id.instance_version_tag);
         versionTag.setText(version.versionCode != null ? version.versionCode : "—");
-        String type = version.isInstalled ? getString(R.string.tag_installed) : getString(R.string.tag_custom);
-        String info = getString(R.string.instances_ui_info_name,
-                version.directoryName != null ? version.directoryName : "—");
-        instanceInfo.setText(info + " · " + type);
-
         String currentName = version.versionCode != null ? version.versionCode : "";
         if (version.displayName != null && !version.displayName.isEmpty()) {
             String dn = version.displayName;
@@ -243,11 +249,13 @@ public class InstanceSettingsActivity extends BaseActivity {
                 currentName = dn;
             }
         }
+        updateInstanceInfo(currentName);
         populatingData = true;
         lastSavedInstanceName = currentName.trim();
         editName.setText(currentName);
         switchIsolation.setChecked(version.versionIsolation);
         switchLaunchVertically.setChecked(version.launchVertically);
+        switchModMenu.setChecked(versionManager.isInstanceModMenuEnabled(version));
         editShortcutName.setText(InstanceShortcutManager.getSavedName(this, version));
         shortcutIconUri = InstanceShortcutManager.getSavedIconUri(this, version);
         updateShortcutIconPreview();
@@ -255,6 +263,8 @@ public class InstanceSettingsActivity extends BaseActivity {
     }
 
     private void selectTab(int index) {
+        boolean changed = currentTab >= 0 && currentTab != index;
+        currentTab = index;
         View[] sections = {sectionGeneral, sectionLaunchOptions, sectionLoader, sectionManagement};
         for (int i = 0; i < sections.length; i++) {
             if (i == index) {
@@ -268,6 +278,21 @@ public class InstanceSettingsActivity extends BaseActivity {
         if (loaderSection != null) {
             loaderSection.setVisible(index == TAB_LOADER);
         }
+        if (changed) findViewById(R.id.instance_settings_scroll).post(() ->
+                ((android.widget.ScrollView) findViewById(R.id.instance_settings_scroll)).scrollTo(0, 0));
+    }
+
+    private void updateInstanceInfo(String name) {
+        TextView info = findViewById(R.id.instance_info);
+        String type = getString(version.isInstalled ? R.string.tag_installed : R.string.tag_custom);
+        info.setText(name + " · " + type);
+        info.setContentDescription(info.getText());
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("instance_settings_tab", currentTab);
     }
 
     private void scheduleInstanceNameSave() {
@@ -288,6 +313,7 @@ public class InstanceSettingsActivity extends BaseActivity {
         if (newName.isEmpty() || newName.equals(lastSavedInstanceName)) return;
         if (versionManager.setInstanceDisplayName(version, newName)) {
             lastSavedInstanceName = newName;
+            updateInstanceInfo(newName);
             setResult(RESULT_OK);
         } else {
             Toast.makeText(this, R.string.instance_settings_auto_save_failed, Toast.LENGTH_SHORT).show();

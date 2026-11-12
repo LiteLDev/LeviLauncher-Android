@@ -43,6 +43,7 @@ import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
 
 import org.levimc.launcher.ui.views.MainViewModel;
 import org.levimc.launcher.ui.widget.UiKit;
+import org.levimc.launcher.ui.widget.LauncherPopup;
 import org.levimc.launcher.util.ThemePalette;
 import org.levimc.launcher.ui.views.MainViewModelFactory;
 import org.levimc.launcher.util.ApkImportManager;
@@ -812,7 +813,6 @@ import okhttp3.OkHttpClient;
         binding.homeLaunchMenuButton.setImageTintList(ColorStateList.valueOf(onAccent));
         binding.homeLaunchDivider.setBackgroundColor(onAccent);
 
-        UiKit.tintIconChip(binding.homeModsChip, binding.homeModsIcon, UiKit.INDIGO);
         UiKit.tintIconChip(binding.homeContentChip, binding.homeContentIcon, UiKit.PINK);
         UiKit.tintIconChip(binding.homeDownloadChip, binding.homeDownloadIcon, UiKit.ORANGE);
         UiKit.tintIconChip(binding.homeWorldsChip, binding.homeWorldsIcon, UiKit.BLUE);
@@ -832,14 +832,11 @@ import okhttp3.OkHttpClient;
     }
 
     private void showLaunchMenu(View anchor) {
-        android.widget.PopupMenu menu = new android.widget.PopupMenu(this, anchor, Gravity.END);
-        menu.getMenu().add(0, 1, 0, R.string.quick_launch);
-        menu.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() != 1) return false;
-            startActivity(new Intent(this, QuickLaunchActivity.class));
-            return true;
-        });
-        menu.show();
+        new LauncherPopup(anchor)
+                .width(240)
+                .action(1, getString(R.string.quick_launch), R.drawable.ic_qa_launch)
+                .onSelect(id -> startActivity(new Intent(this, QuickLaunchActivity.class)))
+                .show();
     }
 
     private void openInstanceSettings() {
@@ -1267,9 +1264,6 @@ import okhttp3.OkHttpClient;
         tv.setTypeface(getResources().getFont(R.font.misans));
         tv.setGravity(Gravity.CENTER_VERTICAL);
         tv.setMinHeight((int) UiKit.dp(this, 36));
-        tv.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_ui_puzzle, 0, 0, 0);
-        tv.setCompoundDrawableTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.ui_muted)));
-        tv.setCompoundDrawablePadding((int) UiKit.dp(this, 10));
         tv.setMaxLines(1);
         tv.setEllipsize(android.text.TextUtils.TruncateAt.END);
         modsListContainer.addView(tv);

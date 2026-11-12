@@ -1,165 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- A mod row, drawn as its own borderless card like v1.6.1: drag handle, name (+ load order, author, package badges), version, enable switch. -->
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="6dp"
-    android:background="@drawable/v161r2_mods_row_card"
-    android:orientation="vertical">
-
-    <!-- v1.6.1 rows are separate cards, so the divider takes no space. -->
-    <View
-        android:id="@+id/mod_divider"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@color/divider" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:minHeight="56dp"
-        android:orientation="horizontal"
-        android:paddingStart="12dp"
-        android:paddingTop="8dp"
-        android:paddingEnd="12dp"
-        android:paddingBottom="8dp">
-
-        <ImageView
-            android:id="@+id/drag_handle"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="12dp"
-            android:alpha="0.6"
-            android:contentDescription="@string/drag_to_reorder"
-            android:padding="4dp"
-            android:src="@drawable/ic_drag_handle"
-            app:tint="@color/text_secondary" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:minWidth="64dp"
-            android:orientation="vertical"
-            android:paddingEnd="8dp">
-
-            <TextView
-                android:id="@+id/mod_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@string/mod_name_placeholder"
-                android:textAppearance="@style/TextAppearance.Levi.Body"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/mod_order"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:maxLines="1"
-                    android:text="@string/mod_load_order_placeholder"
-                    android:textAppearance="@style/TextAppearance.Levi.Caption"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/mod_config_badge"
-                    style="@style/Widget.Levi.Tag.Accent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="6dp"
-                    android:paddingHorizontal="7dp"
-                    android:paddingVertical="2dp"
-                    android:text="@string/mod_config_badge"
-                    android:textSize="10sp"
-                    android:textStyle="bold"
-                    android:visibility="gone" />
-
-                <ImageView
-                    android:id="@+id/mod_pkg_badge"
-                    android:layout_width="26dp"
-                    android:layout_height="18dp"
-                    android:layout_marginEnd="6dp"
-                    android:background="@drawable/bg_ui_tag_accent"
-                    android:contentDescription="@string/pkg_mod_badge"
-                    android:paddingHorizontal="6dp"
-                    android:paddingVertical="2dp"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/ic_pkg_package"
-                    android:tooltipText="@string/pkg_mod_badge"
-                    android:visibility="gone"
-                    app:tint="@color/accent_text" />
-
-                <TextView
-                    android:id="@+id/mod_pkg_update"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="6dp"
-                    android:background="@drawable/bg_pkg_status_chip"
-                    android:backgroundTint="@color/pkg_status_success"
-                    android:ellipsize="end"
-                    android:fontFamily="@font/misans"
-                    android:maxLines="1"
-                    android:minHeight="24dp"
-                    android:gravity="center"
-                    android:paddingHorizontal="8dp"
-                    android:textColor="@color/on_primary"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/mod_author"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    android:textAppearance="@style/TextAppearance.Levi.Caption" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/bg_ui_row">
+    <View android:id="@+id/mod_divider" android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginStart="12dp" android:layout_marginEnd="12dp" android:background="@color/divider" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:minHeight="56dp" android:paddingStart="8dp" android:paddingEnd="12dp" android:paddingTop="8dp" android:paddingBottom="8dp">
+        <ImageView android:id="@+id/drag_handle" android:layout_width="28dp" android:layout_height="40dp" android:layout_marginEnd="8dp" android:padding="4dp" android:contentDescription="@string/drag_to_reorder" android:src="@drawable/ic_drag_handle" app:tint="@color/text_secondary" />
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="8dp" android:orientation="vertical">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                <TextView android:id="@+id/mod_name" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:singleLine="true" android:ellipsize="end" android:textAppearance="@style/TextAppearance.Levi.Body" android:textSize="14sp" android:textStyle="bold" android:includeFontPadding="false" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Levi.Body" android:id="@+id/mod_config_badge" style="@style/Widget.Levi.Tag.Accent" android:text="@string/mod_config_badge" android:textSize="10sp" android:paddingStart="6dp" android:paddingEnd="6dp" android:paddingTop="2dp" android:paddingBottom="2dp" android:visibility="gone" android:layout_marginStart="6dp" />
+                <ImageView android:id="@+id/mod_pkg_badge" android:layout_width="24dp" android:layout_height="20dp" android:paddingStart="5dp" android:paddingEnd="5dp" android:paddingTop="2dp" android:paddingBottom="2dp" android:background="@drawable/bg_ui_tag_accent" android:src="@drawable/ic_pkg_package" android:contentDescription="@string/pkg_mod_badge" android:visibility="gone" app:tint="@color/accent_text" android:layout_marginStart="6dp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Levi.Body" android:id="@+id/mod_order" android:layout_marginStart="6dp" android:textSize="10sp" android:textColor="@color/text_secondary" android:singleLine="true" android:visibility="gone" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="4dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Levi.Body" android:id="@+id/mod_version" style="@style/Widget.Levi.Tag" android:textSize="10sp" android:paddingStart="6dp" android:paddingEnd="6dp" android:paddingTop="2dp" android:paddingBottom="2dp" android:maxWidth="112dp" android:singleLine="true" android:ellipsize="end" android:includeFontPadding="false" />
+                <TextView android:id="@+id/mod_author" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="8dp" android:singleLine="true" android:ellipsize="end" android:textAppearance="@style/TextAppearance.Levi.Caption" android:textSize="11sp" android:includeFontPadding="false" />
+            </LinearLayout>
+            <LinearLayout android:id="@+id/mod_badges" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="5dp" android:visibility="gone">
+                <FrameLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:textAppearance="@style/TextAppearance.Levi.Body" android:id="@+id/mod_pkg_update" android:background="@drawable/bg_pkg_status_chip" android:backgroundTint="@color/pkg_status_success" android:textColor="@color/on_primary" android:textSize="11sp" android:textStyle="bold" android:maxWidth="180dp" android:singleLine="true" android:ellipsize="end" android:gravity="center" android:minHeight="24dp" android:paddingStart="8dp" android:paddingEnd="8dp" android:visibility="gone" />
+                </FrameLayout>
             </LinearLayout>
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/mod_version"
-            android:layout_width="@dimen/mods_col_version_width"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.Levi.Body"
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp"
-            android:textStyle="bold" />
-
-        <FrameLayout
-            android:layout_width="72dp"
-            android:layout_height="wrap_content">
-
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/mod_switch"
-                style="@style/Widget.Levi.Switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center" />
-        </FrameLayout>
-
-        <!-- Keeps the switch column under the header's "Enabled" label (the header ends with the refresh button). -->
-        <Space
-            android:layout_width="44dp"
-            android:layout_height="1dp" />
+        <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/mod_switch" style="@style/Widget.Levi.Switch" android:layout_width="52dp" android:layout_height="40dp" android:minHeight="0dp" />
     </LinearLayout>
 </LinearLayout>

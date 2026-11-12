@@ -16,7 +16,6 @@ public class InbuiltModManager {
     private static final String KEY_INBUILT_KEYBIND_PREFIX = "inbuilt_keybind_";
     private static final String KEY_OVERLAY_BUTTON_SIZE_PREFIX = "overlay_button_size_";
     private static final String KEY_OVERLAY_OPACITY_PREFIX = "overlay_opacity_";
-    private static final String KEY_MOD_MENU_ENABLED = "mod_menu_enabled";
     private static final String KEY_NOTIFICATIONS_ENABLED = "notifications_enabled";
     private static final String KEY_MOD_MENU_OPACITY = "mod_menu_opacity";
     private static final String KEY_MOD_MENU_BUTTON_OPACITY = "mod_menu_button_opacity";
@@ -141,14 +140,6 @@ public class InbuiltModManager {
 
     public void setOverlayOpacity(String modId, int opacity) {
         prefs.edit().putInt(KEY_OVERLAY_OPACITY_PREFIX + modId, Math.max(0, Math.min(100, opacity))).apply();
-    }
-
-    public boolean isModMenuEnabled() {
-        return prefs.getBoolean(KEY_MOD_MENU_ENABLED, true);
-    }
-
-    public void setModMenuEnabled(boolean enabled) {
-        prefs.edit().putBoolean(KEY_MOD_MENU_ENABLED, enabled).apply();
     }
 
     public boolean isLauncherHudHideEnabled() {

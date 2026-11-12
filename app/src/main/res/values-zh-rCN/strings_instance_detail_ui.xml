@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="instance_mod_menu_title">游戏内模组菜单</string>
+    <string name="instance_mod_menu_description">为此实例启用启动器的游戏内模组菜单。</string>
+    <string name="mod_detail_about">关于此模组</string>
+</resources>
