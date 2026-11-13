@@ -3,436 +3,181 @@ package org.levimc.launcher.ui.dialogs;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.animation.ValueAnimator;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import org.levimc.launcher.R;
-import org.levimc.launcher.ui.animation.DynamicAnim;
+import org.levimc.launcher.ui.widget.UiKit;
 
 public class CustomAlertDialog extends Dialog {
-
-    private String mTitle;
-    private String mMessage;
-    private String mPositiveText;
-    private String mNegativeText;
-    private String mNeutralText;
-    private View.OnClickListener mPositiveListener;
-    private View.OnClickListener mNegativeListener;
-    private View.OnClickListener mNeutralListener;
+    private String mTitle, mMessage, mPositiveText, mNegativeText, mNeutralText;
+    private View.OnClickListener mPositiveListener, mNegativeListener, mNeutralListener;
     private Button mPositiveButton;
     private String[] mItems;
     private DialogInterface.OnClickListener mItemClickListener;
     private View mCustomView;
-    private boolean mBlurBackground;
-    private int mTitleColor = 0;
-    private boolean mUseBorderedBackground;
+    private boolean mBlurBackground = true;
+    private int mTitleColor;
+    private int mIconResource;
     private boolean mDismissing;
     private Runnable mDismissAnimationEndListener;
 
-    public CustomAlertDialog(Context context) {
-        super(context);
-    }
+    public CustomAlertDialog(Context context) { super(context); }
+    public CustomAlertDialog setTitleText(String title) { mTitle = title; return this; }
+    public CustomAlertDialog setMessage(String message) { mMessage = message; return this; }
+    public CustomAlertDialog setPositiveButton(String text, View.OnClickListener listener) { mPositiveText = text; mPositiveListener = listener; return this; }
+    public CustomAlertDialog setNegativeButton(String text, View.OnClickListener listener) { mNegativeText = text; mNegativeListener = listener; return this; }
+    public CustomAlertDialog setNeutralButton(String text, View.OnClickListener listener) { mNeutralText = text; mNeutralListener = listener; return this; }
+    public CustomAlertDialog setItems(String[] items, DialogInterface.OnClickListener listener) { mItems = items; mItemClickListener = listener; return this; }
+    public CustomAlertDialog setCustomView(View view) { mCustomView = view; return this; }
+    public CustomAlertDialog setBlurBackground(boolean blur) { mBlurBackground = blur; return this; }
+    public CustomAlertDialog setTitleColor(int color) { mTitleColor = color; return this; }
+    public CustomAlertDialog setIconResource(int icon) { mIconResource = icon; return this; }
+    public CustomAlertDialog setUseBorderedBackground(boolean bordered) { return this; }
+    public CustomAlertDialog setOnDismissAnimationEndListener(Runnable listener) { mDismissAnimationEndListener = listener; return this; }
 
-    public CustomAlertDialog setTitleText(String title) {
-        this.mTitle = title;
-        return this;
-    }
-
-    public CustomAlertDialog setMessage(String message) {
-        this.mMessage = message;
-        return this;
-    }
-
-    public CustomAlertDialog setPositiveButton(String text, View.OnClickListener listener) {
-        this.mPositiveText = text;
-        this.mPositiveListener = listener;
-        return this;
-    }
-
-    public CustomAlertDialog setNegativeButton(String text, View.OnClickListener listener) {
-        this.mNegativeText = text;
-        this.mNegativeListener = listener;
-        return this;
-    }
-
-    public CustomAlertDialog setNeutralButton(String text, View.OnClickListener listener) {
-        this.mNeutralText = text;
-        this.mNeutralListener = listener;
-        return this;
-    }
-
-    public CustomAlertDialog setItems(String[] items, DialogInterface.OnClickListener listener) {
-        this.mItems = items;
-        this.mItemClickListener = listener;
-        return this;
-    }
-
-    public CustomAlertDialog setCustomView(View view) {
-        this.mCustomView = view;
-        return this;
-    }
-
-    public CustomAlertDialog setBlurBackground(boolean blur) {
-        this.mBlurBackground = blur;
-        return this;
-    }
-
-    public CustomAlertDialog setTitleColor(int color) {
-        this.mTitleColor = color;
-        return this;
-    }
-
-    public CustomAlertDialog setUseBorderedBackground(boolean bordered) {
-        this.mUseBorderedBackground = bordered;
-        return this;
-    }
-
-    public CustomAlertDialog setOnDismissAnimationEndListener(Runnable listener) {
-        this.mDismissAnimationEndListener = listener;
-        return this;
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    @Override protected void onCreate(Bundle state) {
+        super.onCreate(state);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.alert_dialog_custom);
         setCanceledOnTouchOutside(false);
-
-        if (mUseBorderedBackground) {
-            View root = findViewById(android.R.id.content);
-            if (root != null) {
-                View dialogRoot = ((ViewGroup) root).getChildAt(0);
-                if (dialogRoot != null) {
-                    dialogRoot.setBackgroundResource(R.drawable.dialog_background_black_border);
-                }
-            }
+        TextView title = findViewById(R.id.tv_title);
+        title.setText(mTitle == null ? "" : mTitle);
+        findViewById(R.id.dialog_header).setVisibility(mTitle == null || mTitle.isEmpty() ? View.GONE : View.VISIBLE);
+        ImageView icon = findViewById(R.id.dialog_header_icon);
+        if (mIconResource != 0) {
+            icon.setImageResource(mIconResource);
+            icon.setImageTintList(ColorStateList.valueOf(mTitleColor != 0 ? mTitleColor : UiKit.accentText(getContext())));
+            icon.setBackground(LauncherDialogs.shape(getContext(), LauncherDialogs.raised(getContext()), 10, true));
+            icon.setVisibility(View.VISIBLE);
         }
-
-        TextView tvTitle = findViewById(R.id.tv_title);
-        TextView tvMessage = findViewById(R.id.tv_message);
-        Button btnPositive = findViewById(R.id.btn_positive);
-        Button btnNegative = findViewById(R.id.btn_negative);
-        Button btnNeutral = findViewById(R.id.btn_neutral);
-        mPositiveButton = btnPositive;
-        View spacingNegNeu = findViewById(R.id.btn_spacing_neg_neu);
-        View spacingNeuPos = findViewById(R.id.btn_spacing_neu_pos);
-
-        tvTitle.setText(mTitle != null ? mTitle : "");
-        if (mTitleColor != 0) {
-            tvTitle.setTextColor(mTitleColor);
-        }
-        tvMessage.setText(mMessage != null ? mMessage : "");
-
-        RecyclerView itemsRecyclerView = findViewById(R.id.items_recycler_view);
-        View messageScrollView = findViewById(R.id.message_scroll_view);
-        LinearLayout customViewContainer = findViewById(R.id.custom_view_container);
-        
+        TextView message = findViewById(R.id.tv_message);
+        message.setText(mMessage == null ? "" : mMessage);
+        message.setVisibility(mMessage == null || mMessage.isEmpty() ? View.GONE : View.VISIBLE);
+        LinearLayout custom = findViewById(R.id.custom_view_container);
+        RecyclerView items = findViewById(R.id.items_recycler_view);
         if (mCustomView != null) {
-            messageScrollView.setVisibility(View.GONE);
-            itemsRecyclerView.setVisibility(View.GONE);
-            if (customViewContainer != null) {
-                customViewContainer.setVisibility(View.VISIBLE);
-                customViewContainer.addView(mCustomView);
-            }
+            if (mCustomView.getParent() instanceof ViewGroup) ((ViewGroup) mCustomView.getParent()).removeView(mCustomView);
+            custom.addView(mCustomView);
+            custom.setVisibility(View.VISIBLE);
+            LinearLayout.LayoutParams space = (LinearLayout.LayoutParams) custom.getLayoutParams();
+            space.topMargin = message.getVisibility() == View.VISIBLE ? dp(12) : 0;
+            custom.setLayoutParams(space);
         } else if (mItems != null && mItems.length > 0) {
-            messageScrollView.setVisibility(View.GONE);
-            itemsRecyclerView.setVisibility(View.VISIBLE);
-            itemsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-            itemsRecyclerView.setAdapter(new ItemsAdapter(mItems, (position) -> {
-                if (mItemClickListener != null) {
-                    mItemClickListener.onClick(this, position);
-                }
+            findViewById(R.id.message_scroll_view).setVisibility(View.GONE);
+            items.setVisibility(View.VISIBLE);
+            items.setItemAnimator(null);
+            items.setLayoutManager(new LinearLayoutManager(getContext()));
+            items.setAdapter(new ItemsAdapter(mItems, index -> {
+                if (mItemClickListener != null) mItemClickListener.onClick(this, index);
                 dismiss();
             }));
-        } else {
-            itemsRecyclerView.setVisibility(View.GONE);
         }
-
-        boolean hasThreeButtons = mPositiveText != null && mNegativeText != null && mNeutralText != null;
-        LinearLayout btnContainer = findViewById(R.id.btn_container);
-
-        if (hasThreeButtons && btnContainer != null) {
-            btnContainer.setOrientation(LinearLayout.VERTICAL);
-
-            LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            btnParams.topMargin = (int) (8 * getContext().getResources().getDisplayMetrics().density);
-
-            LinearLayout.LayoutParams firstBtnParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
-            btnPositive.setLayoutParams(firstBtnParams);
-            btnNeutral.setLayoutParams(btnParams);
-            btnNegative.setLayoutParams(btnParams);
-
-            if (spacingNegNeu != null) spacingNegNeu.setVisibility(View.GONE);
-            if (spacingNeuPos != null) spacingNeuPos.setVisibility(View.GONE);
-
-            btnContainer.removeAllViews();
-            btnContainer.addView(btnPositive);
-            btnContainer.addView(btnNeutral);
-            btnContainer.addView(btnNegative);
+        mPositiveButton = findViewById(R.id.btn_positive);
+        Button negative = findViewById(R.id.btn_negative);
+        Button neutral = findViewById(R.id.btn_neutral);
+        bindButton(negative, mNegativeText, mNegativeListener, false);
+        bindButton(neutral, mNeutralText, mNeutralListener, false);
+        bindButton(mPositiveButton, mPositiveText, mPositiveListener, true);
+        LinearLayout footer = findViewById(R.id.btn_container);
+        int count = (mNegativeText != null ? 1 : 0) + (mNeutralText != null ? 1 : 0) + (mPositiveText != null ? 1 : 0);
+        footer.setVisibility(count == 0 ? View.GONE : View.VISIBLE);
+        findViewById(R.id.dialog_action_divider).setVisibility(count == 0 ? View.GONE : View.VISIBLE);
+        findViewById(R.id.dialog_action_divider).setBackgroundColor(LauncherDialogs.border(getContext()));
+        int width = Math.min(dp(520), getContext().getResources().getDisplayMetrics().widthPixels - dp(32));
+        int available = width - dp(32);
+        float required = dp(8 * Math.max(0, count - 1));
+        for (Button button : new Button[]{negative, neutral, mPositiveButton}) if (button.getVisibility() == View.VISIBLE) required += Math.max(dp(88), button.getPaint().measureText(button.getText().toString()) + button.getPaddingLeft() + button.getPaddingRight());
+        boolean distribute = required > available || count == 3;
+        boolean first = true;
+        for (Button button : new Button[]{negative, neutral, mPositiveButton}) {
+            if (button.getVisibility() != View.VISIBLE) continue;
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(distribute ? 0 : -2, -2, distribute ? 1 : 0);
+            params.setMarginStart(first ? 0 : dp(8));
+            button.setLayoutParams(params);
+            if (!distribute) button.setMinWidth(dp(88));
+            first = false;
         }
-
-        if (mNegativeText != null) {
-            btnNegative.setText(mNegativeText);
-            btnNegative.setVisibility(View.VISIBLE);
-        } else {
-            btnNegative.setVisibility(View.GONE);
+        LauncherDialogs.bind(this, 520, mBlurBackground);
+        if (getWindow() != null) {
+            getWindow().setLayout(width, -2);
+            getWindow().setWindowAnimations(0);
         }
-
-        if (mNeutralText != null) {
-            btnNeutral.setText(mNeutralText);
-            btnNeutral.setVisibility(View.VISIBLE);
-            if (!hasThreeButtons) {
-                if (spacingNegNeu != null) spacingNegNeu.setVisibility(mNegativeText != null ? View.VISIBLE : View.GONE);
-                if (spacingNeuPos != null) spacingNeuPos.setVisibility(mPositiveText != null ? View.VISIBLE : View.GONE);
-            }
-        } else {
-            btnNeutral.setVisibility(View.GONE);
-            if (spacingNegNeu != null) spacingNegNeu.setVisibility(View.GONE);
-            if (spacingNeuPos != null) spacingNeuPos.setVisibility(mNegativeText != null && mPositiveText != null ? View.VISIBLE : View.GONE);
-        }
-
-        if (mPositiveText != null) {
-            btnPositive.setText(mPositiveText);
-            btnPositive.setVisibility(View.VISIBLE);
-        } else {
-            btnPositive.setVisibility(View.GONE);
-        }
-
-        btnPositive.setOnClickListener(v -> {
-            if (mPositiveListener != null) mPositiveListener.onClick(v);
-            dismiss();
-        });
-
-        btnNegative.setOnClickListener(v -> {
-            if (mNegativeListener != null) mNegativeListener.onClick(v);
-            dismiss();
-        });
-
-        btnNeutral.setOnClickListener(v -> {
-            if (mNeutralListener != null) mNeutralListener.onClick(v);
-            dismiss();
-        });
-
-        Window window = getWindow();
-        if (window != null) {
-            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            float density = getContext().getResources().getDisplayMetrics().density;
-            int screenWidth = getContext().getResources().getDisplayMetrics().widthPixels;
-            int maxWidth = (int) (400 * density);
-            int dialogWidth = Math.min((int) (screenWidth * 0.9), maxWidth);
-            window.setLayout(dialogWidth, WindowManager.LayoutParams.WRAP_CONTENT);
-
-            if (mBlurBackground) {
-                window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-                WindowManager.LayoutParams params = window.getAttributes();
-                params.dimAmount = 0.6f;
-                window.setAttributes(params);
-            }
-        }
-
-        View content = findViewById(android.R.id.content);
-        if (content != null) {
-            DynamicAnim.animateDialogShow(content);
-        }
-        DynamicAnim.applyPressScale(btnPositive);
-        DynamicAnim.applyPressScale(btnNegative);
-        DynamicAnim.applyPressScale(btnNeutral);
-
-        try {
-            org.levimc.launcher.util.PersonalizationManager pm = new org.levimc.launcher.util.PersonalizationManager(getContext());
-            int accent = pm.getAccentColor();
-            if (accent != 0) {
-                btnPositive.setBackgroundTintList(android.content.res.ColorStateList.valueOf(accent));
-                btnPositive.setTextColor(Color.WHITE);
-            }
-        } catch (Exception ignored) {}
     }
 
-    @Override
-    public void show() {
-        Window window = getWindow();
-        if (window != null) {
-            window.setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
-        }
+    private void bindButton(Button button, String label, View.OnClickListener listener, boolean primary) {
+        button.setVisibility(label == null ? View.GONE : View.VISIBLE);
+        if (label == null) return;
+        button.setText(label);
+        LauncherDialogs.button(button, primary);
+        button.setOnClickListener(view -> { if (listener != null) listener.onClick(view); dismiss(); });
+    }
+
+    @Override public void show() {
+        mDismissing = false;
         super.show();
-        if (window != null) {
-            window.getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            );
-            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+        LauncherDialogs.style(this, 520);
+        TextView title = findViewById(R.id.tv_title);
+        if (mTitleColor != 0) title.setTextColor(mTitleColor);
+        View root = findViewById(R.id.dialog_shell);
+        root.animate().withEndAction(null).cancel();
+        root.setAlpha(0f); root.setTranslationY(dp(6));
+        root.animate().alpha(1f).translationY(0).setDuration(150L).start();
+    }
+
+    @Override public void dismiss() {
+        if (!isShowing() || mDismissing) return;
+        mDismissing = true;
+        View root = findViewById(R.id.dialog_shell);
+        if (root == null || !root.isAttachedToWindow()) { finishDismiss(true); return; }
+        root.animate().alpha(0f).translationY(dp(4)).setDuration(120L).withEndAction(() -> finishDismiss(true)).start();
+    }
+
+    private void finishDismiss(boolean notify) {
+        View root = findViewById(R.id.dialog_shell);
+        if (root != null) root.animate().withEndAction(null).cancel();
+        try { super.dismiss(); }
+        catch (RuntimeException ignored) {}
+        if (notify) {
+            Runnable callback = mDismissAnimationEndListener;
+            mDismissAnimationEndListener = null;
+            if (callback != null) callback.run();
         }
     }
 
-    @Override
-    public void dismiss() {
-        try {
-            if (!isShowing() || mDismissing) {
-                return;
-            }
-            mDismissing = true;
-            Window window = getWindow();
-            if (window == null || window.getDecorView().getParent() == null) {
-                try {
-                    super.dismiss();
-                } catch (Exception ignored) {
-                } finally {
-                    notifyDismissAnimationEnd();
-                }
-                return;
-            }
-            animateBackdropDismiss(window);
+    public void dismissImmediately() { mDismissing = true; finishDismiss(false); }
+    public Button getPositiveButton() { return mPositiveButton; }
+    private int dp(float value) { return LauncherDialogs.dp(getContext(), value); }
 
-            View content = findViewById(android.R.id.content);
-            if (content != null) {
-                DynamicAnim.animateDialogDismiss(content, () -> {
-                    try {
-                        if (isShowing()) {
-                            Window w = getWindow();
-                            if (w != null && w.getDecorView().getParent() != null) {
-                                clearBackdrop(w);
-                                CustomAlertDialog.super.dismiss();
-                            }
-                        }
-                    } catch (Exception ignored) {
-                    } finally {
-                        notifyDismissAnimationEnd();
-                    }
-                });
-            } else {
-                clearBackdrop(window);
-                super.dismiss();
-                notifyDismissAnimationEnd();
-            }
-        } catch (Exception ignored) {}
-    }
-
-    private void notifyDismissAnimationEnd() {
-        Runnable listener = mDismissAnimationEndListener;
-        mDismissAnimationEndListener = null;
-        if (listener != null) {
-            listener.run();
+    private static final class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.Holder> {
+        interface Listener { void selected(int index); }
+        final String[] items;
+        final Listener listener;
+        ItemsAdapter(String[] items, Listener listener) { this.items = items; this.listener = listener; }
+        @NonNull @Override public Holder onCreateViewHolder(@NonNull ViewGroup parent, int type) {
+            Context context = parent.getContext();
+            TextView row = new TextView(context);
+            row.setTextColor(LauncherDialogs.text(context)); row.setTextSize(13.5f);
+            row.setMinHeight(LauncherDialogs.dp(context, 48));
+            row.setPadding(LauncherDialogs.dp(context, 12), LauncherDialogs.dp(context, 12), LauncherDialogs.dp(context, 12), LauncherDialogs.dp(context, 12));
+            row.setBackground(new android.graphics.drawable.RippleDrawable(ColorStateList.valueOf(0x22808080),
+                    LauncherDialogs.shape(context, LauncherDialogs.raised(context), 10, false), LauncherDialogs.shape(context, Color.WHITE, 10, false)));
+            RecyclerView.LayoutParams layout = new RecyclerView.LayoutParams(-1, -2);
+            layout.bottomMargin = LauncherDialogs.dp(context, 6); row.setLayoutParams(layout);
+            return new Holder(row);
         }
-    }
-
-    private void animateBackdropDismiss(Window window) {
-        WindowManager.LayoutParams initialParams = window.getAttributes();
-        float startDimAmount = initialParams.dimAmount;
-        if (startDimAmount <= 0f) {
-            return;
-        }
-
-        ValueAnimator dimAnimator = ValueAnimator.ofFloat(startDimAmount, 0f);
-        dimAnimator.setDuration(160L);
-        dimAnimator.addUpdateListener(animation -> {
-            Window currentWindow = getWindow();
-            if (currentWindow == null || currentWindow.getDecorView().getParent() == null) {
-                return;
-            }
-            WindowManager.LayoutParams params = currentWindow.getAttributes();
-            params.dimAmount = (float) animation.getAnimatedValue();
-            currentWindow.setAttributes(params);
-        });
-        dimAnimator.start();
-    }
-
-    private void clearBackdrop(Window window) {
-        if (mBlurBackground && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            window.clearFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
-        }
-        window.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-        WindowManager.LayoutParams params = window.getAttributes();
-        params.dimAmount = 0f;
-        window.setAttributes(params);
-    }
-
-    public void dismissImmediately() {
-        try {
-            if (isShowing()) {
-                Window window = getWindow();
-                if (window != null) {
-                    clearBackdrop(window);
-                }
-                super.dismiss();
-            }
-        } catch (Exception ignored) {}
-    }
-
-    public Button getPositiveButton() {
-        return mPositiveButton;
-    }
-
-    private static class ItemsAdapter extends RecyclerView.Adapter<ItemsAdapter.ViewHolder> {
-        private final String[] items;
-        private final OnItemClickListener listener;
-
-        interface OnItemClickListener {
-            void onClick(int position);
-        }
-
-        ItemsAdapter(String[] items, OnItemClickListener listener) {
-            this.items = items;
-            this.listener = listener;
-        }
-
-        @NonNull
-        @Override
-        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            TextView textView = new TextView(parent.getContext());
-            textView.setLayoutParams(new RecyclerView.LayoutParams(
-                    RecyclerView.LayoutParams.MATCH_PARENT,
-                    RecyclerView.LayoutParams.WRAP_CONTENT));
-            int padding = (int) (16 * parent.getContext().getResources().getDisplayMetrics().density);
-            textView.setPadding(padding, padding, padding, padding);
-            textView.setTextSize(14);
-            textView.setTextColor(parent.getContext().getResources().getColor(R.color.text_primary, null));
-            textView.setBackgroundResource(android.R.drawable.list_selector_background);
-            return new ViewHolder(textView);
-        }
-
-        @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            holder.textView.setText(items[position]);
-            holder.textView.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onClick(position);
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return items != null ? items.length : 0;
-        }
-
-        static class ViewHolder extends RecyclerView.ViewHolder {
-            TextView textView;
-
-            ViewHolder(TextView itemView) {
-                super(itemView);
-                this.textView = itemView;
-            }
-        }
+        @Override public void onBindViewHolder(@NonNull Holder holder, int index) { holder.text.setText(items[index]); holder.text.setOnClickListener(view -> listener.selected(index)); }
+        @Override public int getItemCount() { return items.length; }
+        static final class Holder extends RecyclerView.ViewHolder { final TextView text; Holder(TextView view) { super(view); text = view; } }
     }
 }

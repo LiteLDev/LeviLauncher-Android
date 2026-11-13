@@ -1333,8 +1333,9 @@ public class ModMenuOverlay {
         ViewGroup search = overlayView.findViewById(R.id.search_container);
         ((android.widget.ImageView) search.getChildAt(0)).setImageTintList(ColorStateList.valueOf(theme.secondary));
         android.widget.ImageView logo = (android.widget.ImageView) modMenuLogo;
-        logo.setImageTintList(ColorStateList.valueOf(theme.text));
-        logo.setBackground(theme.shape(theme.buttonColor, 7, false));
+        logo.setImageTintList(null);
+        logo.setImageResource(R.drawable.ic_leaf_logo);
+        logo.setBackground(theme.shape(Color.WHITE, 7, false));
         ViewGroup brand = overlayView.findViewById(R.id.menu_brand_labels);
         ((TextView) brand.getChildAt(0)).setTextColor(theme.text);
         ((TextView) brand.getChildAt(1)).setTextColor(theme.secondary);

@@ -27,7 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import org.levimc.launcher.ui.dialogs.LauncherDialogBuilder;
 
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.content.ContentManager;
@@ -1036,7 +1036,7 @@ public class ContentListActivity extends BaseActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
         
-        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
+        AlertDialog dialog = new LauncherDialogBuilder(this)
             .setTitle(R.string.structures_found_title)
             .setView(dialogView)
             .setNegativeButton(R.string.cancel, null)
@@ -1109,7 +1109,7 @@ public class ContentListActivity extends BaseActivity {
             case VERSION_ISOLATION, VERSION_ISOLATION_EXTERNAL -> radioVersionIsolation.setEnabled(false);
         }
 
-        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
+        AlertDialog dialog = new LauncherDialogBuilder(this)
             .setTitle(R.string.transfer_content)
             .setView(dialogView)
             .setPositiveButton(R.string.transfer, (d, which) -> {
@@ -1161,7 +1161,7 @@ public class ContentListActivity extends BaseActivity {
             case VERSION_ISOLATION, VERSION_ISOLATION_EXTERNAL -> radioVersionIsolation.setEnabled(false);
         }
 
-        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
+        AlertDialog dialog = new LauncherDialogBuilder(this)
             .setTitle(R.string.transfer_content)
             .setView(dialogView)
             .setPositiveButton(R.string.transfer, (d, which) -> {
@@ -1561,7 +1561,7 @@ public class ContentListActivity extends BaseActivity {
         radioVersionIsolation.setText(getString(R.string.storage_version_isolation) + " (" + getString(R.string.storage_external) + ")");
         disableCurrentStorageOption(radioInternal, radioExternal, radioVersionIsolationInternal, radioVersionIsolation);
 
-        AlertDialog dialog = new MaterialAlertDialogBuilder(this)
+        AlertDialog dialog = new LauncherDialogBuilder(this)
                 .setTitle(R.string.transfer_content)
                 .setView(dialogView)
                 .setPositiveButton(R.string.transfer, (d, which) -> {

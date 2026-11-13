@@ -267,8 +267,11 @@ public class ContentDetailsActivity extends BaseActivity {
     }
 
     private void showFilesDialog(java.util.List<ContentFile> files) {
-        com.google.android.material.bottomsheet.BottomSheetDialog dialog = new com.google.android.material.bottomsheet.BottomSheetDialog(this);
+        android.app.Dialog dialog = new android.app.Dialog(this);
+        dialog.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_file_list);
+        org.levimc.launcher.ui.dialogs.LauncherDialogs.bind(dialog, 560);
+        dialog.findViewById(R.id.btn_cancel).setOnClickListener(v -> dialog.dismiss());
 
         org.levimc.launcher.util.PersonalizationManager pm = new org.levimc.launcher.util.PersonalizationManager(this);
         int accent = pm.hasCustomAccent() ? pm.getAccentColor() : androidx.core.content.ContextCompat.getColor(this, R.color.primary);
@@ -318,7 +321,7 @@ public class ContentDetailsActivity extends BaseActivity {
             dialog.getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
         }
 
-        dialog.getBehavior().setState(com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED);
+        org.levimc.launcher.ui.dialogs.LauncherDialogs.style(dialog, 560);
     }
 
     private void onBrowserClick() {

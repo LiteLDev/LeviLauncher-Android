@@ -161,6 +161,7 @@ public class FileHandler {
                     if (!packagedUris.isEmpty()) {
                         new CustomAlertDialog(context)
                                 .setTitleText(context.getString(R.string.import_confirmation_title))
+                                .setIconResource(R.drawable.ic_qa_import)
                                 .setMessage(context.getString(R.string.import_confirmation_message, packagedUris.size()))
                                 .setPositiveButton(context.getString(R.string.confirm), d -> handleFilesWithOverwriteCheck(packagedUris, null, null, null, callback))
                                 .setNegativeButton(context.getString(R.string.cancel), d -> {
@@ -468,8 +469,7 @@ public class FileHandler {
         container.setLayoutParams(new android.widget.LinearLayout.LayoutParams(
                 android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
                 android.widget.LinearLayout.LayoutParams.WRAP_CONTENT));
-        int padH = (int) (12 * density);
-        container.setPadding(padH, 0, padH, padH);
+        container.setPadding(0, 0, 0, 0);
 
         android.widget.LinearLayout.LayoutParams nameParams = new android.widget.LinearLayout.LayoutParams(
                 android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
@@ -501,6 +501,8 @@ public class FileHandler {
 
         new CustomAlertDialog(context)
                 .setTitleText(context.getString(R.string.import_so_plugin_title))
+                .setMessage(fileName)
+                .setIconResource(R.drawable.ic_qa_import)
                 .setCustomView(container)
                 .setPositiveButton(context.getString(R.string.import_button), v -> {
                     String name    = etName.getText().toString().trim();
@@ -527,10 +529,10 @@ public class FileHandler {
             android.view.ViewGroup container, String label, String defaultValue, float density, android.widget.LinearLayout.LayoutParams layoutParams) {
         android.widget.LinearLayout card = new android.widget.LinearLayout(context);
         card.setOrientation(android.widget.LinearLayout.VERTICAL);
-        card.setBackgroundResource(R.drawable.plugin_field_background);
-        int cardPadH = (int) (12 * density);
+        card.setBackground(null);
+        int cardPadH = 0;
         int cardPadTop = (int) (8 * density);
-        int cardPadBottom = (int) (8 * density);
+        int cardPadBottom = 0;
         card.setPadding(cardPadH, cardPadTop, cardPadH, cardPadBottom);
         
         if (layoutParams == null) {
@@ -543,7 +545,7 @@ public class FileHandler {
 
         android.widget.TextView tv = new android.widget.TextView(context);
         tv.setText(label);
-        tv.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 10);
+        tv.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 12);
         int secondaryColor = 0xFFAAAAAA;
         try { secondaryColor = context.getResources().getColor(R.color.text_secondary, context.getTheme()); } catch (Exception ignored) {}
         tv.setTextColor(secondaryColor);
@@ -1278,6 +1280,7 @@ public class FileHandler {
 
         new Handler(Looper.getMainLooper()).post(() -> new CustomAlertDialog(context)
                 .setTitleText(context.getString(R.string.overwrite_file_title))
+                .setIconResource(R.drawable.ic_dialog_replace)
                 .setMessage(context.getString(R.string.overwrite_file_message, modName))
                 .setPositiveButton(context.getString(R.string.overwrite), dlg -> {
                     synchronized (decisionLock) {

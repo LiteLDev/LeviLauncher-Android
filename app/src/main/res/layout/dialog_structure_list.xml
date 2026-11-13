@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<org.levimc.launcher.ui.dialogs.LauncherDialogLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp"
-    android:background="#2D2D2D">
+    android:padding="0dp">
 
     <TextView
         android:id="@+id/structure_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#AAAAAA"
+        android:textColor="@color/text_secondary"
         android:textSize="14sp"
         android:layout_marginBottom="12dp" />
 
@@ -18,6 +17,6 @@
         android:id="@+id/structures_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxHeight="400dp" />
+        android:layout_weight="1" />
 
-</LinearLayout>
+</org.levimc.launcher.ui.dialogs.LauncherDialogLayout>

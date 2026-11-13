@@ -10,7 +10,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import org.levimc.launcher.ui.dialogs.LauncherDialogBuilder;
 
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.content.OptionsEditor;
@@ -205,7 +205,7 @@ public class OptionsEditorActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         if (hasUnsavedChanges) {
-            AlertDialog dialog = new MaterialAlertDialogBuilder(this)
+            AlertDialog dialog = new LauncherDialogBuilder(this)
                     .setTitle(R.string.unsaved_changes)
                     .setMessage(R.string.discard_changes_message)
                     .setPositiveButton(R.string.discard, (d, which) -> { d.dismiss(); finish(); })

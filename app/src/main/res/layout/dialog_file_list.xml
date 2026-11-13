@@ -1,34 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:paddingTop="14dp"
-    android:background="@drawable/bg_rounded_card">
-
-    <TextView
-        android:id="@+id/dialog_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingHorizontal="16dp"
-        android:paddingBottom="12dp"
-        android:text="@string/curseforge_available_files"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:fontFamily="@font/misans"
-        android:gravity="start"
-        android:textColor="@color/on_surface" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/divider" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_files"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:clipToPadding="false"
-        android:paddingBottom="8dp"
-        android:scrollbars="vertical" />
-</LinearLayout>
+<org.levimc.launcher.ui.dialogs.LauncherDialogLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:orientation="vertical" android:padding="16dp">
+    <TextView android:id="@+id/dialog_title" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="@string/curseforge_available_files" android:textSize="17sp" android:fontFamily="sans-serif-medium"
+        android:textColor="@color/on_surface" android:accessibilityHeading="true" />
+    <androidx.recyclerview.widget.RecyclerView android:id="@+id/recycler_files"
+        android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_weight="1"
+        android:layout_marginTop="12dp" android:clipToPadding="false" android:scrollbars="vertical" />
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="12dp" android:background="@color/divider" />
+    <Button android:id="@+id/btn_cancel" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="end" android:layout_marginTop="12dp" android:text="@string/cancel" />
+</org.levimc.launcher.ui.dialogs.LauncherDialogLayout>

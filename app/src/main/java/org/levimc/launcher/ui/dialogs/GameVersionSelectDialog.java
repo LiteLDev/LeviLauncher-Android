@@ -45,6 +45,7 @@ public class GameVersionSelectDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_game_version_select);
+        org.levimc.launcher.ui.dialogs.LauncherDialogs.bind(this, 520);
         RecyclerView recyclerView = findViewById(R.id.recycler_versions);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         UltimateVersionAdapter adapter = new UltimateVersionAdapter(getContext(), bigGroups);

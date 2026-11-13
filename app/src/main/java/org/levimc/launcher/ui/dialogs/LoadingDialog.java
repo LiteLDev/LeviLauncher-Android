@@ -29,6 +29,7 @@ public class LoadingDialog extends Dialog {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_loading, null);
         setContentView(view);
+        org.levimc.launcher.ui.dialogs.LauncherDialogs.bind(this, 420);
         setCancelable(false);
         getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         

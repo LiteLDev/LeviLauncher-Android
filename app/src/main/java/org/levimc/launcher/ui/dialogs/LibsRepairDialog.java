@@ -47,6 +47,7 @@ public class LibsRepairDialog extends Dialog {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_libs_repair);
+        org.levimc.launcher.ui.dialogs.LauncherDialogs.bind(this, 560);
 
         progressBar = findViewById(R.id.progress_bar);
         progressText = findViewById(R.id.progress_text);

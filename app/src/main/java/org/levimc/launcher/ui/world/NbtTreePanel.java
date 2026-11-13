@@ -16,7 +16,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import org.levimc.launcher.ui.dialogs.LauncherDialogBuilder;
 
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.content.nbt.NbtTag;
@@ -290,7 +290,7 @@ public final class NbtTreePanel extends LinearLayout {
         AlertDialog dialog =
                 WorldUi.show(
                         c,
-                        new MaterialAlertDialogBuilder(c)
+                        new LauncherDialogBuilder(c)
                                 .setTitle(
                                         row.tag.getName().isEmpty()
                                                 ? "Edit " + NbtTag.getTypeName(row.tag.getType())
@@ -330,7 +330,7 @@ public final class NbtTreePanel extends LinearLayout {
         String[] actions = {"Edit / open", "Rename", "Duplicate", "Replace with SNBT", "Delete"};
         WorldUi.show(
                 getContext(),
-                new MaterialAlertDialogBuilder(getContext())
+                new LauncherDialogBuilder(getContext())
                         .setTitle(row.tag.getName().isEmpty() ? row.label : row.tag.getName())
                         .setItems(
                                 actions,
@@ -373,7 +373,7 @@ public final class NbtTreePanel extends LinearLayout {
         AlertDialog dialog =
                 WorldUi.show(
                         c,
-                        new MaterialAlertDialogBuilder(c)
+                        new LauncherDialogBuilder(c)
                                 .setTitle("Rename tag")
                                 .setView(form)
                                 .setPositiveButton("Rename", null)
@@ -403,7 +403,7 @@ public final class NbtTreePanel extends LinearLayout {
         }
         WorldUi.show(
                 getContext(),
-                new MaterialAlertDialogBuilder(getContext())
+                new LauncherDialogBuilder(getContext())
                         .setTitle("Delete tag?")
                         .setMessage(row.label)
                         .setPositiveButton(
@@ -454,7 +454,7 @@ public final class NbtTreePanel extends LinearLayout {
         for (int i = 0; i < 12; i++) types[i] = NbtTag.getTypeName((byte) (i + 1));
         WorldUi.show(
                 getContext(),
-                new MaterialAlertDialogBuilder(getContext())
+                new LauncherDialogBuilder(getContext())
                         .setTitle("Tag type")
                         .setItems(types, (d, i) -> insert(parent, empty((byte) (i + 1)))));
     }
@@ -477,7 +477,7 @@ public final class NbtTreePanel extends LinearLayout {
         AlertDialog dialog =
                 WorldUi.show(
                         getContext(),
-                        new MaterialAlertDialogBuilder(getContext())
+                        new LauncherDialogBuilder(getContext())
                                 .setTitle("Add tag")
                                 .setView(form)
                                 .setPositiveButton("Add", null)

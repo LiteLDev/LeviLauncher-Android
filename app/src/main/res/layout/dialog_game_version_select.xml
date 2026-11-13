@@ -1,57 +1,9 @@
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:paddingTop="32dp"
-    android:paddingBottom="32dp"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:background="@drawable/dialog_background_black_border"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:id="@+id/header_container"
-            android:orientation="horizontal"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingTop="14dp"
-            android:paddingBottom="6dp"
-            android:gravity="center_vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_leaf_logo" />
-
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/game_version_select_title"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorPrimary"
-                android:fontFamily="@font/misans"/>
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#1A888888"
-            android:layout_marginHorizontal="16dp"/>
-            
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_versions"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingBottom="16dp"
-            android:overScrollMode="never"/>
+<?xml version='1.0' encoding='utf-8'?>
+<org.levimc.launcher.ui.dialogs.LauncherDialogLayout xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content" android:padding="16dp">
+    <LinearLayout android:id="@+id/header_container" android:orientation="horizontal" android:gravity="center_vertical" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="12dp">
+        <ImageView android:layout_width="32dp" android:layout_height="32dp" android:src="@drawable/ic_leaf_logo" />
+        <TextView android:id="@+id/title" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:text="@string/game_version_select_title" android:textSize="17sp" android:textStyle="bold" android:textColor="?attr/colorPrimary" android:fontFamily="@font/misans" />
     </LinearLayout>
-</FrameLayout>
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#1A888888" />
+    <androidx.recyclerview.widget.RecyclerView android:id="@+id/recycler_versions" android:layout_width="match_parent" android:layout_height="wrap_content" android:paddingStart="0dp" android:paddingEnd="0dp" android:paddingBottom="0dp" android:overScrollMode="never" android:layout_weight="1" android:layout_marginTop="8dp" />
+</org.levimc.launcher.ui.dialogs.LauncherDialogLayout>

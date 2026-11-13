@@ -63,6 +63,7 @@ public class ApkVersionConfirmDialog extends DialogFragment {
 
         View root = getLayoutInflater().inflate(R.layout.dialog_apk_version_confirm, null);
         dialog.setContentView(root);
+        org.levimc.launcher.ui.dialogs.LauncherDialogs.bind(dialog, 520);
 
         editVersionName = root.findViewById(R.id.edit_version_name);
         textError = root.findViewById(R.id.text_version_error);
@@ -115,7 +116,6 @@ public class ApkVersionConfirmDialog extends DialogFragment {
         if (window != null) {
             window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             window.addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-            window.addFlags(WindowManager.LayoutParams.FLAG_BLUR_BEHIND);
             WindowManager.LayoutParams params = window.getAttributes();
             params.dimAmount = 0.6f;
             

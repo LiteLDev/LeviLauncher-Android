@@ -126,6 +126,7 @@ public final class InstallDialog extends Dialog implements DefaultLifecycleObser
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_pkg_install);
+        org.levimc.launcher.ui.dialogs.LauncherDialogs.bind(this, 560);
         setCanceledOnTouchOutside(false);
 
         instanceSpinner = findViewById(R.id.pkg_install_instance);

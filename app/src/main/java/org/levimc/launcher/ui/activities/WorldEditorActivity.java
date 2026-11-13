@@ -25,7 +25,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import org.levimc.launcher.ui.dialogs.LauncherDialogBuilder;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.tabs.TabLayout;
 
@@ -564,7 +564,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
         AlertDialog dialog =
                 WorldUi.show(
                         this,
-                        new MaterialAlertDialogBuilder(this)
+                        new LauncherDialogBuilder(this)
                                 .setTitle("Tools")
                                 .setView(scroll)
                                 .setNegativeButton("Close", null));
@@ -612,7 +612,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
     private void advancedNbt() {
         WorldUi.show(
                 this,
-                new MaterialAlertDialogBuilder(this)
+                new LauncherDialogBuilder(this)
                         .setTitle("Advanced NBT")
                         .setItems(
                                 new String[] {
@@ -926,7 +926,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
     private void chooseLayer() {
         WorldUi.show(
                 this,
-                new MaterialAlertDialogBuilder(this)
+                new LauncherDialogBuilder(this)
                         .setTitle("Map layer")
                         .setSingleChoiceItems(
                                 LAYERS,
@@ -946,7 +946,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
     private void chooseDimension() {
         WorldUi.show(
                 this,
-                new MaterialAlertDialogBuilder(this)
+                new LauncherDialogBuilder(this)
                         .setTitle("Dimension")
                         .setSingleChoiceItems(
                                 new String[] {"Overworld", "Nether", "The End"},
@@ -1018,7 +1018,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
         AlertDialog d =
                 WorldUi.show(
                         this,
-                        new MaterialAlertDialogBuilder(this)
+                        new LauncherDialogBuilder(this)
                                 .setTitle("Map options")
                                 .setView(scroll)
                                 .setPositiveButton("Apply", null)
@@ -1069,7 +1069,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
     private void goMenu() {
         WorldUi.show(
                 this,
-                new MaterialAlertDialogBuilder(this)
+                new LauncherDialogBuilder(this)
                         .setTitle("Go to")
                         .setItems(
                                 new String[] {
@@ -1142,7 +1142,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
                                     .toArray(String[]::new);
                     WorldUi.show(
                             this,
-                            new MaterialAlertDialogBuilder(this)
+                            new LauncherDialogBuilder(this)
                                     .setTitle("Players")
                                     .setItems(labels, (d, i) -> goMarker(players.get(i))));
                 });
@@ -1213,7 +1213,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
                     };
                     WorldUi.show(
                             this,
-                            new MaterialAlertDialogBuilder(this)
+                            new LauncherDialogBuilder(this)
                                     .setTitle("Inspect block")
                                     .setMessage(detail)
                                     .setPositiveButton(
@@ -1221,7 +1221,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
                                             (d, w) ->
                                                     WorldUi.show(
                                                             this,
-                                                            new MaterialAlertDialogBuilder(this)
+                                                            new LauncherDialogBuilder(this)
                                                                     .setTitle(
                                                                             x + ", " + y + ", " + z)
                                                                     .setItems(
@@ -1330,7 +1330,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
                     }
                     WorldUi.show(
                             this,
-                            new MaterialAlertDialogBuilder(this)
+                            new LauncherDialogBuilder(this)
                                     .setTitle("Entities")
                                     .setItems(
                                             markers.stream()
@@ -1368,7 +1368,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
                     }
                     WorldUi.show(
                             this,
-                            new MaterialAlertDialogBuilder(this)
+                            new LauncherDialogBuilder(this)
                                     .setTitle("Chunk records")
                                     .setItems(
                                             keys.stream()
@@ -1389,7 +1389,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
                     }
                     WorldUi.show(
                             this,
-                            new MaterialAlertDialogBuilder(this)
+                            new LauncherDialogBuilder(this)
                                     .setTitle("Move saved player")
                                     .setItems(
                                             players.stream()
@@ -1698,7 +1698,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
         }
         WorldUi.show(
                 this,
-                new MaterialAlertDialogBuilder(this)
+                new LauncherDialogBuilder(this)
                         .setTitle("Unsaved NBT file")
                         .setMessage("Export your changes before closing?")
                         .setPositiveButton("Export", (d, w) -> exportDocument())
@@ -1734,7 +1734,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
                     AlertDialog dialog =
                             WorldUi.show(
                                     this,
-                                    new MaterialAlertDialogBuilder(this)
+                                    new LauncherDialogBuilder(this)
                                             .setTitle("Edit SNBT")
                                             .setView(form)
                                             .setPositiveButton("Apply", null)
@@ -1788,7 +1788,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
                         };
         WorldUi.show(
                 this,
-                new MaterialAlertDialogBuilder(this)
+                new LauncherDialogBuilder(this)
                         .setTitle(WorldRecords.label(key))
                         .setItems(
                                 options,
@@ -1986,7 +1986,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
         }
         WorldUi.show(
                 this,
-                new MaterialAlertDialogBuilder(this)
+                new LauncherDialogBuilder(this)
                         .setTitle("NBT file format")
                         .setItems(
                                 new String[] {
@@ -2035,7 +2035,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
         };
         WorldUi.show(
                 this,
-                new MaterialAlertDialogBuilder(this)
+                new LauncherDialogBuilder(this)
                         .setTitle("Advanced locator")
                         .setItems(
                                 kinds,
@@ -2094,7 +2094,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
                                                                 }
                                                                 WorldUi.show(
                                                                         this,
-                                                                        new MaterialAlertDialogBuilder(
+                                                                        new LauncherDialogBuilder(
                                                                                         this)
                                                                                 .setTitle(
                                                                                         results
@@ -2220,7 +2220,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
     private void blockTools() {
         WorldUi.show(
                 this,
-                new MaterialAlertDialogBuilder(this)
+                new LauncherDialogBuilder(this)
                         .setTitle("Block operations")
                         .setItems(
                                 new String[] {
@@ -2302,7 +2302,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
     private void structureTools() {
         WorldUi.show(
                 this,
-                new MaterialAlertDialogBuilder(this)
+                new LauncherDialogBuilder(this)
                         .setTitle("Structures")
                         .setItems(
                                 new String[] {
@@ -2505,7 +2505,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
         }
         WorldUi.show(
                 this,
-                new MaterialAlertDialogBuilder(this)
+                new LauncherDialogBuilder(this)
                         .setTitle("Bookmarks")
                         .setItems(
                                 state.bookmarks.stream()
@@ -2515,7 +2515,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
                                     WorldRecords.Marker marker = state.bookmarks.get(i);
                                     WorldUi.show(
                                             this,
-                                            new MaterialAlertDialogBuilder(this)
+                                            new LauncherDialogBuilder(this)
                                                     .setTitle(marker.label)
                                                     .setItems(
                                                             new String[] {
@@ -2654,7 +2654,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
         AlertDialog dialog =
                 WorldUi.show(
                         this,
-                        new MaterialAlertDialogBuilder(this)
+                        new LauncherDialogBuilder(this)
                                 .setTitle(title)
                                 .setView(scroll)
                                 .setPositiveButton("Apply", null)
@@ -2692,7 +2692,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
     private void confirm(String title, String message, Runnable action) {
         WorldUi.show(
                 this,
-                new MaterialAlertDialogBuilder(this)
+                new LauncherDialogBuilder(this)
                         .setTitle(title)
                         .setMessage(message)
                         .setPositiveButton("Continue", (d, w) -> action.run())
@@ -2760,7 +2760,7 @@ public final class WorldEditorActivity extends BaseActivity implements NbtTreePa
         if (state.draftDirty || state.session.pendingCount() > 0) {
             WorldUi.show(
                     this,
-                    new MaterialAlertDialogBuilder(this)
+                    new LauncherDialogBuilder(this)
                             .setTitle("Unsaved world edits")
                             .setMessage("Save changes before leaving?")
                             .setPositiveButton(

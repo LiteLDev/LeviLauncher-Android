@@ -40,6 +40,7 @@ public class InstallProgressDialog extends Dialog {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_install_progress);
+        org.levimc.launcher.ui.dialogs.LauncherDialogs.bind(this, 480);
 
         progressBar = findViewById(R.id.progress_bar);
         progressText = findViewById(R.id.tv_progress_percent);

@@ -1,196 +1,42 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- InstallDialog: target instance, install plan, notices, inline task progress. -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/dialog_background_black_border"
-    android:orientation="vertical"
-    android:padding="22dp">
-
-    <TextView
-        android:id="@+id/pkg_install_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/misans"
-        android:text="@string/pkg_install_dialog_title"
-        android:textColor="?attr/colorPrimary"
-        android:textSize="18sp"
-        android:textStyle="bold" />
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="12dp"
-        android:layout_weight="1"
-        android:fadeScrollbars="true">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/misans"
-                android:text="@string/pkg_install_dialog_body"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp" />
-
-            <Spinner
-                android:id="@+id/pkg_install_instance"
-                style="@style/PkgFilterSpinner"
-                android:layout_width="match_parent"
-                android:layout_marginTop="6dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@drawable/bg_pkg_log_panel"
-                android:orientation="vertical"
-                android:padding="10dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        style="@style/PkgFieldLabel"
-                        android:text="@string/pkg_field_variant" />
-
-                    <TextView
-                        android:id="@+id/pkg_install_variant"
-                        style="@style/PkgFieldValue" />
+<?xml version='1.0' encoding='utf-8'?>
+<org.levimc.launcher.ui.dialogs.LauncherDialogLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+    <TextView android:id="@+id/pkg_install_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/misans" android:text="@string/pkg_install_dialog_title" android:textColor="?attr/colorPrimary" android:textSize="17sp" android:textStyle="bold" />
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_marginTop="12dp" android:layout_weight="1" android:fadeScrollbars="true">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:fontFamily="@font/misans" android:text="@string/pkg_install_dialog_body" android:textColor="@color/text_secondary" android:textSize="12sp" />
+            <Spinner android:id="@+id/pkg_install_instance" style="@style/PkgFilterSpinner" android:layout_width="match_parent" android:layout_marginTop="6dp" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:background="@drawable/bg_pkg_log_panel" android:orientation="vertical" android:padding="10dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+                    <TextView style="@style/PkgFieldLabel" android:text="@string/pkg_field_variant" />
+                    <TextView android:id="@+id/pkg_install_variant" style="@style/PkgFieldValue" />
                 </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        style="@style/PkgFieldLabel"
-                        android:text="@string/pkg_field_version" />
-
-                    <TextView
-                        android:id="@+id/pkg_install_version"
-                        style="@style/PkgFieldValue"
-                        android:fontFamily="monospace" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:orientation="horizontal">
+                    <TextView style="@style/PkgFieldLabel" android:text="@string/pkg_field_version" />
+                    <TextView android:id="@+id/pkg_install_version" style="@style/PkgFieldValue" android:fontFamily="monospace" />
                 </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        style="@style/PkgFieldLabel"
-                        android:text="@string/pkg_field_installed" />
-
-                    <TextView
-                        android:id="@+id/pkg_install_installed"
-                        style="@style/PkgFieldValue" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:orientation="horizontal">
+                    <TextView style="@style/PkgFieldLabel" android:text="@string/pkg_field_installed" />
+                    <TextView android:id="@+id/pkg_install_installed" style="@style/PkgFieldValue" />
                 </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        style="@style/PkgFieldLabel"
-                        android:text="@string/pkg_field_game" />
-
-                    <TextView
-                        android:id="@+id/pkg_install_game"
-                        style="@style/PkgFieldValue"
-                        android:fontFamily="monospace" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:orientation="horizontal">
+                    <TextView style="@style/PkgFieldLabel" android:text="@string/pkg_field_game" />
+                    <TextView android:id="@+id/pkg_install_game" style="@style/PkgFieldValue" android:fontFamily="monospace" />
                 </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        style="@style/PkgFieldLabel"
-                        android:text="@string/pkg_field_availability" />
-
-                    <FrameLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0.58">
-
-                        <TextView
-                            android:id="@+id/pkg_install_availability"
-                            style="@style/PkgChip"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/pkg_install_availability_pending"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/misans"
-                            android:text="@string/pkg_checking"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:gravity="center_vertical" android:orientation="horizontal">
+                    <TextView style="@style/PkgFieldLabel" android:text="@string/pkg_field_availability" />
+                    <FrameLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="0.58">
+                        <TextView android:id="@+id/pkg_install_availability" style="@style/PkgChip" android:textStyle="bold" />
+                        <TextView android:id="@+id/pkg_install_availability_pending" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/misans" android:text="@string/pkg_checking" android:textColor="@color/text_secondary" android:textSize="12sp" />
                     </FrameLayout>
                 </LinearLayout>
             </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/pkg_install_notices"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="vertical" />
-
-            <org.levimc.launcher.ui.packages.TaskProgressView
-                android:id="@+id/pkg_install_progress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical"
-                android:visibility="gone" />
+            <LinearLayout android:id="@+id/pkg_install_notices" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:orientation="vertical" />
+            <org.levimc.launcher.ui.packages.TaskProgressView android:id="@+id/pkg_install_progress" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:orientation="vertical" android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/pkg_install_btn_cancel"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:minHeight="48dp"
-            android:text="@string/pkg_task_cancel"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:textSize="14sp" />
-
-        <View
-            android:layout_width="8dp"
-            android:layout_height="0dp" />
-
-        <Button
-            android:id="@+id/pkg_install_btn_primary"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:minHeight="48dp"
-            android:textSize="14sp" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:orientation="horizontal">
+        <Button android:id="@+id/pkg_install_btn_cancel" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:minHeight="48dp" android:text="@string/pkg_task_cancel" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="14sp" />
+        <View android:layout_width="8dp" android:layout_height="0dp" />
+        <Button android:id="@+id/pkg_install_btn_primary" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:ellipsize="end" android:maxLines="1" android:minHeight="48dp" android:textSize="14sp" />
     </LinearLayout>
-</LinearLayout>
+</org.levimc.launcher.ui.dialogs.LauncherDialogLayout>

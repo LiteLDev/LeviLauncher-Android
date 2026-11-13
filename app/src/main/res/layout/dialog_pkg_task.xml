@@ -1,206 +1,27 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- TaskDialog: the compact progress dialog and the full console of a package task session. -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/dialog_background_black_border"
-    android:orientation="vertical"
-    android:padding="22dp">
-
-    <TextView
-        android:id="@+id/pkg_task_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:fontFamily="@font/misans"
-        android:maxLines="2"
-        android:textColor="?attr/colorPrimary"
-        android:textSize="18sp"
-        android:textStyle="bold" />
-
-    <ScrollView
-        android:id="@+id/pkg_task_body_scroll"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="14dp"
-        android:layout_weight="1"
-        android:fadeScrollbars="true">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/pkg_task_target_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/pkg_task_target_label"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/pkg_task_target"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
-                    android:layout_weight="1"
-                    android:ellipsize="middle"
-                    android:fontFamily="monospace"
-                    android:maxLines="1"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textSize="13sp" />
-
-                <TextView
-                    android:id="@+id/pkg_task_status_chip"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/bg_pkg_status_chip"
-                    android:maxLines="1"
-                    android:paddingStart="10dp"
-                    android:paddingTop="2dp"
-                    android:paddingEnd="10dp"
-                    android:paddingBottom="2dp"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
+<?xml version='1.0' encoding='utf-8'?>
+<org.levimc.launcher.ui.dialogs.LauncherDialogLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+    <TextView android:id="@+id/pkg_task_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:ellipsize="end" android:fontFamily="@font/misans" android:maxLines="2" android:textColor="?attr/colorPrimary" android:textSize="17sp" android:textStyle="bold" />
+    <ScrollView android:id="@+id/pkg_task_body_scroll" android:layout_width="match_parent" android:layout_height="0dp" android:layout_marginTop="14dp" android:layout_weight="1" android:fadeScrollbars="true">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:id="@+id/pkg_task_target_label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/pkg_task_target_label" android:textColor="@color/text_secondary" android:textSize="13sp" />
+                <TextView android:id="@+id/pkg_task_target" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:layout_weight="1" android:ellipsize="middle" android:fontFamily="monospace" android:maxLines="1" android:textColor="?attr/colorOnSurface" android:textSize="13sp" />
+                <TextView android:id="@+id/pkg_task_status_chip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:background="@drawable/bg_pkg_status_chip" android:maxLines="1" android:paddingStart="10dp" android:paddingTop="2dp" android:paddingEnd="10dp" android:paddingBottom="2dp" android:textSize="12sp" android:textStyle="bold" />
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/pkg_task_progress_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:text="@string/pkg_task_progress_label"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:visibility="gone" />
-
-            <org.levimc.launcher.ui.packages.TaskProgressView
-                android:id="@+id/pkg_task_progress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp" />
-
-            <TextView
-                android:id="@+id/pkg_task_error"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:background="@drawable/bg_pkg_error_notice"
-                android:padding="10dp"
-                android:textColor="@color/error"
-                android:textIsSelectable="true"
-                android:textSize="13sp"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/pkg_task_log_toggle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="?attr/selectableItemBackground"
-                android:drawablePadding="4dp"
-                android:gravity="center_vertical"
-                android:minHeight="36dp"
-                android:paddingStart="4dp"
-                android:paddingEnd="8dp"
-                android:text="@string/pkg_task_show_log"
-                android:textColor="?attr/colorPrimary"
-                android:textSize="13sp"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/pkg_task_log_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:text="@string/pkg_task_log_title"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:visibility="gone" />
+            <TextView android:id="@+id/pkg_task_progress_label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:text="@string/pkg_task_progress_label" android:textColor="@color/text_secondary" android:textSize="12sp" android:visibility="gone" />
+            <org.levimc.launcher.ui.packages.TaskProgressView android:id="@+id/pkg_task_progress" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" />
+            <TextView android:id="@+id/pkg_task_error" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:background="@drawable/bg_pkg_error_notice" android:padding="10dp" android:textColor="@color/error" android:textIsSelectable="true" android:textSize="13sp" android:visibility="gone" />
+            <TextView android:id="@+id/pkg_task_log_toggle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:background="?attr/selectableItemBackground" android:drawablePadding="4dp" android:gravity="center_vertical" android:minHeight="36dp" android:paddingStart="4dp" android:paddingEnd="8dp" android:text="@string/pkg_task_show_log" android:textColor="?attr/colorPrimary" android:textSize="13sp" android:visibility="gone" />
+            <TextView android:id="@+id/pkg_task_log_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:text="@string/pkg_task_log_title" android:textColor="@color/text_secondary" android:textSize="12sp" android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
-
-    <FrameLayout
-        android:id="@+id/pkg_task_log_panel"
-        android:layout_width="match_parent"
-        android:layout_height="160dp"
-        android:layout_marginTop="6dp"
-        android:background="@drawable/bg_pkg_log_panel"
-        android:visibility="gone">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/pkg_task_log_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingStart="10dp"
-            android:paddingTop="6dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="6dp"
-            android:scrollbars="vertical" />
-
-        <TextView
-            android:id="@+id/pkg_task_log_empty"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:text="@string/pkg_task_no_output"
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp"
-            android:visibility="gone" />
+    <FrameLayout android:id="@+id/pkg_task_log_panel" android:layout_width="match_parent" android:layout_height="160dp" android:layout_marginTop="6dp" android:background="@drawable/bg_pkg_log_panel" android:visibility="gone">
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/pkg_task_log_list" android:layout_width="match_parent" android:layout_height="match_parent" android:clipToPadding="false" android:paddingStart="10dp" android:paddingTop="6dp" android:paddingEnd="10dp" android:paddingBottom="6dp" android:scrollbars="vertical" />
+        <TextView android:id="@+id/pkg_task_log_empty" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="10dp" android:text="@string/pkg_task_no_output" android:textColor="@color/text_secondary" android:textSize="12sp" android:visibility="gone" />
     </FrameLayout>
-
-    <LinearLayout
-        android:id="@+id/pkg_task_buttons"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
-        android:gravity="end"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/pkg_task_btn_copy"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:minHeight="48dp"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:text="@string/pkg_task_copy_logs"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:textSize="14sp"
-            android:visibility="gone" />
-
-        <View
-            android:id="@+id/pkg_task_btn_spacing"
-            android:layout_width="8dp"
-            android:layout_height="0dp"
-            android:visibility="gone" />
-
-        <Button
-            android:id="@+id/pkg_task_btn_main"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="?attr/colorPrimary"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:minHeight="48dp"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:text="@string/pkg_task_cancel"
-            android:textColor="?attr/colorOnPrimary"
-            android:textSize="14sp" />
+    <LinearLayout android:id="@+id/pkg_task_buttons" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="18dp" android:gravity="end" android:orientation="horizontal">
+        <Button android:id="@+id/pkg_task_btn_copy" style="@style/Widget.MaterialComponents.Button.TextButton" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:ellipsize="end" android:maxLines="1" android:minHeight="48dp" android:paddingStart="12dp" android:paddingEnd="12dp" android:text="@string/pkg_task_copy_logs" android:textColor="?attr/colorOnSurfaceVariant" android:textSize="14sp" android:visibility="gone" />
+        <View android:id="@+id/pkg_task_btn_spacing" android:layout_width="8dp" android:layout_height="0dp" android:visibility="gone" />
+        <Button android:id="@+id/pkg_task_btn_main" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:backgroundTint="?attr/colorPrimary" android:ellipsize="end" android:maxLines="1" android:minHeight="48dp" android:paddingStart="12dp" android:paddingEnd="12dp" android:text="@string/pkg_task_cancel" android:textColor="?attr/colorOnPrimary" android:textSize="14sp" />
     </LinearLayout>
-</LinearLayout>
+</org.levimc.launcher.ui.dialogs.LauncherDialogLayout>

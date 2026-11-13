@@ -39,6 +39,7 @@ import org.levimc.launcher.core.play.VersionCatalog;
 import org.levimc.launcher.core.versions.GameVersion;
 import org.levimc.launcher.core.versions.VersionManager;
 import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
+import org.levimc.launcher.ui.dialogs.DownloadCreatorNotice;
 import org.levimc.launcher.ui.dialogs.SimpleTextWatcher;
 import org.levimc.launcher.ui.widget.SegmentedControl;
 import org.levimc.launcher.ui.widget.UiKit;
@@ -106,6 +107,10 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
     private MaterialButton emptyAction;
     private ReleaseAdapter adapter;
     private ColorStateList accentTint;
+    private DownloadCreatorNotice creatorNotice;
+    private final Runnable creatorNoticeRequest = () -> {
+        if (creatorNotice == null || !creatorNotice.isShowing()) creatorNotice = DownloadCreatorNotice.showIfNeeded(this);
+    };
 
     private int sourceMode;
     private int typeFilter;
@@ -251,10 +256,28 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
         syncAccount(true);
         if (!loadingLocal) loadLocal();
         refreshInstalled();
+        View content = findViewById(android.R.id.content);
+        if (content != null) {
+            content.removeCallbacks(creatorNoticeRequest);
+            content.post(creatorNoticeRequest);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        clearCreatorNotice();
+        super.onPause();
+    }
+
+    private void clearCreatorNotice() {
+        View content = findViewById(android.R.id.content);
+        if (content != null) content.removeCallbacks(creatorNoticeRequest);
+        if (creatorNotice != null) { creatorNotice.dismiss(); creatorNotice = null; }
     }
 
     @Override
     protected void onDestroy() {
+        clearCreatorNotice();
         disposed = true;
         catalogRequest++;
         dataRequest++;
@@ -691,6 +714,7 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
         container.addView(input);
         CustomAlertDialog dialog = new CustomAlertDialog(this)
                 .setTitleText(getString(R.string.game_download_by_code))
+                .setIconResource(R.drawable.ic_ui_code)
                 .setMessage(getString(R.string.game_download_by_code_message))
                 .setCustomView(container)
                 .setPositiveButton(getString(R.string.game_download_download), null)

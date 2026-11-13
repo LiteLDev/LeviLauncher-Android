@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="creator_notice_label">BEFORE YOU RECORD</string>
+    <string name="creator_notice_title">Important for content creators</string>
+    <string name="creator_notice_headline">Keep Downloads out of your YouTube videos.</string>
+    <string name="creator_notice_risk">Showing this page or discussing Minecraft Bedrock version switching on Android may be mistaken for unauthorized downloads, even when Minecraft was downloaded legally through the Google Play API. This can lead to video removal or a Community Guidelines strike, even without demonstrating a download.</string>
+    <string name="creator_notice_ownership">If your Google account does not own Minecraft, you cannot download and install it from the Launcher.</string>
+    <string name="creator_notice_source_text">LeviLauncher uses an account that owns Minecraft to download directly from Google Play. The source below shows how LeviLauncher downloads through the Google Play API.</string>
+    <string name="creator_notice_source_link">View Play API source</string>
+    <string name="creator_notice_remember">Don’t show again</string>
+    <string name="creator_notice_acknowledge">Okay, I understand</string>
+</resources>

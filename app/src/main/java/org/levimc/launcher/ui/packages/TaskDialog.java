@@ -133,6 +133,7 @@ public class TaskDialog extends Dialog implements TaskSession.Observer, DefaultL
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_pkg_task);
+        org.levimc.launcher.ui.dialogs.LauncherDialogs.bind(this, 620);
         setCanceledOnTouchOutside(false);
 
         titleView = findViewById(R.id.pkg_task_title);
