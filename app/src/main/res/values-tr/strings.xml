@@ -180,7 +180,7 @@
 
     <string name="error_no_browser">Kullanılabilir tarayıcı yok</string>
     <!-- License & Security -->
-    <string name="eula_title">LeviLauncher Lisans Sözleşmesi</string>
+    <string name="eula_title">LeviLauncher lisans sözleşmesi</string>
     <string name="eula_message"><b>LeviLauncher\'a Hoş Geldiniz</b>\n\nBu yazılımı kullanarak aşağıdakileri kabul etmiş olursunuz:\n\n• Bu <b>resmi olmayan</b> bir Minecraft başlatıcısıdır\n• <b>Lisanslı</b> bir Minecraft kopyasına sahip olmanız gerekir\n• Her türlü korsan kullanım veya hile yasaktır\n• Modlar/kaynak paketleri kendi sorumluluğunuzda kullanılır\n• Mojang/Microsoft ile bağlantılı değildir\n\nKullanmaya devam etmek kabul anlamına gelir</string>
     <string name="eula_agree">Kabul Et</string>
     <string name="eula_exit">Reddet</string>
@@ -414,7 +414,7 @@
     <string name="invalid_license_detected_toast">Orijinal olmayan Minecraft algılandı. Minecraft\'ın Google Play Store\'dan olduğundan emin olun</string>
 
     <string name="full_mods_title">Modlar </string>
-    <string name="total_mods">Toplam Mod:</string>
+    <string name="total_mods">Toplam mod:</string>
     <string name="enabled_mods">Etkin:</string>
     <string name="add_mod">Mod Ekle</string>
     <string name="external_mods">Harici Modlar</string>
@@ -463,7 +463,7 @@
     <string name="mod_filename_format">Dosya: %s</string>
     <string name="mod_enable_status">Etkinleştirme Durumu</string>
     <string name="mod_icon_content_description">Mod simgesi</string>
-    <string name="mod_author_byline">%s tarafından</string>
+    <string name="mod_author_byline">Yazar: %s</string>
     <string name="mod_version_chip">Sürüm %s</string>
     <string name="mod_metadata_title">Bilgi</string>
     <string name="mod_actions_title">İşlemler</string>
@@ -471,7 +471,7 @@
     <string name="mod_version_label">Sürüm</string>
     <string name="mod_minecraft_versions_label">Minecraft Sürümleri</string>
     <string name="mod_entry_label">Giriş Dosyası</string>
-    <string name="mod_id_label">Mod Kimliği</string>
+    <string name="mod_id_label">Mod kimliği</string>
     <string name="mod_config_files_label">Yapılandırma Dosyaları</string>
     <string name="mod_unknown_author">Bilinmeyen yazar</string>
     <string name="mod_unknown_version">Bilinmeyen sürüm</string>
@@ -653,16 +653,16 @@
     <string name="remove">Kaldır</string>
     
     <!-- Inbuilt Mods -->
-    <string name="inbuilt_mod_quick_drop">Hızlı Bırak</string>
+    <string name="inbuilt_mod_quick_drop">Hızlı bırakma</string>
     <string name="inbuilt_mod_quick_drop_desc">Eşyaları hızlıca bırak</string>
     <string name="inbuilt_mod_camera">Hızlı Bakış Açısı</string>
     <string name="inbuilt_mod_camera_desc">Kamera görünümünü değiştir</string>
-    <string name="inbuilt_mod_hud">HUD\'u Gizle</string>
+    <string name="inbuilt_mod_hud">HUD’ı gizle</string>
     <string name="inbuilt_mod_hud_desc">Kısayol çubuğunu ve arayüzü gizle</string>
     <string name="mod_config_hide_launcher_hud">Başlatıcı HUD\'unu ve kaplama düğmelerini de gizle</string>
-    <string name="inbuilt_mod_autosprint">Otomatik Koş</string>
+    <string name="inbuilt_mod_autosprint">Otomatik koşma</string>
     <string name="inbuilt_mod_autosprint_desc">Koşmayı aç/kapat</string>
-    <string name="inbuilt_mod_chick_pet">Civciv Evcil Hayvan</string>
+    <string name="inbuilt_mod_chick_pet">Evcil civciv</string>
     <string name="inbuilt_mod_chick_pet_desc">Etrafta yürüyen, uyuyan ve dokunulunca koşan sevimli piksel civciv!</string>
     <string name="inbuilt_mod_zoom">Yakınlaştır</string>
     <string name="inbuilt_mod_zoom_desc">OptiFine yakınlaştırması gibi basılı tutarak yakınlaştır</string>
@@ -824,7 +824,7 @@
 
     <!-- Quick Launch Dialogs -->
     <string name="server_ip_hint">Sunucu IP Adresi</string>
-    <string name="server_port_hint">Port (varsayılan: 19132)</string>
+    <string name="server_port_hint">Bağlantı noktası (varsayılan: 19132)</string>
     <string name="server_name_hint">Sunucu Adı</string>
     <string name="realm_invite_code_hint">Realm Davet Kodu</string>
     <string name="world_name_hint">Dünya Adı</string>
@@ -895,8 +895,8 @@
     <string name="about_license_note">Lisans ayrıntıları için depo içindeki LICENSE dosyasına bakın.</string>
     <string name="about_contribute_title">Katkıda Bulun</string>
     <string name="about_contribute_desc">LeviLauncher\'ı geliştirmek için Issue veya Pull Request aracılığıyla katkıda bulunabilirsiniz.</string>
-    <string name="about_issues">Sorun Bildir</string>
-    <string name="about_star_fork">Yıldızla / Çatalla</string>
+    <string name="about_issues">Sorun bildir</string>
+    <string name="about_star_fork">Yıldız / Çatalla</string>
 
     <string-array name="launcher_tips">
         <item>Ayarlar; tema, renk, arka plan ve diğer görünüm seçeneklerini isteğinize göre düzenlemenizi sağlar.</item>
@@ -910,6 +910,12 @@
         <item>Başlatıcı içinde birden fazla Xbox hesabını yönetin ve aralarında sorunsuzca geçiş yapın.</item>
         <item>CurseForge, topluluk içeriklerine doğrudan göz atmanızı ve indirmenizi sağlar.</item>
         <item>Minecraft özelliklerini ve performansını genişletmek veya geliştirmek için mod içe aktarın.</item>
+        <item>Hareketli GIF’leri başlatıcı duvar kâğıdı olarak da kullanabilirsiniz.</item>
+        <item>Bir örneğin simgesini kendi ayarlarından değiştirebilirsiniz.</item>
+        <item>Mod menüsünde modüllere yıldız ekleyerek onları Favoriler’de kolayca bulun.</item>
+        <item>Mod menüsünü taşımak için başlığını, boyutunu değiştirmek için sağ alt köşesini sürükleyin.</item>
+        <item>Minecraft sürümünüze göre filtrelemek için Harici modlar’da Yalnızca uyumlu seçeneğini kullanın.</item>
+        <item>NBT verilerini düzenlemeden önce dünyanızı yedekleyin.</item>
     </string-array>
     <!-- Personalization -->
     <string name="theme_color_title">Tema Rengi</string>
@@ -986,7 +992,7 @@
     <string name="more_buttons_add_button">Düğme Ekle</string>
     <string name="more_buttons_limit_reached">En fazla %1$d özel düğme sınırına ulaşıldı.</string>
     <string name="more_buttons_empty">Henüz özel düğme yok. Bir tane oluşturmak için Düğme Ekle’ye dokunun.</string>
-    <string name="more_buttons_mode_toggle">Geçişli</string>
+    <string name="more_buttons_mode_toggle">Aç/kapat</string>
     <string name="more_buttons_mode_momentary">Anlık</string>
     <string name="more_buttons_summary_format">%1$s  •  %2$s  •  %3$d%% simge</string>
     <string name="more_buttons_tap_again_delete">Silmek İçin Tekrar Dokun</string>
@@ -1001,7 +1007,7 @@
     <string name="more_buttons_tutorial_body">1. Bir simge kitaplığından basit bir SVG simgesi indirin. SVG Repo ve The SVG iyi başlangıç noktalarıdır.\n\n2. Bir düğme ekleyin ve tam olarak bir klavye tuşu seçin.\n\n3. Normal SVG’yi içe aktarın. Varsayılan olarak saf siyaha (#000000) yeniden renklendirilir.\n\n4. Basılı SVG isteğe bağlıdır. Sağlamazsanız normal SVG yeniden kullanılır. Varsayılan olarak basılı simge #E6E6E6 olarak renklendirilir ve Minecraft düğmesi gibi biraz aşağı kaydırılır.\n\n5. Orijinal Renkleri Koru seçeneği, normal ve basılı durumlar için SVG renklerini ayrı ayrı korumanızı sağlar.\n\n6. Simge Boyutu ve Simge X/Y Ofseti, Minecraft tarzı düğmenin içindeki görseli ayarlar. Düğme Boyutu tüm ekran kontrolünü değiştirir.\n\n7. Klavye eşlemesinin anlık mı yoksa geçişli mi olacağını seçin. Anlık mod, düğmeyi tuttuğunuz sürece eşlenen tuşu basılı tutar; Geçişli mod her dokunuşta tuşa basma ve bırakma arasında geçiş yapar.\n\nDaha Fazla Düğme, bilinçli olarak düğme başına yalnızca bir tuşu destekler ve makro, tuş dizisi, otomatik tekrar veya otomatik tıklama sağlamaz.</string>
     <string name="more_buttons_open_svg_repo">SVG Repo’yu Aç</string>
     <string name="more_buttons_open_the_svg">The SVG’yi Aç</string>
-    <string name="more_buttons_edit_title">%1$s Düzenle</string>
+    <string name="more_buttons_edit_title">%1$s düzenle</string>
     <string name="more_buttons_preview_normal_state">Normal Durumu Önizle</string>
     <string name="more_buttons_preview_pressed_state">Basılı Durumu Önizle</string>
     <string name="more_buttons_name">Ad</string>

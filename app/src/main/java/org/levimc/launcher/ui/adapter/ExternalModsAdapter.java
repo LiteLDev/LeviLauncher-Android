@@ -101,10 +101,11 @@ public final class ExternalModsAdapter extends RecyclerView.Adapter<ExternalMods
         Context ctx = holder.itemView.getContext();
         holder.divider.setVisibility(position == 0 ? View.GONE : View.VISIBLE);
         holder.name.setText(mod.name);
+        holder.author.setVisibility(TextUtils.isEmpty(mod.author) ? View.GONE : View.VISIBLE);
         holder.author.setText(TextUtils.isEmpty(mod.author) ? ""
-                : "| " + ctx.getString(R.string.mods_external_author, mod.author));
+                : ctx.getString(R.string.mods_external_author, mod.author));
         holder.version.setText(release == null || TextUtils.isEmpty(release.version) ? ""
-                : "· " + versionLabel(release.version));
+                : versionLabel(release.version));
         holder.description.setText(mod.description);
         holder.description.setVisibility(TextUtils.isEmpty(mod.description) ? View.GONE : View.VISIBLE);
 
@@ -156,7 +157,7 @@ public final class ExternalModsAdapter extends RecyclerView.Adapter<ExternalMods
                     .into(holder.icon);
         }
 
-        boolean canInstall = release != null && compatible != null && !minecraftVersion.isEmpty() && !isBusy;
+        boolean canInstall = release != null && compatible != null && !minecraftVersion.isEmpty() && busyModId == null;
         if (isBusy) {
             holder.action.setText(R.string.loading);
         } else if (release == null || compatible == null || minecraftVersion.isEmpty()) {

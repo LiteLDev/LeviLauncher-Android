@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="levi_navbar_item_padding">4dp</dimen>
-    <dimen name="levi_navbar_text_size">12sp</dimen>
+    <dimen name="levi_navbar_text_size">12.5sp</dimen>
     <dimen name="levi_navbar_icon_size">23dp</dimen>
     <dimen name="levi_navbar_center_offset">14dp</dimen>
 </resources>

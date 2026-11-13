@@ -69,6 +69,10 @@ public final class ExternalModsActivity extends BaseActivity {
     private boolean compatibleOnly;
     private boolean installing;
     private boolean refreshFailed;
+    private boolean remoteLoaded;
+    private TextView resultCount;
+    private View emptyPanel;
+    private MaterialButton clearFilters;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +101,9 @@ public final class ExternalModsActivity extends BaseActivity {
                 : getString(R.string.external_mods_subtitle, minecraftVersion));
 
         viewModel.getModsLiveData().observe(this, ignored -> updateInstalledMods());
-        ModCatalogRepository.loadCached(this, (catalog, error) -> renderCatalog(catalog));
+        ModCatalogRepository.loadCached(this, (catalog, error) -> {
+            if (!remoteLoaded && !isDestroyed()) renderCatalog(catalog);
+        });
         refreshCatalog(false);
         DynamicAnim.applyPressScaleRecursively(findViewById(android.R.id.content));
         new PersonalizationManager(this).applyAccentToView(findViewById(android.R.id.content), this);
@@ -119,14 +125,23 @@ public final class ExternalModsActivity extends BaseActivity {
         sort = findViewById(R.id.external_mods_sort);
         discord = findViewById(R.id.external_mods_discord);
         refresh = findViewById(R.id.external_mods_refresh);
+        resultCount = findViewById(R.id.external_mods_results);
+        emptyPanel = findViewById(R.id.external_mods_empty_layout);
+        clearFilters = findViewById(R.id.external_mods_clear);
+        clearFilters.setOnClickListener(v -> {
+            search.setText("");
+            compatibleFilter.setChecked(false);
+            compatibleOnly = false;
+            applyFilters();
+        });
     }
 
     private void setupRecycler() {
-        // v1.6.1 grid: about 3 cards across on a landscape phone, at least one.
-        int spans = Math.max(1, getResources().getConfiguration().screenWidthDp / 280);
+        int spans = Math.max(1, getResources().getConfiguration().screenWidthDp / 320);
         recycler.setLayoutManager(new GridLayoutManager(this, spans));
         adapter = new ExternalModsAdapter(minecraftVersion, this::handleModAction);
         recycler.setAdapter(adapter);
+        recycler.setItemAnimator(null);
     }
 
     private void setupControls() {
@@ -196,6 +211,8 @@ public final class ExternalModsActivity extends BaseActivity {
         refresh.setEnabled(false);
         if (allMods.isEmpty()) progress.setVisibility(View.VISIBLE);
         ModCatalogRepository.refresh(this, (catalog, error) -> {
+            if (isDestroyed()) return;
+            remoteLoaded = true;
             refresh.setEnabled(true);
             progress.setVisibility(View.GONE);
             refreshFailed = error != null;
@@ -233,11 +250,14 @@ public final class ExternalModsActivity extends BaseActivity {
         }
 
         adapter.submit(filtered);
-        empty.setVisibility(filtered.isEmpty() && progress.getVisibility() != View.VISIBLE
-                ? View.VISIBLE : View.GONE);
+        boolean noResults = filtered.isEmpty() && progress.getVisibility() != View.VISIBLE;
+        emptyPanel.setVisibility(noResults ? View.VISIBLE : View.GONE);
+        boolean narrowed = !query.isEmpty() || filterCompatibleOnly && !allMods.isEmpty();
+        empty.setText(narrowed ? R.string.mods_empty_filtered : R.string.no_mods_found);
+        clearFilters.setVisibility(narrowed ? View.VISIBLE : View.GONE);
+        resultCount.setText(getString(R.string.external_mods_results, filtered.size(), allMods.size()));
         recycler.setVisibility(filtered.isEmpty() ? View.GONE : View.VISIBLE);
         updateStatus();
-        recycler.post(() -> DynamicAnim.staggerRecyclerChildren(recycler));
     }
 
     private void handleModAction(ModCatalog.CatalogMod mod, ModCatalog.CatalogRelease release) {
@@ -368,6 +388,11 @@ public final class ExternalModsActivity extends BaseActivity {
         } else {
             status.setVisibility(View.GONE);
         }
+    }
+
+    @Override protected void onDestroy() {
+        dismissInstallDialog();
+        super.onDestroy();
     }
 
     private String searchableText(ModCatalog.CatalogMod mod) {

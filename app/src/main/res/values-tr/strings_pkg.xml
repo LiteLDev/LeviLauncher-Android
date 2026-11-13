@@ -407,7 +407,7 @@
     <!-- package settings card (Settings, basic tab) -->
     <string name="pkg_settings_title">Önbelleği temizle</string>
     <string name="pkg_settings_desc">Paket indirmeleri başarısız olursa paket yöneticisinin önbelleğini temizleyin.</string>
-    <string name="pkg_settings_proxy_title">GitHub proxy</string>
+    <string name="pkg_settings_proxy_title">GitHub vekil sunucusu</string>
     <string name="pkg_settings_proxy_desc">Paketler indirilirken kullanılan GitHub proxy\'si. Varsayılana dönmek için boş bırakın.</string>
     <string name="pkg_settings_proxy_hint">https://github.bibk.top</string>
     <string name="pkg_settings_proxy_preset_custom">Özel</string>

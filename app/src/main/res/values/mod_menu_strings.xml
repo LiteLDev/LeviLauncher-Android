@@ -15,7 +15,7 @@
     <string name="mm_dark">Dark</string>
     <string name="mm_light">Light</string>
     <string name="mm_accent_source">Color source</string>
-    <string name="mm_accent_source_hint">Use the launcher color, Android wallpaper colors, or your own.</string>
+    <string name="mm_accent_source_hint">Use a palette color or choose your own accent.</string>
     <string name="mm_launcher_color">Launcher color</string>
     <string name="mm_wallpaper_color">Wallpaper · Android 12+</string>
     <string name="mm_custom_color">Custom color</string>

@@ -194,7 +194,7 @@
         <item name="android:paddingBottom">0dp</item>
         <item name="android:paddingStart">@dimen/levi_navbar_item_padding</item>
         <item name="android:paddingEnd">@dimen/levi_navbar_item_padding</item>
-        <item name="android:drawablePadding">6dp</item>
+        <item name="android:drawablePadding">4dp</item>
         <item name="android:drawableTint">@color/text_primary</item>
         <item name="android:fontFamily">@font/misans</item>
         <item name="android:textSize">@dimen/levi_navbar_text_size</item>

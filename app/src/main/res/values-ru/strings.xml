@@ -304,14 +304,14 @@
     <string name="skin_packs_category">Скин-паки</string>
     <string name="screenshots_category">Скриншоты</string>
     <string name="servers_category">Серверы</string>
-    <string name="storage_internal">Внутренняя</string>
-    <string name="storage_external">Внешняя</string>
+    <string name="storage_internal">Внутреннее</string>
+    <string name="storage_external">Внешнее</string>
     <string name="storage_version_isolation">Изоляция версии</string>
     <string name="select_storage_label">Выберите хранилище:</string>
     <string name="search_hint">Поиск…</string>
     <string name="search_properties_hint">Поиск свойств…</string>
     <string name="no_matching_properties">Подходящие свойства не найдены</string>
-    <string name="transfer">Перенос</string>
+    <string name="transfer">Перенести</string>
     <string name="transfer_content">Перенос контента</string>
     <string name="transfer_to">Перенести в:</string>
     <string name="transfer_success">Перенос успешно завершен</string>
@@ -332,7 +332,7 @@
     <string name="delete_world">Удалить мир</string>
     <string name="backup_world">Создать резервную копию мира</string>
     <string name="export">Экспорт</string>
-    <string name="backup">Резервное копирование</string>
+    <string name="backup">Резервная копия</string>
     <string name="delete">Удалить</string>
     <string name="delete_pack">Удалить</string>
 
@@ -361,7 +361,7 @@
 
     <!-- World Editor -->
     <string name="edit_world">Редактировать мир</string>
-    <string name="edit">Редактировать</string>
+    <string name="edit">Изменить</string>
     <string name="save">Сохранить</string>
     <string name="reset">Сбросить</string>
     <string name="saved_to_gallery">Сохранено в галерею</string>
@@ -416,7 +416,7 @@
     <string name="invalid_license_detected_toast">Обнаружена нелицензионная версия Minecraft. Убедитесь, что Minecraft установлен из Google Play Маркета</string>
 
     <string name="full_mods_title">Моды</string>
-    <string name="total_mods">Всего модов: </string>
+    <string name="total_mods">Всего модов:</string>
     <string name="enabled_mods">Включено:</string>
     <string name="add_mod">Добавить мод</string>
     <string name="external_mods">Внешние моды</string>
@@ -465,7 +465,7 @@
     <string name="mod_filename_format">Файл: %s</string>
     <string name="mod_enable_status">Состояние включения</string>
     <string name="mod_icon_content_description">Значок мода</string>
-    <string name="mod_author_byline">от %s</string>
+    <string name="mod_author_byline">Автор: %s</string>
     <string name="mod_version_chip">Версия %s</string>
     <string name="mod_metadata_title">Информация</string>
     <string name="mod_actions_title">Действия</string>
@@ -629,7 +629,7 @@
     <string name="dialog_title_exit_app">Выйти из приложения</string>
     <string name="dialog_message_exit_app">Вы уверены, что хотите выйти?</string>
     <string name="dialog_positive_exit">Выйти</string>
-    <string name="show_logcat_overlay">Оверлей Logcat</string>
+    <string name="show_logcat_overlay">Панель Logcat</string>
 
 
 
@@ -661,16 +661,16 @@
     <string name="remove">Удалить</string>
     
     <!-- Inbuilt Mods -->
-    <string name="inbuilt_mod_quick_drop">Быстрый сброс</string>
+    <string name="inbuilt_mod_quick_drop">Быстрый выброс</string>
     <string name="inbuilt_mod_quick_drop_desc">Быстрое выбрасывание предметов</string>
     <string name="inbuilt_mod_camera">Быстрая смена камеры</string>
     <string name="inbuilt_mod_camera_desc">Переключение вида камеры</string>
-    <string name="inbuilt_mod_hud">Скрыть интерфейс</string>
+    <string name="inbuilt_mod_hud">Скрыть HUD</string>
     <string name="inbuilt_mod_hud_desc">Скрыть панель быстрого доступа и UI</string>
     <string name="mod_config_hide_launcher_hud">Также скрывать HUD лаунчера и кнопки оверлея</string>
-    <string name="inbuilt_mod_autosprint">Авто-спринт</string>
+    <string name="inbuilt_mod_autosprint">Автобег</string>
     <string name="inbuilt_mod_autosprint_desc">Включение/выключение спринта</string>
-    <string name="inbuilt_mod_chick_pet">Питомец-цыплёнок</string>
+    <string name="inbuilt_mod_chick_pet">Цыплёнок-питомец</string>
     <string name="inbuilt_mod_chick_pet_desc">Милый пиксельный цыплёнок, который гуляет, спит и убегает при касании!</string>
     <string name="inbuilt_mod_zoom">Зум</string>
     <string name="inbuilt_mod_zoom_desc">Удерживайте для приближения, как в OptiFine</string>
@@ -903,8 +903,8 @@
     <string name="about_license_note">Подробности лицензии смотрите в файле LICENSE в репозитории.</string>
     <string name="about_contribute_title">Участие в разработке</string>
     <string name="about_contribute_desc">Вклад через Issues или Pull Requests приветствуется и помогает улучшать LeviLauncher.</string>
-    <string name="about_issues">Issue</string>
-    <string name="about_star_fork">Star / Fork</string>
+    <string name="about_issues">Сообщить о проблеме</string>
+    <string name="about_star_fork">Звезда / Форк</string>
 
     <string-array name="launcher_tips">
         <item>В настройках можно изменить тему, цвет, фон и другие параметры внешнего вида под ваш стиль.</item>
@@ -918,6 +918,12 @@
         <item>Управляйте несколькими аккаунтами Xbox внутри лаунчера и легко переключайтесь между ними.</item>
         <item>CurseForge позволяет просматривать и загружать контент сообщества напрямую.</item>
         <item>Загружайте внешние нативные SO-модули, чтобы расширять или улучшать возможности и производительность Minecraft.</item>
+        <item>Анимированные GIF тоже можно использовать как обои лаунчера.</item>
+        <item>Значок экземпляра можно изменить в его настройках.</item>
+        <item>Отмечайте модули звёздочкой в меню модов, чтобы находить их в Избранном.</item>
+        <item>Перемещайте меню модов за заголовок, меняйте размер за правый нижний угол.</item>
+        <item>Включите Только совместимые во Внешних модах, чтобы отобрать моды для вашей версии Minecraft.</item>
+        <item>Создайте резервную копию мира перед редактированием его NBT-данных.</item>
     </string-array>
     <!-- Personalization -->
     <string name="theme_color_title">Цвет темы</string>
@@ -994,7 +1000,7 @@
     <string name="more_buttons_add_button">Добавить кнопку</string>
     <string name="more_buttons_limit_reached">Достигнут максимум пользовательских кнопок: %1$d.</string>
     <string name="more_buttons_empty">Пользовательских кнопок пока нет. Нажмите «Добавить кнопку», чтобы создать одну.</string>
-    <string name="more_buttons_mode_toggle">Переключатель</string>
+    <string name="more_buttons_mode_toggle">Переключение</string>
     <string name="more_buttons_mode_momentary">Моментальная</string>
     <string name="more_buttons_summary_format">%1$s  •  %2$s  •  значок %3$d%%</string>
     <string name="more_buttons_tap_again_delete">Нажмите ещё раз для удаления</string>

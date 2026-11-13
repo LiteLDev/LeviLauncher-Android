@@ -1,48 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/card_background_small"
-    android:layout_marginVertical="4dp"
-    android:orientation="horizontal"
-    android:padding="12dp"
-    android:gravity="center_vertical">
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/property_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/misans"
-            android:textColor="@color/on_surface"
-            android:textSize="14sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/property_key"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/misans"
-            android:textColor="@color/on_surface"
-            android:textSize="11sp"
-            android:alpha="0.6" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="4dp" android:orientation="horizontal" android:background="@drawable/bg_polish_card" android:paddingHorizontal="12dp" android:paddingVertical="8dp" android:gravity="center_vertical">
+    <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="14dp" android:orientation="vertical">
+        <TextView android:id="@+id/property_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="13sp" android:fontFamily="sans-serif-medium" android:textColor="@color/text_primary" />
+        <TextView android:id="@+id/property_key" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="3dp" android:textSize="10sp" android:fontFamily="monospace" android:textColor="@color/text_secondary" />
     </LinearLayout>
-
-    <EditText
-        android:id="@+id/property_value"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_search_box"
-        android:fontFamily="@font/misans"
-        android:padding="8dp"
-        android:textColor="@color/on_surface"
-        android:textSize="13sp"
-        android:maxLines="1"
-        android:inputType="text"
-        android:imeOptions="actionDone" />
+    <EditText android:id="@+id/property_value" style="@style/Widget.Levi.Input" android:layout_width="128dp" android:layout_height="wrap_content" android:minHeight="44dp" android:padding="10dp" android:textSize="13sp" android:singleLine="true" android:inputType="textVisiblePassword|textNoSuggestions" android:imeOptions="actionDone" android:importantForAutofill="no" />
 </LinearLayout>

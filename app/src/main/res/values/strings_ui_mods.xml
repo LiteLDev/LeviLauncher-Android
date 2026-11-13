@@ -2,8 +2,8 @@
 <resources>
     <!-- Mods page -->
     <string name="mods_get_mods">Get mods</string>
-    <string name="mods_subtitle">%1$s · %2$d mods, %3$d enabled</string>
-    <string name="mods_subtitle_counts">%1$d mods, %2$d enabled</string>
+    <string name="mods_subtitle">%1$s · Mods: %2$d · Enabled: %3$d</string>
+    <string name="mods_subtitle_counts">Mods: %1$d · Enabled: %2$d</string>
     <string name="mods_only_enabled">Only show enabled mods</string>
     <string name="mods_ingame_menu">In-game mod menu</string>
     <string name="mods_filter_all">All</string>

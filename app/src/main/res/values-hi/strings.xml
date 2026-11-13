@@ -82,7 +82,7 @@
     <string name="overlay_permission_not_granted">ओवरले अनुमति नहीं दी गई</string>
 
     <string name="import_apk">APK आयात करें</string>
-    <string name="install">इंस्टॉल</string>
+    <string name="install">इंस्टॉल करें</string>
     <string name="version_name">संस्करण का नाम</string>
     <string name="name_invalid">यह नाम उपयोग नहीं किया जा सकता या पहले ही लिया जा चुका है!</string>
     <string name="install_done">इंस्टॉल पूरा हुआ, संस्करण: %1$s</string>
@@ -311,7 +311,7 @@
     <string name="search_hint">खोजें…</string>
     <string name="search_properties_hint">गुण खोजें…</string>
     <string name="no_matching_properties">कोई मेल खाने वाले गुण नहीं मिले</string>
-    <string name="transfer">स्थानांतरण</string>
+    <string name="transfer">स्थानांतरित करें</string>
     <string name="transfer_content">सामग्री स्थानांतरित करें</string>
     <string name="transfer_to">इसमें स्थानांतरित करें:</string>
     <string name="transfer_success">स्थानांतरण सफलतापूर्वक पूरा हुआ</string>
@@ -363,7 +363,7 @@
     <string name="edit_world">वर्ल्ड संपादित करें</string>
     <string name="edit">संपादित करें</string>
     <string name="save">सहेजें</string>
-    <string name="reset">रीसेट</string>
+    <string name="reset">रीसेट करें</string>
     <string name="saved_to_gallery">गैलरी में सहेजा गया</string>
     <string name="level_dat_not_found">level.dat नहीं मिला</string>
     <string name="no_editable_properties">कोई संपादन योग्य गुण नहीं मिला</string>
@@ -635,7 +635,7 @@
     <string name="logcat_blacklist_hint">ब्लैकलिस्ट (अल्पविराम से अलग)</string>
     <string name="logcat_filter_clear">फ़िल्टर साफ़ करें</string>
     <string name="logcat_filter">फ़िल्टर</string>
-    <string name="logcat_autoscroll">ऑटो-स्क्रॉल</string>
+    <string name="logcat_autoscroll">अपने आप स्क्रॉल करें</string>
     <string name="logcat_pause">रोकें</string>
     <string name="logcat_clear">साफ़ करें</string>
     <string name="logcat_close">बंद करें</string>
@@ -653,16 +653,16 @@
     <string name="remove">हटाएं</string>
     
     <!-- Inbuilt Mods -->
-    <string name="inbuilt_mod_quick_drop">क्विक ड्रॉप</string>
+    <string name="inbuilt_mod_quick_drop">जल्दी फेंकें</string>
     <string name="inbuilt_mod_quick_drop_desc">आइटम जल्दी से छोड़ें</string>
     <string name="inbuilt_mod_camera">त्वरित परिप्रेक्ष्य</string>
     <string name="inbuilt_mod_camera_desc">कैमरा दृश्य टॉगल करें</string>
-    <string name="inbuilt_mod_hud">HUD छिपाएं</string>
+    <string name="inbuilt_mod_hud">HUD छिपाएँ</string>
     <string name="inbuilt_mod_hud_desc">हॉटबार और UI को छिपाएं</string>
     <string name="mod_config_hide_launcher_hud">लॉन्चर HUD और ओवरले बटन भी छिपाएँ</string>
-    <string name="inbuilt_mod_autosprint">ऑटो स्प्रिंट</string>
+    <string name="inbuilt_mod_autosprint">अपने आप दौड़ें</string>
     <string name="inbuilt_mod_autosprint_desc">स्प्रिंट चालू/बंद टॉगल करें</string>
-    <string name="inbuilt_mod_chick_pet">चूजा पालतू</string>
+    <string name="inbuilt_mod_chick_pet">पालतू चूज़ा</string>
     <string name="inbuilt_mod_chick_pet_desc">एक प्यारा पिक्सेल चूजा जो चलता है, सोता है, और छूने पर भागता है!</string>
     <string name="inbuilt_mod_zoom">ज़ूम</string>
     <string name="inbuilt_mod_zoom_desc">ज़ूम इन करने के लिए दबाए रखें, OptiFine ज़ूम की तरह</string>
@@ -895,8 +895,8 @@
     <string name="about_license_note">लाइसेंस विवरण के लिए रिपॉजिटरी में LICENSE देखें।</string>
     <string name="about_contribute_title">योगदान करें</string>
     <string name="about_contribute_desc">LeviLauncher को बेहतर बनाने के लिए Issues या Pull Requests के माध्यम से योगदान का स्वागत है।</string>
-    <string name="about_issues">Issue</string>
-    <string name="about_star_fork">Star / Fork</string>
+    <string name="about_issues">समस्या की रिपोर्ट करें</string>
+    <string name="about_star_fork">स्टार / फ़ोर्क</string>
 
     <string-array name="launcher_tips">
         <item>सेटिंग्स आपको अपने सेटअप से मेल खाने के लिए थीम, रंग, पृष्ठभूमि और अन्य उपस्थिति विकल्पों को समायोजित करने देती है।</item>
@@ -910,6 +910,12 @@
         <item>लॉन्चर के अंदर कई Xbox खाते प्रबंधित करें और उनके बीच निर्बाध रूप से स्विच करें।</item>
         <item>CurseForge आपको सीधे सामुदायिक सामग्री ब्राउज़ और डाउनलोड करने देता है।</item>
         <item>Minecraft सुविधाओं और प्रदर्शन का विस्तार या वृद्धि करने के लिए बाहरी देशी SO मॉड्यूल लोड करें।</item>
+        <item>आप लॉन्चर के वॉलपेपर के रूप में एनिमेटेड GIF भी इस्तेमाल कर सकते हैं।</item>
+        <item>इंस्टेंस का आइकन उसकी सेटिंग्स से बदलें।</item>
+        <item>मॉड मेनू में मॉड्यूल पर स्टार लगाएँ ताकि वह पसंदीदा में आसानी से मिल जाए।</item>
+        <item>मॉड मेनू खिसकाने के लिए उसका शीर्षक खींचें और आकार बदलने के लिए नीचे-दाएँ कोने को खींचें।</item>
+        <item>अपने Minecraft संस्करण के मॉड छाँटने के लिए बाहरी मॉड्स में केवल संगत मॉड चुनें।</item>
+        <item>दुनिया का NBT डेटा बदलने से पहले उसका बैकअप लें।</item>
     </string-array>
     <!-- Personalization -->
     <string name="theme_color_title">थीम रंग</string>
@@ -947,7 +953,7 @@
     <string name="discord">Discord</string>
     <string name="screenshot_date_format">दिनांक: %1$s</string>
     <string name="pagination_page_of">पृष्ठ %1$d / %2$s</string>
-    <string name="pagination_page_one">पृष्ठ 1</string>
+    <string name="pagination_page_one">पेज 1</string>
     <string name="logcat_filter_all">सभी</string>
     <string name="invalid_color_format">अमान्य रंग प्रारूप</string>
     <string name="world_directory_not_found">वर्ल्ड निर्देशिका नहीं मिली</string>
@@ -986,7 +992,7 @@
     <string name="more_buttons_add_button">बटन जोड़ें</string>
     <string name="more_buttons_limit_reached">अधिकतम %1$d कस्टम बटन की सीमा पूरी हो गई।</string>
     <string name="more_buttons_empty">अभी कोई कस्टम बटन नहीं है। एक बनाने के लिए बटन जोड़ें पर टैप करें।</string>
-    <string name="more_buttons_mode_toggle">टॉगल</string>
+    <string name="more_buttons_mode_toggle">चालू/बंद</string>
     <string name="more_buttons_mode_momentary">क्षणिक</string>
     <string name="more_buttons_summary_format">%1$s  •  %2$s  •  %3$d%% आइकन</string>
     <string name="more_buttons_tap_again_delete">हटाने के लिए फिर टैप करें</string>

@@ -14,6 +14,8 @@ public final class ModMenuToggle extends CompoundButton {
     private final RectF track = new RectF();
     private ModMenuTheme palette;
     private float position;
+    private int offTrack;
+    private int offThumb;
     private ValueAnimator animator;
 
     public ModMenuToggle(Context context) { this(context, null); }
@@ -28,11 +30,17 @@ public final class ModMenuToggle extends CompoundButton {
         setMinHeight(dp(40));
         setFocusable(true);
         setClickable(true);
-        palette = new ModMenuTheme(context);
+        setPalette(new ModMenuTheme(context));
         position = isChecked() ? 1 : 0;
     }
 
-    void setPalette(ModMenuTheme palette) { this.palette = palette; invalidate(); }
+    void setPalette(ModMenuTheme palette) {
+        this.palette = palette;
+        offTrack = ModMenuTheme.mix(palette.raised, palette.outline, 0.65f);
+        offThumb = ModMenuTheme.readable(palette.secondary, offTrack, 3.0,
+                palette.dark ? android.graphics.Color.WHITE : android.graphics.Color.BLACK);
+        invalidate();
+    }
 
     @Override public void setChecked(boolean checked) {
         boolean changed = checked != isChecked();
@@ -54,11 +62,16 @@ public final class ModMenuToggle extends CompoundButton {
         float top = (getHeight() - height) / 2f;
         track.set(left, top, left + width, top + height);
         paint.setStyle(Paint.Style.FILL);
-        int off = palette.dark ? 0xFF44444D : 0xFFB0B0B8;
+        int off = offTrack;
         paint.setColor(ModMenuTheme.mix(off, palette.primary, position));
         paint.setAlpha(isEnabled() ? 255 : 130);
         canvas.drawRoundRect(track, height / 2, height / 2, paint);
-        paint.setColor(0xFFF8F8FA);
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(Math.max(1, getResources().getDisplayMetrics().density));
+        paint.setColor(ModMenuTheme.mix(palette.outline, palette.primary, position));
+        canvas.drawRoundRect(track, height / 2, height / 2, paint);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setColor(ModMenuTheme.mix(offThumb, 0xFFF8F8FA, position));
         paint.setAlpha(isEnabled() ? 255 : 160);
         float travel = width - height;
         if (getLayoutDirection() == LAYOUT_DIRECTION_RTL) travel *= -1;

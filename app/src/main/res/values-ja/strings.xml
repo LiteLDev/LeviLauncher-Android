@@ -30,7 +30,7 @@
 
     <!-- About -->
     <string name="about_title">☕ アプリについて</string>
-    <string name="copyright">©2024–2026 LeviMC. All rights reserved.</string>
+    <string name="copyright">©2024–2026 LeviMC. すべての権利を留保します。</string>
     <string name="font_license">このアプリは Misans フォントを使用しています。</string>
     <string name="about_footer_github">GitHub: https://github.com/LiteLDev/LeviLauncher-Android</string>
     <string name="quick_actions_title">クイックアクション</string>
@@ -180,7 +180,7 @@
 
     <string name="error_no_browser">利用可能なブラウザがありません</string>
     <!-- License & Security -->
-    <string name="eula_title">LeviLauncher 使用許諾契約</string>
+    <string name="eula_title">LeviLauncher使用許諾契約</string>
     <string name="eula_message"><b>LeviLauncher へようこそ</b>\n\nこのソフトウェアを使用することにより、以下に同意したとみなされます：\n\n• これは<b>非公式</b>の Minecraft ランチャーです\n• <b>ライセンスされた</b> Minecraft のコピーを所有している必要があります\n• いかなる形式の海賊版やチートも禁止されています\n• モッドやリソースパックの使用は自己責任です\n• Mojang / Microsoft とは提携していません\n\n継続使用は同意を構成します</string>
     <string name="eula_agree">同意する</string>
     <string name="eula_exit">拒否する</string>
@@ -414,7 +414,7 @@
     <string name="invalid_license_detected_toast">非正規品が検出されました。Play ストアからの Minecraft であることを確認してください。</string>
 
     <string name="full_mods_title">モッド </string>
-    <string name="total_mods">合計モッド数:</string>
+    <string name="total_mods">Mod総数:</string>
     <string name="enabled_mods">有効化:</string>
     <string name="add_mod">モッドを追加</string>
     <string name="external_mods">外部 Mod</string>
@@ -463,7 +463,7 @@
     <string name="mod_filename_format">ファイル: %s</string>
     <string name="mod_enable_status">有効状態</string>
     <string name="mod_icon_content_description">Mod アイコン</string>
-    <string name="mod_author_byline">by %s</string>
+    <string name="mod_author_byline">作者: %s</string>
     <string name="mod_version_chip">バージョン %s</string>
     <string name="mod_metadata_title">情報</string>
     <string name="mod_actions_title">操作</string>
@@ -621,7 +621,7 @@
     <string name="dialog_title_exit_app">アプリを終了</string>
     <string name="dialog_message_exit_app">本当に終了してもよろしいですか？</string>
     <string name="dialog_positive_exit">終了</string>
-    <string name="show_logcat_overlay">Logcat オーバーレイ</string>
+    <string name="show_logcat_overlay">Logcatオーバーレイ</string>
 
 
 
@@ -657,7 +657,7 @@
     <string name="inbuilt_mod_quick_drop_desc">アイテムをすばやく落とす</string>
     <string name="inbuilt_mod_camera">クイック視点</string>
     <string name="inbuilt_mod_camera_desc">カメラの視点を切り替える</string>
-    <string name="inbuilt_mod_hud">HUD を隠す</string>
+    <string name="inbuilt_mod_hud">HUDを非表示</string>
     <string name="inbuilt_mod_hud_desc">ホットバーと UI を非表示にする</string>
     <string name="mod_config_hide_launcher_hud">ランチャーの HUD とオーバーレイボタンも非表示にする</string>
     <string name="inbuilt_mod_autosprint">オートスプリント</string>
@@ -824,7 +824,7 @@
 
     <!-- Quick Launch Dialogs -->
     <string name="server_ip_hint">サーバー IP アドレス</string>
-    <string name="server_port_hint">ポート (デフォルト: 19132)</string>
+    <string name="server_port_hint">ポート（既定: 19132）</string>
     <string name="server_name_hint">サーバー名</string>
     <string name="realm_invite_code_hint">Realm 招待コード</string>
     <string name="world_name_hint">ワールド名</string>
@@ -895,7 +895,7 @@
     <string name="about_license_note">ライセンスの詳細はリポジトリの LICENSE をご覧ください。</string>
     <string name="about_contribute_title">貢献</string>
     <string name="about_contribute_desc">Issues や Pull Requests を通じた貢献を歓迎します。</string>
-    <string name="about_issues">Issue</string>
+    <string name="about_issues">問題を報告</string>
     <string name="about_star_fork">スター / フォーク</string>
 
     <string-array name="launcher_tips">
@@ -910,6 +910,12 @@
         <item>ランチャー内で複数の Xbox アカウントを管理し、シームレスに切り替えます。</item>
         <item>CurseForge からコミュニティコンテンツを直接ダウンロードできます。</item>
         <item>外部の SO モジュールをロードして、Minecraft の機能とパフォーマンスを向上させます。</item>
+        <item>アニメーションGIFもランチャーの壁紙として使用できます。</item>
+        <item>インスタンスのアイコンは、そのインスタンスの設定で変更できます。</item>
+        <item>Modメニューでモジュールに星を付けると、お気に入りから簡単に探せます。</item>
+        <item>Modメニューはタイトルをドラッグして移動、右下の角でサイズ変更できます。</item>
+        <item>外部Modの「対応Modのみ」で、使用中のMinecraftバージョンに絞り込めます。</item>
+        <item>NBTデータを編集する前に、ワールドをバックアップしましょう。</item>
     </string-array>
     <!-- Personalization -->
     <string name="theme_color_title">テーマの色</string>
@@ -986,7 +992,7 @@
     <string name="more_buttons_add_button">ボタンを追加</string>
     <string name="more_buttons_limit_reached">カスタムボタンの上限 %1$d 個に達しました。</string>
     <string name="more_buttons_empty">カスタムボタンはまだありません。「ボタンを追加」をタップして作成してください。</string>
-    <string name="more_buttons_mode_toggle">トグル</string>
+    <string name="more_buttons_mode_toggle">切り替え</string>
     <string name="more_buttons_mode_momentary">モーメンタリ</string>
     <string name="more_buttons_summary_format">%1$s  •  %2$s  •  アイコン %3$d%%</string>
     <string name="more_buttons_tap_again_delete">もう一度タップして削除</string>
@@ -1001,7 +1007,7 @@
     <string name="more_buttons_tutorial_body">1. アイコンライブラリからシンプルな SVG アイコンをダウンロードします。SVG Repo と The SVG が便利です。\n\n2. ボタンを追加し、キーボードキーを1つだけ選択します。\n\n3. 通常 SVG を読み込みます。初期設定では純黒 (#000000) に変更されます。\n\n4. 押下時 SVG は任意です。指定しない場合は通常 SVG が再利用されます。初期設定では押下アイコンは #E6E6E6 に変更され、Minecraft のボタンのように少し下へ移動します。\n\n5. 「元の色を保持」を使うと、通常状態と押下状態それぞれで SVG の色を保持できます。\n\n6. 「アイコンサイズ」と「アイコン X/Y オフセット」で Minecraft 風ボタン内の図柄を調整します。「ボタンサイズ」は画面上のコントロール全体の大きさを変更します。\n\n7. キー割り当てをモーメンタリまたはトグルから選びます。モーメンタリはボタンを押している間だけキーを押し、トグルはタップするたびにキーの押下と解放を切り替えます。\n\n追加ボタンは意図的に1ボタンにつき1キーのみをサポートし、マクロ、キーシーケンス、自動リピート、オートクリックは提供しません。</string>
     <string name="more_buttons_open_svg_repo">SVG Repo を開く</string>
     <string name="more_buttons_open_the_svg">The SVG を開く</string>
-    <string name="more_buttons_edit_title">%1$s を編集</string>
+    <string name="more_buttons_edit_title">%1$sを編集</string>
     <string name="more_buttons_preview_normal_state">通常状態をプレビュー</string>
     <string name="more_buttons_preview_pressed_state">押下状態をプレビュー</string>
     <string name="more_buttons_name">名前</string>

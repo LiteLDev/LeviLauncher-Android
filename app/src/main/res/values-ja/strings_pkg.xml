@@ -398,7 +398,7 @@
     <!-- package settings card (Settings, basic tab) -->
     <string name="pkg_settings_title">キャッシュを削除</string>
     <string name="pkg_settings_desc">パッケージのダウンロードに失敗する場合は、パッケージマネージャーのキャッシュを削除してください。</string>
-    <string name="pkg_settings_proxy_title">GitHub プロキシ</string>
+    <string name="pkg_settings_proxy_title">GitHubプロキシ</string>
     <string name="pkg_settings_proxy_desc">パッケージをダウンロードする際に使用する GitHub プロキシです。空欄にすると既定値に戻ります。</string>
     <string name="pkg_settings_proxy_hint">https://github.bibk.top</string>
     <string name="pkg_settings_proxy_preset_custom">カスタム</string>

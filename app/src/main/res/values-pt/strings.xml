@@ -180,7 +180,7 @@
 
     <string name="error_no_browser">Nenhum navegador disponível</string>
     <!-- License & Security -->
-    <string name="eula_title">Contrato de Licença LeviLauncher</string>
+    <string name="eula_title">Contrato de licença do LeviLauncher</string>
     <string name="eula_message"><b>Bem-vindo ao LeviLauncher</b>\n\nAo usar este software, você concorda que:\n\n• Este é um launcher <b>não oficial</b>\n• Você deve possuir uma cópia <b>licenciada</b> do Minecraft\n• Qualquer pirataria ou trapaça é proibida\n• O uso de mods/pacotes é por sua conta e risco\n• Não afiliado à Mojang/Microsoft\n\nO uso contínuo constitui concordância</string>
     <string name="eula_agree">Aceitar</string>
     <string name="eula_exit">Recusar</string>
@@ -332,7 +332,7 @@
     <string name="delete_world">Excluir Mundo</string>
     <string name="backup_world">Fazer Backup do Mundo</string>
     <string name="export">Exportar</string>
-    <string name="backup">Backup</string>
+    <string name="backup">Cópia de segurança</string>
     <string name="delete">Excluir</string>
     <string name="delete_pack">Excluir</string>
 
@@ -414,7 +414,7 @@
     <string name="invalid_license_detected_toast">Minecraft não original detectado. Verifique a sua versão da Play Store.</string>
 
     <string name="full_mods_title">Mods </string>
-    <string name="total_mods">Total de Mods:</string>
+    <string name="total_mods">Total de mods:</string>
     <string name="enabled_mods">Ativados:</string>
     <string name="add_mod">Adicionar Mod</string>
     <string name="external_mods">Mods externos</string>
@@ -621,7 +621,7 @@
     <string name="dialog_title_exit_app">Sair do App</string>
     <string name="dialog_message_exit_app">Tem certeza de que deseja sair?</string>
     <string name="dialog_positive_exit">Sair</string>
-    <string name="show_logcat_overlay">Sobreposição de Logcat</string>
+    <string name="show_logcat_overlay">Painel do Logcat</string>
 
 
 
@@ -635,7 +635,7 @@
     <string name="logcat_blacklist_hint">Lista negra (separado por vírgulas)</string>
     <string name="logcat_filter_clear">Limpar filtros</string>
     <string name="logcat_filter">Filtrar</string>
-    <string name="logcat_autoscroll">Auto-scroll</string>
+    <string name="logcat_autoscroll">Rolagem automática</string>
     <string name="logcat_pause">Pausar</string>
     <string name="logcat_clear">Limpar</string>
     <string name="logcat_close">Fechar</string>
@@ -653,16 +653,16 @@
     <string name="remove">Remover</string>
     
     <!-- Inbuilt Mods -->
-    <string name="inbuilt_mod_quick_drop">Gota Rápida</string>
+    <string name="inbuilt_mod_quick_drop">Descarte rápido</string>
     <string name="inbuilt_mod_quick_drop_desc">Jogue itens rapidamente</string>
     <string name="inbuilt_mod_camera">Perspectiva Rápida</string>
     <string name="inbuilt_mod_camera_desc">Mudar a visão da câmera</string>
     <string name="inbuilt_mod_hud">Ocultar HUD</string>
     <string name="inbuilt_mod_hud_desc">Ocultar a barra e interface</string>
     <string name="mod_config_hide_launcher_hud">Ocultar também o HUD e os botões flutuantes do launcher</string>
-    <string name="inbuilt_mod_autosprint">Auto Sprint</string>
+    <string name="inbuilt_mod_autosprint">Corrida automática</string>
     <string name="inbuilt_mod_autosprint_desc">Ligar/desligar a corrida automática</string>
-    <string name="inbuilt_mod_chick_pet">Pintinho de Estimação</string>
+    <string name="inbuilt_mod_chick_pet">Pintinho de estimação</string>
     <string name="inbuilt_mod_chick_pet_desc">Um pintinho pixelado que anda e corre ao ser tocado!</string>
     <string name="inbuilt_mod_zoom">Zoom</string>
     <string name="inbuilt_mod_zoom_desc">Segure para dar zoom, estilo OptiFine</string>
@@ -895,8 +895,8 @@
     <string name="about_license_note">Veja LICENSE no repositório para detalhes.</string>
     <string name="about_contribute_title">Contribuir</string>
     <string name="about_contribute_desc">Contribuições via Issues ou Pull Requests são bem-vindas.</string>
-    <string name="about_issues">Issue</string>
-    <string name="about_star_fork">Dar Estrela / Fazer Fork</string>
+    <string name="about_issues">Relatar um problema</string>
+    <string name="about_star_fork">Estrela / Fork</string>
 
     <string-array name="launcher_tips">
         <item>As Configurações permitem que você ajuste tema, cor, fundo e outras opções para combinar com você.</item>
@@ -910,6 +910,12 @@
         <item>Gerencie várias contas Xbox dentro do launcher e alterne entre elas com facilidade.</item>
         <item>O CurseForge permite que você baixe conteúdo da comunidade diretamente.</item>
         <item>Carregue módulos SO para estender ou melhorar os recursos e o desempenho do Minecraft.</item>
+        <item>GIFs animados também podem ser usados como papel de parede do inicializador.</item>
+        <item>Altere o ícone de uma instância nas configurações dela.</item>
+        <item>Marque módulos com uma estrela no menu de mods para encontrá-los nos Favoritos.</item>
+        <item>Arraste o título do menu de mods para movê-lo ou o canto inferior direito para redimensioná-lo.</item>
+        <item>Use Somente compatíveis em Mods externos para filtrar pela sua versão do Minecraft.</item>
+        <item>Faça uma cópia de segurança do seu mundo antes de editar os dados NBT dele.</item>
     </string-array>
     <!-- Personalization -->
     <string name="theme_color_title">Cor do Tema</string>
@@ -986,7 +992,7 @@
     <string name="more_buttons_add_button">Adicionar botão</string>
     <string name="more_buttons_limit_reached">O limite máximo de %1$d botões personalizados foi atingido.</string>
     <string name="more_buttons_empty">Ainda não há botões personalizados. Toque em Adicionar botão para criar um.</string>
-    <string name="more_buttons_mode_toggle">Alternância</string>
+    <string name="more_buttons_mode_toggle">Alternar</string>
     <string name="more_buttons_mode_momentary">Momentâneo</string>
     <string name="more_buttons_summary_format">%1$s  •  %2$s  •  ícone %3$d%%</string>
     <string name="more_buttons_tap_again_delete">Toque novamente para excluir</string>

@@ -18,8 +18,8 @@
     <string name="current_instance">Phiên bản hiện tại</string>
 
     <!-- Mods -->
-    <string name="mods_title">Mods (%d)</string>
-    <string name="mods_section_title">Mods</string>
+    <string name="mods_title">Mod (%d)</string>
+    <string name="mods_section_title">Mod</string>
     <string name="external_mods_label">Mods bên ngoài</string>
     <string name="inbuilt_mods_label">Mods có sẵn</string>
     <string name="manage_mods">Quản lý Mods</string>
@@ -30,7 +30,7 @@
 
     <!-- About -->
     <string name="about_title">☕ Về</string>
-    <string name="copyright">©2024–2026 LeviMC. Mọi quyền được bảo lưu.</string>
+    <string name="copyright">©2024–2026 LeviMC. Bảo lưu mọi quyền.</string>
     <string name="font_license">Ứng dụng đang sử dụng phông chữ Misans.</string>
     <string name="about_footer_github">GitHub: https://github.com/LiteLDev/LeviLauncher-Android</string>
     <string name="quick_actions_title">Thao tác nhanh</string>
@@ -304,14 +304,14 @@
     <string name="skin_packs_category">Gói ngoại hình</string>
     <string name="screenshots_category">Ảnh chụp màn hình</string>
     <string name="servers_category">Máy chủ</string>
-    <string name="storage_internal">Bộ nhớ trong</string>
-    <string name="storage_external">Bộ nhớ ngoài</string>
+    <string name="storage_internal">Nội bộ</string>
+    <string name="storage_external">Bên ngoài</string>
     <string name="storage_version_isolation">Chia phiên bản</string>
     <string name="select_storage_label">Chọn kho lưu trữ:</string>
     <string name="search_hint">Tìm kiếm…</string>
     <string name="search_properties_hint">Tìm kiếm thuộc tính…</string>
     <string name="no_matching_properties">Không tìm thấy kết quả phù hợp.</string>
-    <string name="transfer">Chuyển đổi</string>
+    <string name="transfer">Chuyển</string>
     <string name="transfer_content">Chuyển đổi nội dung</string>
     <string name="transfer_to">Chuyển tới:</string>
     <string name="transfer_success">Chuyển đổi đã hoàn tất</string>
@@ -379,7 +379,7 @@
     <string name="custom_flat_world">Tùy chỉnh thế giới phẳng</string>
     <string name="world_name">Tên thế giới</string>
     <string name="enter_world_name">Nhập tên thế giới</string>
-    <string name="biome">Biome</string>
+    <string name="biome">Quần xã</string>
     <string name="game_mode">Chế độ chơi</string>
     <string name="layers">Lớp (từ dưới lên trên)</string>
     <string name="layers_hint">Kéo để sắp xếp lại, vuốt sang trái để xóa.</string>
@@ -413,8 +413,8 @@
     <string name="genuine_badge_label">Giấy phép chưa được xác minh</string>
     <string name="invalid_license_detected_toast">Đã phát hiện Minecraft không phải bản chính hãng. Hãy đảm bảo Minecraft của bạn được tải từ Google Play Store.</string>
 
-    <string name="full_mods_title">Mods </string>
-    <string name="total_mods">Tổng các Mods:</string>
+    <string name="full_mods_title">Mod </string>
+    <string name="total_mods">Tổng số mod:</string>
     <string name="enabled_mods">Đã bật:</string>
     <string name="add_mod">Thêm Mod</string>
     <string name="external_mods">Mod bên ngoài</string>
@@ -460,7 +460,7 @@
     <string name="error_loading_mod">Lỗi khi tải chi tiết Mod</string>
     <string name="mod_enabled">Mod đã bật</string>
     <string name="mod_disabled">Mod chưa bật</string>
-    <string name="mod_filename_format">File: %s</string>
+    <string name="mod_filename_format">Tệp: %s</string>
     <string name="mod_enable_status">Trạng thái kích hoạt</string>
     <string name="mod_icon_content_description">Biểu tượng Mod</string>
     <string name="mod_author_byline">bởi %s</string>
@@ -471,7 +471,7 @@
     <string name="mod_version_label">Phiên bản</string>
     <string name="mod_minecraft_versions_label">Các phiên bản Minecraft</string>
     <string name="mod_entry_label">Tệp chính</string>
-    <string name="mod_id_label">Mod ID</string>
+    <string name="mod_id_label">ID mod</string>
     <string name="mod_config_files_label">Cấu hình Files</string>
     <string name="mod_unknown_author">Không rõ Tác giả</string>
     <string name="mod_unknown_version">Không rõ phiên bản</string>
@@ -491,7 +491,7 @@
     <string name="mod_config_collapse">Thu gọn</string>
     <string name="mod_config_raw_json">Chỉnh sửa JSON thô</string>
     <string name="mod_config_raw_json_short">JSON</string>
-    <string name="mod_config_item_label">Item %1$s</string>
+    <string name="mod_config_item_label">Mục %1$s</string>
     <string name="mod_config_object_desc">Nhóm các thiết lập liên quan</string>
     <string name="mod_config_array_desc">Danh sách các giá trị</string>
     <string name="mod_config_range_prefix">Phạm vi</string>
@@ -510,8 +510,7 @@
         <item quantity="other">%d các lựa chọn</item>
     </plurals>
     <plurals name="mod_config_items_count">
-        <item quantity="one">%d item</item>
-        <item quantity="other">%d items</item>
+        <item quantity="other">%1$d mục</item>
     </plurals>
 
     <!-- Game Version Select Dialog -->
@@ -653,7 +652,7 @@
     <string name="remove">Xóa</string>
     
     <!-- Inbuilt Mods -->
-    <string name="inbuilt_mod_quick_drop">Thả Nhanh</string>
+    <string name="inbuilt_mod_quick_drop">Thả nhanh</string>
     <string name="inbuilt_mod_quick_drop_desc">Thả vật phẩm nhanh</string>
     <string name="inbuilt_mod_camera">Đổi góc nhìn nhanh</string>
     <string name="inbuilt_mod_camera_desc">Chuyển đổi chế độ xem camera</string>
@@ -662,9 +661,9 @@
     <string name="mod_config_hide_launcher_hud">Ẩn cả HUD và các nút lớp phủ của launcher</string>
     <string name="inbuilt_mod_autosprint">Tự động chạy nhanh</string>
     <string name="inbuilt_mod_autosprint_desc">Bật/tắt chế độ chạy nhanh</string>
-    <string name="inbuilt_mod_chick_pet">Gà Con</string>
+    <string name="inbuilt_mod_chick_pet">Gà con thú cưng</string>
     <string name="inbuilt_mod_chick_pet_desc">Một chú gà con dễ thương được tạo hình bằng pixel, biết đi lại, ngủ và chạy khi được chạm vào! UwU</string>
-    <string name="inbuilt_mod_zoom">Zoom</string>
+    <string name="inbuilt_mod_zoom">Thu phóng</string>
     <string name="inbuilt_mod_zoom_desc">Nhấn giữ để phóng to, tương tự OptiFine zoom</string>
     <string name="zoom_level_label">Mức độ Zoom:</string>
     <string name="zoom_keybind_label">Phím tắt Zoom:</string>
@@ -703,7 +702,7 @@
     <string name="extract_structures">Trích xuất cấu trúc</string>
     <string name="no_structures_found">Không tìm thấy cấu trúc nào trên thế giới này.</string>
     <string name="no_structures_found_title">Không tìm thấy cấu trúc nào</string>
-    <string name="no_structures_found_message">Không tìm thấy cấu trúc nào trên thế giới này.\n\Để trích xuất một cấu trúc:\n1. Mở thế giới này trong Minecraft bằng launcher này.\n2. Đặt một khối cấu trúc (Structure Block) và chỉnh thành chế độ Lưu.\n3. Đặt tên cho cấu trúc của bạn và nhấn Lưu.\n4. Rời khỏi thế giới và trở lại đây.\n5. Nhấn \"Extract Structures\" lại lần nữa</string>
+    <string name="no_structures_found_message">Không tìm thấy cấu trúc nào trong thế giới này.\n\nĐể trích xuất cấu trúc:\n1. Mở thế giới này trong Minecraft bằng trình khởi chạy này.\n2. Đặt một khối cấu trúc và chọn chế độ Lưu.\n3. Đặt tên cho cấu trúc rồi nhấn Lưu.\n4. Thoát khỏi thế giới và quay lại đây.\n5. Nhấn Trích xuất cấu trúc lần nữa.</string>
     <string name="structures_exported">Đã xuất %1$d cấu trúc tới %2$s</string>
     <string name="structures_exported_zip">Đã xuất %d cấu trúc tới ZIP</string>
     <string name="structure_found">Tìm thấy cấu trúc</string>
@@ -895,8 +894,8 @@
     <string name="about_license_note">Xem file LICENSE trong kho lưu trữ để biết chi tiết về giấy phép.</string>
     <string name="about_contribute_title">Đóng góp</string>
     <string name="about_contribute_desc">Chúng tôi hoan nghênh các đóng góp thông qua Issues hoặc Pull Requests để cải thiện LeviLauncher.</string>
-    <string name="about_issues">Issue</string>
-    <string name="about_star_fork">Star / Fork</string>
+    <string name="about_issues">Báo cáo sự cố</string>
+    <string name="about_star_fork">Gắn sao / Fork</string>
 
     <string-array name="launcher_tips">
         <item>Phần Cài đặt cho phép bạn điều chỉnh chủ đề, màu sắc, hình nền và các tùy chọn hiển thị khác sao cho phù hợp với thiết lập của mình.</item>
@@ -910,6 +909,12 @@
         <item>Quản lý nhiều tài khoản Xbox ngay trong trình khởi chạy và chuyển đổi giữa chúng một cách liền mạch.</item>
         <item>CurseForge cho phép bạn duyệt và tải xuống nội dung do cộng đồng trực tiếp thực hiện.</item>
         <item>Nhập các bản mod để mở rộng hoặc nâng cao các tính năng và hiệu năng của Minecraft.</item>
+        <item>Bạn cũng có thể dùng GIF động làm hình nền trình khởi chạy.</item>
+        <item>Đổi biểu tượng của bản cài trong phần cài đặt của bản đó.</item>
+        <item>Đánh dấu sao cho mô-đun trong menu mod để tìm nhanh trong Yêu thích.</item>
+        <item>Kéo tiêu đề menu mod để di chuyển hoặc kéo góc dưới bên phải để đổi kích thước.</item>
+        <item>Dùng Chỉ tương thích trong Mod bên ngoài để lọc theo phiên bản Minecraft của bạn.</item>
+        <item>Sao lưu thế giới trước khi chỉnh sửa dữ liệu NBT của nó.</item>
     </string-array>
     <!-- Personalization -->
     <string name="theme_color_title">Màu chủ đề</string>

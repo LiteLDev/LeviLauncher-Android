@@ -199,7 +199,7 @@
     <string name="pkg_package_empty">Tidak ada data</string>
     <string name="pkg_variant_label">Varian</string>
     <string name="pkg_variant_hint">Sebagian besar paket hanya memiliki satu varian. Biarkan default kecuali pembuatnya menyatakan lain.</string>
-    <string name="pkg_variant_default">Default</string>
+    <string name="pkg_variant_default">Bawaan</string>
     <string name="pkg_group_minecraft">Minecraft %1$s</string>
     <string name="pkg_game_versions_unrestricted">Tanpa batasan versi game</string>
     <string name="pkg_game_versions_loading">Memuat</string>
@@ -398,7 +398,7 @@
     <!-- package settings card (Settings, basic tab) -->
     <string name="pkg_settings_title">Bersihkan cache</string>
     <string name="pkg_settings_desc">Bersihkan cache pengelola paket jika unduhan paket gagal.</string>
-    <string name="pkg_settings_proxy_title">Proxy GitHub</string>
+    <string name="pkg_settings_proxy_title">Proksi GitHub</string>
     <string name="pkg_settings_proxy_desc">Proxy GitHub yang digunakan saat mengunduh paket. Biarkan kosong untuk memulihkan bawaan.</string>
     <string name="pkg_settings_proxy_hint">https://github.bibk.top</string>
     <string name="pkg_settings_proxy_preset_custom">Kustom</string>

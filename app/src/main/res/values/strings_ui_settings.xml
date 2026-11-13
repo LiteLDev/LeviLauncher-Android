@@ -42,7 +42,7 @@
     <string name="settings_ui_clear_image">Clear</string>
     <string name="settings_ui_no_folder">No folder selected</string>
     <string name="settings_ui_single_image">Custom wallpaper</string>
-    <string name="settings_ui_image_count">%1$d wallpapers</string>
+    <string name="settings_ui_image_count">Wallpapers: %1$d</string>
     <string name="settings_ui_folder_failed">No usable images or GIFs found in this folder</string>
     <string name="settings_ui_play_order">Wallpaper order</string>
     <string name="settings_ui_play_random">Random</string>

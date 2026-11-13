@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -57,7 +60,11 @@ public class OptionsEditor {
     }
 
     public void save() throws IOException {
-        File parentDir = optionsFile.getParentFile();
+        save(getOptions());
+    }
+
+    public void save(Map<String, String> values) throws IOException {
+        File parentDir = optionsFile.getAbsoluteFile().getParentFile();
         if (parentDir != null && !parentDir.exists()) {
             parentDir.mkdirs();
         }
@@ -67,11 +74,18 @@ public class OptionsEditor {
             copyFile(optionsFile, backup);
         }
 
-        try (OutputStreamWriter writer = new OutputStreamWriter(
-                new FileOutputStream(optionsFile), StandardCharsets.UTF_8)) {
-            for (Map.Entry<String, String> entry : options.entrySet()) {
-                writer.write(entry.getKey() + ":" + entry.getValue() + "\n");
+        File pending = File.createTempFile(".options-", ".tmp", parentDir);
+        try {
+            try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(pending), StandardCharsets.UTF_8)) {
+                for (Map.Entry<String, String> entry : values.entrySet()) writer.write(entry.getKey() + ":" + entry.getValue() + "\n");
             }
+            try {
+                Files.move(pending.toPath(), optionsFile.toPath(), StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+            } catch (AtomicMoveNotSupportedException unsupported) {
+                Files.move(pending.toPath(), optionsFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            }
+        } finally {
+            if (pending.exists()) pending.delete();
         }
         
         Log.d(TAG, "Saved " + options.size() + " options to " + optionsFile.getAbsolutePath());
@@ -155,7 +169,7 @@ public class OptionsEditor {
         }
 
         private String categorize(String key) {
-            String lower = key.toLowerCase();
+            String lower = key.toLowerCase(java.util.Locale.ROOT);
             if (lower.contains("gfx") || lower.contains("render") || lower.contains("graphics") 
                     || lower.contains("texture") || lower.contains("particle") || lower.contains("fancy")) {
                 return "Graphics";

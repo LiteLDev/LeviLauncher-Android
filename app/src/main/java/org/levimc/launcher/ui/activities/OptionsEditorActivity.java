@@ -1,232 +1,220 @@
 package org.levimc.launcher.ui.activities;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
-import org.levimc.launcher.ui.dialogs.LauncherDialogBuilder;
-
+import com.google.android.material.button.MaterialButton;
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.content.OptionsEditor;
 import org.levimc.launcher.core.content.OptionsEditor.OptionProperty;
 import org.levimc.launcher.databinding.ActivityOptionsEditorBinding;
 import org.levimc.launcher.ui.adapter.OptionsPropertiesAdapter;
-import org.levimc.launcher.ui.animation.DynamicAnim;
-
+import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
+import org.levimc.launcher.ui.widget.LauncherPopup;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 public class OptionsEditorActivity extends BaseActivity {
-
     public static final String EXTRA_OPTIONS_PATH = "options_path";
     public static final String EXTRA_STORAGE_TYPE = "storage_type";
-
+    private static final String[] CATEGORIES = {"Graphics", "Audio", "Controls", "Interface", "Game", "Developer", "Multiplayer", "VR", "Other"};
     private ActivityOptionsEditorBinding binding;
     private OptionsEditor optionsEditor;
     private OptionsPropertiesAdapter adapter;
     private ExecutorService executor;
-
     private List<OptionProperty> allProperties = new ArrayList<>();
-    private boolean hasUnsavedChanges = false;
+    private final Map<String, String> savedValues = new LinkedHashMap<>();
+    private boolean hasUnsavedChanges;
+    private boolean loading = true;
+    private boolean saving;
+    private int category = -1;
+    private TextView status;
+    private MaterialButton categoryButton;
+    private Bundle restoredEdits;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    @Override protected void onCreate(Bundle state) {
+        super.onCreate(state);
         binding = ActivityOptionsEditorBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        DynamicAnim.applyPressScaleRecursively(binding.getRoot());
         executor = Executors.newSingleThreadExecutor();
-
-        String optionsPath = getIntent().getStringExtra(EXTRA_OPTIONS_PATH);
-        String storageType = getIntent().getStringExtra(EXTRA_STORAGE_TYPE);
-
-        if (optionsPath == null) {
+        String path = getIntent().getStringExtra(EXTRA_OPTIONS_PATH);
+        if (path == null || path.isEmpty()) {
             Toast.makeText(this, R.string.options_file_not_found, Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
-
-        optionsEditor = new OptionsEditor(new File(optionsPath));
-        setupUI(storageType);
-        loadOptionsData();
-    }
-
-    private void setupUI(String storageType) {
-        String title = getString(R.string.edit_options);
-        if (storageType != null) {
-            title += " (" + storageType + ")";
+        if (state != null) {
+            restoredEdits = state.getBundle("option_edits");
+            category = state.getInt("option_category", -1);
+            if (category < -1 || category >= CATEGORIES.length) category = -1;
         }
-        binding.titleText.setText(title);
-
-        binding.saveButton.setOnClickListener(v -> saveChanges());
+        optionsEditor = new OptionsEditor(new File(path));
+        status = findViewById(R.id.options_editor_status);
+        categoryButton = findViewById(R.id.options_category_button);
         binding.saveButton.setEnabled(false);
-
+        binding.saveButton.setOnClickListener(v -> saveChanges(false));
         adapter = new OptionsPropertiesAdapter();
-        adapter.setOnOptionChangedListener((property, newValue) -> {
-            optionsEditor.setValue(property.getKey(), newValue);
-            property.setValue(newValue);
-            hasUnsavedChanges = true;
-            binding.saveButton.setEnabled(true);
+        adapter.setOnOptionChangedListener((property, value) -> {
+            optionsEditor.setValue(property.getKey(), value);
+            property.setValue(value);
+            updateDirtyState();
         });
-
         binding.optionsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.optionsRecyclerView.setAdapter(adapter);
-        setupSearchFilter();
-    }
-
-    private void setupSearchFilter() {
+        binding.optionsRecyclerView.setItemAnimator(null);
+        categoryButton.setOnClickListener(v -> showCategories());
+        categoryButton.setText(category < 0 ? getString(R.string.options_category_all)
+                : OptionsPropertiesAdapter.categoryLabel(this, CATEGORIES[category]));
         binding.searchEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterProperties(s.toString());
-            }
-            @Override
-            public void afterTextChanged(Editable s) {}
+            @Override public void beforeTextChanged(CharSequence text, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence text, int start, int before, int count) { if (!loading) filterProperties(); }
+            @Override public void afterTextChanged(Editable text) {}
         });
-    }
-
-    private void filterProperties(String query) {
-        String lowerQuery = query.toLowerCase().trim();
-        List<OptionProperty> filtered;
-        if (lowerQuery.isEmpty()) {
-            filtered = allProperties;
-        } else {
-            filtered = allProperties.stream()
-                .filter(prop -> prop.getDisplayName().toLowerCase().contains(lowerQuery)
-                        || prop.getKey().toLowerCase().contains(lowerQuery)
-                        || prop.getCategory().toLowerCase().contains(lowerQuery)
-                        || prop.getValue().toLowerCase().contains(lowerQuery))
-                .collect(Collectors.toList());
-        }
-
-        if (filtered.isEmpty() && !allProperties.isEmpty()) {
-            binding.emptyText.setVisibility(View.VISIBLE);
-            binding.emptyText.setText(R.string.no_matching_options);
-            binding.optionsRecyclerView.setVisibility(View.GONE);
-        } else if (!filtered.isEmpty()) {
-            binding.emptyText.setVisibility(View.GONE);
-            binding.optionsRecyclerView.setVisibility(View.VISIBLE);
-            Map<String, List<OptionProperty>> grouped = groupByCategory(filtered);
-            adapter.setProperties(grouped);
-        }
-    }
-
-    private void loadOptionsData() {
+        if (state != null) binding.searchEditText.setText(state.getString("option_query", ""));
         binding.loadingProgress.setVisibility(View.VISIBLE);
-        binding.optionsRecyclerView.setVisibility(View.GONE);
-        binding.emptyText.setVisibility(View.GONE);
-
         executor.execute(() -> {
             try {
                 optionsEditor.load();
-                runOnUiThread(this::displayOptions);
-            } catch (Exception e) {
                 runOnUiThread(() -> {
+                    if (isDestroyed()) return;
+                    loading = false;
+                    binding.loadingProgress.setVisibility(View.GONE);
+                    savedValues.putAll(optionsEditor.getOptions());
+                    allProperties = optionsEditor.getOptionProperties();
+                    if (restoredEdits != null) for (OptionProperty property : allProperties) {
+                        if (!restoredEdits.containsKey(property.getKey())) continue;
+                        String value = restoredEdits.getString(property.getKey(), property.getValue());
+                        property.setValue(value);
+                        optionsEditor.setValue(property.getKey(), value);
+                    }
+                    restoredEdits = null;
+                    updateDirtyState();
+                    filterProperties();
+                });
+            } catch (Exception error) {
+                runOnUiThread(() -> {
+                    if (isDestroyed()) return;
+                    loading = false;
                     binding.loadingProgress.setVisibility(View.GONE);
                     binding.emptyText.setVisibility(View.VISIBLE);
-                    binding.emptyText.setText(getString(R.string.error_loading_options) + ": " + e.getMessage());
+                    binding.emptyText.setText(getString(R.string.error_loading_options) + ": " + error.getMessage());
                 });
             }
         });
     }
 
-    private void displayOptions() {
-        binding.loadingProgress.setVisibility(View.GONE);
-
-        if (!optionsEditor.isLoaded()) {
-            binding.emptyText.setVisibility(View.VISIBLE);
-            binding.emptyText.setText(R.string.options_file_not_found);
-            binding.optionsRecyclerView.setVisibility(View.GONE);
-            return;
+    private void showCategories() {
+        LauncherPopup popup = new LauncherPopup(categoryButton).section(getString(R.string.category))
+                .choice(0, getString(R.string.options_category_all), category < 0);
+        for (int i = 0; i < CATEGORIES.length; i++) {
+            popup.choice(i + 1, OptionsPropertiesAdapter.categoryLabel(this, CATEGORIES[i]), category == i);
         }
-
-        allProperties = optionsEditor.getOptionProperties();
-
-        if (allProperties.isEmpty()) {
-            binding.emptyText.setVisibility(View.VISIBLE);
-            binding.emptyText.setText(R.string.no_options_found);
-            binding.optionsRecyclerView.setVisibility(View.GONE);
-        } else {
-            binding.emptyText.setVisibility(View.GONE);
-            binding.optionsRecyclerView.setVisibility(View.VISIBLE);
-            Map<String, List<OptionProperty>> grouped = groupByCategory(allProperties);
-            adapter.setProperties(grouped);
-        }
+        popup.onSelect(id -> {
+            category = id - 1;
+            categoryButton.setText(category < 0 ? getString(R.string.options_category_all)
+                    : OptionsPropertiesAdapter.categoryLabel(this, CATEGORIES[category]));
+            filterProperties();
+        }).show();
     }
 
-    private Map<String, List<OptionProperty>> groupByCategory(List<OptionProperty> properties) {
+    private void filterProperties() {
+        String query = binding.searchEditText.getText().toString().trim().toLowerCase(Locale.ROOT);
         Map<String, List<OptionProperty>> grouped = new LinkedHashMap<>();
-        for (OptionProperty prop : properties) {
-            String category = prop.getCategory();
-            grouped.computeIfAbsent(category, k -> new ArrayList<>()).add(prop);
+        int visible = 0;
+        for (OptionProperty property : allProperties) {
+            if (category >= 0 && !CATEGORIES[category].equals(property.getCategory())) continue;
+            String text = property.getDisplayName() + " " + property.getKey() + " " + property.getValue() + " "
+                    + OptionsPropertiesAdapter.categoryLabel(this, property.getCategory());
+            if (!query.isEmpty() && !text.toLowerCase(Locale.ROOT).contains(query)) continue;
+            grouped.computeIfAbsent(property.getCategory(), key -> new ArrayList<>()).add(property);
+            visible++;
         }
-        return grouped;
+        adapter.setProperties(grouped);
+        binding.optionsRecyclerView.setVisibility(visible == 0 ? View.GONE : View.VISIBLE);
+        binding.emptyText.setVisibility(visible == 0 ? View.VISIBLE : View.GONE);
+        binding.emptyText.setText(allProperties.isEmpty() ? R.string.no_options_found : R.string.no_matching_options);
+        status.setText(getString(R.string.options_editor_results, visible, allProperties.size()));
     }
 
-    private void saveChanges() {
-        if (!hasUnsavedChanges) return;
+    private void updateDirtyState() {
+        hasUnsavedChanges = false;
+        for (OptionProperty property : allProperties) if (!Objects.equals(savedValues.get(property.getKey()), property.getValue())) {
+            hasUnsavedChanges = true;
+            break;
+        }
+        binding.saveButton.setEnabled(hasUnsavedChanges && !saving);
+        ((TextView) findViewById(R.id.options_editor_info)).setText(saving ? R.string.options_editor_saving
+                : hasUnsavedChanges ? R.string.unsaved_changes : R.string.options_editor_subtitle);
+    }
 
-        binding.loadingProgress.setVisibility(View.VISIBLE);
-        binding.saveButton.setEnabled(false);
-
+    private void saveChanges(boolean closeAfterSave) {
+        if (saving || loading) return;
+        if (!hasUnsavedChanges) { if (closeAfterSave) finish(); return; }
+        View focused = getCurrentFocus();
+        if (focused != null) {
+            InputMethodManager keyboard = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            if (keyboard != null) keyboard.hideSoftInputFromWindow(focused.getWindowToken(), 0);
+            focused.clearFocus();
+        }
+        Map<String, String> snapshot = optionsEditor.getOptions();
+        saving = true;
+        updateDirtyState();
         executor.execute(() -> {
             try {
-                optionsEditor.save();
+                optionsEditor.save(snapshot);
                 runOnUiThread(() -> {
-                    binding.loadingProgress.setVisibility(View.GONE);
-                    hasUnsavedChanges = false;
+                    if (isDestroyed()) return;
+                    saving = false;
+                    savedValues.clear();
+                    savedValues.putAll(snapshot);
+                    updateDirtyState();
                     Toast.makeText(this, R.string.options_saved, Toast.LENGTH_SHORT).show();
+                    if (closeAfterSave && !hasUnsavedChanges) finish();
                 });
-            } catch (Exception e) {
+            } catch (Exception error) {
                 runOnUiThread(() -> {
-                    binding.loadingProgress.setVisibility(View.GONE);
-                    binding.saveButton.setEnabled(true);
-                    Toast.makeText(this, getString(R.string.save_failed) + ": " + e.getMessage(),
-                            Toast.LENGTH_LONG).show();
+                    if (isDestroyed()) return;
+                    saving = false;
+                    updateDirtyState();
+                    Toast.makeText(this, getString(R.string.save_failed) + ": " + error.getMessage(), Toast.LENGTH_LONG).show();
                 });
             }
         });
     }
 
-    @Override
-    public void onBackPressed() {
-        if (hasUnsavedChanges) {
-            AlertDialog dialog = new LauncherDialogBuilder(this)
-                    .setTitle(R.string.unsaved_changes)
-                    .setMessage(R.string.discard_changes_message)
-                    .setPositiveButton(R.string.discard, (d, which) -> { d.dismiss(); finish(); })
-                    .setNegativeButton(R.string.cancel, (d, which) -> d.dismiss())
-                    .show();
-            dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.WHITE);
-            dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.WHITE);
-            org.levimc.launcher.util.PersonalizationManager pm = new org.levimc.launcher.util.PersonalizationManager(this);
-            int accent = pm.getAccentColor();
-            if (accent != 0) {
-                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(accent);
-                dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(accent);
-            }
-        } else {
-            super.onBackPressed();
-        }
+    @Override public void onBackPressed() {
+        if (saving) { Toast.makeText(this, R.string.options_editor_saving, Toast.LENGTH_SHORT).show(); return; }
+        if (!hasUnsavedChanges) { super.onBackPressed(); return; }
+        new CustomAlertDialog(this).setTitleText(getString(R.string.unsaved_changes))
+                .setMessage(getString(R.string.discard_changes_message))
+                .setNegativeButton(getString(R.string.cancel), null)
+                .setNeutralButton(getString(R.string.discard), v -> finish())
+                .setPositiveButton(getString(R.string.options_editor_save_close), v -> saveChanges(true)).show();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    @Override protected void onSaveInstanceState(Bundle state) {
+        super.onSaveInstanceState(state);
+        Bundle edits = new Bundle();
+        for (OptionProperty property : allProperties) if (!Objects.equals(savedValues.get(property.getKey()), property.getValue())) edits.putString(property.getKey(), property.getValue());
+        state.putBundle("option_edits", edits);
+        state.putInt("option_category", category);
+        state.putString("option_query", binding.searchEditText.getText().toString());
+    }
+
+    @Override protected void onDestroy() {
         if (executor != null) executor.shutdown();
+        super.onDestroy();
     }
 }

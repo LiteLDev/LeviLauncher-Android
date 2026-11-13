@@ -180,7 +180,7 @@
 
     <string name="error_no_browser">No hay navegador disponible</string>
     <!-- License & Security -->
-    <string name="eula_title">Acuerdo de Licencia de LeviLauncher</string>
+    <string name="eula_title">Acuerdo de licencia de LeviLauncher</string>
     <string name="eula_message"><b>Bienvenido a LeviLauncher</b>\n\nAl usar este software aceptas que:\n\n• Este es un launcher <b>no oficial</b> de Minecraft\n• Debes poseer una copia <b>con licencia</b> de Minecraft\n• Se prohíbe cualquier forma de piratería o trampa\n• Los mods/packs se usan bajo tu propio riesgo\n• No está afiliado con Mojang/Microsoft\n\nEl uso continuo constituye un acuerdo</string>
     <string name="eula_agree">Aceptar</string>
     <string name="eula_exit">Rechazar</string>
@@ -332,7 +332,7 @@
     <string name="delete_world">Eliminar Mundo</string>
     <string name="backup_world">Respaldar Mundo</string>
     <string name="export">Exportar</string>
-    <string name="backup">Respaldar</string>
+    <string name="backup">Copia de seguridad</string>
     <string name="delete">Eliminar</string>
     <string name="delete_pack">Eliminar</string>
 
@@ -414,7 +414,7 @@
     <string name="invalid_license_detected_toast">Minecraft no original detectado. Asegúrate de tener Minecraft de Google Play Store</string>
 
     <string name="full_mods_title">Mods </string>
-    <string name="total_mods">Total de Mods:</string>
+    <string name="total_mods">Total de mods:</string>
     <string name="enabled_mods">Habilitados:</string>
     <string name="add_mod">Añadir Mod</string>
     <string name="external_mods">Mods externos</string>
@@ -621,7 +621,7 @@
     <string name="dialog_title_exit_app">Salir de la aplicación</string>
     <string name="dialog_message_exit_app">¿Estás seguro de que deseas salir?</string>
     <string name="dialog_positive_exit">Salir</string>
-    <string name="show_logcat_overlay">Superposición Logcat</string>
+    <string name="show_logcat_overlay">Panel de Logcat</string>
 
 
 
@@ -635,7 +635,7 @@
     <string name="logcat_blacklist_hint">Lista negra (separada por comas)</string>
     <string name="logcat_filter_clear">Borrar filtros</string>
     <string name="logcat_filter">Filtro</string>
-    <string name="logcat_autoscroll">Auto-scroll</string>
+    <string name="logcat_autoscroll">Desplazamiento automático</string>
     <string name="logcat_pause">Pausa</string>
     <string name="logcat_clear">Limpiar</string>
     <string name="logcat_close">Cerrar</string>
@@ -653,16 +653,16 @@
     <string name="remove">Quitar</string>
     
     <!-- Inbuilt Mods -->
-    <string name="inbuilt_mod_quick_drop">Dejar caer rápido</string>
+    <string name="inbuilt_mod_quick_drop">Soltar rápido</string>
     <string name="inbuilt_mod_quick_drop_desc">Suelta objetos rápidamente</string>
     <string name="inbuilt_mod_camera">Perspectiva Rápida</string>
     <string name="inbuilt_mod_camera_desc">Cambiar la vista de la cámara</string>
     <string name="inbuilt_mod_hud">Ocultar HUD</string>
     <string name="inbuilt_mod_hud_desc">Ocultar barra de acceso rápido y UI</string>
     <string name="mod_config_hide_launcher_hud">Ocultar también el HUD y los botones superpuestos del launcher</string>
-    <string name="inbuilt_mod_autosprint">Auto Sprint</string>
+    <string name="inbuilt_mod_autosprint">Esprint automático</string>
     <string name="inbuilt_mod_autosprint_desc">Activar/desactivar el sprint automático</string>
-    <string name="inbuilt_mod_chick_pet">Mascota Pollito</string>
+    <string name="inbuilt_mod_chick_pet">Pollito mascota</string>
     <string name="inbuilt_mod_chick_pet_desc">¡Un lindo pollito pixelado que camina, duerme y corre al tocarlo!</string>
     <string name="inbuilt_mod_zoom">Zoom</string>
     <string name="inbuilt_mod_zoom_desc">Mantén pulsado para hacer zoom, tipo OptiFine</string>
@@ -824,7 +824,7 @@
 
     <!-- Quick Launch Dialogs -->
     <string name="server_ip_hint">Dirección IP del Servidor</string>
-    <string name="server_port_hint">Puerto (por defecto: 19132)</string>
+    <string name="server_port_hint">Puerto (predeterminado: 19132)</string>
     <string name="server_name_hint">Nombre del Servidor</string>
     <string name="realm_invite_code_hint">Código Invitación Realm</string>
     <string name="world_name_hint">Nombre del Mundo</string>
@@ -895,8 +895,8 @@
     <string name="about_license_note">Consulta el archivo LICENSE en el repositorio.</string>
     <string name="about_contribute_title">Contribuir</string>
     <string name="about_contribute_desc">Contribuciones vía Issues o Pull Requests son bienvenidas.</string>
-    <string name="about_issues">Issue</string>
-    <string name="about_star_fork">Dar Estrella / Hacer Fork</string>
+    <string name="about_issues">Informar de un problema</string>
+    <string name="about_star_fork">Estrella / Fork</string>
 
     <string-array name="launcher_tips">
         <item>Los Ajustes te permiten cambiar el tema, color, fondo y otras opciones para adaptar tu launcher.</item>
@@ -910,6 +910,12 @@
         <item>Gestiona varias cuentas Xbox dentro del launcher y cambia entre ellas sin problemas.</item>
         <item>CurseForge te permite navegar y descargar contenido de la comunidad directamente.</item>
         <item>Carga módulos SO externos para extender o mejorar el rendimiento de Minecraft.</item>
+        <item>También puedes usar GIF animados como fondo del lanzador.</item>
+        <item>Cambia el icono de una instancia desde sus ajustes.</item>
+        <item>Marca módulos con una estrella en el menú de mods para encontrarlos en Favoritos.</item>
+        <item>Arrastra el título del menú de mods para moverlo o su esquina inferior derecha para cambiar su tamaño.</item>
+        <item>Usa Solo compatibles en Mods externos para filtrar por tu versión de Minecraft.</item>
+        <item>Haz una copia de tu mundo antes de editar sus datos NBT.</item>
     </string-array>
     <!-- Personalization -->
     <string name="theme_color_title">Color del Tema</string>

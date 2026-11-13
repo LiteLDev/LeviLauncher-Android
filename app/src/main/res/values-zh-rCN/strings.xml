@@ -11,8 +11,8 @@
     <string name="app_name">LeviLauncher</string>
     <string name="minecraft">Minecraft</string>
     <string name="launch">启动</string>
-    <string name="beta_badge">Beta</string>
-    <string name="debug_badge">Debug</string>
+    <string name="beta_badge">测试版</string>
+    <string name="debug_badge">调试</string>
     <string name="cursor">光标</string>
     <string name="bedrock_edition">基岩版</string>
     <string name="current_instance">当前实例</string>
@@ -463,7 +463,7 @@
     <string name="mod_filename_format">文件：%s</string>
     <string name="mod_enable_status">启用状态</string>
     <string name="mod_icon_content_description">模组图标</string>
-    <string name="mod_author_byline">by %s</string>
+    <string name="mod_author_byline">作者：%s</string>
     <string name="mod_version_chip">版本 %s</string>
     <string name="mod_metadata_title">信息</string>
     <string name="mod_actions_title">操作</string>
@@ -895,8 +895,8 @@
     <string name="about_license_note">许可证详情请参阅仓库中的 LICENSE。</string>
     <string name="about_contribute_title">参与贡献</string>
     <string name="about_contribute_desc">欢迎通过 Issues 或 Pull Requests 改进 LeviLauncher。</string>
-    <string name="about_issues">Issue</string>
-    <string name="about_star_fork">Star / Fork</string>
+    <string name="about_issues">反馈问题</string>
+    <string name="about_star_fork">加星 / 复刻</string>
 
     <string-array name="launcher_tips">
         <item>在设置中可以调整主题、颜色、背景和其他外观选项，让启动器更符合你的使用习惯。</item>
@@ -910,6 +910,12 @@
         <item>在启动器中管理多个 Xbox 账号，并在它们之间无缝切换。</item>
         <item>CurseForge 可以让你直接浏览并下载社区内容。</item>
         <item>导入模组以扩展或增强 Minecraft 功能和性能。</item>
+        <item>动态 GIF 也可以用作启动器壁纸。</item>
+        <item>可以在实例设置中更改实例图标。</item>
+        <item>在模组菜单中为模块加星，就能在收藏中快速找到它。</item>
+        <item>拖动模组菜单的标题可移动菜单，拖动右下角可调整大小。</item>
+        <item>在外部模组页面使用“仅显示兼容”，即可按当前 Minecraft 版本筛选。</item>
+        <item>编辑世界的 NBT 数据前，请先备份世界。</item>
     </string-array>
     <!-- Personalization -->
     <string name="theme_color_title">主题颜色</string>

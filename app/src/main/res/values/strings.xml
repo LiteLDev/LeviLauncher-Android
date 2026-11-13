@@ -910,6 +910,12 @@
         <item>Manage multiple Xbox accounts inside the launcher and switch between them seamlessly.</item>
         <item>CurseForge lets you browse and download community content directly.</item>
         <item>Import mods to extend or enhance Minecraft features and performance.</item>
+        <item>Animated GIFs work as launcher wallpapers too.</item>
+        <item>Change an instance’s icon from its settings.</item>
+        <item>Star modules in the mod menu to find them in Favorites.</item>
+        <item>Drag the mod-menu title to move it, or its bottom-right corner to resize it.</item>
+        <item>Use Compatible only in External Mods to filter for your Minecraft version.</item>
+        <item>Back up your world before editing its NBT data.</item>
     </string-array>
     <!-- Personalization -->
     <string name="theme_color_title">Theme Color</string>

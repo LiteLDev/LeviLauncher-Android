@@ -2,6 +2,8 @@ package org.levimc.launcher.ui.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -81,6 +83,33 @@ public class OptionsPropertiesAdapter extends RecyclerView.Adapter<RecyclerView.
         return items.size();
     }
 
+    public static String categoryLabel(Context context, String category) {
+        int resource;
+        switch (category) {
+            case "Graphics": resource = R.string.options_category_graphics; break;
+            case "Audio": resource = R.string.options_category_audio; break;
+            case "Controls": resource = R.string.options_category_controls; break;
+            case "Interface": resource = R.string.options_category_interface; break;
+            case "Game": resource = R.string.options_category_game; break;
+            case "Developer": resource = R.string.options_category_developer; break;
+            case "Multiplayer": resource = R.string.options_category_multiplayer; break;
+            case "VR": resource = R.string.options_category_vr; break;
+            default: resource = R.string.options_category_other;
+        }
+        return context.getString(resource);
+    }
+
+    @Override public void onViewRecycled(@NonNull RecyclerView.ViewHolder holder) {
+        if (holder instanceof PropertyViewHolder) {
+            PropertyViewHolder row = (PropertyViewHolder) holder;
+            if (row.watcher != null) row.propertyValue.removeTextChangedListener(row.watcher);
+            row.watcher = null;
+            row.propertyValue.setOnEditorActionListener(null);
+            row.propertyValue.setOnFocusChangeListener(null);
+        }
+        super.onViewRecycled(holder);
+    }
+
     private static class HeaderItem {
         final String title;
         HeaderItem(String title) { this.title = title; }
@@ -95,7 +124,7 @@ public class OptionsPropertiesAdapter extends RecyclerView.Adapter<RecyclerView.
         }
 
         void bind(HeaderItem item) {
-            headerText.setText(item.title);
+            headerText.setText(categoryLabel(itemView.getContext(), item.title));
         }
     }
 
@@ -103,6 +132,7 @@ public class OptionsPropertiesAdapter extends RecyclerView.Adapter<RecyclerView.
         TextView propertyName;
         TextView propertyKey;
         EditText propertyValue;
+        TextWatcher watcher;
 
         PropertyViewHolder(View itemView) {
             super(itemView);
@@ -117,7 +147,17 @@ public class OptionsPropertiesAdapter extends RecyclerView.Adapter<RecyclerView.
 
             propertyValue.setOnEditorActionListener(null);
             propertyValue.setOnFocusChangeListener(null);
+            if (watcher != null) propertyValue.removeTextChangedListener(watcher);
             propertyValue.setText(property.getValue());
+            propertyValue.setContentDescription(itemView.getContext().getString(R.string.options_editor_value_for, property.getDisplayName()));
+            watcher = new TextWatcher() {
+                @Override public void beforeTextChanged(CharSequence text, int start, int count, int after) {}
+                @Override public void onTextChanged(CharSequence text, int start, int before, int count) {}
+                @Override public void afterTextChanged(Editable value) {
+                    if (listener != null && !value.toString().equals(property.getValue())) listener.onOptionChanged(property, value.toString());
+                }
+            };
+            propertyValue.addTextChangedListener(watcher);
 
             propertyValue.setOnEditorActionListener((v, actionId, event) -> {
                 if (listener != null) {

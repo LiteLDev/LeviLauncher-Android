@@ -1,0 +1,21 @@
+<resources>
+    <string name="external_mods_results">Showing %1$d of %2$d mods</string>
+    <string name="options_editor_subtitle">Edit Minecraft options and save when finished.</string>
+    <string name="options_editor_results">Showing %1$d of %2$d options</string>
+    <string name="options_editor_value_for">Value for %1$s</string>
+    <string name="options_editor_saving">Saving changes…</string>
+    <string name="options_editor_save_close">Save and close</string>
+    <string name="options_category_all">All categories</string>
+    <string name="options_category_graphics">Graphics</string>
+    <string name="options_category_audio">Audio</string>
+    <string name="options_category_controls">Controls</string>
+    <string name="options_category_interface">Interface</string>
+    <string name="options_category_game">Gameplay</string>
+    <string name="options_category_developer">Developer</string>
+    <string name="options_category_multiplayer">Multiplayer</string>
+    <string name="options_category_vr">Virtual reality</string>
+    <string name="options_category_other">Other</string>
+    <string name="splash_tagline">Minecraft, with more possibilities.</string>
+    <string name="splash_opening">Opening your launcher…</string>
+    <string name="splash_version">v%1$s</string>
+</resources>

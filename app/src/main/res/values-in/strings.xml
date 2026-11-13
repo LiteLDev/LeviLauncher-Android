@@ -18,8 +18,8 @@
     <string name="current_instance">Instans Saat Ini</string>
 
     <!-- Mods -->
-    <string name="mods_title">Mods (%d)</string>
-    <string name="mods_section_title">Mods</string>
+    <string name="mods_title">Mod (%d)</string>
+    <string name="mods_section_title">Mod</string>
     <string name="external_mods_label">Mods Eksternal</string>
     <string name="inbuilt_mods_label">Mods Bawaan</string>
     <string name="manage_mods">Kelola Mods</string>
@@ -30,7 +30,7 @@
 
     <!-- About -->
     <string name="about_title">☕ Tentang</string>
-    <string name="copyright">©2024–2026 LeviMC. All rights reserved.</string>
+    <string name="copyright">©2024–2026 LeviMC. Seluruh hak cipta dilindungi.</string>
     <string name="font_license">Aplikasi ini menggunakan font Misans..</string>
     <string name="about_footer_github">GitHub: https://github.com/LiteLDev/LeviLauncher-Android</string>
     <string name="quick_actions_title">Tindakan Cepat</string>
@@ -82,7 +82,7 @@
     <string name="overlay_permission_not_granted">Izin overlay tidak diberikan</string>
 
     <string name="import_apk">Impor APK</string>
-    <string name="install">Install</string>
+    <string name="install">Instal</string>
     <string name="version_name">Nama versi</string>
     <string name="name_invalid">Nama ini tidak dapat digunakan atau sudah dipakai!</string>
     <string name="install_done">Instalasi selesai, versi: %1$s</string>
@@ -180,7 +180,7 @@
 
     <string name="error_no_browser">Tidak ada peramban yang tersedia.</string>
     <!-- License & Security -->
-    <string name="eula_title">LeviLauncher License Agreement</string>
+    <string name="eula_title">Perjanjian lisensi LeviLauncher</string>
     <string name="eula_message"><b>Selamat datang di LeviLauncher</b>\n\nBy using this software you agree to:\n\n• This is an <b>unofficial</b> Minecraft launcher\n• You must own a <b>licensed</b> copy of Minecraft\n• Any form of piracy or cheating is prohibited\n• Mods/resource packs are used at your own risk\n• Not affiliated with Mojang/Microsoft\n\nContinued use constitutes agreement</string>
     <string name="eula_agree">Terima</string>
     <string name="eula_exit">Tolak</string>
@@ -305,13 +305,13 @@
     <string name="screenshots_category">Tangkapan Layar</string>
     <string name="servers_category">Server</string>
     <string name="storage_internal">Internal</string>
-    <string name="storage_external">External</string>
+    <string name="storage_external">Eksternal</string>
     <string name="storage_version_isolation">Isolasi Versi</string>
     <string name="select_storage_label">Pilih Penyimpanan:</string>
     <string name="search_hint">Mencari…</string>
     <string name="search_properties_hint">Cari properti…</string>
     <string name="no_matching_properties">Tidak ditemukan properti yang cocok</string>
-    <string name="transfer">Transfer</string>
+    <string name="transfer">Pindahkan</string>
     <string name="transfer_content">Transfer Konten</string>
     <string name="transfer_to">Transfer ke:</string>
     <string name="transfer_success">Transfer berhasil diselesaikan</string>
@@ -413,8 +413,8 @@
     <string name="genuine_badge_label">Lisensi tidak ter-verifikasi</string>
     <string name="invalid_license_detected_toast">Minecraft palsu terdeteksi. Pastikan Minecraft Anda berasal dari Google Play Store.</string>
 
-    <string name="full_mods_title">Mods </string>
-    <string name="total_mods">Total Mods:</string>
+    <string name="full_mods_title">Mod </string>
+    <string name="total_mods">Total mod:</string>
     <string name="enabled_mods">Aktif:</string>
     <string name="add_mod">Tambahkan Mod</string>
     <string name="external_mods">Mod Eksternal</string>
@@ -460,7 +460,7 @@
     <string name="error_loading_mod">Terjadi kesalahan saat memuat detail mod.</string>
     <string name="mod_enabled">Mod diaktifkan</string>
     <string name="mod_disabled">Mod dinonaktifkan</string>
-    <string name="mod_filename_format">File: %s</string>
+    <string name="mod_filename_format">Berkas: %s</string>
     <string name="mod_enable_status">Status</string>
     <string name="mod_icon_content_description">Ikon mod</string>
     <string name="mod_author_byline">oleh %s</string>
@@ -471,7 +471,7 @@
     <string name="mod_version_label">Versi</string>
     <string name="mod_minecraft_versions_label">Versi Minecraft</string>
     <string name="mod_entry_label">File Entri</string>
-    <string name="mod_id_label">ID Mod</string>
+    <string name="mod_id_label">ID mod</string>
     <string name="mod_config_files_label">File Konfigurasi</string>
     <string name="mod_unknown_author">Pembuat tidak diketahui</string>
     <string name="mod_unknown_version">Versi tidak diketahui</string>
@@ -621,7 +621,7 @@
     <string name="dialog_title_exit_app">Keluar dari Aplikasi</string>
     <string name="dialog_message_exit_app">Apakah Anda yakin ingin keluar?</string>
     <string name="dialog_positive_exit">Keluar</string>
-    <string name="show_logcat_overlay">Logcat overlay</string>
+    <string name="show_logcat_overlay">Panel Logcat</string>
 
 
 
@@ -635,7 +635,7 @@
     <string name="logcat_blacklist_hint">Daftar hitam (dipisahkan koma)</string>
     <string name="logcat_filter_clear">Hapus filter</string>
     <string name="logcat_filter">Filter</string>
-    <string name="logcat_autoscroll">Auto-scroll</string>
+    <string name="logcat_autoscroll">Gulir otomatis</string>
     <string name="logcat_pause">Berhentikan(pause)</string>
     <string name="logcat_clear">Bersihkan</string>
     <string name="logcat_close">Tutup</string>
@@ -653,16 +653,16 @@
     <string name="remove">Hapuskan</string>
     
     <!-- Inbuilt Mods -->
-    <string name="inbuilt_mod_quick_drop">Quick Drop</string>
+    <string name="inbuilt_mod_quick_drop">Buang cepat</string>
     <string name="inbuilt_mod_quick_drop_desc">Jatuhkan barang dengan cepat</string>
     <string name="inbuilt_mod_camera">Perspektif Kamera Cepat</string>
     <string name="inbuilt_mod_camera_desc">Alihkan tampilan kamera</string>
-    <string name="inbuilt_mod_hud">Hide HUD</string>
+    <string name="inbuilt_mod_hud">Sembunyikan HUD</string>
     <string name="inbuilt_mod_hud_desc">Sembunyikan hotbar dan UI</string>
     <string name="mod_config_hide_launcher_hud">Sembunyikan juga HUD launcher dan tombol overlay</string>
-    <string name="inbuilt_mod_autosprint">Auto Sprint</string>
+    <string name="inbuilt_mod_autosprint">Lari otomatis</string>
     <string name="inbuilt_mod_autosprint_desc">Aktifkan/nonaktifkan lari cepat</string>
-    <string name="inbuilt_mod_chick_pet">Chick Pet</string>
+    <string name="inbuilt_mod_chick_pet">Anak ayam peliharaan</string>
     <string name="inbuilt_mod_chick_pet_desc">Seekor anak ayam piksel yang lucu yang bisa berjalan, tidur, dan berlari saat disentuh!</string>
     <string name="inbuilt_mod_zoom">Zoom</string>
     <string name="inbuilt_mod_zoom_desc">Tahan untuk memperbesar, seperti zoom OptiFine</string>
@@ -824,7 +824,7 @@
 
     <!-- Quick Launch Dialogs -->
     <string name="server_ip_hint">Alamat IP Server</string>
-    <string name="server_port_hint">Port (default: 19132)</string>
+    <string name="server_port_hint">Port (bawaan: 19132)</string>
     <string name="server_name_hint">Nama Server</string>
     <string name="realm_invite_code_hint">Kode Undangan Realm</string>
     <string name="world_name_hint">Nama Dunia</string>
@@ -895,8 +895,8 @@
     <string name="about_license_note">Lihat LICENSE di repositori untuk detail lisensi.</string>
     <string name="about_contribute_title">Berkontribusi</string>
     <string name="about_contribute_desc">Kontribusi melalui Issues atau Pull Requests dipersilakan untuk meningkatkan LeviLauncher.</string>
-    <string name="about_issues">Issue</string>
-    <string name="about_star_fork">Star / Fork</string>
+    <string name="about_issues">Laporkan masalah</string>
+    <string name="about_star_fork">Bintang / Fork</string>
 
     <string-array name="launcher_tips">
         <item>Pengaturan memungkinkan Anda menyesuaikan tema, warna, latar belakang, dan opsi tampilan lain agar sesuai dengan setup Anda.</item>
@@ -910,6 +910,12 @@
         <item>Kelola beberapa akun Xbox di dalam launcher dan beralih antar akun dengan mudah.</item>
         <item>CurseForge memungkinkan Anda menjelajahi dan mengunduh konten komunitas secara langsung.</item>
         <item>Muat modul SO native eksternal untuk memperluas atau meningkatkan fitur dan performa Minecraft.</item>
+        <item>GIF animasi juga dapat digunakan sebagai wallpaper peluncur.</item>
+        <item>Ubah ikon instans dari pengaturannya.</item>
+        <item>Beri bintang pada modul di menu mod agar mudah ditemukan di Favorit.</item>
+        <item>Seret judul menu mod untuk memindahkannya, atau sudut kanan bawahnya untuk mengubah ukuran.</item>
+        <item>Gunakan Hanya yang kompatibel di Mod eksternal untuk memfilter versi Minecraft Anda.</item>
+        <item>Cadangkan dunia Anda sebelum mengedit data NBT-nya.</item>
     </string-array>
     <!-- Personalization -->
     <string name="theme_color_title">Warna Tema</string>
@@ -986,7 +992,7 @@
     <string name="more_buttons_add_button">Tambah Tombol</string>
     <string name="more_buttons_limit_reached">Batas maksimum %1$d tombol kustom telah tercapai.</string>
     <string name="more_buttons_empty">Belum ada tombol kustom. Ketuk Tambah Tombol untuk membuatnya.</string>
-    <string name="more_buttons_mode_toggle">Toggle</string>
+    <string name="more_buttons_mode_toggle">Beralih</string>
     <string name="more_buttons_mode_momentary">Sesaat</string>
     <string name="more_buttons_summary_format">%1$s  •  %2$s  •  ikon %3$d%%</string>
     <string name="more_buttons_tap_again_delete">Ketuk Lagi untuk Menghapus</string>

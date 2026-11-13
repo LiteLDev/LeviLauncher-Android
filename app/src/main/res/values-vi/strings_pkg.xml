@@ -104,7 +104,7 @@
     <string name="pkg_err_cause_corrupt">Tệp đã tải xuống bị hỏng hoặc không đầy đủ. Hãy dọn bộ nhớ đệm gói trong cài đặt Trình quản lý gói rồi thử lại.</string>
 
     <!-- Browse and package screens (PackagesActivity, BrowseFragment, PackageActivity, InstallDialog) -->
-    <string name="pkg_title_mods">LeviMC Mods</string>
+    <string name="pkg_title_mods">Mod LeviMC</string>
     <string name="pkg_tab_browse">Duyệt</string>
     <string name="pkg_tab_installed">Đã cài đặt</string>
     <string name="pkg_tab_details">Chi tiết</string>

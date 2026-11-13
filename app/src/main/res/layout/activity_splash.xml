@@ -1,96 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background"
-    tools:context=".ui.activities.SplashActivity">
-
-    <View
-        android:id="@+id/logoGlow"
-        android:layout_width="180dp"
-        android:layout_height="180dp"
-        android:background="@drawable/bg_logo_glow"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.28" />
-
-    <View
-        android:id="@+id/orbitRing"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
-        android:background="@drawable/bg_orbit_ring"
-        app:layout_constraintBottom_toBottomOf="@id/logoGlow"
-        app:layout_constraintEnd_toEndOf="@id/logoGlow"
-        app:layout_constraintStart_toStartOf="@id/logoGlow"
-        app:layout_constraintTop_toTopOf="@id/logoGlow" />
-
-    <View
-        android:id="@+id/orbitDot"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
-        android:background="@drawable/bg_orbit_dot"
-        app:layout_constraintBottom_toBottomOf="@id/orbitRing"
-        app:layout_constraintEnd_toEndOf="@id/orbitRing"
-        app:layout_constraintStart_toStartOf="@id/orbitRing"
-        app:layout_constraintTop_toTopOf="@id/orbitRing" />
-
-    <ImageView
-        android:id="@+id/imgLeaf"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:contentDescription="@string/splash_logo_desc"
-        android:src="@drawable/ic_leaf_logo"
-        app:layout_constraintBottom_toBottomOf="@id/logoGlow"
-        app:layout_constraintEnd_toEndOf="@id/logoGlow"
-        app:layout_constraintStart_toStartOf="@id/logoGlow"
-        app:layout_constraintTop_toTopOf="@id/logoGlow" />
-
-    <TextView
-        android:id="@+id/tvAppName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:includeFontPadding="false"
-        android:letterSpacing="0.05"
-        android:text="@string/app_name"
-        android:textColor="@color/on_background"
-        android:textSize="34sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/logoGlow" />
-
-    <ProgressBar
-        android:id="@+id/loadingBar"
-        style="@android:style/Widget.ProgressBar.Horizontal"
-        android:layout_width="160dp"
-        android:layout_height="3dp"
-        android:layout_marginTop="28dp"
-        android:indeterminate="false"
-        android:max="100"
-        android:progress="0"
-        android:progressDrawable="@drawable/bg_loading_progress"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvAppName" />
-
-    <TextView
-        android:id="@+id/tvPreparing"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="14dp"
-        android:alpha="0.6"
-        android:text="@string/preparing_to_launch"
-        android:textColor="@color/on_background"
-        android:textSize="12sp"
-        android:letterSpacing="0.08"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/loadingBar" />
-
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:padding="24dp" android:background="@color/background">
+    <ImageView android:layout_width="260dp" android:layout_height="260dp" android:src="@drawable/ic_leaf_logo" android:alpha="0.035" android:rotation="-18" android:importantForAccessibility="no" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" />
+    <LinearLayout android:id="@+id/splash_brand" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toTopOf="@id/splash_footer" app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent">
+        <ImageView android:id="@+id/imgLeaf" android:layout_width="80dp" android:layout_height="80dp" android:padding="10dp" android:src="@drawable/ic_leaf_logo" android:contentDescription="@string/splash_logo_desc" />
+        <TextView android:id="@+id/tvAppName" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="@string/app_name" android:textSize="30sp" android:fontFamily="sans-serif-medium" android:textColor="@color/text_primary" android:includeFontPadding="false" />
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:gravity="center" android:text="@string/splash_tagline" android:textSize="12sp" android:textColor="@color/text_secondary" />
+    </LinearLayout>
+    <LinearLayout android:id="@+id/splash_footer" android:layout_width="0dp" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent">
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+            <TextView android:id="@+id/tvPreparing" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/splash_opening" android:textSize="11sp" android:textColor="@color/text_secondary" />
+            <ProgressBar android:id="@+id/loadingBar" style="?android:attr/progressBarStyleHorizontal" android:layout_width="112dp" android:layout_height="3dp" android:layout_marginTop="8dp" android:indeterminate="true" android:indeterminateTint="@color/primary" />
+        </LinearLayout>
+        <TextView android:id="@+id/tvVersion" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="11sp" android:fontFamily="monospace" android:textColor="@color/text_secondary" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
