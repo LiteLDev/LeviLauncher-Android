@@ -68,6 +68,17 @@ public class InbuiltOverlayManager {
     private static final int START_X = 50;
     private long lastVisibilityStateHash = Long.MIN_VALUE;
     private volatile boolean launcherHudHidden;
+    private final android.os.Handler runtimeHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+    private final java.util.concurrent.atomic.AtomicBoolean runtimeUpdateQueued = new java.util.concurrent.atomic.AtomicBoolean();
+    private volatile boolean activityActive = true;
+    private volatile boolean disposed;
+    private volatile long lastRuntimeUpdate = -50L;
+    private final Runnable runtimeUpdate = () -> {
+        runtimeUpdateQueued.set(false);
+        if (!isRuntimeEnabled()) return;
+        lastRuntimeUpdate = android.os.SystemClock.uptimeMillis();
+        updateRuntimeVisibility();
+    };
 
     public InbuiltOverlayManager(Activity activity) {
         this.activity = activity;
@@ -694,6 +705,10 @@ public class InbuiltOverlayManager {
 
 
     public void hideAllOverlays() {
+        disposed = true;
+        activityActive = false;
+        runtimeHandler.removeCallbacks(runtimeUpdate);
+        runtimeUpdateQueued.set(false);
         releaseModMenuShortcut();
         releaseKeybinds();
         for (BaseOverlayButton controller : keybindControllers.values()) controller.hide();
@@ -1114,11 +1129,44 @@ public class InbuiltOverlayManager {
     }
 
     public void refreshRuntimeVisibility() {
+        if (!modMenuEnabled || !activityActive || disposed) return;
         lastVisibilityStateHash = Long.MIN_VALUE;
-        tick();
+        runtimeHandler.removeCallbacks(runtimeUpdate);
+        runtimeUpdateQueued.set(false);
+        if (android.os.Looper.myLooper() == android.os.Looper.getMainLooper()) runtimeUpdate.run();
+        else if (runtimeUpdateQueued.compareAndSet(false, true)) runtimeHandler.post(runtimeUpdate);
+    }
+
+    private boolean isRuntimeEnabled() {
+        return modMenuEnabled && activityActive && !disposed;
     }
 
     public void tick() {
+        if (!modMenuEnabled || !activityActive || disposed) return;
+        if (android.os.SystemClock.uptimeMillis() - lastRuntimeUpdate < 50L) return;
+        if (runtimeUpdateQueued.compareAndSet(false, true)) runtimeHandler.post(runtimeUpdate);
+    }
+
+    public void setActivityActive(boolean active) {
+        if (disposed || activityActive == active) return;
+        activityActive = active;
+        if (hudOverlay != null) hudOverlay.setRuntimeActive(active);
+        if (fpsDisplayOverlay != null) fpsDisplayOverlay.setRuntimeActive(active);
+        if (cpsDisplayOverlay != null) cpsDisplayOverlay.setRuntimeActive(active);
+        if (chickPetOverlay != null) chickPetOverlay.setRuntimeActive(active);
+        if (gyroOverlay != null) gyroOverlay.setRuntimeActive(active);
+        if (!active) {
+            runtimeHandler.removeCallbacks(runtimeUpdate);
+            runtimeUpdateQueued.set(false);
+            releaseKeybinds();
+            for (BaseOverlayButton overlay : overlays) overlay.pauseInput();
+            if (modMenuOverlay != null) modMenuOverlay.hide();
+        } else {
+            refreshRuntimeVisibility();
+        }
+    }
+
+    private void updateRuntimeVisibility() {
         InbuiltModManager manager = InbuiltModManager.getInstance(activity);
         boolean isPauseOnly = manager.isPauseMenuOnly();
         boolean isPauseOpen = org.levimc.launcher.preloader.PreloaderInput.isPauseMenuOpen();
@@ -1129,7 +1177,7 @@ public class InbuiltOverlayManager {
         boolean hideLauncherOverlays = launcherHudHidden && manager.isLauncherHudHideEnabled();
         if (!showGameOverlays && hasPressedKeybinds) activity.runOnUiThread(this::releaseKeybinds);
         boolean inbuiltVisible = hudEditorMode || showGameOverlays;
-        int hotbarGameplayState = HotbarSlotMod.getGameplayVisibilityState();
+        int hotbarGameplayState = hotbarSlotOverlayMap.isEmpty() ? -1 : HotbarSlotMod.getGameplayVisibilityState();
         boolean hotbarGameplayVisible = hotbarGameplayState >= 0
                 ? hotbarGameplayState == 1 : showGameOverlays;
         boolean hotbarVisible = !hideLauncherOverlays && (hudEditorMode || hotbarGameplayVisible ||
@@ -1142,12 +1190,6 @@ public class InbuiltOverlayManager {
             }
         }
 
-        for (BaseOverlayButton overlay : overlays) {
-            if ((!hideLauncherOverlays || overlay instanceof ToggleHudOverlay) &&
-                    (inbuiltVisible || manager.isOverlayShowEverywhere(overlay.getOverlayConfigKey()))) {
-                overlay.tick();
-            }
-        }
         for (HotbarSlotOverlay hotbar : hotbarSlotOverlayMap.values()) {
             hotbar.setRenderVisible(hotbarVisible);
         }

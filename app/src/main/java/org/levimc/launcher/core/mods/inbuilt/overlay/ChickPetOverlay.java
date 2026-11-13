@@ -32,6 +32,9 @@ public class ChickPetOverlay {
     private ImageView chickView;
     private WindowManager.LayoutParams wmParams;
     private boolean isShowing = false;
+    private boolean runtimeActive = true;
+    private boolean animationsRunning;
+    private int displayedFrame;
     private boolean isHiding = false;
     private Runnable pendingShowRunnable;
 
@@ -57,14 +60,14 @@ public class ChickPetOverlay {
     private final Runnable animationRunnable = new Runnable() {
         @Override
         public void run() {
-            if (!isShowing) return;
+            if (!animationsRunning || !canAnimate()) { animationsRunning = false; return; }
             updateAnimation();
             handler.postDelayed(this, FRAME_DELAY);
         }
     };
 
     private final Runnable stateChangeRunnable = () -> {
-        if (!isShowing) return;
+        if (!animationsRunning || !canAnimate()) return;
         if (currentState != State.RUNNING) {
             changeToRandomState();
         }
@@ -135,18 +138,43 @@ public class ChickPetOverlay {
             if (manager != null) {
                 manager.refreshRuntimeVisibility();
             }
-            handler.post(animationRunnable);
-            scheduleNextStateChange();
+            syncAnimations();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void setVisibility(int visibility) {
-        if (chickView != null) {
-            chickView.setVisibility(visibility);
+        if (chickView != null && chickView.getVisibility() != visibility) chickView.setVisibility(visibility);
+        syncAnimations();
+    }
+
+    public void setRuntimeActive(boolean active) {
+        runtimeActive = active;
+        syncAnimations();
+    }
+
+    private boolean canAnimate() {
+        return isShowing && runtimeActive && chickView != null && chickView.getVisibility() == View.VISIBLE;
+    }
+
+    private void syncAnimations() {
+        if (!canAnimate()) {
+            animationsRunning = false;
+            handler.removeCallbacks(animationRunnable);
+            handler.removeCallbacks(stateChangeRunnable);
+            handler.removeCallbacks(runEndRunnable);
+        } else if (!animationsRunning) {
+            animationsRunning = true;
+            handler.post(animationRunnable);
+            scheduleNextStateChange();
+            if (currentState == State.RUNNING) handler.postDelayed(runEndRunnable, 1500);
         }
     }
+
+    private final Runnable runEndRunnable = () -> {
+        if (canAnimate() && currentState == State.RUNNING) changeToRandomState();
+    };
 
     private boolean handleTouch(View v, MotionEvent event) {
         if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
@@ -163,11 +191,8 @@ public class ChickPetOverlay {
         dirX = random.nextBoolean() ? speed : -speed;
         dirY = (random.nextInt(3) - 1) * (int)(2 * density);
         facingRight = dirX > 0;
-        handler.postDelayed(() -> {
-            if (currentState == State.RUNNING) {
-                changeToRandomState();
-            }
-        }, 1500 + random.nextInt(1500));
+        handler.removeCallbacks(runEndRunnable);
+        handler.postDelayed(runEndRunnable, 1500 + random.nextInt(1500));
     }
 
     private void changeToRandomState() {
@@ -250,7 +275,10 @@ public class ChickPetOverlay {
                 break;
         }
 
-        chickView.setImageResource(frames[animFrame]);
+        if (displayedFrame != frames[animFrame]) {
+            displayedFrame = frames[animFrame];
+            chickView.setImageResource(displayedFrame);
+        }
         chickView.setScaleX(useFlip && !facingRight ? -1f : 1f);
     }
 
@@ -278,7 +306,7 @@ public class ChickPetOverlay {
             dirY = -Math.abs(dirY);
         }
 
-        if (wmParams != null && chickView != null) {
+        if (wmParams != null && chickView != null && (wmParams.x != posX || wmParams.y != posY)) {
             wmParams.x = posX;
             wmParams.y = posY;
             try {
@@ -288,6 +316,11 @@ public class ChickPetOverlay {
     }
 
     public void hide() {
+        animationsRunning = false;
+        displayedFrame = 0;
+        handler.removeCallbacks(animationRunnable);
+        handler.removeCallbacks(stateChangeRunnable);
+        handler.removeCallbacks(runEndRunnable);
         if (pendingShowRunnable != null) {
             handler.removeCallbacks(pendingShowRunnable);
             pendingShowRunnable = null;

@@ -288,6 +288,7 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
         if (overlayManager == null) {
             startInbuiltModServices()
         }
+        overlayManager?.setActivityActive(true)
     }
 
     private fun isMouseSource(source: Int): Boolean {
@@ -476,6 +477,7 @@ class MinecraftActivity : MainActivity(), PojavControlsHost {
     }
 
     override fun onPause() {
+        overlayManager?.setActivityActive(false)
         overlayManager?.releaseModMenuShortcut()
         overlayManager?.releaseKeybinds()
         val shouldRestartAfterNormalExit = shouldRestartAfterNormalExit()

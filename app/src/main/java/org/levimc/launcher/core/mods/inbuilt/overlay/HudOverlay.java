@@ -16,58 +16,88 @@ public class HudOverlay extends View {
     private DrawCommand[] cachedDrawCommands = new DrawCommand[0];
     private long cachedDrawRevision = Long.MIN_VALUE;
     private boolean frameCallbackPosted = false;
+    private boolean runtimeActive = true;
+    private boolean isHudEditorMode = false;
+    private Runnable pendingShow;
+    private long snapshotSequence;
+    private final android.graphics.Path trianglePath = new android.graphics.Path();
+    private final android.graphics.RectF imageBounds = new android.graphics.RectF();
     private final java.util.Map<String, android.graphics.Typeface> typefaceCache = new java.util.HashMap<>();
+
+    private final java.util.Map<String, android.graphics.Bitmap> imageCache = new java.util.HashMap<>();
+    private final java.util.Set<String> pendingFonts = new java.util.HashSet<>();
+    private final java.util.Set<String> pendingImages = new java.util.HashSet<>();
+    private final java.util.Set<String> missingFonts = new java.util.HashSet<>();
+    private final java.util.Set<String> missingImages = new java.util.HashSet<>();
+    private int assetGeneration;
+    private final java.util.concurrent.ThreadPoolExecutor assetWorker = new java.util.concurrent.ThreadPoolExecutor(
+            0, 1, 5L, java.util.concurrent.TimeUnit.SECONDS, new java.util.concurrent.LinkedBlockingQueue<>(), task -> {
+                Thread thread = new Thread(() -> {
+                    android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+                    task.run();
+                }, "ModHudAssets");
+                thread.setDaemon(true);
+                return thread;
+            });
 
     private android.graphics.Typeface getFont(String fontId) {
         if (fontId == null || fontId.isEmpty()) return null;
         if (typefaceCache.containsKey(fontId)) return typefaceCache.get(fontId);
-        
-        byte[] fontBytes = ExternalModBridge.nativeGetRegisteredFontBytes(fontId);
-        if (fontBytes != null && fontBytes.length > 0) {
+        if (!pendingFonts.add(fontId)) return null;
+        int generation = assetGeneration;
+        assetWorker.execute(() -> {
+            android.graphics.Typeface loaded = null;
+            java.io.File temporary = null;
             try {
-                java.io.File tempFile = java.io.File.createTempFile("font_" + fontId, ".ttf", getContext().getCacheDir());
-                java.io.FileOutputStream fos = new java.io.FileOutputStream(tempFile);
-                fos.write(fontBytes);
-                fos.close();
-                android.graphics.Typeface tf = android.graphics.Typeface.createFromFile(tempFile);
-                typefaceCache.put(fontId, tf);
-                return tf;
-            } catch (Exception e) {
-                e.printStackTrace();
+                byte[] bytes = ExternalModBridge.nativeGetRegisteredFontBytes(fontId);
+                if (bytes != null && bytes.length > 0) {
+                    temporary = java.io.File.createTempFile("hud-font-", ".ttf", getContext().getCacheDir());
+                    try (java.io.FileOutputStream output = new java.io.FileOutputStream(temporary)) { output.write(bytes); }
+                    loaded = android.graphics.Typeface.createFromFile(temporary);
+                }
+            } catch (java.io.IOException | RuntimeException | LinkageError ignored) {
+            } finally {
+                if (temporary != null) temporary.delete();
             }
-        }
-        typefaceCache.put(fontId, null);
+            android.graphics.Typeface result = loaded;
+            handler.post(() -> {
+                if (generation != assetGeneration) return;
+                pendingFonts.remove(fontId);
+                typefaceCache.put(fontId, result);
+                if (result == null) { missingFonts.add(fontId); scheduleAssetRetry(); }
+                else if (canRender()) invalidate();
+            });
+        });
         return null;
     }
-
-    private final java.util.Map<String, android.graphics.Bitmap> imageCache = new java.util.HashMap<>();
 
     private android.graphics.Bitmap getImage(String imageId) {
         if (imageId == null || imageId.isEmpty()) return null;
         if (imageCache.containsKey(imageId)) return imageCache.get(imageId);
-        
-        Object[] image = ExternalModBridge.nativeGetRegisteredImage(imageId);
-        if (image != null && image.length >= 2 && image[0] instanceof byte[]
-                && image[1] instanceof int[]) {
-            byte[] imageBytes = (byte[]) image[0];
-            int[] dimensions = (int[]) image[1];
-            if (dimensions.length >= 2 && dimensions[0] > 0 && dimensions[1] > 0) {
-                long expectedBytes = (long) dimensions[0] * dimensions[1] * 4L;
-                if (expectedBytes == imageBytes.length) {
-                    try {
-                        java.nio.ByteBuffer buffer = java.nio.ByteBuffer.wrap(imageBytes);
-                        android.graphics.Bitmap bitmap = android.graphics.Bitmap.createBitmap(
-                                dimensions[0], dimensions[1],
-                                android.graphics.Bitmap.Config.ARGB_8888);
-                        bitmap.copyPixelsFromBuffer(buffer);
-                        imageCache.put(imageId, bitmap);
-                        return bitmap;
-                    } catch (Exception e) {
+        if (!pendingImages.add(imageId)) return null;
+        int generation = assetGeneration;
+        assetWorker.execute(() -> {
+            android.graphics.Bitmap loaded = null;
+            try {
+                Object[] image = ExternalModBridge.nativeGetRegisteredImage(imageId);
+                if (image != null && image.length >= 2 && image[0] instanceof byte[] && image[1] instanceof int[]) {
+                    byte[] bytes = (byte[]) image[0];
+                    int[] size = (int[]) image[1];
+                    if (size.length >= 2 && size[0] > 0 && size[1] > 0 && (long) size[0] * size[1] * 4L == bytes.length) {
+                        loaded = android.graphics.Bitmap.createBitmap(size[0], size[1], android.graphics.Bitmap.Config.ARGB_8888);
+                        loaded.copyPixelsFromBuffer(java.nio.ByteBuffer.wrap(bytes));
                     }
                 }
-            }
-        }
-        imageCache.put(imageId, null);
+            } catch (RuntimeException | LinkageError ignored) {}
+            android.graphics.Bitmap result = loaded;
+            handler.post(() -> {
+                if (generation != assetGeneration) return;
+                pendingImages.remove(imageId);
+                imageCache.put(imageId, result);
+                if (result == null) { missingImages.add(imageId); scheduleAssetRetry(); }
+                else if (canRender()) invalidate();
+            });
+        });
         return null;
     }
 
@@ -78,79 +108,121 @@ public class HudOverlay extends View {
         setElevation(100f);
     }
 
-    private final android.view.Choreographer.FrameCallback frameCallback = new android.view.Choreographer.FrameCallback() {
-        @Override
-        public void doFrame(long frameTimeNanos) {
-            frameCallbackPosted = false;
-            if (!isShowing || getVisibility() != VISIBLE) return;
-            long revision = ExternalModBridge.getDrawCommandsRevision();
-            if (revision < 0L || revision != cachedDrawRevision) invalidate();
-            postFrameCallback();
+    private final android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
+    private final Runnable idlePoll = this::postFrameCallback;
+    private final Runnable assetRetry = this::retryMissingAssets;
+
+    private void scheduleAssetRetry() {
+        if (canRender() && (!missingFonts.isEmpty() || !missingImages.isEmpty()) && !handler.hasCallbacks(assetRetry)) {
+            handler.postDelayed(assetRetry, 1000L);
         }
+    }
+
+    private void retryMissingAssets() {
+        if (!canRender()) return;
+        java.util.List<String> fonts = new java.util.ArrayList<>(missingFonts);
+        java.util.List<String> images = new java.util.ArrayList<>(missingImages);
+        missingFonts.clear();
+        missingImages.clear();
+        for (String id : fonts) { typefaceCache.remove(id); getFont(id); }
+        for (String id : images) { imageCache.remove(id); getImage(id); }
+    }
+    private final android.view.Choreographer.FrameCallback frameCallback = frameTimeNanos -> {
+        frameCallbackPosted = false;
+        if (!canRender()) return;
+        long revision = ExternalModBridge.getDrawCommandsRevision();
+        if (revision < 0L || revision != cachedDrawRevision) {
+            DrawCommand[] next = ExternalModBridge.getHudDrawCommands(cachedDrawCommands);
+            cachedDrawRevision = revision;
+            snapshotSequence++;
+            boolean changed = next != cachedDrawCommands && (next.length != 0 || cachedDrawCommands.length != 0);
+            cachedDrawCommands = next;
+            if (changed || isHudEditorMode) invalidate();
+        }
+        if (cachedDrawCommands.length == 0 && !isHudEditorMode) handler.postDelayed(idlePoll, 100L);
+        else postFrameCallback();
     };
 
-    private final android.os.Handler handler = new android.os.Handler(android.os.Looper.getMainLooper());
+    private boolean canRender() {
+        return isShowing && runtimeActive && isAttachedToWindow()
+                && getVisibility() == VISIBLE && getWindowVisibility() == VISIBLE;
+    }
 
     private void postFrameCallback() {
-        if (frameCallbackPosted || !isShowing || getVisibility() != VISIBLE) return;
+        if (frameCallbackPosted || !canRender()) return;
+        handler.removeCallbacks(idlePoll);
+        scheduleAssetRetry();
         frameCallbackPosted = true;
         android.view.Choreographer.getInstance().postFrameCallback(frameCallback);
+    }
+
+    private void stopFrames() {
+        handler.removeCallbacks(idlePoll);
+        handler.removeCallbacks(assetRetry);
+        android.view.Choreographer.getInstance().removeFrameCallback(frameCallback);
+        frameCallbackPosted = false;
+    }
+
+    public void setRuntimeActive(boolean active) {
+        runtimeActive = active;
+        if (canRender()) postFrameCallback(); else stopFrames();
     }
 
     @Override
     protected void onVisibilityChanged(View changedView, int visibility) {
         super.onVisibilityChanged(changedView, visibility);
-        if (visibility == VISIBLE) postFrameCallback();
+        if (handler == null) return;
+        if (canRender()) postFrameCallback(); else stopFrames();
+    }
+
+    @Override
+    protected void onWindowVisibilityChanged(int visibility) {
+        super.onWindowVisibilityChanged(visibility);
+        if (handler == null) return;
+        if (canRender()) postFrameCallback(); else stopFrames();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        stopFrames();
+        super.onDetachedFromWindow();
     }
 
     public void show() {
-        if (isShowing) return;
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (isShowing) return;
-                
-                try {
-                    ViewGroup rootView = ((Activity) getContext()).findViewById(android.R.id.content);
-                    if (rootView != null) {
-                        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                                FrameLayout.LayoutParams.MATCH_PARENT,
-                                FrameLayout.LayoutParams.MATCH_PARENT
-                        );
-                        HudOverlay.this.setVisibility(GONE);
-                        rootView.addView(HudOverlay.this, params);
-                        isShowing = true;
-                        cachedDrawRevision = Long.MIN_VALUE;
-                        InbuiltOverlayManager manager = InbuiltOverlayManager.getInstance();
-                        if (manager != null) {
-                            manager.refreshRuntimeVisibility();
-                        }
-                        postFrameCallback();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }, 100);
+        if (isShowing || pendingShow != null) return;
+        pendingShow = () -> {
+            pendingShow = null;
+            if (isShowing || ((Activity) getContext()).isFinishing() || ((Activity) getContext()).isDestroyed()) return;
+            ViewGroup root = ((Activity) getContext()).findViewById(android.R.id.content);
+            if (root == null) return;
+            setVisibility(GONE);
+            root.addView(this, new FrameLayout.LayoutParams(-1, -1));
+            isShowing = true;
+            cachedDrawRevision = Long.MIN_VALUE;
+            InbuiltOverlayManager manager = InbuiltOverlayManager.getInstance();
+            if (manager != null) manager.refreshRuntimeVisibility();
+            postFrameCallback();
+        };
+        handler.postDelayed(pendingShow, 100L);
     }
 
     public void hide() {
-        if (!isShowing) return;
-        try {
-            ViewGroup rootView = ((Activity) getContext()).findViewById(android.R.id.content);
-            if (rootView != null) {
-                rootView.removeView(this);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        if (pendingShow != null) { handler.removeCallbacks(pendingShow); pendingShow = null; }
         isShowing = false;
-        android.view.Choreographer.getInstance().removeFrameCallback(frameCallback);
-        frameCallbackPosted = false;
+        stopFrames();
+        if (getParent() instanceof ViewGroup) ((ViewGroup) getParent()).removeView(this);
+        cachedDrawCommands = new DrawCommand[0];
+        cachedDrawRevision = Long.MIN_VALUE;
+        assetGeneration++;
+        assetWorker.getQueue().clear();
+        pendingImages.clear();
+        pendingFonts.clear();
+        missingImages.clear();
+        missingFonts.clear();
+        imageCache.clear();
+        typefaceCache.clear();
     }
 
-    private boolean isHudEditorMode = false;
 
     private String draggingModule = null;
     private ExternalModBridge.HudEditorElement draggingHudElement = null;
@@ -210,6 +282,8 @@ public class HudOverlay extends View {
         cachedHudElementsRevision = Long.MIN_VALUE;
         clearDragging();
         invalidate();
+        stopFrames();
+        postFrameCallback();
     }
 
     public boolean isHudEditorMode() {
@@ -223,19 +297,13 @@ public class HudOverlay extends View {
     }
 
     private DrawCommand[] currentDrawCommands() {
-        long revision = ExternalModBridge.getDrawCommandsRevision();
-        if (revision < 0L || revision != cachedDrawRevision) {
-            cachedDrawCommands = ExternalModBridge.getDrawCommands();
-            cachedDrawRevision = revision;
-        }
         return cachedDrawCommands;
     }
 
     private ExternalModBridge.HudEditorElement[] currentHudEditorElements() {
-        long revision = ExternalModBridge.getDrawCommandsRevision();
-        if (revision < 0L || revision != cachedHudElementsRevision) {
+        if (snapshotSequence != cachedHudElementsRevision) {
             cachedHudElements = ExternalModBridge.getHudEditorElements();
-            cachedHudElementsRevision = revision;
+            cachedHudElementsRevision = snapshotSequence;
         }
         return cachedHudElements;
     }
@@ -600,10 +668,6 @@ public class HudOverlay extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         if (!isShowing) return;
-        if (getWidth() > 0 && getHeight() > 0) {
-            ExternalModBridge.setHudSurfaceSize(getWidth(), getHeight());
-        }
-
         if (isHudEditorMode) {
             canvas.drawColor(0x88000000);
         }
@@ -699,7 +763,8 @@ public class HudOverlay extends View {
                     canvas.drawCircle(drawX, drawY, cmd.size, paint);
                 } else if (cmd.type == DrawCommand.TYPE_TRIANGLE_FILLED) {
                     paint.setStyle(Paint.Style.FILL);
-                    android.graphics.Path path = new android.graphics.Path();
+                    android.graphics.Path path = trianglePath;
+                    path.rewind();
                     path.moveTo(drawX, drawY);
                     
                     float pt2X = cmd.w;
@@ -723,8 +788,8 @@ public class HudOverlay extends View {
                 } else if (cmd.type == DrawCommand.TYPE_IMAGE) {
                     android.graphics.Bitmap bitmap = getImage(cmd.imageId);
                     if (bitmap != null) {
-                        android.graphics.RectF dst = new android.graphics.RectF(drawX, drawY, drawX + cmd.w, drawY + cmd.h);
-                        canvas.drawBitmap(bitmap, null, dst, paint);
+                        imageBounds.set(drawX, drawY, drawX + cmd.w, drawY + cmd.h);
+                        canvas.drawBitmap(bitmap, null, imageBounds, paint);
                     }
                 }
 

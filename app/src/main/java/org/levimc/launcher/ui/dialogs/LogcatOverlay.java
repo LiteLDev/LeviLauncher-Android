@@ -83,15 +83,19 @@ public class LogcatOverlay extends FrameLayout {
     private int pendingHistoryTrimLines = 0;
 
     private final ArrayBlockingQueue<String> pendingLines = new ArrayBlockingQueue<>(8192);
-    private ExecutorService ioExecutor = Executors.newSingleThreadExecutor();
-    private ExecutorService filterExecutor = Executors.newSingleThreadExecutor();
+    private ExecutorService ioExecutor = createWorker("LogcatHistory");
+    private ExecutorService filterExecutor = createWorker("LogcatFilter");
     private volatile boolean renderLoopStarted = false;
+    private volatile boolean running;
+    private volatile boolean historyRestored;
+    private volatile int streamGeneration;
 
-    private boolean autoScroll = true, autoScrollLocked = false, paused = false, minimized = false;
-    private String filterTextLower = "";
-    private List<String> excludeKeywordsLower = Collections.emptyList();
-    private char levelFilterChar = 0;
+    private volatile boolean autoScroll = true, autoScrollLocked = false, paused = false, minimized = false;
+    private volatile String filterTextLower = "";
+    private volatile List<String> excludeKeywordsLower = Collections.emptyList();
+    private volatile char levelFilterChar = 0;
 
+    private final Object readerLock = new Object();
     private Process logcatProc;
     private Thread readerThread;
 
@@ -140,7 +144,6 @@ public class LogcatOverlay extends FrameLayout {
         initHistoryFiles(ctx);
         setupUiListeners();
         restoreState(sp);
-        restorePersistedHistory();
         return sp;
     }
 
@@ -392,93 +395,129 @@ public class LogcatOverlay extends FrameLayout {
         }
     }
 
+    private static ExecutorService createWorker(String name) {
+        return Executors.newSingleThreadExecutor(task -> new Thread(() -> {
+            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+            task.run();
+        }, name));
+    }
+
     public void start() {
-        if (readerThread != null && readerThread.isAlive()) return;
+        if (running) return;
+        running = true;
+        streamGeneration++;
         paused = false;
-        if (ioExecutor.isShutdown() || ioExecutor.isTerminated()) {
-            ioExecutor = Executors.newSingleThreadExecutor();
-        }
+        if (ioExecutor.isShutdown() || ioExecutor.isTerminated()) ioExecutor = createWorker("LogcatHistory");
+        if (filterExecutor.isShutdown() || filterExecutor.isTerminated()) filterExecutor = createWorker("LogcatFilter");
+        int generation = streamGeneration;
+        if (!historyRestored) ioExecutor.submit(() -> restorePersistedHistory(generation));
         startBackgroundRenderLoop();
         startReader();
     }
 
     public void stop() {
+        if (!running && ioExecutor.isShutdown()) return;
+        running = false;
+        streamGeneration++;
         paused = true;
         stopReader();
         // Clear any pending lines so nothing gets appended after disable
         pendingLines.clear();
         ioExecutor.shutdownNow();
+        filterExecutor.shutdownNow();
         renderLoopStarted = false;
     }
 
     private void startReader() {
+        int generation = streamGeneration;
         readerThread = new Thread(() -> {
+            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+            Process process = null;
             try {
-                List<String> cmd = new ArrayList<>();
-                cmd.add("logcat");
-                cmd.add("-v"); cmd.add("threadtime");
+                List<String> command = new ArrayList<>();
+                command.add("logcat");
+                command.add("-v"); command.add("threadtime");
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    cmd.add("--pid");
-                    cmd.add(String.valueOf(android.os.Process.myPid()));
+                    command.add("--pid");
+                    command.add(String.valueOf(android.os.Process.myPid()));
                 }
-                logcatProc = new ProcessBuilder(cmd).redirectErrorStream(true).start();
-
-                var reader = new java.io.BufferedReader(new java.io.InputStreamReader(logcatProc.getInputStream()));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    if (!paused) pendingLines.offer(line);
+                process = new ProcessBuilder(command).redirectErrorStream(true).start();
+                synchronized (readerLock) {
+                    if (!running || generation != streamGeneration) { process.destroy(); return; }
+                    logcatProc = process;
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                    String line;
+                    while (running && generation == streamGeneration && (line = reader.readLine()) != null) {
+                        if (!paused) pendingLines.offer(line);
+                    }
+                }
+            } catch (Exception error) {
+                if (running && generation == streamGeneration) error.printStackTrace();
+            } finally {
+                if (process != null) process.destroy();
+                synchronized (readerLock) {
+                    if (logcatProc == process) logcatProc = null;
+                    if (readerThread == Thread.currentThread()) readerThread = null;
+                }
             }
         }, "LogcatReader");
         readerThread.start();
     }
 
     private void stopReader() {
-        try {
-            if (logcatProc != null) logcatProc.destroy();
-            if (readerThread != null && readerThread.isAlive()) readerThread.interrupt();
-        } catch (Throwable ignored) {}
-        logcatProc = null;
-        readerThread = null;
+        Process process;
+        Thread reader;
+        synchronized (readerLock) {
+            process = logcatProc;
+            reader = readerThread;
+            logcatProc = null;
+            readerThread = null;
+        }
+        if (process != null) process.destroy();
+        if (reader != null) reader.interrupt();
     }
 
     private void startBackgroundRenderLoop() {
         if (renderLoopStarted) return;
         renderLoopStarted = true;
+        int generation = streamGeneration;
         ioExecutor.submit(() -> {
-            StringBuilder sb = new StringBuilder();
             List<String> batch = new ArrayList<>(MAX_BATCH_LINES);
-            while (true) {
+            while (running && generation == streamGeneration) {
                 try {
-                    String ln = pendingLines.poll(100, java.util.concurrent.TimeUnit.MILLISECONDS);
-                    if (ln != null) {
-                        batch.clear();
-                        batch.add(ln);
-                        pendingLines.drainTo(batch, MAX_BATCH_LINES - 1);
-
-                        synchronized (logBuffer) {
-                            for (String line : batch) {
-                                if (logBuffer.size() >= MAX_BUFFER_LINES) logBuffer.pollFirst();
-                                logBuffer.addLast(line);
-                            }
-                        }
-                        appendPersistedHistory(batch);
+                    String first = pendingLines.poll(250L, java.util.concurrent.TimeUnit.MILLISECONDS);
+                    if (first == null) continue;
+                    batch.clear();
+                    batch.add(first);
+                    long deadline = System.nanoTime() + 100_000_000L;
+                    while (batch.size() < MAX_BATCH_LINES) {
+                        pendingLines.drainTo(batch, MAX_BATCH_LINES - batch.size());
+                        long remaining = deadline - System.nanoTime();
+                        if (batch.size() >= MAX_BATCH_LINES || remaining <= 0) break;
+                        String next = pendingLines.poll(remaining, java.util.concurrent.TimeUnit.NANOSECONDS);
+                        if (next == null) break;
+                        batch.add(next);
+                    }
+                    if (!running || generation != streamGeneration) return;
+                    synchronized (logBuffer) {
                         for (String line : batch) {
-                            if (passesFilter(line)) {
-                                sb.append(line).append("\n");
-                            }
+                            if (logBuffer.size() >= MAX_BUFFER_LINES) logBuffer.pollFirst();
+                            logBuffer.addLast(line);
                         }
                     }
-
-                    if (sb.length() > 0) {
-                        final String chunk = sb.toString();
-                        sb.setLength(0);
-                        mainHandler.post(() -> appendChunk(chunk));
+                    appendPersistedHistory(batch);
+                    if (minimized) continue;
+                    StringBuilder content = new StringBuilder();
+                    for (String line : batch) if (passesFilter(line)) content.append(line).append('\n');
+                    if (content.length() > 0) {
+                        String chunk = content.toString();
+                        mainHandler.post(() -> {
+                            if (running && generation == streamGeneration && !minimized) appendChunk(chunk);
+                        });
                     }
-                } catch (InterruptedException e) {
-                    renderLoopStarted = false;
+                } catch (InterruptedException interrupted) {
+                    Thread.currentThread().interrupt();
                     return;
                 }
             }
@@ -499,6 +538,8 @@ public class LogcatOverlay extends FrameLayout {
     }
 
     private void scheduleFilterRefresh() {
+        if (!running || filterExecutor.isShutdown()) return;
+        int generation = streamGeneration;
         filterExecutor.submit(() -> {
             List<String> snapshot;
             synchronized (logBuffer) { snapshot = new ArrayList<>(logBuffer); }
@@ -509,6 +550,7 @@ public class LogcatOverlay extends FrameLayout {
                 }
             }
             mainHandler.post(() -> {
+                if (!running || generation != streamGeneration || minimized) return;
                 boolean wasAtBottom = isAtBottom();
                 int firstPos = layoutManager.findFirstVisibleItemPosition();
                 View firstView = layoutManager.findViewByPosition(firstPos);
@@ -717,11 +759,12 @@ public class LogcatOverlay extends FrameLayout {
         historyLockFile = new File(dir, HISTORY_LOCK_FILE_NAME);
     }
 
-    private void restorePersistedHistory() {
+    private void restorePersistedHistory(int generation) {
         List<String> history = readPersistedHistory();
-        if (history.isEmpty()) return;
-
         synchronized (logBuffer) {
+            if (!running || generation != streamGeneration) return;
+            historyRestored = true;
+            if (history.isEmpty()) return;
             logBuffer.clear();
             for (String line : history) {
                 if (logBuffer.size() >= MAX_BUFFER_LINES) logBuffer.pollFirst();
@@ -735,8 +778,11 @@ public class LogcatOverlay extends FrameLayout {
                 items.add(colorizeLine(line));
             }
         }
-        logAdapter.setItems(items);
-        if (autoScroll) recyclerView.post(this::smoothScrollToBottom);
+        mainHandler.post(() -> {
+            if (!running || generation != streamGeneration || minimized) return;
+            logAdapter.setItems(items);
+            if (autoScroll) smoothScrollToBottom();
+        });
     }
 
     private List<String> readPersistedHistory() {
@@ -882,6 +928,7 @@ public class LogcatOverlay extends FrameLayout {
     private int clamp(int v, int min, int max) { return Math.max(min, Math.min(max, v)); }
 
     private void setMinimized(boolean value) {
+        if (!value && running) scheduleFilterRefresh();
         minimized = value;
         overlayContainer.setVisibility(value ? GONE : VISIBLE);
         if (cornerBottomLeft != null) cornerBottomLeft.setVisibility(value ? GONE : VISIBLE);
@@ -927,7 +974,7 @@ public class LogcatOverlay extends FrameLayout {
 
     public void hide() {
         stop();
-        setVisibility(GONE);
+        if (getVisibility() != GONE) setVisibility(GONE);
     }
 
     @Override

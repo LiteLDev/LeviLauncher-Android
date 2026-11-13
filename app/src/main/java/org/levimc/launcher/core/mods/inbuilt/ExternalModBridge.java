@@ -32,11 +32,14 @@ public class ExternalModBridge {
         }
     }
 
+    private static volatile boolean floatingButtonApiAvailable = true;
+
     public static boolean isFloatingModMenuButtonHidden() {
-        if (!ModManager.ensurePreloaderLoaded()) return false;
+        if (!floatingButtonApiAvailable || !ModManager.ensurePreloaderLoaded()) return false;
         try {
             return nativeIsFloatingModMenuButtonHidden();
         } catch (UnsatisfiedLinkError e) {
+            floatingButtonApiAvailable = false;
             return false;
         }
     }
@@ -223,6 +226,9 @@ public class ExternalModBridge {
         return (int) (value & 0xFFFFFFFFL);
     }
 
+    private static final DrawCommand[] EMPTY_DRAW_COMMANDS = new DrawCommand[0];
+    private static volatile boolean drawRevisionAvailable = true;
+    private static volatile boolean drawCommandsAvailable = true;
     public static native Object[] nativeGetDrawCommands();
     private static native long nativeGetDrawCommandsRevision();
     private static native String nativeGetHudEditorElementsInfo();
@@ -308,54 +314,83 @@ public class ExternalModBridge {
     }
 
     public static long getDrawCommandsRevision() {
-        if (!ModManager.ensurePreloaderLoaded()) return -1L;
+        if (!drawRevisionAvailable || !ModManager.ensurePreloaderLoaded()) return -1L;
         try {
             return nativeGetDrawCommandsRevision();
         } catch (UnsatisfiedLinkError e) {
+            drawRevisionAvailable = false;
             return -1L;
         }
     }
 
     public static DrawCommand[] getDrawCommands() {
-        if (!ModManager.ensurePreloaderLoaded()) return new DrawCommand[0];
+        return getHudDrawCommands(null);
+    }
+
+    public static DrawCommand[] getHudDrawCommands(DrawCommand[] previous) {
+        if (!drawCommandsAvailable || !ModManager.ensurePreloaderLoaded()) return EMPTY_DRAW_COMMANDS;
         try {
             Object[] arrays = nativeGetDrawCommands();
-            if (arrays == null || arrays.length < 8) return new DrawCommand[0];
-
-            int[] types = (int[]) arrays[0];
-            float[] rects = (float[]) arrays[1];
-            int[] colors = (int[]) arrays[2];
-            float[] sizes = (float[]) arrays[3];
-            String[] texts = (String[]) arrays[4];
-            String[] moduleIds = (String[]) arrays[5];
-            String[] fontIds = (String[]) arrays[6];
-            String[] imageIds = (String[]) arrays[7];
-
-            if (types == null) return new DrawCommand[0];
-
-            int n = types.length;
-            DrawCommand[] cmds = new DrawCommand[n];
-            for (int i = 0; i < n; i++) {
-                DrawCommand cmd = new DrawCommand();
-                cmd.type = types[i];
-                cmd.x = rects[i * 6 + 0];
-                cmd.y = rects[i * 6 + 1];
-                cmd.w = rects[i * 6 + 2];
-                cmd.h = rects[i * 6 + 3];
-                cmd.x3 = rects[i * 6 + 4];
-                cmd.y3 = rects[i * 6 + 5];
-                cmd.color = colors[i];
-                cmd.size = sizes[i];
-                cmd.text = texts != null ? texts[i] : null;
-                cmd.moduleId = moduleIds != null ? moduleIds[i] : null;
-                cmd.fontId = fontIds != null ? fontIds[i] : null;
-                cmd.imageId = imageIds != null ? imageIds[i] : null;
-                cmds[i] = cmd;
-            }
-            return cmds;
+            return decodeDrawCommands(arrays, previous);
         } catch (UnsatisfiedLinkError e) {
+            drawCommandsAvailable = false;
             Log.e(TAG, "nativeGetDrawCommands not available", e);
-            return new DrawCommand[0];
+            return EMPTY_DRAW_COMMANDS;
         }
+    }
+    private static DrawCommand[] decodeDrawCommands(Object[] arrays, DrawCommand[] previous) {
+        if (arrays == null || arrays.length < 8) return EMPTY_DRAW_COMMANDS;
+
+        int[] types = (int[]) arrays[0];
+        float[] rects = (float[]) arrays[1];
+        int[] colors = (int[]) arrays[2];
+        float[] sizes = (float[]) arrays[3];
+        String[] texts = (String[]) arrays[4];
+        String[] moduleIds = (String[]) arrays[5];
+        String[] fontIds = (String[]) arrays[6];
+        String[] imageIds = (String[]) arrays[7];
+
+        if (types == null || types.length == 0) return EMPTY_DRAW_COMMANDS;
+
+        int n = types.length;
+        if (previous != null && previous.length == n) {
+            boolean identical = true;
+            for (int i = 0; i < n && identical; i++) {
+                DrawCommand old = previous[i];
+                identical = old != null && old.type == types[i] && old.color == colors[i]
+                        && sameFloat(old.x, rects[i * 6]) && sameFloat(old.y, rects[i * 6 + 1])
+                        && sameFloat(old.w, rects[i * 6 + 2]) && sameFloat(old.h, rects[i * 6 + 3])
+                        && sameFloat(old.x3, rects[i * 6 + 4]) && sameFloat(old.y3, rects[i * 6 + 5])
+                        && sameFloat(old.size, sizes[i])
+                        && java.util.Objects.equals(old.text, texts == null ? null : texts[i])
+                        && java.util.Objects.equals(old.moduleId, moduleIds == null ? null : moduleIds[i])
+                        && java.util.Objects.equals(old.fontId, fontIds == null ? null : fontIds[i])
+                        && java.util.Objects.equals(old.imageId, imageIds == null ? null : imageIds[i]);
+            }
+            if (identical) return previous;
+        }
+        DrawCommand[] cmds = new DrawCommand[n];
+        for (int i = 0; i < n; i++) {
+            DrawCommand cmd = new DrawCommand();
+            cmd.type = types[i];
+            cmd.x = rects[i * 6 + 0];
+            cmd.y = rects[i * 6 + 1];
+            cmd.w = rects[i * 6 + 2];
+            cmd.h = rects[i * 6 + 3];
+            cmd.x3 = rects[i * 6 + 4];
+            cmd.y3 = rects[i * 6 + 5];
+            cmd.color = colors[i];
+            cmd.size = sizes[i];
+            cmd.text = texts != null ? texts[i] : null;
+            cmd.moduleId = moduleIds != null ? moduleIds[i] : null;
+            cmd.fontId = fontIds != null ? fontIds[i] : null;
+            cmd.imageId = imageIds != null ? imageIds[i] : null;
+            cmds[i] = cmd;
+        }
+        return cmds;
+    }
+
+    private static boolean sameFloat(float first, float second) {
+        return Float.floatToRawIntBits(first) == Float.floatToRawIntBits(second);
     }
 }

@@ -29,6 +29,7 @@ public class ModNotificationManager {
     private final WindowManager windowManager;
     private final List<NotificationEntry> entries = new ArrayList<>();
     private final AtomicInteger generation = new AtomicInteger();
+    private volatile boolean activityActive = true;
 
     private static final class NotificationEntry {
         String id;
@@ -50,12 +51,13 @@ public class ModNotificationManager {
         activity.getApplication().registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
             @Override public void onActivityCreated(Activity a, Bundle state) {}
             @Override public void onActivityStarted(Activity a) {}
-            @Override public void onActivityResumed(Activity a) {}
-            @Override public void onActivityPaused(Activity a) {}
-            @Override public void onActivityStopped(Activity a) { if (a == activity) hideAll(); }
+            @Override public void onActivityResumed(Activity a) { if (a == activity) activityActive = true; }
+            @Override public void onActivityPaused(Activity a) { if (a == activity) { activityActive = false; hideAll(); } }
+            @Override public void onActivityStopped(Activity a) { if (a == activity) { activityActive = false; hideAll(); } }
             @Override public void onActivitySaveInstanceState(Activity a, Bundle state) {}
             @Override public void onActivityDestroyed(Activity a) {
                 if (a != activity) return;
+                activityActive = false;
                 hideAll();
                 a.getApplication().unregisterActivityLifecycleCallbacks(this);
             }
@@ -64,23 +66,30 @@ public class ModNotificationManager {
 
     public void show(String modName, String modId) { show(modName, modId, true); }
 
+    private void runOnMain(Runnable task) {
+        if (Looper.myLooper() == Looper.getMainLooper()) task.run();
+        else handler.post(task);
+    }
+
     public void show(String modName, String modId, boolean enabled) {
+        if (!activityActive) return;
         int expected = generation.get();
-        handler.post(() -> {
-            if (generation.get() != expected || activity.isFinishing() || activity.isDestroyed()) return;
+        runOnMain(() -> {
+            if (!activityActive || generation.get() != expected || activity.isFinishing() || activity.isDestroyed()) return;
             showInternal(modName, modId, enabled, false);
         });
     }
 
     void preview() {
+        if (!activityActive) return;
         int expected = generation.get();
-        handler.post(() -> {
+        runOnMain(() -> {
             if (generation.get() == expected) showInternal(activity.getString(R.string.mm_notification_preview), "preview", true, true);
         });
     }
 
     private void showInternal(String title, String id, boolean enabled, boolean preview) {
-        if (activity.isFinishing() || activity.isDestroyed()) return;
+        if (!activityActive || activity.isFinishing() || activity.isDestroyed()) return;
         Context context = ModMenuTheme.wrap(activity);
         ModMenuTheme theme = new ModMenuTheme(context);
         ModMenuPreferences prefs = new ModMenuPreferences(activity);
@@ -250,7 +259,7 @@ public class ModNotificationManager {
 
     public void hideAll() {
         generation.incrementAndGet();
-        handler.post(() -> {
+        runOnMain(() -> {
             for (NotificationEntry entry : new ArrayList<>(entries)) remove(entry);
         });
     }

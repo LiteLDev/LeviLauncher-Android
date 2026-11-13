@@ -18,6 +18,7 @@ import org.levimc.launcher.core.mods.inbuilt.nativemod.GyroMod;
 public class GyroOverlay extends BaseOverlayButton implements SensorEventListener {
     private boolean isActive = false;
     private boolean initialized = false;
+    private boolean runtimeActive = true;
     private final Handler handler = new Handler(Looper.getMainLooper());
 
     private SensorManager sensorManager;
@@ -143,7 +144,7 @@ public class GyroOverlay extends BaseOverlayButton implements SensorEventListene
         prevDeltaPitch = 0f;
         lastGyroTimestampNs = 0L;
 
-        sensorManager.registerListener(this, rotationSensor, SensorManager.SENSOR_DELAY_GAME);
+        if (runtimeActive) sensorManager.registerListener(this, rotationSensor, SensorManager.SENSOR_DELAY_GAME);
         GyroMod.nativeSetEnabled(true);
         updateButtonState(true);
     }
@@ -155,6 +156,16 @@ public class GyroOverlay extends BaseOverlayButton implements SensorEventListene
         sensorManager.unregisterListener(this);
         GyroMod.nativeSetEnabled(false);
         updateButtonState(false);
+    }
+
+    public void setRuntimeActive(boolean active) {
+        if (runtimeActive == active) return;
+        runtimeActive = active;
+        sensorManager.unregisterListener(this);
+        calibrate();
+        if (active && isActive && rotationSensor != null) {
+            sensorManager.registerListener(this, rotationSensor, SensorManager.SENSOR_DELAY_GAME);
+        }
     }
 
     private void calibrate() {
@@ -175,7 +186,7 @@ public class GyroOverlay extends BaseOverlayButton implements SensorEventListene
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (!isActive || !initialized) return;
+        if (!runtimeActive || !isActive || !initialized) return;
 
         if (sensorType == Sensor.TYPE_GYROSCOPE) {
             handleGyroscopeEvent(event);

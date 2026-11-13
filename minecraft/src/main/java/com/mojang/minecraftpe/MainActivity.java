@@ -102,6 +102,7 @@ public class MainActivity extends GameActivity implements View.OnKeyListener, Fi
     public int virtualKeyboardHeight = 0;
 
     int keyboardHeight = 0;
+    private final GameSurfaceSize reportedSurfaceSize = new GameSurfaceSize();
     private boolean _fromOnCreate = false;
     private boolean mCursorLocked = false;
     private boolean mIsSoftKeyboardVisible = false;
@@ -429,6 +430,16 @@ public class MainActivity extends GameActivity implements View.OnKeyListener, Fi
         return new CrashManager();
     }
 
+    private void reportSurfaceSize(int width, int height) {
+        if (!reportedSurfaceSize.changed(width, height, keyboardHeight)) return;
+        try {
+            nativeResize(width, height);
+        } catch (RuntimeException | LinkageError failure) {
+            reportedSurfaceSize.reset();
+            throw failure;
+        }
+    }
+
     public void initializeCrashManager() {
     }
 
@@ -476,7 +487,7 @@ public class MainActivity extends GameActivity implements View.OnKeyListener, Fi
         findViewById(android.R.id.content).getRootView().addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                nativeResize(right - left, bottom - top);
+                reportSurfaceSize(right - left, bottom - top);
             }
         });
 
@@ -489,7 +500,7 @@ public class MainActivity extends GameActivity implements View.OnKeyListener, Fi
                 keyboardHeight = (view.getHeight() - rect.height());
 
                 try {
-                    nativeResize(view.getWidth(), view.getHeight());
+                    reportSurfaceSize(view.getWidth(), view.getHeight());
                 } catch (UnsatisfiedLinkError ignored) {
                 }
             }
@@ -1603,6 +1614,7 @@ public class MainActivity extends GameActivity implements View.OnKeyListener, Fi
     @Override
     protected void onResume() {
         super.onResume();
+        reportedSurfaceSize.reset();
         NotificationListenerService.initialize(
                 getApplicationContext(),
                 getIntent().getStringExtra("MINECRAFT_FIREBASE_APP_ID"),

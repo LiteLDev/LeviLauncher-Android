@@ -31,6 +31,9 @@ public class FpsDisplayOverlay {
     private TextView statsText;
     private WindowManager.LayoutParams wmParams;
     private boolean isShowing = false;
+    private boolean runtimeActive = true;
+    private boolean updatesRunning;
+    private int lastDisplayValue = Integer.MIN_VALUE;
     private Runnable pendingShowRunnable;
     private boolean initialized = false;
 
@@ -43,7 +46,7 @@ public class FpsDisplayOverlay {
     private final Runnable updateRunnable = new Runnable() {
         @Override
         public void run() {
-            if (!isShowing) return;
+            if (!updatesRunning || !canUpdate()) { updatesRunning = false; return; }
             updateDisplay();
             handler.postDelayed(this, UPDATE_INTERVAL);
         }
@@ -63,12 +66,13 @@ public class FpsDisplayOverlay {
         handler.postDelayed(pendingShowRunnable, 500);
     }
 
+    private final Runnable initializeRunnable = () -> {
+        if (canUpdate() && !initialized) initialized = FpsMod.init();
+    };
+
     private void initializeNative() {
-        handler.postDelayed(() -> {
-            if (FpsMod.init()) {
-                initialized = true;
-            }
-        }, 1000);
+        handler.removeCallbacks(initializeRunnable);
+        handler.postDelayed(initializeRunnable, 1000);
     }
 
     private void showInternal(int startX, int startY) {
@@ -103,7 +107,7 @@ public class FpsDisplayOverlay {
             windowManager.addView(overlayView, wmParams);
             isShowing = true;
 
-            handler.post(updateRunnable);
+            syncUpdates();
             applyOpacity();
             updateLockState();
             applySize();
@@ -138,7 +142,7 @@ public class FpsDisplayOverlay {
         isShowing = true;
         wmParams = null;
 
-        handler.post(updateRunnable);
+        syncUpdates();
         applyOpacity();
         updateLockState();
         applySize();
@@ -153,15 +157,13 @@ public class FpsDisplayOverlay {
     }
 
     private void updateDisplay() {
-        if (statsText != null) {
-            if (initialized && FpsMod.nativeIsInitialized()) {
-                int fps = FpsMod.nativeGetFps();
-                statsText.setText(activity.getString(R.string.mod_overlay_fps_value, fps));
-            } else {
-                statsText.setText(activity.getString(R.string.mod_overlay_fps_unknown));
-            }
-            clampCurrentPosition(false);
-        }
+        if (statsText == null) return;
+        int value = initialized && FpsMod.nativeIsInitialized() ? FpsMod.nativeGetFps() : -1;
+        if (lastDisplayValue == value) return;
+        lastDisplayValue = value;
+        statsText.setText(value >= 0 ? activity.getString(R.string.mod_overlay_fps_value, value)
+                : activity.getString(R.string.mod_overlay_fps_unknown));
+        statsText.post(() -> { if (canUpdate()) clampCurrentPosition(false); });
     }
 
     private void applyOpacity() {
@@ -318,6 +320,10 @@ public class FpsDisplayOverlay {
     }
 
     public void hide() {
+        handler.removeCallbacks(initializeRunnable);
+        updatesRunning = false;
+        handler.removeCallbacks(updateRunnable);
+        lastDisplayValue = Integer.MIN_VALUE;
         if (pendingShowRunnable != null) {
             handler.removeCallbacks(pendingShowRunnable);
             pendingShowRunnable = null;
@@ -347,8 +353,28 @@ public class FpsDisplayOverlay {
     }
 
     public void setVisibility(int visibility) {
-        if (overlayView != null) {
-            overlayView.setVisibility(visibility);
+        if (overlayView != null && overlayView.getVisibility() != visibility) overlayView.setVisibility(visibility);
+        syncUpdates();
+    }
+
+    public void setRuntimeActive(boolean active) {
+        runtimeActive = active;
+        syncUpdates();
+    }
+
+    private boolean canUpdate() {
+        return isShowing && runtimeActive && overlayView != null && overlayView.getVisibility() == View.VISIBLE;
+    }
+
+    private void syncUpdates() {
+        if (!canUpdate()) {
+            updatesRunning = false;
+            handler.removeCallbacks(updateRunnable);
+            handler.removeCallbacks(initializeRunnable);
+        } else if (!updatesRunning) {
+            updatesRunning = true;
+            if (!initialized) initializeNative();
+            handler.post(updateRunnable);
         }
     }
 

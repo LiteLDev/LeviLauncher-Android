@@ -90,6 +90,10 @@ public abstract class BaseOverlayButton {
 
     public void tick() {}
 
+    public void pauseInput() {
+        onButtonPressEnd();
+    }
+
     protected void onOverlayGeometryChanged(int x, int y, int width, int height) {}
 
     private void notifyOverlayGeometryChanged() {

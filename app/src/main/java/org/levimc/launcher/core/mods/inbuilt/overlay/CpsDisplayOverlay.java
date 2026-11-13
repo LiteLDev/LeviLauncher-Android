@@ -36,6 +36,9 @@ public class CpsDisplayOverlay {
     private TextView statsText;
     private WindowManager.LayoutParams wmParams;
     private boolean isShowing = false;
+    private boolean runtimeActive = true;
+    private boolean updatesRunning;
+    private int lastDisplayValue = Integer.MIN_VALUE;
     private Runnable pendingShowRunnable;
 
     private float initialX, initialY;
@@ -49,7 +52,7 @@ public class CpsDisplayOverlay {
     private final Runnable updateRunnable = new Runnable() {
         @Override
         public void run() {
-            if (!isShowing) return;
+            if (!updatesRunning || !canUpdate()) { updatesRunning = false; return; }
             updateDisplay();
             handler.postDelayed(this, UPDATE_INTERVAL);
         }
@@ -62,7 +65,9 @@ public class CpsDisplayOverlay {
 
     public void registerClick() {
         synchronized (clickTimes) {
-            clickTimes.add(getTime());
+            double now = getTime();
+            clickTimes.removeIf(time -> now - time > CPS_WINDOW);
+            clickTimes.add(now);
         }
     }
 
@@ -171,7 +176,7 @@ public class CpsDisplayOverlay {
             windowManager.addView(overlayView, wmParams);
             isShowing = true;
 
-            handler.post(updateRunnable);
+            syncUpdates();
             applyOpacity();
             updateLockState();
             applySize();
@@ -206,7 +211,7 @@ public class CpsDisplayOverlay {
         isShowing = true;
         wmParams = null;
 
-        handler.post(updateRunnable);
+        syncUpdates();
         applyOpacity();
         updateLockState();
         applySize();
@@ -221,10 +226,12 @@ public class CpsDisplayOverlay {
     }
 
     private void updateDisplay() {
-        if (statsText != null) {
-            statsText.setText(activity.getString(R.string.mod_overlay_cps_value, getCps()));
-            clampCurrentPosition(false);
-        }
+        if (statsText == null) return;
+        int value = getCps();
+        if (lastDisplayValue == value) return;
+        lastDisplayValue = value;
+        statsText.setText(activity.getString(R.string.mod_overlay_cps_value, value));
+        statsText.post(() -> { if (canUpdate()) clampCurrentPosition(false); });
     }
 
     private void applyOpacity() {
@@ -381,6 +388,9 @@ public class CpsDisplayOverlay {
     }
 
     public void hide() {
+        updatesRunning = false;
+        handler.removeCallbacks(updateRunnable);
+        lastDisplayValue = Integer.MIN_VALUE;
         if (pendingShowRunnable != null) {
             handler.removeCallbacks(pendingShowRunnable);
             pendingShowRunnable = null;
@@ -413,8 +423,26 @@ public class CpsDisplayOverlay {
     }
 
     public void setVisibility(int visibility) {
-        if (overlayView != null) {
-            overlayView.setVisibility(visibility);
+        if (overlayView != null && overlayView.getVisibility() != visibility) overlayView.setVisibility(visibility);
+        syncUpdates();
+    }
+
+    public void setRuntimeActive(boolean active) {
+        runtimeActive = active;
+        syncUpdates();
+    }
+
+    private boolean canUpdate() {
+        return isShowing && runtimeActive && overlayView != null && overlayView.getVisibility() == View.VISIBLE;
+    }
+
+    private void syncUpdates() {
+        if (!canUpdate()) {
+            updatesRunning = false;
+            handler.removeCallbacks(updateRunnable);
+        } else if (!updatesRunning) {
+            updatesRunning = true;
+            handler.post(updateRunnable);
         }
     }
 
