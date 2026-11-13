@@ -1,488 +1,270 @@
 package org.levimc.launcher.core.mods.inbuilt.overlay;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.SeekBar;
-import android.widget.Switch;
 import android.widget.ScrollView;
+import android.widget.SeekBar;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AlertDialog;
 
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.mods.inbuilt.UnifiedMod;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class ModConfigView {
-
     public static void render(Context context, ViewGroup container, UnifiedMod mod, Runnable onConfigChanged) {
         render(context, container, mod, false, onConfigChanged);
     }
 
-    public static void render(Context context, ViewGroup container, UnifiedMod mod, boolean compact, Runnable onConfigChanged) {
+    public static void render(Context source, ViewGroup container, UnifiedMod mod, boolean compact, Runnable onConfigChanged) {
+        Context context = ModMenuTheme.wrap(source);
+        ModMenuTheme theme = new ModMenuTheme(context);
         RuntimeConfigView.stop(container);
         container.removeAllViews();
         if (RuntimeConfigView.render(context, container, mod, compact, onConfigChanged)) return;
-
-        float density = context.getResources().getDisplayMetrics().density;
-        int accent = 0xFF4AE0A0;
         ScrollView scroll = new ScrollView(context);
         scroll.setFillViewport(true);
+        scroll.setOverScrollMode(View.OVER_SCROLL_NEVER);
         LinearLayout content = new LinearLayout(context);
         content.setOrientation(LinearLayout.VERTICAL);
-        content.setPadding((int)(16 * density), (int)(16 * density), (int)(16 * density), (int)(16 * density));
-        scroll.addView(content, new ScrollView.LayoutParams(
-                ScrollView.LayoutParams.MATCH_PARENT, ScrollView.LayoutParams.WRAP_CONTENT));
-        container.addView(scroll, new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        renderConfigEntries(context, content, mod, accent, density, onConfigChanged);
-    }
-
-    private static void renderConfigEntries(Context context, ViewGroup container, UnifiedMod mod, int accent, float density, Runnable onConfigChanged) {
+        content.setPadding(theme.dp(4), theme.dp(4), theme.dp(4), theme.dp(36));
+        scroll.addView(content, new ScrollView.LayoutParams(-1, -2));
+        container.addView(scroll, new ViewGroup.LayoutParams(-1, -1));
         List<UnifiedMod.ConfigEntry> configs = mod.getConfigEntries();
-
-        java.util.Map<String, java.util.List<View>> configViews = new java.util.HashMap<>();
-        Runnable applyDependencies = () -> {
+        Map<String, View> rows = new HashMap<>();
+        Runnable dependencies = () -> {
             for (UnifiedMod.ConfigEntry cfg : configs) {
-                if (cfg.dependsOn != null && !cfg.dependsOn.isEmpty() && configViews.containsKey(cfg.key)) {
-                    boolean isParentEnabled = false;
-                    for (UnifiedMod.ConfigEntry parentCfg : configs) {
-                        if (parentCfg.key.equals(cfg.dependsOn)) {
-                            isParentEnabled = "true".equalsIgnoreCase(parentCfg.currentValue) || "1".equals(parentCfg.currentValue);
-                            break;
-                        }
-                    }
-                    for (View v : configViews.get(cfg.key)) {
-                        v.setVisibility(isParentEnabled ? View.VISIBLE : View.GONE);
+                if (cfg.dependsOn == null || cfg.dependsOn.isEmpty()) continue;
+                boolean visible = false;
+                for (UnifiedMod.ConfigEntry parent : configs) {
+                    if (parent.key.equals(cfg.dependsOn)) {
+                        visible = "true".equalsIgnoreCase(parent.currentValue) || "1".equals(parent.currentValue);
+                        break;
                     }
                 }
+                View row = rows.get(cfg.key);
+                if (row != null) row.setVisibility(visible ? View.VISIBLE : View.GONE);
             }
         };
-        Runnable wrappedOnConfigChanged = () -> {
-            applyDependencies.run();
-            onConfigChanged.run();
-        };
-
         for (UnifiedMod.ConfigEntry cfg : configs) {
-            int startIndex = container.getChildCount();
+            LinearLayout card = new LinearLayout(context);
+            card.setOrientation(LinearLayout.VERTICAL);
+            card.setPadding(theme.dp(10), theme.dp(7), theme.dp(10), theme.dp(7));
+            card.setBackground(theme.shape(theme.raised, theme.corner, true));
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2);
+            params.setMargins(0, theme.dp(3), 0, theme.dp(3));
+            content.addView(card, params);
+            rows.put(cfg.key, card);
+            TextView title = theme.label(cfg.displayName, 11, true);
+            boolean inline = cfg.type == UnifiedMod.ConfigType.RADIO || cfg.type == UnifiedMod.ConfigType.COLOR
+                    || cfg.type == UnifiedMod.ConfigType.KEYBIND || cfg.type == UnifiedMod.ConfigType.TEXT;
+            if (inline) {
+                card.setOrientation(LinearLayout.HORIZONTAL);
+                card.setGravity(Gravity.CENTER_VERTICAL);
+                card.addView(title, new LinearLayout.LayoutParams(0, -2, 1));
+            } else card.addView(title);
+            java.util.function.Consumer<String> update = value -> {
+                mod.updateConfig(cfg, value);
+                dependencies.run();
+                if (onConfigChanged != null) onConfigChanged.run();
+            };
+            String current = cfg.currentValue == null || cfg.currentValue.isEmpty() ? cfg.defaultValue : cfg.currentValue;
             switch (cfg.type) {
-                case TOGGLE:
-                    boolean checked = "true".equalsIgnoreCase(cfg.currentValue) || "1".equals(cfg.currentValue);
-                    addToggle(context, container, cfg.displayName, checked, accent, density, isChecked -> {
-                        mod.updateConfig(cfg, isChecked ? "true" : "false");
-                        wrappedOnConfigChanged.run();
-                    });
+                case TOGGLE: {
+                    card.removeView(title);
+                    LinearLayout row = new LinearLayout(context);
+                    row.setGravity(Gravity.CENTER_VERTICAL);
+                    row.addView(title, new LinearLayout.LayoutParams(0, -2, 1));
+                    CompoundButton control = new ModMenuToggle(context);
+                    theme.toggle(control);
+                    control.setChecked("true".equalsIgnoreCase(cfg.currentValue) || "1".equals(cfg.currentValue));
+                    control.setContentDescription(cfg.displayName);
+                    control.setOnCheckedChangeListener((button, checked) -> update.accept(checked ? "true" : "false"));
+                    row.addView(control, new LinearLayout.LayoutParams(theme.dp(44), theme.dp(40)));
+                    card.addView(row, new LinearLayout.LayoutParams(-1, -2));
+                    row.setOnClickListener(v -> control.setChecked(!control.isChecked()));
                     break;
+                }
                 case SLIDER_INT: {
-                    int min = parseIntSafe(cfg.minValue, 0);
-                    int max = parseIntSafe(cfg.maxValue, 100);
-                    int cur = parseIntSafe(cfg.currentValue, parseIntSafe(cfg.defaultValue, min));
-                    addSlider(context, container, cfg.displayName, cur, min, max, accent, density, progress -> {
-                        mod.updateConfig(cfg, String.valueOf(progress));
-                        wrappedOnConfigChanged.run();
-                    });
+                    int min = parseInt(cfg.minValue, 0);
+                    int max = Math.max(min, parseInt(cfg.maxValue, 100));
+                    int value = Math.max(min, Math.min(max, parseInt(cfg.currentValue, parseInt(cfg.defaultValue, min))));
+                    TextView amount = amount(theme, card, String.valueOf(value));
+                    SeekBar seek = seek(theme, card, Math.max(0, max - min), value - min);
+                    seek.setContentDescription(cfg.displayName);
+                    seek.setOnSeekBarChangeListener(listener(progress -> {
+                        int next = min + progress;
+                        amount.setText(String.valueOf(next));
+                        update.accept(String.valueOf(next));
+                    }));
                     break;
                 }
                 case SLIDER_FLOAT: {
-                    float fMin = parseFloatSafe(cfg.minValue, 0f);
-                    float fMax = parseFloatSafe(cfg.maxValue, 1f);
-                    float fCur = parseFloatSafe(cfg.currentValue, parseFloatSafe(cfg.defaultValue, fMin));
-                    int steps = 100;
-                    int curProgress = (int)((fCur - fMin) / (fMax - fMin) * steps);
-
-                    LinearLayout row = createRow(context, container, density);
-                    TextView label = createLabel(context, cfg.displayName, density);
-                    TextView valText = createValueText(context, String.format("%.2f", fCur), accent, density);
-                    row.addView(label);
-                    row.addView(valText);
-                    container.addView(row);
-
-                    SeekBar seekBar = new SeekBar(context);
-                    seekBar.setMin(0);
-                    seekBar.setMax(steps);
-                    seekBar.setProgress(Math.max(0, Math.min(steps, curProgress)));
-                    applyAccentToSeekBar(seekBar, accent);
-
-                    seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                        @Override
-                        public void onProgressChanged(SeekBar sb, int progress, boolean fromUser) {
-                            if (fromUser) {
-                                float val = fMin + (fMax - fMin) * progress / (float) steps;
-                                valText.setText(String.format("%.2f", val));
-                                mod.updateConfig(cfg, String.valueOf(val));
-                                wrappedOnConfigChanged.run();
-                            }
-                        }
-                        @Override public void onStartTrackingTouch(SeekBar sb) {}
-                        @Override public void onStopTrackingTouch(SeekBar sb) {}
-                    });
-                    addWithMargin(container, seekBar, density);
+                    float min = parseFloat(cfg.minValue, 0f);
+                    float max = Math.max(min, parseFloat(cfg.maxValue, 1f));
+                    float value = Math.max(min, Math.min(max, parseFloat(cfg.currentValue, parseFloat(cfg.defaultValue, min))));
+                    TextView amount = amount(theme, card, String.format(Locale.ROOT, "%.2f", value));
+                    int progress = max > min ? Math.round((value - min) * 100f / (max - min)) : 0;
+                    SeekBar seek = seek(theme, card, 100, progress);
+                    seek.setEnabled(max > min);
+                    seek.setContentDescription(cfg.displayName);
+                    seek.setOnSeekBarChangeListener(listener(next -> {
+                        float number = min + (max - min) * next / 100f;
+                        amount.setText(String.format(Locale.ROOT, "%.2f", number));
+                        update.accept(String.valueOf(number));
+                    }));
                     break;
                 }
                 case RADIO: {
-                    LinearLayout row = createRow(context, container, density);
-                    row.addView(createLabel(context, cfg.displayName, density));
-                    container.addView(row);
-
-                    RadioGroup radioGroup = new RadioGroup(context);
-                    radioGroup.setOrientation(LinearLayout.VERTICAL);
-
-                    String[] options = cfg.minValue != null ? cfg.minValue.split(",") : new String[0];
-                    int selectedIndex = parseIntSafe(cfg.currentValue, parseIntSafe(cfg.defaultValue, 0));
-                    final java.util.Map<Integer, Integer> optionIds = new java.util.HashMap<>();
-
-                    for (int i = 0; i < options.length; i++) {
-                        RadioButton rb = new RadioButton(context);
-                        int optionId = View.generateViewId();
-                        rb.setId(optionId);
-                        rb.setText(options[i]);
-                        rb.setTextColor(0xFFF1F4F6);
-                        rb.setTextSize(14);
-                        int[][] states = {{android.R.attr.state_checked}, {}};
-                        rb.setButtonTintList(new ColorStateList(states, new int[]{accent, 0xFFA8B0B8}));
-                        optionIds.put(optionId, i);
-
-                        LinearLayout.LayoutParams rbParams = new LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                        rb.setLayoutParams(rbParams);
-                        radioGroup.addView(rb);
-                        if (i == selectedIndex) rb.setChecked(true);
-                    }
-
-                    radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
-                        Integer currentIndex = optionIds.get(checkedId);
-                        if (currentIndex == null) return;
-                        String newValue = String.valueOf(currentIndex);
-                        if (newValue.equals(cfg.currentValue)) return;
-
-                        mod.updateConfig(cfg, newValue);
-                        wrappedOnConfigChanged.run();
-                    });
-
-                    LinearLayout.LayoutParams rgParams = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                    rgParams.leftMargin = (int)(4 * density);
-                    rgParams.topMargin = (int)(4 * density);
-                    container.addView(radioGroup, rgParams);
+                    String[] options = cfg.minValue == null || cfg.minValue.isEmpty() ? new String[0] : cfg.minValue.split(",");
+                    TextView choice = action(theme, card, "");
+                    Runnable label = () -> {
+                        int index = parseInt(cfg.currentValue, parseInt(cfg.defaultValue, 0));
+                        choice.setText(index >= 0 && index < options.length ? options[index] : context.getString(R.string.mm_choose_option));
+                    };
+                    label.run();
+                    choice.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.ic_modmenu_chevron, 0);
+                    choice.setCompoundDrawableTintList(android.content.res.ColorStateList.valueOf(theme.accent));
+                    choice.setOnClickListener(v -> ModMenuDialogs.choices(v, cfg.displayName, options,
+                            parseInt(cfg.currentValue, parseInt(cfg.defaultValue, 0)), null, index -> {
+                                update.accept(String.valueOf(index));
+                                label.run();
+                            }));
                     break;
                 }
                 case COLOR: {
-                    LinearLayout headerRow = new LinearLayout(context);
-                    headerRow.setOrientation(LinearLayout.HORIZONTAL);
-                    headerRow.setGravity(android.view.Gravity.CENTER_VERTICAL);
-                    LinearLayout.LayoutParams headerParams = new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                    headerParams.topMargin = (int)(12 * density);
-                    headerRow.setLayoutParams(headerParams);
-
-                    TextView label = createLabel(context, cfg.displayName, density);
-                    headerRow.addView(label);
-
-                    View colorPreview = new View(context);
-                    LinearLayout.LayoutParams previewParams = new LinearLayout.LayoutParams(
-                            (int)(40 * density), (int)(20 * density));
-
-                    String currentHex = cfg.currentValue.isEmpty() ? cfg.defaultValue : cfg.currentValue;
-                    int initialColor = Color.WHITE;
-                    try { initialColor = Color.parseColor(currentHex); } catch (Exception ignored) {}
-
-                    android.graphics.drawable.GradientDrawable gd = new android.graphics.drawable.GradientDrawable();
-                    gd.setColor(initialColor);
-                    gd.setCornerRadius(4 * density);
-                    gd.setStroke((int)(1 * density), 0xFF343A40);
-                    colorPreview.setBackground(gd);
-                    headerRow.addView(colorPreview, previewParams);
-                    container.addView(headerRow);
-
-                    LinearLayout slidersContainer = new LinearLayout(context);
-                    slidersContainer.setOrientation(LinearLayout.VERTICAL);
-                    slidersContainer.setVisibility(View.GONE);
-                    slidersContainer.setPadding((int)(12 * density), (int)(8 * density), 0, (int)(8 * density));
-
-                    final int[] currentColor = {initialColor};
-
-                    ValueChangeListener onSliderChange = val -> {
-                        gd.setColor(currentColor[0]);
-                        colorPreview.setBackground(gd);
-                        mod.updateConfig(cfg, String.format("#%08X", currentColor[0]));
-                        wrappedOnConfigChanged.run();
-                    };
-
-                    int a = Color.alpha(initialColor);
-                    int r = Color.red(initialColor);
-                    int g = Color.green(initialColor);
-                    int b = Color.blue(initialColor);
-
-                    SeekBar alphaSlider = addColorSliderInline(context, slidersContainer, context.getString(R.string.mod_config_color_alpha_short), a, 0xFFFFFFFF, density, progress -> {
-                        currentColor[0] = Color.argb(progress, Color.red(currentColor[0]), Color.green(currentColor[0]), Color.blue(currentColor[0]));
-                        onSliderChange.onValueChanged(progress);
-                    });
-                    SeekBar redSlider = addColorSliderInline(context, slidersContainer, context.getString(R.string.mod_config_color_red_short), r, 0xFFFF4444, density, progress -> {
-                        currentColor[0] = Color.argb(Color.alpha(currentColor[0]), progress, Color.green(currentColor[0]), Color.blue(currentColor[0]));
-                        onSliderChange.onValueChanged(progress);
-                    });
-                    SeekBar greenSlider = addColorSliderInline(context, slidersContainer, context.getString(R.string.mod_config_color_green_short), g, 0xFF44FF44, density, progress -> {
-                        currentColor[0] = Color.argb(Color.alpha(currentColor[0]), Color.red(currentColor[0]), progress, Color.blue(currentColor[0]));
-                        onSliderChange.onValueChanged(progress);
-                    });
-                    SeekBar blueSlider = addColorSliderInline(context, slidersContainer, context.getString(R.string.mod_config_color_blue_short), b, 0xFF4444FF, density, progress -> {
-                        currentColor[0] = Color.argb(Color.alpha(currentColor[0]), Color.red(currentColor[0]), Color.green(currentColor[0]), progress);
-                        onSliderChange.onValueChanged(progress);
-                    });
-
-                    container.addView(slidersContainer, new LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-
-                    headerRow.setOnClickListener(v -> {
-                        boolean isVisible = slidersContainer.getVisibility() == View.VISIBLE;
-                        slidersContainer.setVisibility(isVisible ? View.GONE : View.VISIBLE);
-                    });
+                    int initial;
+                    try { initial = Color.parseColor(current); } catch (Exception ignored) { initial = Color.WHITE; }
+                    int[] color = {initial};
+                    TextView value = action(theme, card, String.format(Locale.ROOT, "#%08X", initial));
+                    value.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_modmenu_palette, 0, 0, 0);
+                    value.setCompoundDrawableTintList(android.content.res.ColorStateList.valueOf(theme.accent));
+                    value.setOnClickListener(v -> ModMenuDialogs.color(v, cfg.displayName, color[0], true, next -> {
+                        color[0] = next;
+                        String hex = String.format(Locale.ROOT, "#%08X", next);
+                        value.setText(hex);
+                        update.accept(hex);
+                    }));
                     break;
                 }
                 case KEYBIND: {
-                    int currentKey = parseIntSafe(cfg.currentValue, parseIntSafe(cfg.defaultValue, 0));
-                    addKeybindCapture(context, container, cfg.displayName, currentKey, accent, density, keyCode -> {
-                        mod.updateConfig(cfg, String.valueOf(keyCode));
-                        wrappedOnConfigChanged.run();
-                    });
+                    int[] key = {parseInt(cfg.currentValue, parseInt(cfg.defaultValue, 0))};
+                    TextView value = action(theme, card, keyName(key[0]));
+                    value.setOnClickListener(v -> ModMenuDialogs.keybind(v, cfg.displayName, key[0], -1, code -> {
+                        key[0] = code;
+                        update.accept(String.valueOf(code));
+                        value.setText(keyName(code));
+                    }));
                     break;
                 }
                 case TEXT: {
-                    LinearLayout row = createRow(context, container, density);
-                    TextView label = createLabel(context, cfg.displayName, density);
-                    android.widget.EditText editText = new android.widget.EditText(context);
-                    editText.setText(cfg.currentValue.isEmpty() ? cfg.defaultValue : cfg.currentValue);
-                    editText.setTextColor(0xFFF1F4F6);
-                    editText.setTextSize(14);
-                    editText.setBackgroundTintList(ColorStateList.valueOf(accent));
-                    editText.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-                    editText.addTextChangedListener(new android.text.TextWatcher() {
+                    EditText input = new EditText(context);
+                    theme.input(input);
+                    input.setText(current);
+                    input.setContentDescription(cfg.displayName);
+                    input.addTextChangedListener(new TextWatcher() {
                         @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
                         @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
-                        @Override public void afterTextChanged(android.text.Editable s) {
-                            mod.updateConfig(cfg, s.toString());
-                            wrappedOnConfigChanged.run();
-                        }
+                        @Override public void afterTextChanged(Editable s) { update.accept(s.toString()); }
                     });
-                    row.addView(label);
-                    row.addView(editText);
-                    container.addView(row);
+                    LinearLayout.LayoutParams inputParams = new LinearLayout.LayoutParams(theme.dp(140), -2);
+                    inputParams.setMarginStart(theme.dp(9));
+                    card.addView(input, inputParams);
+                    boundControl(theme, card, input);
                     break;
                 }
                 case BUTTON: {
-                    LinearLayout row = createRow(context, container, density);
-                    Button btn = new Button(context);
-                    btn.setText(cfg.displayName);
-                    btn.setBackgroundTintList(ColorStateList.valueOf(0xFF24282C));
-                    btn.setTextColor(accent);
-                    btn.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                    btn.setOnClickListener(v -> {
-                        mod.updateConfig(cfg, "true");
-                        wrappedOnConfigChanged.run();
-                    });
-                    row.addView(btn);
-                    container.addView(row);
+                    card.removeView(title);
+                    TextView button = action(theme, card, cfg.displayName);
+                    theme.button(button, true);
+                    button.setOnClickListener(v -> update.accept("true"));
                     break;
                 }
             }
-
-            int endIndex = container.getChildCount();
-            java.util.List<View> viewsAdded = new java.util.ArrayList<>();
-            for (int i = startIndex; i < endIndex; i++) {
-                viewsAdded.add(container.getChildAt(i));
-            }
-            configViews.put(cfg.key, viewsAdded);
         }
-        applyDependencies.run();
+        dependencies.run();
     }
 
-    private static void addSlider(Context context, ViewGroup container, String labelText, int cur, int min, int max, int accent, float density, ValueChangeListener listener) {
-        LinearLayout row = createRow(context, container, density);
-        TextView label = createLabel(context, labelText, density);
-        TextView valText = createValueText(context, String.valueOf(cur), accent, density);
-        row.addView(label);
-        row.addView(valText);
-        container.addView(row);
+    private static LinearLayout.LayoutParams gap(ModMenuTheme theme) {
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(-1, -2);
+        params.topMargin = theme.dp(8);
+        return params;
+    }
 
-        SeekBar seekBar = new SeekBar(context);
-        seekBar.setMin(min);
-        seekBar.setMax(max);
-        seekBar.setProgress(cur);
-        applyAccentToSeekBar(seekBar, accent);
+    private static TextView action(ModMenuTheme theme, LinearLayout parent, String text) {
+        TextView view = theme.label(text, 11, true);
+        theme.button(view, false);
+        view.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams params = parent.getOrientation() == LinearLayout.HORIZONTAL
+                ? new LinearLayout.LayoutParams(theme.dp(140), -2) : new LinearLayout.LayoutParams(-1, -2);
+        if (parent.getOrientation() == LinearLayout.HORIZONTAL) params.setMarginStart(theme.dp(9));
+        else params.topMargin = theme.dp(3);
+        parent.addView(view, params);
+        if (parent.getOrientation() == LinearLayout.HORIZONTAL) boundControl(theme, parent, view);
+        return view;
+    }
 
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar sb, int progress, boolean fromUser) {
-                if (fromUser) {
-                    valText.setText(String.valueOf(progress));
-                    listener.onValueChanged(progress);
-                }
-            }
-            @Override public void onStartTrackingTouch(SeekBar sb) {}
-            @Override public void onStopTrackingTouch(SeekBar sb) {}
+    private static void boundControl(ModMenuTheme theme, LinearLayout row, View control) {
+        row.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
+            int width = Math.min(theme.dp(168), Math.max(theme.dp(96), Math.round((r - l) * 0.42f)));
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) control.getLayoutParams();
+            if (params.width != width) { params.width = width; control.setLayoutParams(params); }
         });
-        addWithMargin(container, seekBar, density);
     }
 
-    private static void addToggle(Context context, ViewGroup container, String labelText, boolean isChecked, int accent, float density, ToggleChangeListener listener) {
-        LinearLayout row = createRow(context, container, density);
-        TextView label = createLabel(context, labelText, density);
-        Switch toggle = new Switch(context);
-        toggle.setChecked(isChecked);
-
-        int[][] states = {{android.R.attr.state_checked}, {}};
-        toggle.setThumbTintList(new ColorStateList(states, new int[]{accent, 0xFFA8B0B8}));
-        int trackColor = Color.argb(100, Color.red(accent), Color.green(accent), Color.blue(accent));
-        toggle.setTrackTintList(new ColorStateList(states, new int[]{trackColor, 0xFF343A40}));
-
-        toggle.setOnCheckedChangeListener((btn, checked) -> listener.onToggleChanged(checked));
-
-        row.addView(label);
-        row.addView(toggle);
-        container.addView(row);
+    private static TextView amount(ModMenuTheme theme, LinearLayout parent, String text) {
+        TextView view = theme.label(text, 10, false);
+        View title = parent.getChildAt(0);
+        parent.removeView(title);
+        LinearLayout row = new LinearLayout(parent.getContext());
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.addView(title, new LinearLayout.LayoutParams(0, -2, 1));
+        row.addView(view);
+        parent.addView(row, 0);
+        return view;
     }
 
-    private static void addKeybindCapture(Context context, ViewGroup container, String labelText, int currentKey, int accent, float density, ValueChangeListener listener) {
-        LinearLayout row = createRow(context, container, density);
-        TextView label = createLabel(context, labelText, density);
-        Button btn = new Button(context);
-        btn.setText(getKeyName(context, currentKey));
-        btn.setBackgroundTintList(ColorStateList.valueOf(0xFF24282C));
-        btn.setTextColor(accent);
-
-        btn.setOnClickListener(v -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.Base_Theme_FullScreen); // using this to match theme
-            builder.setTitle(labelText);
-            builder.setMessage(R.string.mod_config_press_any_key);
-            builder.setCancelable(true);
-            builder.setNegativeButton(R.string.cancel, null);
-            AlertDialog dialog = builder.create();
-            dialog.setOnKeyListener((dialogInterface, keyCode, event) -> {
-                if (event.getAction() == KeyEvent.ACTION_DOWN) {
-                    if (keyCode == KeyEvent.KEYCODE_BACK) {
-                        dialog.dismiss();
-                        return true;
-                    }
-                    btn.setText(getKeyName(context, keyCode));
-                    listener.onValueChanged(keyCode);
-                    dialog.dismiss();
-                    return true;
-                }
-                return false;
-            });
-            dialog.show();
-        });
-
-        row.addView(label);
-        row.addView(btn);
-        container.addView(row);
+    private static SeekBar seek(ModMenuTheme theme, LinearLayout parent, int max, int progress) {
+        SeekBar seek = new SeekBar(parent.getContext());
+        seek.setMax(max);
+        seek.setProgress(progress);
+        theme.seek(seek);
+        parent.addView(seek, new LinearLayout.LayoutParams(-1, theme.dp(36)));
+        return seek;
     }
 
-    private static LinearLayout createRow(Context context, ViewGroup container, float density) {
-        LinearLayout row = new LinearLayout(context);
-        row.setOrientation(LinearLayout.HORIZONTAL);
-        row.setGravity(android.view.Gravity.CENTER_VERTICAL);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.topMargin = (int)(12 * density);
-        row.setLayoutParams(params);
-        return row;
-    }
-
-    private static SeekBar addColorSliderInline(Context context, ViewGroup container, String labelText, int value, int tint, float density, ValueChangeListener listener) {
-        LinearLayout row = new LinearLayout(context);
-        row.setOrientation(LinearLayout.HORIZONTAL);
-        row.setGravity(android.view.Gravity.CENTER_VERTICAL);
-
-        TextView tv = new TextView(context);
-        tv.setText(labelText);
-        tv.setTextColor(0xFFF1F4F6);
-        tv.setTextSize(12);
-        tv.setTypeface(null, android.graphics.Typeface.BOLD);
-        tv.setLayoutParams(new LinearLayout.LayoutParams((int)(20 * density), LinearLayout.LayoutParams.WRAP_CONTENT));
-
-        SeekBar sb = new SeekBar(context);
-        sb.setMax(255);
-        sb.setProgress(value);
-        sb.setProgressTintList(ColorStateList.valueOf(tint));
-        sb.setThumbTintList(ColorStateList.valueOf(tint));
-        sb.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-
-        sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (fromUser) listener.onValueChanged(progress);
-            }
+    private static SeekBar.OnSeekBarChangeListener listener(java.util.function.IntConsumer callback) {
+        return new SeekBar.OnSeekBarChangeListener() {
+            @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) { if (fromUser) callback.accept(progress); }
             @Override public void onStartTrackingTouch(SeekBar seekBar) {}
             @Override public void onStopTrackingTouch(SeekBar seekBar) {}
-        });
-
-        row.addView(tv);
-        row.addView(sb);
-
-        LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        rowParams.topMargin = (int)(4 * density);
-        container.addView(row, rowParams);
-        return sb;
+        };
     }
 
-    private static TextView createLabel(Context context, String text, float density) {
-        TextView label = new TextView(context);
-        label.setText(text);
-        label.setTextColor(0xFFF1F4F6);
-        label.setTextSize(14);
-        label.setTypeface(null, android.graphics.Typeface.BOLD);
-        label.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1));
-        return label;
+    private static int parseInt(String value, int fallback) {
+        try { return Integer.parseInt(value); } catch (Exception ignored) { return fallback; }
     }
 
-    private static TextView createValueText(Context context, String text, int accent, float density) {
-        TextView val = new TextView(context);
-        val.setText(text);
-        val.setTextColor(accent);
-        val.setTextSize(13);
-        val.setTypeface(null, android.graphics.Typeface.BOLD);
-        val.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        return val;
+    private static float parseFloat(String value, float fallback) {
+        try { return Float.parseFloat(value); } catch (Exception ignored) { return fallback; }
     }
 
-    private static void applyAccentToSeekBar(SeekBar seekBar, int accent) {
-        seekBar.setProgressTintList(ColorStateList.valueOf(accent));
-        seekBar.setThumbTintList(ColorStateList.valueOf(accent));
+    private static String keyName(int code) {
+        if (code == 0) return "—";
+        String label = KeyEvent.keyCodeToString(code);
+        return label.startsWith("KEYCODE_") ? label.substring(8).replace('_', ' ') : label;
     }
-
-    private static void addWithMargin(ViewGroup container, View view, float density) {
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        params.topMargin = (int)(6 * density);
-        container.addView(view, params);
-    }
-
-    private static String getKeyName(Context context, int keyCode) {
-        String keyLabel = KeyEvent.keyCodeToString(keyCode);
-        if (keyLabel != null && keyLabel.startsWith("KEYCODE_")) {
-            keyLabel = keyLabel.substring(8);
-        }
-        return keyLabel != null ? keyLabel : context.getString(R.string.mod_config_key_unknown);
-    }
-
-    private static int parseIntSafe(String s, int fallback) {
-        if (s == null || s.isEmpty()) return fallback;
-        try { return Integer.parseInt(s); } catch (NumberFormatException e) { return fallback; }
-    }
-
-    private static float parseFloatSafe(String s, float fallback) {
-        if (s == null || s.isEmpty()) return fallback;
-        try { return Float.parseFloat(s); } catch (NumberFormatException e) { return fallback; }
-    }
-
-    interface ValueChangeListener { void onValueChanged(int val); }
-    interface ToggleChangeListener { void onToggleChanged(boolean val); }
 }

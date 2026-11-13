@@ -35,6 +35,7 @@ public class ModMenuAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private final Map<String, Boolean> toggleStates = new HashMap<>();
     private final Map<String, Boolean> favoriteStates = new HashMap<>();
     private OnModActionListener listener;
+    private ModMenuTheme palette;
     private boolean compactMode;
 
     public ModMenuAdapter() {
@@ -45,6 +46,13 @@ public class ModMenuAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         void onToggle(UnifiedMod mod, boolean enabled);
         void onConfig(UnifiedMod mod);
         void onFavoriteChanged(UnifiedMod mod, boolean favorite);
+    }
+
+    public void refreshTheme() { palette = null; notifyDataSetChanged(); }
+
+    private ModMenuTheme theme(android.content.Context context) {
+        if (palette == null) palette = new ModMenuTheme(context);
+        return palette;
     }
 
     public void setOnModActionListener(OnModActionListener listener) {
@@ -141,14 +149,14 @@ public class ModMenuAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             TextView title = new TextView(parent.getContext());
             float density = parent.getResources().getDisplayMetrics().density;
             RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) (34 * density));
-            params.setMargins((int) (8 * density), (int) (6 * density),
+                ViewGroup.LayoutParams.MATCH_PARENT, (int) (24 * density));
+            params.setMargins((int) (8 * density), (int) (2 * density),
                 (int) (8 * density), 0);
             title.setLayoutParams(params);
             title.setGravity(Gravity.CENTER_VERTICAL);
             title.setPadding((int) (6 * density), 0, (int) (6 * density), 0);
-            title.setTextColor(0xFF4AE0A0);
-            title.setTextSize(11);
+            title.setTextColor(theme(parent.getContext()).secondary);
+            title.setTextSize(10);
             title.setTypeface(null, Typeface.BOLD);
             title.setSingleLine(true);
             title.setEllipsize(TextUtils.TruncateAt.END);
@@ -165,70 +173,65 @@ public class ModMenuAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         MenuItem item = items.get(position);
+        ModMenuTheme theme = theme(holder.itemView.getContext());
         if (item.isGroup()) {
-            ((GroupViewHolder) holder).title.setText(item.groupName);
+            GroupViewHolder group = (GroupViewHolder) holder;
+            group.title.setText(item.groupName);
+            group.title.setTextColor(theme.secondary);
+            group.title.setTextSize(11 * ModMenuTheme.textRatio(group.title.getContext()));
             return;
         }
-
-        ModViewHolder modHolder = (ModViewHolder) holder;
+        ModViewHolder row = (ModViewHolder) holder;
         UnifiedMod mod = item.mod;
-
-        modHolder.name.setText(mod.getName());
-        if (modHolder.groupText != null) {
-            modHolder.groupText.setVisibility(item.showGroupLabel ? View.VISIBLE : View.GONE);
-            if (item.showGroupLabel) {
-                modHolder.groupText.setText(mod.getGroupName());
-            }
+        row.name.setTextSize(12 * ModMenuTheme.textRatio(row.name.getContext()));
+        row.description.setTextSize(10.5f * ModMenuTheme.textRatio(row.description.getContext()));
+        row.name.setText(mod.getName());
+        row.name.setTextColor(theme.text);
+        row.description.setText(mod.getDescription() == null || mod.getDescription().isEmpty() ? mod.getGroupName() : mod.getDescription());
+        row.description.setTextColor(theme.secondary);
+        if (row.groupText != null) {
+            row.groupText.setText(mod.getGroupName());
+            row.groupText.setTextColor(theme.secondary);
+            row.groupText.setTextSize(10 * ModMenuTheme.textRatio(row.groupText.getContext()));
+            row.groupText.setVisibility(item.showGroupLabel ? View.VISIBLE : View.GONE);
         }
-
-        if (mod.getSource() == UnifiedMod.Source.INBUILT) {
-            modHolder.icon.setImageResource(ModIconHelper.getModIcon(mod.getId()));
-            modHolder.icon.setImageTintList(null);
-            modHolder.icon.setColorFilter(null);
-        } else {
-            modHolder.icon.setImageResource(R.drawable.ic_modules);
-            modHolder.icon.setImageTintList(null);
-            modHolder.icon.setColorFilter(null);
-        }
-
-        boolean isEnabled = toggleStates.getOrDefault(mod.getStableKey(), false);
-        updateStatusView(modHolder, isEnabled);
-        updateFavoriteView(modHolder, favoriteStates.getOrDefault(mod.getStableKey(), false));
-
-        View.OnClickListener toggleClick = v -> {
-            boolean newState = !toggleStates.getOrDefault(mod.getStableKey(), false);
-            toggleStates.put(mod.getStableKey(), newState);
-            updateStatusView(modHolder, newState);
-            if (listener != null) {
-                listener.onToggle(mod, newState);
-            }
-        };
-
-        modHolder.itemView.setOnClickListener(toggleClick);
-        modHolder.statusText.setOnClickListener(toggleClick);
-        modHolder.icon.setOnClickListener(toggleClick);
-
-        modHolder.favoriteBtn.setOnClickListener(v -> {
+        row.icon.setImageResource(mod.getSource() == UnifiedMod.Source.INBUILT ? ModIconHelper.getModIcon(mod.getId()) : R.drawable.ic_modmenu_layers);
+        row.icon.setImageTintList(mod.getSource() == UnifiedMod.Source.EXTERNAL ? ColorStateList.valueOf(theme.secondary) : null);
+        row.icon.setColorFilter(null);
+        row.configBtn.setImageTintList(ColorStateList.valueOf(theme.secondary));
+        row.configBtn.setBackground(theme.touch(android.graphics.Color.TRANSPARENT, 5, false));
+        row.favoriteBtn.setBackground(theme.touch(android.graphics.Color.TRANSPARENT, 5, false));
+        row.configBtn.setContentDescription(mod.getName() + ": " + row.itemView.getContext().getString(R.string.mm_edit_configuration));
+        row.itemView.setContentDescription(mod.getName());
+        row.toggle.setPalette(theme);
+        row.toggle.setContentDescription(mod.getName());
+        row.toggle.setOnCheckedChangeListener(null);
+        row.toggle.setChecked(toggleStates.getOrDefault(mod.getStableKey(), false));
+        row.toggle.setOnCheckedChangeListener((button, enabled) -> {
+            if (enabled == toggleStates.getOrDefault(mod.getStableKey(), false)) return;
+            toggleStates.put(mod.getStableKey(), enabled);
+            updateStatusView(row, enabled);
+            if (listener != null) listener.onToggle(mod, enabled);
+        });
+        updateStatusView(row, row.toggle.isChecked());
+        updateFavoriteView(row, favoriteStates.getOrDefault(mod.getStableKey(), false));
+        row.itemView.setOnClickListener(v -> row.toggle.setChecked(!row.toggle.isChecked()));
+        row.itemView.setOnLongClickListener(v -> {
+            String description = mod.getDescription();
+            ModMenuDialogs.info(v, mod.getName(), description == null || description.isEmpty() ? mod.getGroupName() : description,
+                    mod.hasConfig() ? () -> { if (listener != null) listener.onConfig(mod); } : null);
+            return true;
+        });
+        row.statusText.setOnClickListener(v -> row.toggle.setChecked(!row.toggle.isChecked()));
+        row.icon.setOnClickListener(v -> row.toggle.setChecked(!row.toggle.isChecked()));
+        row.favoriteBtn.setOnClickListener(v -> {
             boolean favorite = !favoriteStates.getOrDefault(mod.getStableKey(), false);
             favoriteStates.put(mod.getStableKey(), favorite);
-            updateFavoriteView(modHolder, favorite);
-            if (listener != null) {
-                listener.onFavoriteChanged(mod, favorite);
-            }
+            updateFavoriteView(row, favorite);
+            if (listener != null) listener.onFavoriteChanged(mod, favorite);
         });
-
-        if (mod.hasConfig()) {
-            modHolder.configBtn.setVisibility(View.VISIBLE);
-            modHolder.configBtn.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onConfig(mod);
-                }
-            });
-        } else {
-            modHolder.configBtn.setVisibility(View.GONE);
-        }
-
-        updateCardState(modHolder, isEnabled);
+        row.configBtn.setVisibility(mod.hasConfig() ? View.VISIBLE : View.GONE);
+        row.configBtn.setOnClickListener(v -> { if (listener != null) listener.onConfig(mod); });
     }
 
     @Override
@@ -238,49 +241,30 @@ public class ModMenuAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     private void updateFavoriteView(ModViewHolder holder, boolean favorite) {
-        int color = favorite ? 0xFFFFC107 : 0xFFA8B0B8;
-        holder.favoriteBtn.setImageTintList(ColorStateList.valueOf(color));
-        holder.favoriteBtn.setAlpha(favorite ? 1f : 0.9f);
+        ModMenuTheme theme = theme(holder.itemView.getContext());
+        holder.favoriteBtn.setImageResource(favorite ? R.drawable.ic_star : R.drawable.ic_modmenu_star);
+        holder.favoriteBtn.setImageTintList(ColorStateList.valueOf(favorite ? theme.text : theme.secondary));
+        holder.favoriteBtn.setAlpha(1f);
+        holder.favoriteBtn.setSelected(favorite);
         holder.favoriteBtn.setContentDescription(holder.favoriteBtn.getContext().getString(
-            favorite ? R.string.mod_menu_unfavorite : R.string.mod_menu_favorite));
+                favorite ? R.string.mod_menu_unfavorite : R.string.mod_menu_favorite));
     }
 
     private void updateStatusView(ModViewHolder holder, boolean enabled) {
-        int accent = 0xFF4AE0A0;
-
-        if (enabled) {
-            holder.statusText.setText(R.string.mod_status_enabled);
-            holder.statusText.setTextColor(accent);
-            holder.statusText.setBackgroundResource(R.drawable.bg_mod_status_enabled);
-            holder.statusText.getBackground().setTint(android.graphics.Color.argb(40, 
-                android.graphics.Color.red(accent), 
-                android.graphics.Color.green(accent), 
-                android.graphics.Color.blue(accent)));
-        } else {
-            holder.statusText.setText(R.string.mod_status_disabled);
-            holder.statusText.setTextColor(0xFFB4BBC3);
-            holder.statusText.setBackgroundResource(R.drawable.bg_mod_status_disabled);
-            holder.statusText.getBackground().setTintList(null);
-        }
+        holder.statusText.setText(enabled ? R.string.mod_status_enabled : R.string.mod_status_disabled);
+        holder.toggle.setSelected(enabled);
+        if (android.os.Build.VERSION.SDK_INT >= 30) holder.toggle.setStateDescription(holder.itemView.getContext().getString(enabled ? R.string.mod_status_enabled : R.string.mod_status_disabled));
         updateCardState(holder, enabled);
     }
 
     private void updateCardState(ModViewHolder holder, boolean enabled) {
+        ModMenuTheme theme = theme(holder.itemView.getContext());
         holder.itemView.setAlpha(1f);
-        holder.icon.setAlpha(enabled ? 1f : 0.8f);
-        holder.name.setTextColor(enabled ? 0xFFF1F4F6 : 0xFFD6DCE2);
-        
-        if (holder.itemView instanceof androidx.cardview.widget.CardView) {
-            androidx.cardview.widget.CardView cv = (androidx.cardview.widget.CardView) holder.itemView;
-            
-            if (enabled) {
-                cv.setCardBackgroundColor(0xFF28302D);
-                cv.setCardElevation(6f);
-            } else {
-                cv.setCardBackgroundColor(0xFF24282C);
-                cv.setCardElevation(2f);
-            }
-        }
+        holder.icon.setAlpha(1f);
+        holder.name.setTextColor(theme.text);
+        holder.itemView.setBackground(theme.touch(theme.raised, new ModMenuPreferences(holder.itemView.getContext()).elementRadius(), true));
+        holder.itemView.setStateListAnimator(null);
+        holder.itemView.setSelected(enabled);
     }
 
 
@@ -342,6 +326,8 @@ public class ModMenuAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     static class ModViewHolder extends RecyclerView.ViewHolder {
         ImageView icon;
         TextView name;
+        TextView description;
+        ModMenuToggle toggle;
         TextView statusText;
         TextView groupText;
         ImageButton favoriteBtn;
@@ -351,6 +337,8 @@ public class ModMenuAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             super(itemView);
             icon = itemView.findViewById(R.id.mod_card_icon);
             name = itemView.findViewById(R.id.mod_card_name);
+            description = itemView.findViewById(R.id.mod_card_description);
+            toggle = itemView.findViewById(R.id.mod_card_toggle);
             statusText = itemView.findViewById(R.id.mod_card_status);
             groupText = itemView.findViewById(R.id.mod_card_group);
             favoriteBtn = itemView.findViewById(R.id.mod_card_favorite);

@@ -24,6 +24,7 @@ public class ModMenuKeyRoot extends FrameLayout {
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
+        if (ModMenuDialogs.dispatchKeyEvent(this, event)) return true;
         View focusedView = findFocus();
         if (!(focusedView instanceof EditText) && shortcutHandler != null && shortcutHandler.handle(event)) {
             return true;

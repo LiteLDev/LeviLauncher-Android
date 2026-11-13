@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Levi.ModMenu" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="fontFamily">sans-serif</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="colorPrimary">#737380</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#737380</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="android:colorAccent">#737380</item>
+        <item name="android:windowActionModeOverlay">true</item>
+    </style>
+</resources>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="switch_notifications" type="id" />
+    <item name="switch_pause_menu_only" type="id" />
+    <item name="switch_compact_mod_menu" type="id" />
+    <item name="mod_menu_keybind_value" type="id" />
+    <item name="setting_mod_menu_keybind" type="id" />
+    <item name="seekbar_mod_menu_opacity" type="id" />
+    <item name="text_mod_menu_opacity" type="id" />
+    <item name="seekbar_mod_menu_button_opacity" type="id" />
+    <item name="text_mod_menu_button_opacity" type="id" />
+</resources>

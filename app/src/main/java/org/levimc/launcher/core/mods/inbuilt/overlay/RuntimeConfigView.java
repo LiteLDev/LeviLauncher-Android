@@ -21,13 +21,9 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
-import android.widget.Spinner;
-import android.widget.ArrayAdapter;
-import android.widget.Switch;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.view.ContextThemeWrapper;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -59,11 +55,13 @@ final class RuntimeConfigView {
     private static final Map<String, String> LAST_SELECTED_CATEGORIES = new HashMap<>();
     private static final Map<String, Parcelable> CONTENT_SCROLL_STATES = new HashMap<>();
     private static final Map<String, Parcelable> CATEGORY_SCROLL_STATES = new HashMap<>();
-    private static final int ACCENT = 0xFF4AE0A0;
-    private static final int TEXT_PRIMARY = 0xFFF1F4F6;
-    private static final int TEXT_SECONDARY = 0xFFA8B0B8;
-    private static final int CARD = 0xFF202428;
-    private static final int CARD_SELECTED = 0xFF27312E;
+    private final int ACCENT;
+    private final int TEXT_PRIMARY;
+    private final int TEXT_SECONDARY;
+    private final int CARD;
+    private final int CARD_SELECTED;
+    private final ModMenuTheme theme;
+    private View.OnAttachStateChangeListener attachListener;
 
     private final Context context;
     private final ViewGroup host;
@@ -114,10 +112,13 @@ final class RuntimeConfigView {
 
     private RuntimeConfigView(Context context, ViewGroup host, UnifiedMod mod,
                               boolean compact, Runnable onConfigChanged) {
-        // Minecraft's activity uses AppCompat; Chips and RangeSlider require Material.
-        // Theme only this config view so the game activity and legacy menu keep their themes.
-        this.context = new ContextThemeWrapper(context,
-                com.google.android.material.R.style.Theme_MaterialComponents_NoActionBar);
+        this.context = ModMenuTheme.wrap(context);
+        theme = new ModMenuTheme(this.context);
+        ACCENT = theme.accent;
+        TEXT_PRIMARY = theme.text;
+        TEXT_SECONDARY = theme.secondary;
+        CARD = theme.raised;
+        CARD_SELECTED = theme.selected;
         this.host = host;
         this.mod = mod;
         this.compact = compact;
@@ -169,6 +170,7 @@ final class RuntimeConfigView {
         saveScrollPositions();
         stopped = true;
         handler.removeCallbacks(pollRunnable);
+        if (attachListener != null) host.removeOnAttachStateChangeListener(attachListener);
     }
 
     static boolean render(Context context, ViewGroup host, UnifiedMod mod,
@@ -192,22 +194,19 @@ final class RuntimeConfigView {
         selectedCategory = LAST_SELECTED_CATEGORIES.getOrDefault(mod.getStableKey(), "");
         host.removeAllViews();
         LinearLayout root = new LinearLayout(context);
-        root.setOrientation(compact ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
-        root.setPadding(dp(compact ? 8 : 12), dp(8), dp(compact ? 8 : 12), dp(10));
+        root.setOrientation(LinearLayout.VERTICAL);
+        root.setPadding(dp(4), dp(2), dp(4), 0);
         host.addView(root, new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
         categoryRecycler = new RecyclerView(context);
         categoryRecycler.setOverScrollMode(View.OVER_SCROLL_NEVER);
         categoryRecycler.setLayoutManager(new LinearLayoutManager(context,
-                compact ? RecyclerView.HORIZONTAL : RecyclerView.VERTICAL, false));
+                RecyclerView.HORIZONTAL, false));
         categoryAdapter = new CategoryAdapter();
         categoryRecycler.setAdapter(categoryAdapter);
-        LinearLayout.LayoutParams categoryParams = compact
-                ? new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(48))
-                : new LinearLayout.LayoutParams(dp(156), ViewGroup.LayoutParams.MATCH_PARENT);
-        if (!compact) categoryParams.setMarginEnd(dp(12));
-        else categoryParams.setMargins(0, 0, 0, dp(8));
+        LinearLayout.LayoutParams categoryParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(32));
+        categoryParams.setMargins(0, 0, 0, dp(3));
         root.addView(categoryRecycler, categoryParams);
 
         contentRecycler = new RecyclerView(context);
@@ -216,19 +215,20 @@ final class RuntimeConfigView {
         contentRecycler.setLayoutManager(new LinearLayoutManager(context));
         nodeAdapter = new NodeAdapter();
         contentRecycler.setAdapter(nodeAdapter);
-        LinearLayout.LayoutParams contentParams = compact
-                ? new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f)
-                : new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f);
+        LinearLayout.LayoutParams contentParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f);
+        contentRecycler.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        contentRecycler.setItemAnimator(null);
         root.addView(contentRecycler, contentParams);
 
-        host.addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+        attachListener = new View.OnAttachStateChangeListener() {
             @Override public void onViewAttachedToWindow(View v) {}
             @Override public void onViewDetachedFromWindow(View v) {
                 stop();
                 if (ACTIVE.get(host) == RuntimeConfigView.this) ACTIVE.remove(host);
                 host.removeOnAttachStateChangeListener(this);
             }
-        });
+        };
+        host.addOnAttachStateChangeListener(attachListener);
         applySchema(initial);
         Parcelable savedCategory = CATEGORY_SCROLL_STATES.get(categoryScrollKey());
         if (savedCategory != null) {
@@ -258,6 +258,7 @@ final class RuntimeConfigView {
         }
         LAST_SELECTED_CATEGORIES.put(mod.getStableKey(), selectedCategory);
         categoryAdapter.submit(updated.categories);
+        categoryRecycler.setVisibility(updated.categories.size() > 1 ? View.VISIBLE : View.GONE);
         refreshNodes();
     }
 
@@ -360,13 +361,11 @@ final class RuntimeConfigView {
         @Override public long getItemId(int position) { return items.get(position).id.hashCode(); }
         @Override public CategoryHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             TextView view = new TextView(context);
-            view.setGravity(compact ? Gravity.CENTER : Gravity.CENTER_VERTICAL);
-            view.setTextSize(13);
-            view.setPadding(dp(12), 0, dp(12), 0);
-            RecyclerView.LayoutParams params = compact
-                    ? new RecyclerView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(40))
-                    : new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(46));
-            params.setMargins(compact ? dp(3) : 0, dp(2), compact ? dp(3) : 0, dp(2));
+            view.setGravity(Gravity.CENTER);
+            view.setTextSize(10);
+            view.setPadding(dp(10), 0, dp(10), 0);
+            RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, dp(28));
+            params.setMargins(dp(3), dp(2), dp(3), dp(2));
             view.setLayoutParams(params);
             return new CategoryHolder(view);
         }
@@ -374,9 +373,10 @@ final class RuntimeConfigView {
             RuntimeConfigSchema.Category category = items.get(position);
             boolean selected = category.id.equals(selectedCategory);
             holder.label.setText(category.title);
-            holder.label.setTextColor(selected ? ACCENT : TEXT_SECONDARY);
+            holder.label.setTextColor(selected ? TEXT_PRIMARY : TEXT_SECONDARY);
             holder.label.setTypeface(null, selected ? android.graphics.Typeface.BOLD : android.graphics.Typeface.NORMAL);
-            holder.label.setBackground(roundRect(selected ? CARD_SELECTED : Color.TRANSPARENT, 10));
+            holder.label.setBackground(theme.touch(selected ? CARD_SELECTED : Color.TRANSPARENT, 6, false));
+            holder.label.setSelected(selected);
             holder.label.setOnClickListener(v -> {
                 if (category.id.equals(selectedCategory)) return;
                 saveScrollPositions();
@@ -397,12 +397,19 @@ final class RuntimeConfigView {
 
     private final class NodeAdapter extends RecyclerView.Adapter<NodeHolder> {
         private List<RuntimeConfigSchema.Node> items = Collections.emptyList();
+        private Map<String, String> states = Collections.emptyMap();
 
         NodeAdapter() { setHasStableIds(true); }
 
         void submit(List<RuntimeConfigSchema.Node> next) {
             List<RuntimeConfigSchema.Node> old = items;
             List<RuntimeConfigSchema.Node> copy = new ArrayList<>(next);
+            Map<String, String> oldStates = states;
+            Map<String, String> nextStates = new HashMap<>();
+            for (RuntimeConfigSchema.Node node : copy) {
+                nextStates.put(node.id, node.signature + "|" + (!node.disabled && matches(node.enabledWhen))
+                        + "|" + ("section".equals(node.type) && collapsedSections.contains(node.id)));
+            }
             DiffUtil.DiffResult diff = DiffUtil.calculateDiff(new DiffUtil.Callback() {
                 @Override public int getOldListSize() { return old.size(); }
                 @Override public int getNewListSize() { return copy.size(); }
@@ -412,10 +419,11 @@ final class RuntimeConfigView {
                 @Override public boolean areContentsTheSame(int oldPos, int newPos) {
                     RuntimeConfigSchema.Node a = old.get(oldPos);
                     RuntimeConfigSchema.Node b = copy.get(newPos);
-                    return a.signature.equals(b.signature);
+                    return java.util.Objects.equals(oldStates.get(a.id), nextStates.get(b.id));
                 }
             });
             items = copy;
+            states = nextStates;
             diff.dispatchUpdatesTo(this);
         }
 
@@ -424,7 +432,7 @@ final class RuntimeConfigView {
             FrameLayout frame = new FrameLayout(context);
             RecyclerView.LayoutParams params = new RecyclerView.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.setMargins(0, dp(4), 0, dp(6));
+            params.setMargins(0, dp(3), 0, dp(3));
             frame.setLayoutParams(params);
             return new NodeHolder(frame);
         }
@@ -445,30 +453,70 @@ final class RuntimeConfigView {
         if ("section".equals(node.type)) return buildSection(node);
         LinearLayout card = new LinearLayout(context);
         card.setOrientation(LinearLayout.VERTICAL);
-        card.setPadding(dp(12), dp(10), dp(12), dp(10));
-        card.setBackground(roundRect(CARD, 12));
+        card.setGravity(Gravity.CENTER_VERTICAL);
+        card.setPadding(dp(10), dp(8), dp(10), dp(8));
+        card.setMinimumHeight(dp(42));
+        card.setBackground(roundRect(CARD, theme.corner));
         boolean enabled = !node.disabled && matches(node.enabledWhen);
-        addTitle(card, node.title, node.description);
-
-        switch (node.type) {
-            case "toggle": buildToggle(card, node); break;
-            case "slider_int": buildIntSlider(card, node); break;
-            case "slider_float": buildFloatSlider(card, node); break;
-            case "range_slider": buildRangeSlider(card, node); break;
-            case "choice": buildChoice(card, node); break;
-            case "multi_choice": buildMultiChoice(card, node); break;
-            case "toggle_group": buildToggleGroup(card, node); break;
-            case "ordered_list": buildOrderedList(card, node); break;
-            case "color": buildColor(card, node); break;
-            case "keybind": buildKeybind(card, node); break;
-            case "text": buildText(card, node, false); break;
-            case "multiline_text": buildText(card, node, true); break;
-            case "button": buildButton(card, node); break;
-            case "info": break;
-            default: break;
+        boolean dropdown = "choice".equals(node.type) && ("dropdown".equals(node.style)
+                || "auto".equals(node.style) && node.options.size() > 4);
+        boolean inline = "toggle".equals(node.type) || dropdown || "color".equals(node.type)
+                || "keybind".equals(node.type) || "text".equals(node.type);
+        if (inline) {
+            card.setOrientation(LinearLayout.HORIZONTAL);
+            LinearLayout labels = new LinearLayout(context);
+            labels.setOrientation(LinearLayout.VERTICAL);
+            addTitle(labels, node.title, node.description);
+            card.addView(labels, new LinearLayout.LayoutParams(0, -2, 1));
+            LinearLayout controls = new LinearLayout(context);
+            controls.setOrientation(LinearLayout.VERTICAL);
+            LinearLayout.LayoutParams params = "toggle".equals(node.type)
+                    ? new LinearLayout.LayoutParams(dp(38), -2) : new LinearLayout.LayoutParams(dp(140), -2);
+            params.setMarginStart(dp(10));
+            card.addView(controls, params);
+            if (!"toggle".equals(node.type)) card.addOnLayoutChangeListener((v, l, t, r, b, ol, ot, or, ob) -> {
+                int width = Math.min(dp(168), Math.max(dp(96), Math.round((r - l) * 0.42f)));
+                LinearLayout.LayoutParams current = (LinearLayout.LayoutParams) controls.getLayoutParams();
+                if (current.width != width) { current.width = width; controls.setLayoutParams(current); }
+            });
+            switch (node.type) {
+                case "toggle": buildToggle(controls, node); break;
+                case "choice": buildChoice(controls, node); break;
+                case "color": buildColor(controls, node); break;
+                case "keybind": buildKeybind(controls, node); break;
+                case "text": buildText(controls, node, false); break;
+            }
+        } else {
+            if (!"button".equals(node.type)) {
+                LinearLayout header = new LinearLayout(context);
+                header.setTag("wind_header");
+                header.setGravity(Gravity.CENTER_VERTICAL);
+                LinearLayout labels = new LinearLayout(context);
+                labels.setOrientation(LinearLayout.VERTICAL);
+                addTitle(labels, node.title, node.description);
+                header.addView(labels, new LinearLayout.LayoutParams(0, -2, 1));
+                card.addView(header, new LinearLayout.LayoutParams(-1, -2));
+            } else if (!node.description.isEmpty()) {
+                TextView description = theme.label(node.description, 9.5f, false);
+                description.setPadding(0, 0, 0, dp(5));
+                card.addView(description);
+            }
+            switch (node.type) {
+                case "slider_int": buildIntSlider(card, node); break;
+                case "slider_float": buildFloatSlider(card, node); break;
+                case "range_slider": buildRangeSlider(card, node); break;
+                case "choice": buildChoice(card, node); break;
+                case "multi_choice": buildMultiChoice(card, node); break;
+                case "toggle_group": buildToggleGroup(card, node); break;
+                case "ordered_list": buildOrderedList(card, node); break;
+                case "multiline_text": buildText(card, node, true); break;
+                case "button": buildButton(card, node); break;
+                case "info": break;
+                default: break;
+            }
         }
         setEnabledRecursive(card, enabled);
-        card.setAlpha(enabled ? 1f : 0.5f);
+        card.setAlpha(enabled ? 1f : 0.45f);
         return card;
     }
 
@@ -479,14 +527,14 @@ final class RuntimeConfigView {
         TextView title = new TextView(context);
         title.setText(node.title + (node.collapsible ? (collapsedSections.contains(node.id) ? "  ▸" : "  ▾") : ""));
         title.setTextColor(TEXT_PRIMARY);
-        title.setTextSize(15);
+        title.setTextSize(11);
         title.setTypeface(null, android.graphics.Typeface.BOLD);
         row.addView(title);
         if (!node.description.isEmpty()) {
             TextView desc = new TextView(context);
             desc.setText(node.description);
             desc.setTextColor(TEXT_SECONDARY);
-            desc.setTextSize(11);
+            desc.setTextSize(9.5f);
             row.addView(desc);
         }
         if (node.collapsible) {
@@ -499,31 +547,20 @@ final class RuntimeConfigView {
     }
 
     private void addTitle(LinearLayout parent, String titleText, String description) {
-        TextView title = new TextView(context);
-        title.setText(titleText);
-        title.setTextColor(TEXT_PRIMARY);
-        title.setTextSize(14);
-        title.setTypeface(null, android.graphics.Typeface.BOLD);
-        parent.addView(title);
+        parent.addView(theme.label(titleText, 11, true));
         if (description != null && !description.isEmpty()) {
-            TextView desc = new TextView(context);
-            desc.setText(description);
-            desc.setTextColor(TEXT_SECONDARY);
-            desc.setTextSize(11);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.setMargins(0, dp(2), 0, dp(7));
-            parent.addView(desc, params);
-        } else {
-            title.setPadding(0, 0, 0, dp(6));
+            TextView desc = theme.label(description, 9.5f, false);
+            desc.setPadding(0, dp(3), dp(6), 0);
+            parent.addView(desc);
         }
     }
 
     private void buildToggle(LinearLayout parent, RuntimeConfigSchema.Node node) {
-        Switch control = new Switch(context);
+        CompoundButton control = new ModMenuToggle(context);
         control.setChecked(truthy(mod.getConfigValue(node.key, node.defaultValue)));
         tintSwitch(control);
         control.setOnCheckedChangeListener((button, checked) -> setValue(node.key, checked ? "true" : "false"));
+        control.setContentDescription(node.title);
         parent.addView(control, alignEnd());
     }
 
@@ -533,7 +570,7 @@ final class RuntimeConfigView {
         int step = Math.max(1, parseInt(node.step, 1));
         int current = clamp(parseInt(mod.getConfigValue(node.key, node.defaultValue), min), min, max);
         TextView value = valueText(formatNumber(current, node.unit));
-        parent.addView(value, alignEnd());
+        attachValue(parent, value);
         SeekBar seek = new SeekBar(context);
         int range = max - min;
         int count = Math.max(1, (range + step - 1) / step);
@@ -563,7 +600,7 @@ final class RuntimeConfigView {
         int count = Math.min(1000, Math.max(1, Math.round((max - min) / step)));
         final float actualStep = (max - min) / count;
         TextView value = valueText(formatFloat(current, node.unit));
-        parent.addView(value, alignEnd());
+        attachValue(parent, value);
         SeekBar seek = new SeekBar(context);
         seek.setMin(0);
         seek.setMax(count);
@@ -600,12 +637,19 @@ final class RuntimeConfigView {
             high = swap;
         }
         TextView value = valueText(formatFloat(low, node.unit) + " – " + formatFloat(high, node.unit));
-        parent.addView(value, alignEnd());
+        attachValue(parent, value);
         RangeSlider slider = new RangeSlider(context);
         slider.setValueFrom(min);
         slider.setValueTo(max);
         slider.setStepSize(step);
         slider.setValues(clamp(low, min, max), clamp(high, min, max));
+        slider.setThumbTintList(ColorStateList.valueOf(ACCENT));
+        slider.setTrackActiveTintList(ColorStateList.valueOf(ACCENT));
+        slider.setTrackInactiveTintList(ColorStateList.valueOf(theme.outline));
+        slider.setThumbRadius(dp(6));
+        slider.setTrackHeight(dp(3));
+        slider.setTickVisible(false);
+        slider.setLabelBehavior(com.google.android.material.slider.LabelFormatter.LABEL_GONE);
         slider.addOnChangeListener((s, changedValue, fromUser) -> {
             List<Float> values = s.getValues();
             if (values.size() < 2) return;
@@ -620,41 +664,28 @@ final class RuntimeConfigView {
         String style = node.style;
         if ("auto".equals(style)) style = node.options.size() <= 4 ? "segmented" : "dropdown";
         if ("dropdown".equals(style)) {
-            Spinner spinner = new Spinner(context);
-            List<String> labels = new ArrayList<>();
-            int selected = 0;
-            for (int i = 0; i < node.options.size(); i++) {
-                labels.add(node.options.get(i).label);
-                if (node.options.get(i).value.equals(current)) selected = i;
-            }
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, labels) {
-                @Override public boolean isEnabled(int position) {
-                    return position >= 0 && position < node.options.size() && !node.options.get(position).disabled;
+            Button choice = new Button(context);
+            theme.button(choice, false);
+            choice.setText(optionLabel(node, current));
+            choice.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.ic_modmenu_chevron, 0);
+            choice.setCompoundDrawableTintList(ColorStateList.valueOf(ACCENT));
+            choice.setOnClickListener(v -> {
+                String[] labels = new String[node.options.size()];
+                boolean[] available = new boolean[node.options.size()];
+                int selected = -1;
+                String value = mod.getConfigValue(node.key, node.defaultValue);
+                for (int i = 0; i < node.options.size(); i++) {
+                    labels[i] = node.options.get(i).label;
+                    available[i] = !node.options.get(i).disabled;
+                    if (node.options.get(i).value.equals(value)) selected = i;
                 }
-                @Override public View getDropDownView(int position, View convertView, ViewGroup parentView) {
-                    View view = super.getDropDownView(position, convertView, parentView);
-                    boolean enabled = isEnabled(position);
-                    view.setEnabled(enabled);
-                    view.setAlpha(enabled ? 1f : 0.45f);
-                    return view;
-                }
-            };
-            spinner.setAdapter(adapter);
-            spinner.setSelection(selected, false);
-            spinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
-                String lastSelectedValue = current;
-                @Override public void onItemSelected(android.widget.AdapterView<?> parentView, View view, int position, long id) {
-                    if (position >= 0 && position < node.options.size() && !node.options.get(position).disabled) {
-                        String value = node.options.get(position).value;
-                        // Initial callbacks are optional; ignore unchanged values, not the first event.
-                        if (value.equals(lastSelectedValue)) return;
-                        lastSelectedValue = value;
-                        setValue(node.key, value);
-                    }
-                }
-                @Override public void onNothingSelected(android.widget.AdapterView<?> parentView) {}
+                ModMenuDialogs.choices(v, node.title, labels, selected, available, index -> {
+                    RuntimeConfigSchema.Option option = node.options.get(index);
+                    choice.setText(option.label);
+                    if (!option.value.equals(mod.getConfigValue(node.key, node.defaultValue))) setValue(node.key, option.value);
+                });
             });
-            parent.addView(spinner, matchWidth());
+            parent.addView(choice, matchWidth());
             return;
         }
         if ("radio".equals(style)) {
@@ -664,6 +695,7 @@ final class RuntimeConfigView {
                 radio.setId(View.generateViewId());
                 radio.setText(option.label);
                 radio.setTextColor(TEXT_PRIMARY);
+                theme.toggle(radio);
                 radio.setTag(option.value);
                 radio.setEnabled(!option.disabled);
                 radio.setChecked(option.value.equals(current));
@@ -703,6 +735,7 @@ final class RuntimeConfigView {
                     CheckBox check = new CheckBox(context);
                     check.setText(option.label);
                     check.setTextColor(TEXT_PRIMARY);
+                    theme.toggle(check);
                     check.setChecked(selected.contains(option.value));
                     check.setEnabled(!option.disabled);
                     check.setOnCheckedChangeListener((button, checked) -> {
@@ -749,6 +782,7 @@ final class RuntimeConfigView {
                 CheckBox check = new CheckBox(context);
                 check.setText(option.label);
                 check.setTextColor(TEXT_PRIMARY);
+                theme.toggle(check);
                 check.setChecked(truthy(mod.getConfigValue(key, "false")));
                 check.setEnabled(!option.disabled);
                 check.setOnCheckedChangeListener((button, checked) -> setValue(key, checked ? "true" : "false"));
@@ -856,6 +890,7 @@ final class RuntimeConfigView {
         search.setTextColor(TEXT_PRIMARY);
         search.setHintTextColor(TEXT_SECONDARY);
         search.setTextSize(12);
+        theme.input(search);
         LinearLayout.LayoutParams params = matchWidth();
         params.setMargins(0, 0, 0, dp(6));
         parent.addView(search, params);
@@ -871,7 +906,7 @@ final class RuntimeConfigView {
     }
 
     private void updateOrderedListHeight(RecyclerView list, int count) {
-        int height = Math.min(dp(230), Math.max(dp(44), count * dp(44)));
+        int height = Math.min(dp(170), Math.max(dp(32), count * dp(34)));
         ViewGroup.LayoutParams params = list.getLayoutParams();
         if (params == null) params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
         params.width = ViewGroup.LayoutParams.MATCH_PARENT;
@@ -897,14 +932,15 @@ final class RuntimeConfigView {
             TextView label = new TextView(context);
             label.setTextColor(TEXT_PRIMARY);
             label.setTextSize(12);
-            row.addView(label, new LinearLayout.LayoutParams(0, dp(38), 1f));
+            row.addView(label, new LinearLayout.LayoutParams(0, dp(30), 1f));
             Button remove = new Button(context);
             remove.setText("×");
             remove.setTextSize(16);
+            theme.button(remove, false);
             remove.setMinWidth(0);
             remove.setMinimumWidth(0);
             remove.setPadding(dp(8), 0, dp(8), 0);
-            row.addView(remove, new LinearLayout.LayoutParams(dp(42), dp(38)));
+            row.addView(remove, new LinearLayout.LayoutParams(dp(30), dp(30)));
             return new OrderedHolder(row, label, remove);
         }
         @Override public void onBindViewHolder(OrderedHolder holder, int position) {
@@ -938,6 +974,9 @@ final class RuntimeConfigView {
         String current = mod.getConfigValue(node.key, node.defaultValue);
         if (current.isEmpty()) current = "#FFFFFFFF";
         button.setText(current);
+        theme.button(button, false);
+        button.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_modmenu_palette, 0, 0, 0);
+        button.setCompoundDrawableTintList(ColorStateList.valueOf(ACCENT));
         button.setOnClickListener(v -> showColorDialog(
                 node, mod.getConfigValue(node.key, node.defaultValue), button));
         parent.addView(button, alignEnd());
@@ -946,78 +985,29 @@ final class RuntimeConfigView {
     private void showColorDialog(RuntimeConfigSchema.Node node, String initialValue, Button sourceButton) {
         int initial;
         try { initial = Color.parseColor(initialValue); } catch (Exception ignored) { initial = Color.WHITE; }
-        LinearLayout box = new LinearLayout(context);
-        box.setOrientation(LinearLayout.VERTICAL);
-        box.setPadding(dp(18), dp(6), dp(18), 0);
-        int[] color = {initial};
-        addColorChannel(box, "R", Color.red(initial), value -> color[0] = Color.argb(Color.alpha(color[0]), value, Color.green(color[0]), Color.blue(color[0])));
-        addColorChannel(box, "G", Color.green(initial), value -> color[0] = Color.argb(Color.alpha(color[0]), Color.red(color[0]), value, Color.blue(color[0])));
-        addColorChannel(box, "B", Color.blue(initial), value -> color[0] = Color.argb(Color.alpha(color[0]), Color.red(color[0]), Color.green(color[0]), value));
-        if (node.colorAlpha) addColorChannel(box, "A", Color.alpha(initial), value -> color[0] = Color.argb(value, Color.red(color[0]), Color.green(color[0]), Color.blue(color[0])));
-        new AlertDialog.Builder(context)
-                .setTitle(node.title)
-                .setView(box)
-                .setNegativeButton(android.R.string.cancel, null)
-                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                    String next = String.format(Locale.US, "#%08X", color[0]);
-                    sourceButton.setText(next);
-                    setValue(node.key, next);
-                })
-                .show();
-    }
-
-    private interface IntConsumer { void accept(int value); }
-    private void addColorChannel(LinearLayout parent, String name, int initial, IntConsumer consumer) {
-        TextView label = new TextView(context);
-        label.setText(name + "  " + initial);
-        label.setTextColor(TEXT_SECONDARY);
-        parent.addView(label);
-        SeekBar seek = new SeekBar(context);
-        seek.setMin(0);
-        seek.setMax(255);
-        seek.setProgress(initial);
-        tintSeek(seek);
-        seek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (!fromUser) return;
-                label.setText(name + "  " + progress);
-                consumer.accept(progress);
-            }
-            @Override public void onStartTrackingTouch(SeekBar seekBar) {}
-            @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+        ModMenuDialogs.color(sourceButton, node.title, initial, node.colorAlpha, color -> {
+            String next = String.format(Locale.ROOT, "#%08X", color);
+            sourceButton.setText(next);
+            setValue(node.key, next);
         });
-        parent.addView(seek, matchWidth());
     }
 
     private void buildKeybind(LinearLayout parent, RuntimeConfigSchema.Node node) {
         int current = parseInt(mod.getConfigValue(node.key, node.defaultValue), 0);
         Button button = new Button(context);
         button.setText(keyName(current));
-        button.setOnClickListener(v -> {
-            AlertDialog dialog = new AlertDialog.Builder(context)
-                    .setTitle(node.title)
-                    .setMessage("Press a key")
-                    .setNegativeButton(android.R.string.cancel, null)
-                    .setNeutralButton(R.string.mod_config_clear_keybind, (d, which) -> {
-                        setValue(node.key, String.valueOf(KeyEvent.KEYCODE_UNKNOWN));
-                        button.setText(keyName(KeyEvent.KEYCODE_UNKNOWN));
-                    })
-                    .create();
-            dialog.setOnKeyListener((d, keyCode, event) -> {
-                if (event.getAction() != KeyEvent.ACTION_DOWN) return false;
-                if (keyCode == KeyEvent.KEYCODE_BACK) { dialog.dismiss(); return true; }
-                setValue(node.key, String.valueOf(keyCode));
-                button.setText(keyName(keyCode));
-                dialog.dismiss();
-                return true;
-            });
-            dialog.show();
-        });
-        parent.addView(button, alignEnd());
+        theme.button(button, false);
+        button.setOnClickListener(v -> ModMenuDialogs.keybind(v, node.title,
+                parseInt(mod.getConfigValue(node.key, node.defaultValue), 0), -1, code -> {
+                    setValue(node.key, String.valueOf(code));
+                    button.setText(keyName(code));
+                }));
+        parent.addView(button, matchWidth());
     }
 
     private void buildText(LinearLayout parent, RuntimeConfigSchema.Node node, boolean multiline) {
         EditText input = new EditText(context);
+        theme.input(input);
         input.setText(mod.getConfigValue(node.key, node.defaultValue));
         input.setTextColor(TEXT_PRIMARY);
         input.setHintTextColor(TEXT_SECONDARY);
@@ -1038,7 +1028,7 @@ final class RuntimeConfigView {
     private void buildButton(LinearLayout parent, RuntimeConfigSchema.Node node) {
         Button button = new Button(context);
         button.setText(node.title);
-        button.setTextColor(ACCENT);
+        theme.button(button, true);
         button.setOnClickListener(v -> setValue(node.key, node.actionValue));
         parent.addView(button, matchWidth());
     }
@@ -1051,9 +1041,14 @@ final class RuntimeConfigView {
         chip.setTextColor(TEXT_PRIMARY);
         chip.setChipBackgroundColor(new ColorStateList(
                 new int[][]{new int[]{android.R.attr.state_checked}, new int[]{}},
-                new int[]{CARD_SELECTED, 0xFF2A2E32}));
-        chip.setChipStrokeWidth(1f);
-        chip.setChipStrokeColor(ColorStateList.valueOf(0xFF3C4349));
+                new int[]{CARD_SELECTED, theme.surface}));
+        chip.setChipStrokeWidth(dp(1));
+        chip.setChipCornerRadius(dp(theme.corner));
+        chip.setTextSize(11);
+        chip.setEnsureMinTouchTargetSize(false);
+        chip.setChipMinHeight(dp(28));
+        chip.setCheckedIconTint(ColorStateList.valueOf(ACCENT));
+        chip.setChipStrokeColor(ColorStateList.valueOf(theme.outline));
         return chip;
     }
 
@@ -1068,8 +1063,16 @@ final class RuntimeConfigView {
         TextView view = new TextView(context);
         view.setText(text);
         view.setTextColor(ACCENT);
-        view.setTextSize(12);
+        view.setTextSize(10);
         return view;
+    }
+
+    private void attachValue(LinearLayout parent, TextView value) {
+        View first = parent.getChildCount() > 0 ? parent.getChildAt(0) : null;
+        if (first instanceof LinearLayout && "wind_header".equals(first.getTag())) {
+            value.setPadding(dp(8), 0, 0, 0);
+            ((LinearLayout) first).addView(value, new LinearLayout.LayoutParams(-2, -2));
+        } else parent.addView(value, alignEnd());
     }
 
     private LinearLayout.LayoutParams alignEnd() {
@@ -1084,18 +1087,15 @@ final class RuntimeConfigView {
     }
 
     private void tintSeek(SeekBar seek) {
-        seek.setProgressTintList(ColorStateList.valueOf(ACCENT));
-        seek.setThumbTintList(ColorStateList.valueOf(ACCENT));
+        theme.seek(seek);
     }
 
-    private void tintSwitch(Switch control) {
-        int[][] states = {{android.R.attr.state_checked}, {}};
-        control.setThumbTintList(new ColorStateList(states, new int[]{ACCENT, 0xFFA8B0B8}));
-        control.setTrackTintList(new ColorStateList(states, new int[]{0x884AE0A0, 0xFF343A40}));
+    private void tintSwitch(CompoundButton control) {
+        theme.toggle(control);
     }
 
     private void setEnabledRecursive(View view, boolean enabled) {
-        view.setEnabled(enabled);
+        if (!enabled) view.setEnabled(false);
         if (view instanceof ViewGroup) {
             ViewGroup group = (ViewGroup) view;
             for (int i = 0; i < group.getChildCount(); i++) setEnabledRecursive(group.getChildAt(i), enabled);
@@ -1106,6 +1106,7 @@ final class RuntimeConfigView {
         GradientDrawable drawable = new GradientDrawable();
         drawable.setColor(color);
         drawable.setCornerRadius(dp(radiusDp));
+        drawable.setStroke(dp(1), theme.outline);
         return drawable;
     }
 

@@ -2,16 +2,18 @@ package org.levimc.launcher.core.mods.inbuilt.overlay;
 
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.app.Application;
+import android.content.Context;
 import android.graphics.PixelFormat;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowInsets;
 import android.view.WindowManager;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -19,165 +21,237 @@ import org.levimc.launcher.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ModNotificationManager {
-    private static final int DISPLAY_DURATION = 2500;
-    private static final int SLIDE_DURATION = 200;
-    private static final int NOTIFICATION_HEIGHT_DP = 70;
-    private static final int NOTIFICATION_SPACING_DP = 8;
-    private static final int BASE_MARGIN_DP = 16;
-    private static final int BOTTOM_OFFSET_DP = 60;
-
     private final Activity activity;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final WindowManager windowManager;
-    private final List<NotificationEntry> activeNotifications = new ArrayList<>();
-    private final float density;
+    private final List<NotificationEntry> entries = new ArrayList<>();
+    private final AtomicInteger generation = new AtomicInteger();
 
-    private static class NotificationEntry {
+    private static final class NotificationEntry {
+        String id;
         View view;
         WindowManager.LayoutParams params;
-        Runnable dismissRunnable;
-        int index;
+        Runnable dismiss;
+        ObjectAnimator progress;
+        int height;
+        int position;
+        boolean removed;
+        long shownAt;
+        ProgressBar bar;
+        TextView message;
     }
 
     public ModNotificationManager(Activity activity) {
         this.activity = activity;
-        this.windowManager = (WindowManager) activity.getSystemService(Activity.WINDOW_SERVICE);
-        this.density = activity.getResources().getDisplayMetrics().density;
+        windowManager = (WindowManager) activity.getSystemService(Context.WINDOW_SERVICE);
+        activity.getApplication().registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
+            @Override public void onActivityCreated(Activity a, Bundle state) {}
+            @Override public void onActivityStarted(Activity a) {}
+            @Override public void onActivityResumed(Activity a) {}
+            @Override public void onActivityPaused(Activity a) {}
+            @Override public void onActivityStopped(Activity a) { if (a == activity) hideAll(); }
+            @Override public void onActivitySaveInstanceState(Activity a, Bundle state) {}
+            @Override public void onActivityDestroyed(Activity a) {
+                if (a != activity) return;
+                hideAll();
+                a.getApplication().unregisterActivityLifecycleCallbacks(this);
+            }
+        });
     }
 
-    public void show(String modName, String modId) {
-        if (activity.isFinishing() || activity.isDestroyed()) return;
-        handler.post(() -> showInternal(modName, modId));
+    public void show(String modName, String modId) { show(modName, modId, true); }
+
+    public void show(String modName, String modId, boolean enabled) {
+        int expected = generation.get();
+        handler.post(() -> {
+            if (generation.get() != expected || activity.isFinishing() || activity.isDestroyed()) return;
+            showInternal(modName, modId, enabled, false);
+        });
     }
 
-    private void showInternal(String modName, String modId) {
+    void preview() {
+        int expected = generation.get();
+        handler.post(() -> {
+            if (generation.get() == expected) showInternal(activity.getString(R.string.mm_notification_preview), "preview", true, true);
+        });
+    }
+
+    private void showInternal(String title, String id, boolean enabled, boolean preview) {
         if (activity.isFinishing() || activity.isDestroyed()) return;
-
-        shiftNotificationsUp();
-
+        Context context = ModMenuTheme.wrap(activity);
+        ModMenuTheme theme = new ModMenuTheme(context);
+        ModMenuPreferences prefs = new ModMenuPreferences(activity);
+        for (NotificationEntry entry : new ArrayList<>(entries)) {
+            if (entry.id.equals(id) || entry.position != prefs.notificationPosition()) remove(entry);
+        }
+        while (entries.size() >= prefs.notificationLimit()) remove(entries.get(entries.size() - 1));
+        LinearLayout card = new LinearLayout(context);
+        card.setOrientation(LinearLayout.VERTICAL);
+        card.setPadding(theme.dp(10), theme.dp(8), theme.dp(10), theme.dp(8));
+        card.setBackground(theme.shape(theme.raised, Math.min(10, theme.radius), true));
+        card.setElevation(theme.dp(6));
+        LinearLayout row = new LinearLayout(context);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        ImageView icon = new ImageView(context);
+        icon.setImageResource(preview ? R.drawable.ic_modmenu_bell : ModIconHelper.getModIcon(id == null ? "" : id));
+        icon.setImageTintList(preview ? android.content.res.ColorStateList.valueOf(theme.accent) : null);
+        icon.setBackground(theme.shape(theme.selected, 6, false));
+        icon.setPadding(theme.dp(4), theme.dp(4), theme.dp(4), theme.dp(4));
+        row.addView(icon, new LinearLayout.LayoutParams(theme.dp(26), theme.dp(26)));
+        LinearLayout labels = new LinearLayout(context);
+        labels.setOrientation(LinearLayout.VERTICAL);
+        labels.setPadding(theme.dp(10), 0, 0, 0);
+        TextView name = theme.label(title, 12, true);
+        name.setMaxLines(2);
+        name.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        labels.addView(name);
+        TextView message = theme.label(activity.getString(preview ? R.string.mm_notification_preview_hint
+                    : enabled ? R.string.mod_status_enabled : R.string.mod_status_disabled), 10.5f, false);
+            message.setPadding(0, theme.dp(4), 0, 0);
+            message.setVisibility(prefs.notificationCompact() ? View.GONE : View.VISIBLE);
+            labels.addView(message);
+        row.addView(labels, new LinearLayout.LayoutParams(0, -2, 1));
+        View dot = new View(context);
+        dot.setBackground(theme.shape(enabled ? theme.accent : theme.secondary, 4, false));
+        LinearLayout.LayoutParams dotParams = new LinearLayout.LayoutParams(theme.dp(5), theme.dp(5));
+        dotParams.setMarginStart(theme.dp(8));
+        row.addView(dot, dotParams);
+        card.addView(row);
+        ProgressBar bar = new ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal);
+        bar.setMax(1000);
+        bar.setProgress(1000);
+        bar.setProgressTintList(android.content.res.ColorStateList.valueOf(theme.accent));
+        bar.setProgressBackgroundTintList(android.content.res.ColorStateList.valueOf(theme.outline));
+        {
+            LinearLayout.LayoutParams barParams = new LinearLayout.LayoutParams(-1, theme.dp(2));
+            barParams.topMargin = theme.dp(7);
+            bar.setVisibility(prefs.notificationProgress() ? View.VISIBLE : View.GONE);
+            card.addView(bar, barParams);
+        }
+        NotificationEntry entry = new NotificationEntry();
+        entry.id = id == null ? "" : id;
+        entry.view = card;
+        entry.position = prefs.notificationPosition();
+        entry.shownAt = android.os.SystemClock.uptimeMillis();
+        entry.bar = bar;
+        entry.message = message;
+        int screenWidth = activity.getResources().getDisplayMetrics().widthPixels;
+        int width = Math.min(theme.dp(prefs.notificationCompact() ? 200 : 240), Math.max(theme.dp(160), screenWidth - theme.dp(40)));
+        card.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        entry.height = card.getMeasuredHeight();
+        entry.params = new WindowManager.LayoutParams(width, -2, WindowManager.LayoutParams.TYPE_APPLICATION_PANEL,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+                        | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN, PixelFormat.TRANSLUCENT);
+        entry.params.gravity = Gravity.TOP | Gravity.LEFT;
+        entry.params.token = activity.getWindow().getDecorView().getWindowToken();
         try {
-            View notificationView = LayoutInflater.from(activity).inflate(R.layout.overlay_mod_notification, null);
-            setupViews(notificationView, modName, modId);
-
-            int margin = (int) (BASE_MARGIN_DP * density);
-            int bottomOffset = (int) (BOTTOM_OFFSET_DP * density);
-
-            WindowManager.LayoutParams wmParams = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_APPLICATION_PANEL,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                    | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
-                PixelFormat.TRANSLUCENT
-            );
-            wmParams.gravity = Gravity.BOTTOM | Gravity.END;
-            wmParams.x = margin;
-            wmParams.y = margin + bottomOffset;
-            wmParams.token = activity.getWindow().getDecorView().getWindowToken();
-
-            NotificationEntry entry = new NotificationEntry();
-            entry.view = notificationView;
-            entry.params = wmParams;
-            entry.index = 0;
-
-            windowManager.addView(notificationView, wmParams);
-            activeNotifications.add(0, entry);
-
-            animateIn(notificationView);
-            startProgressAnimation(notificationView);
-
-            entry.dismissRunnable = () -> dismissNotification(entry);
-            handler.postDelayed(entry.dismissRunnable, DISPLAY_DURATION);
-        } catch (Exception e) {
-            e.printStackTrace();
+            position(entry, 0, theme);
+            windowManager.addView(card, entry.params);
+            entries.add(0, entry);
+            reflow();
+            card.setTranslationY(theme.dp(entry.position < 3 ? -10 : 10));
+            card.setAlpha(0f);
+            card.animate().translationY(0).alpha(1f).setDuration(180).start();
+            if (prefs.notificationProgress()) {
+                entry.progress = ObjectAnimator.ofInt(bar, "progress", 1000, 0);
+                entry.progress.setInterpolator(new android.view.animation.LinearInterpolator());
+                entry.progress.setDuration(prefs.notificationDuration());
+                entry.progress.start();
+            }
+            entry.dismiss = () -> {
+                card.animate().alpha(0f).translationY(theme.dp(entry.position < 3 ? -8 : 8)).setDuration(140)
+                        .withEndAction(() -> { remove(entry); reflow(); }).start();
+            };
+            handler.postDelayed(entry.dismiss, prefs.notificationDuration());
+        } catch (RuntimeException ignored) {
+            remove(entry);
         }
     }
 
-    private void shiftNotificationsUp() {
-        int shiftAmount = (int) ((NOTIFICATION_HEIGHT_DP + NOTIFICATION_SPACING_DP) * density);
-        for (NotificationEntry entry : activeNotifications) {
-            entry.index++;
-            entry.params.y += shiftAmount;
-            try {
-                entry.view.animate()
-                    .translationY(-shiftAmount)
-                    .setDuration(150)
-                    .setInterpolator(new DecelerateInterpolator())
-                    .withEndAction(() -> {
-                        entry.view.setTranslationY(0);
-                        try {
-                            windowManager.updateViewLayout(entry.view, entry.params);
-                        } catch (Exception ignored) {}
-                    })
-                    .start();
-            } catch (Exception ignored) {}
+    void refreshAppearance() {
+        ModMenuPreferences prefs = new ModMenuPreferences(activity);
+        ModMenuTheme theme = new ModMenuTheme(activity);
+        while (entries.size() > prefs.notificationLimit()) remove(entries.get(entries.size() - 1));
+        for (NotificationEntry entry : new ArrayList<>(entries)) {
+            entry.position = prefs.notificationPosition();
+            entry.message.setVisibility(prefs.notificationCompact() ? View.GONE : View.VISIBLE);
+            entry.bar.setVisibility(prefs.notificationProgress() ? View.VISIBLE : View.GONE);
+            entry.params.width = Math.min(theme.dp(prefs.notificationCompact() ? 200 : 240),
+                    Math.max(theme.dp(160), activity.getResources().getDisplayMetrics().widthPixels - theme.dp(40)));
+            entry.view.measure(View.MeasureSpec.makeMeasureSpec(entry.params.width, View.MeasureSpec.EXACTLY),
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            entry.height = entry.view.getMeasuredHeight();
+            long remaining = prefs.notificationDuration() - (android.os.SystemClock.uptimeMillis() - entry.shownAt);
+            if (remaining <= 0) { remove(entry); continue; }
+            handler.removeCallbacks(entry.dismiss);
+            handler.postDelayed(entry.dismiss, remaining);
+            if (entry.progress != null) entry.progress.cancel();
+            if (prefs.notificationProgress()) {
+                int progress = Math.round(remaining * 1000f / prefs.notificationDuration());
+                entry.bar.setProgress(progress);
+                entry.progress = ObjectAnimator.ofInt(entry.bar, "progress", progress, 0);
+                entry.progress.setInterpolator(new android.view.animation.LinearInterpolator());
+                entry.progress.setDuration(remaining);
+                entry.progress.start();
+            }
+        }
+        reflow();
+    }
+
+    private void position(NotificationEntry entry, int offset, ModMenuTheme theme) {
+        View decor = activity.getWindow().getDecorView();
+        int width = decor.getWidth() > 0 ? decor.getWidth() : activity.getResources().getDisplayMetrics().widthPixels;
+        int height = decor.getHeight() > 0 ? decor.getHeight() : activity.getResources().getDisplayMetrics().heightPixels;
+        int left = theme.dp(16), right = theme.dp(16), top = theme.dp(16), bottom = theme.dp(16);
+        WindowInsets insets = decor.getRootWindowInsets();
+        if (insets != null) {
+            left += insets.getSystemWindowInsetLeft();
+            right += insets.getSystemWindowInsetRight();
+            top += insets.getSystemWindowInsetTop();
+            bottom += insets.getSystemWindowInsetBottom();
+            if (android.os.Build.VERSION.SDK_INT >= 28 && insets.getDisplayCutout() != null) {
+                left = Math.max(left, insets.getDisplayCutout().getSafeInsetLeft() + theme.dp(8));
+                right = Math.max(right, insets.getDisplayCutout().getSafeInsetRight() + theme.dp(8));
+                top = Math.max(top, insets.getDisplayCutout().getSafeInsetTop() + theme.dp(8));
+                bottom = Math.max(bottom, insets.getDisplayCutout().getSafeInsetBottom() + theme.dp(8));
+            }
+        }
+        int column = entry.position % 3;
+        entry.params.x = column == 0 ? left : column == 1 ? (width - entry.params.width) / 2 : width - right - entry.params.width;
+        entry.params.x = Math.max(left, Math.min(width - right - entry.params.width, entry.params.x));
+        entry.params.y = entry.position < 3 ? top + offset : height - bottom - entry.height - offset;
+        entry.params.y = Math.max(top, Math.min(height - bottom - entry.height, entry.params.y));
+    }
+
+    private void reflow() {
+        ModMenuTheme theme = new ModMenuTheme(activity);
+        int offset = 0;
+        int availableHeight = activity.getResources().getDisplayMetrics().heightPixels - theme.dp(40);
+        for (NotificationEntry entry : new ArrayList<>(entries)) {
+            if (offset > 0 && offset + entry.height > availableHeight) { remove(entry); continue; }
+            position(entry, offset, theme);
+            try { windowManager.updateViewLayout(entry.view, entry.params); } catch (RuntimeException ignored) { remove(entry); }
+            offset += entry.height + theme.dp(8);
         }
     }
 
-    private void setupViews(View notificationView, String modName, String modId) {
-        ImageView icon = notificationView.findViewById(R.id.notification_icon);
-        TextView title = notificationView.findViewById(R.id.notification_title);
-        TextView message = notificationView.findViewById(R.id.notification_message);
-
-        icon.setImageResource(ModIconHelper.getModIcon(modId));
-        icon.setImageTintList(null);
-        icon.setColorFilter(null);
-        title.setText(modName);
-        message.setText(activity.getString(R.string.mod_status_enabled));
+    private void remove(NotificationEntry entry) {
+        if (entry.removed) return;
+        entry.removed = true;
+        entries.remove(entry);
+        if (entry.dismiss != null) handler.removeCallbacks(entry.dismiss);
+        if (entry.progress != null) entry.progress.cancel();
+        entry.view.animate().withEndAction(null).cancel();
+        try { windowManager.removeViewImmediate(entry.view); } catch (RuntimeException ignored) {}
     }
-
-    private void animateIn(View view) {
-        view.setTranslationX(300);
-        view.setAlpha(0f);
-        view.animate()
-            .translationX(0)
-            .alpha(1f)
-            .setDuration(SLIDE_DURATION)
-            .setInterpolator(new DecelerateInterpolator())
-            .start();
-    }
-
-    private void dismissNotification(NotificationEntry entry) {
-        if (!activeNotifications.contains(entry)) return;
-
-        entry.view.animate()
-            .translationX(300)
-            .alpha(0f)
-            .setDuration(SLIDE_DURATION)
-            .setInterpolator(new AccelerateInterpolator())
-            .withEndAction(() -> removeNotification(entry))
-            .start();
-    }
-
-    private void removeNotification(NotificationEntry entry) {
-        try {
-            windowManager.removeView(entry.view);
-        } catch (Exception ignored) {}
-        activeNotifications.remove(entry);
-    }
-
-    private void startProgressAnimation(View notificationView) {
-        ProgressBar progress = notificationView.findViewById(R.id.notification_progress);
-        ObjectAnimator animator = ObjectAnimator.ofInt(progress, "progress", 100, 0);
-        animator.setDuration(DISPLAY_DURATION);
-        animator.setInterpolator(new AccelerateInterpolator(0.5f));
-        animator.start();
-    }
-
 
     public void hideAll() {
+        generation.incrementAndGet();
         handler.post(() -> {
-            for (NotificationEntry entry : new ArrayList<>(activeNotifications)) {
-                if (entry.dismissRunnable != null) {
-                    handler.removeCallbacks(entry.dismissRunnable);
-                }
-                try {
-                    windowManager.removeView(entry.view);
-                } catch (Exception ignored) {}
-            }
-            activeNotifications.clear();
+            for (NotificationEntry entry : new ArrayList<>(entries)) remove(entry);
         });
     }
 }

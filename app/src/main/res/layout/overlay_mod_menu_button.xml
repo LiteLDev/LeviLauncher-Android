@@ -1,16 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="48dp"
-    android:layout_height="48dp"
-    android:padding="2dp">
-
-    <ImageButton
-        android:id="@+id/mod_menu_fab"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/bg_mod_menu_fab"
-        android:src="@drawable/ic_leaf_logo"
-        android:padding="7dp"
-        android:scaleType="fitCenter" />
-
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="53dp" android:layout_height="53dp" android:padding="2dp" android:clipChildren="false" android:clipToPadding="false">
+    <ImageButton android:id="@+id/mod_menu_fab" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/bg_mod_menu_fab" android:backgroundTint="@null" android:src="@drawable/ic_leaf_logo" android:padding="8dp" android:scaleType="fitCenter" android:contentDescription="@string/mod_menu_modules" />
 </FrameLayout>

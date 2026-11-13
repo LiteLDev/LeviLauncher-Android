@@ -1,94 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="56dp"
-    android:layout_marginStart="4dp"
-    android:layout_marginTop="3dp"
-    android:layout_marginEnd="4dp"
-    android:layout_marginBottom="3dp"
-    android:defaultFocusHighlightEnabled="false"
-    app:cardBackgroundColor="#24282C"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="2dp">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="9dp"
-        android:paddingEnd="6dp">
-
-        <ImageView
-            android:id="@+id/mod_card_icon"
-            android:layout_width="26dp"
-            android:layout_height="26dp" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/mod_card_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textColor="#F1F4F6"
-                android:textSize="12sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/mod_card_group"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="1dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textColor="#7F8993"
-                android:textSize="9sp"
-                android:visibility="gone" />
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/mod_card_status"
-            android:layout_width="wrap_content"
-            android:layout_height="22dp"
-            android:layout_marginStart="5dp"
-            android:background="@drawable/bg_mod_status_disabled"
-            android:gravity="center"
-            android:minWidth="48dp"
-            android:paddingStart="7dp"
-            android:paddingEnd="7dp"
-            android:textSize="9sp"
-            android:textStyle="bold" />
-
-        <ImageButton
-            android:id="@+id/mod_card_config"
-            android:layout_width="27dp"
-            android:layout_height="27dp"
-            android:layout_marginStart="2dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:defaultFocusHighlightEnabled="false"
-            android:padding="5dp"
-            android:src="@drawable/ic_settings"
-            android:tint="#A8B0B8" />
-
-        <ImageButton
-            android:id="@+id/mod_card_favorite"
-            android:layout_width="27dp"
-            android:layout_height="27dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:defaultFocusHighlightEnabled="false"
-            android:padding="5dp"
-            android:src="@drawable/ic_star"
-            android:tint="#A8B0B8" />
-
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="76dp" android:layout_margin="3dp" android:orientation="vertical" android:paddingStart="10dp" android:paddingEnd="8dp" android:paddingTop="4dp" android:paddingBottom="10dp" android:clickable="true" android:focusable="true">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="42dp" android:orientation="horizontal" android:gravity="center_vertical">
+        <ImageView android:id="@+id/mod_card_icon" android:layout_width="20dp" android:layout_height="24dp" android:layout_marginEnd="8dp" android:importantForAccessibility="no" />
+        <TextView android:id="@+id/mod_card_name" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:paddingEnd="4dp" android:textSize="12sp" android:fontFamily="sans-serif-medium" android:includeFontPadding="false" />
+        <ImageButton android:id="@+id/mod_card_favorite" android:layout_width="36dp" android:layout_height="42dp" android:padding="8dp" android:src="@drawable/ic_modmenu_star" android:contentDescription="@string/mod_menu_favorite" />
+        <ImageButton android:id="@+id/mod_card_config" android:layout_width="36dp" android:layout_height="42dp" android:padding="8dp" android:src="@drawable/ic_modmenu_settings" android:contentDescription="@string/settings" />
+        <org.levimc.launcher.core.mods.inbuilt.overlay.ModMenuToggle android:id="@+id/mod_card_toggle" android:layout_width="46dp" android:layout_height="42dp" android:saveEnabled="false" />
     </LinearLayout>
-
-</androidx.cardview.widget.CardView>
+    <TextView android:id="@+id/mod_card_description" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:textSize="10.5sp" android:lineSpacingExtra="2dp" android:includeFontPadding="false" />
+    <TextView android:id="@+id/mod_card_group" android:layout_width="match_parent" android:layout_height="wrap_content" android:textSize="10sp" android:visibility="gone" />
+    <TextView android:id="@+id/mod_card_status" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
+</LinearLayout>
