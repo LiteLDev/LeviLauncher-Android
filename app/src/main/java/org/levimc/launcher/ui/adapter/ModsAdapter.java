@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.mods.Mod;
 import org.levimc.launcher.ui.packages.InstalledFragment;
+import org.levimc.launcher.ui.widget.LauncherPopup;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +28,7 @@ public class ModsAdapter extends RecyclerView.Adapter<ModsAdapter.ModViewHolder>
     private OnModEnableChangeListener onModEnableChangeListener;
     private OnModReorderListener onModReorderListener;
     private OnModClickListener onModClickListener;
+    private OnModUninstallListener onModUninstallListener;
     private ItemTouchHelper itemTouchHelper;
     private OnPkgUpdateClickListener onPkgUpdateClickListener;
     /** The packages owning mod folders (lower-case folder), from InstalledFragment.Model.byFolder. */
@@ -45,6 +47,10 @@ public class ModsAdapter extends RecyclerView.Adapter<ModsAdapter.ModViewHolder>
 
     public interface OnModClickListener {
         void onModClick(Mod mod, int position, View sharedView);
+    }
+
+    public interface OnModUninstallListener {
+        void onModUninstall(Mod mod);
     }
 
     /** The "Update to X" chip of a mod a package owns was tapped. */
@@ -67,6 +73,10 @@ public class ModsAdapter extends RecyclerView.Adapter<ModsAdapter.ModViewHolder>
 
     public void setOnModClickListener(OnModClickListener listener) {
         this.onModClickListener = listener;
+    }
+
+    public void setOnModUninstallListener(OnModUninstallListener listener) {
+        onModUninstallListener = listener;
     }
 
     public void setItemTouchHelper(ItemTouchHelper itemTouchHelper) {
@@ -165,11 +175,26 @@ public class ModsAdapter extends RecyclerView.Adapter<ModsAdapter.ModViewHolder>
                 onModClickListener.onModClick(mod, current, holder.itemView);
             }
         });
+        holder.more.setOnClickListener(v -> showActions(holder, mod));
 
         android.content.Context context = holder.itemView.getContext();
         org.levimc.launcher.util.PersonalizationManager pm = new org.levimc.launcher.util.PersonalizationManager(context);
         if (context instanceof android.app.Activity) pm.applyGlassToTree(holder.itemView, (android.app.Activity) context);
         pm.applyAccentToView(holder.itemView, context);
+    }
+
+    private void showActions(ModViewHolder holder, Mod mod) {
+        android.content.Context context = holder.itemView.getContext();
+        new LauncherPopup(holder.more).width(220)
+                .destructiveAction(0, context.getString(R.string.pkg_menu_uninstall), R.drawable.ic_ui_delete)
+                .action(1, context.getString(R.string.crumb_details), R.drawable.ic_nav_about)
+                .onSelect(action -> {
+                    int position = holder.getBindingAdapterPosition();
+                    if (position == RecyclerView.NO_POSITION || position >= mods.size()
+                            || !mod.getId().equals(mods.get(position).getId())) return;
+                    if (action == 0 && onModUninstallListener != null) onModUninstallListener.onModUninstall(mod);
+                    else if (action == 1 && onModClickListener != null) onModClickListener.onModClick(mod, position, holder.itemView);
+                }).show();
     }
 
     @Override
@@ -262,6 +287,7 @@ public class ModsAdapter extends RecyclerView.Adapter<ModsAdapter.ModViewHolder>
         TextView versionText;
         CompoundButton switchBtn;
         ImageView dragHandle;
+        View more;
 
         public ModViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -276,6 +302,7 @@ public class ModsAdapter extends RecyclerView.Adapter<ModsAdapter.ModViewHolder>
             switchBtn = itemView.findViewById(R.id.mod_switch);
             dragHandle = itemView.findViewById(R.id.drag_handle);
             divider = itemView.findViewById(R.id.mod_divider);
+            more = itemView.findViewById(R.id.mod_more);
         }
     }
 }

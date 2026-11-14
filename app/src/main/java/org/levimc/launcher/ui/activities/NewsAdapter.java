@@ -1,6 +1,8 @@
 package org.levimc.launcher.ui.activities;
 
 import android.content.Intent;
+import android.content.ActivityNotFoundException;
+import android.widget.Toast;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.text.TextUtils;
@@ -12,17 +14,20 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.DiffUtil;
 
 import com.google.android.material.card.MaterialCardView;
 
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.news.NewsItem;
-import org.levimc.launcher.ui.animation.DynamicAnim;
+import org.levimc.launcher.util.PersonalizationManager;
 import org.levimc.launcher.ui.widget.UiKit;
 
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Objects;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -32,14 +37,35 @@ import java.util.Set;
 final class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.Holder> {
     private final List<NewsItem> items = new ArrayList<>();
     private final Set<String> unreadIds = new HashSet<>();
-    private final DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.ENGLISH);
-
     void submit(List<NewsItem> news, Set<String> unread) {
+        List<NewsItem> previous = new ArrayList<>(items);
+        Set<String> previousUnread = new HashSet<>(unreadIds);
+        List<NewsItem> next = news == null ? new ArrayList<>() : new ArrayList<>(news);
+        Set<String> nextUnread = unread == null ? new HashSet<>() : new HashSet<>(unread);
+        DiffUtil.DiffResult diff = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+            @Override
+            public int getOldListSize() { return previous.size(); }
+            @Override
+            public int getNewListSize() { return next.size(); }
+            @Override
+            public boolean areItemsTheSame(int oldPosition, int newPosition) {
+                return Objects.equals(previous.get(oldPosition).id, next.get(newPosition).id);
+            }
+            @Override
+            public boolean areContentsTheSame(int oldPosition, int newPosition) {
+                NewsItem before = previous.get(oldPosition);
+                NewsItem after = next.get(newPosition);
+                return Objects.equals(before.title, after.title) && Objects.equals(before.summary, after.summary)
+                        && Objects.equals(before.category, after.category) && Objects.equals(before.url, after.url)
+                        && Objects.equals(before.publishedAt, after.publishedAt) && before.important == after.important
+                        && previousUnread.contains(before.id) == nextUnread.contains(after.id);
+            }
+        });
         items.clear();
-        if (news != null) items.addAll(news);
+        items.addAll(next);
         unreadIds.clear();
-        if (unread != null) unreadIds.addAll(unread);
-        notifyDataSetChanged();
+        unreadIds.addAll(nextUnread);
+        diff.dispatchUpdatesTo(this);
     }
 
     int indexOf(String id) {
@@ -63,24 +89,38 @@ final class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.Holder> {
         holder.title.setText(item.title);
         holder.summary.setText(item.summary);
         holder.summary.setVisibility(TextUtils.isEmpty(item.summary) ? View.GONE : View.VISIBLE);
-        holder.category.setText(TextUtils.isEmpty(item.category) ? "News" : item.category);
+        holder.category.setText(TextUtils.isEmpty(item.category) ? holder.itemView.getContext().getString(R.string.news_all) : item.category);
         holder.date.setText(formatDate(item.publishedAt));
         holder.unread.setVisibility(unreadIds.contains(item.id) ? View.VISIBLE : View.GONE);
         holder.important.setVisibility(item.important ? View.VISIBLE : View.GONE);
-        holder.action.setVisibility(TextUtils.isEmpty(item.url) ? View.GONE : View.VISIBLE);
+        boolean canOpen = isWebUrl(item.url);
+        holder.action.setVisibility(canOpen ? View.VISIBLE : View.GONE);
+        holder.card.setClickable(canOpen);
+        holder.card.setFocusable(canOpen);
+        new PersonalizationManager(holder.itemView.getContext()).applyGlassToView(holder.card);
+        UiKit.tintSoftAccent(holder.category, 6);
+        android.graphics.drawable.GradientDrawable notice = new android.graphics.drawable.GradientDrawable();
+        notice.setColor(UiKit.alpha(UiKit.RED, 28));
+        notice.setCornerRadius(UiKit.dp(holder.itemView.getContext(), 6));
+        holder.important.setBackground(notice);
         styleReadMore(holder.action);
 
         View.OnClickListener open = v -> {
-            if (TextUtils.isEmpty(item.url)) return;
+            if (!isWebUrl(item.url)) return;
             Uri uri = Uri.parse(item.url);
             String scheme = uri.getScheme();
             if (!("https".equalsIgnoreCase(scheme) || "http".equalsIgnoreCase(scheme))) return;
             Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-            holder.itemView.getContext().startActivity(intent);
+            try {
+                holder.itemView.getContext().startActivity(intent);
+            } catch (ActivityNotFoundException ignored) {
+                Toast.makeText(holder.itemView.getContext(), R.string.ms_no_browser, Toast.LENGTH_SHORT).show();
+            }
         };
-        holder.card.setOnClickListener(open);
+        holder.card.setOnClickListener(canOpen ? open : null);
+        holder.card.setClickable(canOpen);
         holder.action.setOnClickListener(open);
-        DynamicAnim.applyPressScale(holder.card);
+
     }
 
     @Override
@@ -90,10 +130,18 @@ final class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.Holder> {
 
     private String formatDate(String value) {
         try {
-            return dateFormat.format(Instant.parse(value).atZone(ZoneId.systemDefault()));
+            return DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(Locale.getDefault())
+                    .format(Instant.parse(value).atZone(ZoneId.systemDefault()));
         } catch (Exception ignored) {
             return value == null ? "" : value;
         }
+    }
+
+    private static boolean isWebUrl(String url) {
+        if (TextUtils.isEmpty(url)) return false;
+        Uri uri = Uri.parse(url);
+        return !TextUtils.isEmpty(uri.getHost()) && ("https".equalsIgnoreCase(uri.getScheme())
+                || "http".equalsIgnoreCase(uri.getScheme()));
     }
 
     private static int dp(View view, int value) {

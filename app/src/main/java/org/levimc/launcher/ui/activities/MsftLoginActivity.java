@@ -6,8 +6,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.Uri;
@@ -26,7 +24,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -57,7 +55,7 @@ public class MsftLoginActivity extends BaseActivity {
     public static final String EXTRA_LOGIN_COMPLETED = "ms_login_completed";
     public static final String EXTRA_LOGIN_NAME = "ms_login_name";
 
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor = Executors.newFixedThreadPool(2);
     private final AtomicBoolean cancelled = new AtomicBoolean(false);
     private final AtomicBoolean completed = new AtomicBoolean(false);
     private final AtomicLong loginGeneration = new AtomicLong();
@@ -102,16 +100,21 @@ public class MsftLoginActivity extends BaseActivity {
         }
     };
 
-    @Override
-    protected boolean shouldSkipNavBar() {
-        return true;
-    }
-
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_msft_login);
+        View page = findViewById(R.id.msft_login_root);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            int bottomPadding = page.getPaddingBottom();
+            page.setOnApplyWindowInsetsListener((view, insets) -> {
+                int keyboard = insets.getInsets(android.view.WindowInsets.Type.ime()).bottom;
+                view.setPadding(view.getPaddingLeft(), view.getPaddingTop(), view.getPaddingRight(), bottomPadding + keyboard);
+                return insets;
+            });
+            page.requestApplyInsets();
+        }
 
         methodPanel = findViewById(R.id.msft_method_panel);
         devicePanel = findViewById(R.id.msft_device_panel);
@@ -125,25 +128,19 @@ public class MsftLoginActivity extends BaseActivity {
         progressText = findViewById(R.id.msft_progress_text);
         copyCodeButton = findViewById(R.id.msft_copy_code);
         openBrowserButton = findViewById(R.id.msft_open_browser);
-        webView = findViewById(R.id.msft_login_webview);
 
-        ImageButton backButton = findViewById(R.id.msft_back_button);
         MaterialButton deviceButton = findViewById(R.id.msft_device_login_button);
         MaterialButton webButton = findViewById(R.id.msft_web_login_button);
         MaterialButton deviceCancelButton = findViewById(R.id.msft_device_cancel);
         MaterialButton webCancelButton = findViewById(R.id.msft_web_cancel);
 
-        applyPrimaryAccent(deviceButton, openBrowserButton);
-        applyOutlinedAccent(webButton, copyCodeButton);
+        applyPrimaryAccent(webButton, openBrowserButton);
         DynamicAnim.applyPressScale(deviceButton);
         DynamicAnim.applyPressScale(webButton);
         DynamicAnim.applyPressScale(copyCodeButton);
         DynamicAnim.applyPressScale(openBrowserButton);
         DynamicAnim.applyPressScale(deviceCancelButton);
         DynamicAnim.applyPressScale(webCancelButton);
-        DynamicAnim.applyPressScale(backButton);
-
-        configureWebView();
 
         deviceButton.setOnClickListener(v -> startDeviceCodeLogin());
         webButton.setOnClickListener(v -> startWebViewLogin());
@@ -151,7 +148,7 @@ public class MsftLoginActivity extends BaseActivity {
         openBrowserButton.setOnClickListener(v -> openDeviceLoginPage());
         deviceCancelButton.setOnClickListener(v -> showMethodChooser(null));
         webCancelButton.setOnClickListener(v -> showMethodChooser(null));
-        backButton.setOnClickListener(v -> handleBack());
+        findViewById(R.id.msft_progress_cancel).setOnClickListener(v -> showMethodChooser(null));
 
         getOnBackPressedDispatcher().addCallback(this, new androidx.activity.OnBackPressedCallback(true) {
             @Override
@@ -169,6 +166,14 @@ public class MsftLoginActivity extends BaseActivity {
         if (externalBrowserOpened && deviceCode != null && isCurrentLogin(deviceGeneration)) {
             deviceStatusText.setText(R.string.ms_device_code_checking);
         }
+        mainHandler.removeCallbacks(expiryRunnable);
+        if (deviceCode != null) mainHandler.post(expiryRunnable);
+    }
+
+    @Override
+    protected void onPause() {
+        mainHandler.removeCallbacks(expiryRunnable);
+        super.onPause();
     }
 
     private int getAccentColor() {
@@ -194,20 +199,12 @@ public class MsftLoginActivity extends BaseActivity {
         }
     }
 
-    private void applyOutlinedAccent(MaterialButton... buttons) {
-        int accent = getAccentColor();
-        ColorStateList colors = ColorStateList.valueOf(accent);
-        for (MaterialButton button : buttons) {
-            if (button != null) {
-                button.setTextColor(accent);
-                button.setStrokeColor(colors);
-                button.setIconTint(colors);
-            }
-        }
-    }
-
     @SuppressLint("SetJavaScriptEnabled")
     private void configureWebView() {
+        webView = new WebView(this);
+        webView.setId(R.id.msft_login_webview);
+        ((FrameLayout) findViewById(R.id.msft_web_container)).addView(webView,
+                new FrameLayout.LayoutParams(-1, -1));
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
         cookieManager.setAcceptThirdPartyCookies(webView, true);
@@ -344,6 +341,7 @@ public class MsftLoginActivity extends BaseActivity {
 
     private void startWebViewLogin() {
         cancelCurrentLogin();
+        if (webView == null) configureWebView();
         webGeneration = loginGeneration.get();
         externalBrowserOpened = false;
         methodError.setVisibility(View.GONE);
@@ -436,6 +434,7 @@ public class MsftLoginActivity extends BaseActivity {
     }
 
     private void showProgress(int messageRes) {
+        dismissKeyboard();
         progressText.setText(messageRes);
         progressOverlay.setVisibility(View.VISIBLE);
     }
@@ -463,7 +462,7 @@ public class MsftLoginActivity extends BaseActivity {
     }
 
     private void showFailure(Throwable throwable, long generation) {
-        String message = MsftAuthManager.describeError(throwable);
+        String message = MsftAuthManager.describeError(this, throwable);
         runOnUiThread(() -> {
             if (isCurrentLogin(generation)) {
                 showMethodChooser(message);
@@ -473,7 +472,8 @@ public class MsftLoginActivity extends BaseActivity {
 
     private void showMethodChooser(String error) {
         cancelCurrentLogin();
-        webView.stopLoading();
+        dismissKeyboard();
+        if (webView != null) webView.stopLoading();
         externalBrowserOpened = false;
         methodPanel.setVisibility(View.VISIBLE);
         devicePanel.setVisibility(View.GONE);
@@ -504,38 +504,33 @@ public class MsftLoginActivity extends BaseActivity {
             return;
         }
         Uri loginUri = Uri.parse(current.getVerificationUri()).buildUpon()
-                .appendQueryParameter("otc", current.getUserCode())
-                .appendQueryParameter("prompt", "login")
-                .appendQueryParameter("max_age", "0")
-                .build();
-        Intent defaultBrowserIntent = new Intent(Intent.ACTION_VIEW, loginUri);
-        defaultBrowserIntent.addCategory(Intent.CATEGORY_BROWSABLE);
-        ResolveInfo defaultBrowser = getPackageManager().resolveActivity(
-                defaultBrowserIntent,
-                PackageManager.MATCH_DEFAULT_ONLY
-        );
-        if (defaultBrowser == null || defaultBrowser.activityInfo == null) {
-            Toast.makeText(this, R.string.ms_no_browser, Toast.LENGTH_LONG).show();
-            return;
-        }
-        String browserPackage = defaultBrowser.activityInfo.packageName;
-        if (!CustomTabsClient.isEphemeralBrowsingSupported(this, browserPackage)) {
-            Toast.makeText(this, R.string.ms_default_browser_no_private_mode, Toast.LENGTH_LONG).show();
+                .appendQueryParameter("otc", current.getUserCode()).build();
+        if (!"https".equalsIgnoreCase(loginUri.getScheme())) {
+            Toast.makeText(this, R.string.ms_login_ssl_failed, Toast.LENGTH_LONG).show();
             return;
         }
         try {
-            CustomTabsIntent customTabsIntent = new CustomTabsIntent.Builder()
-                    .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
-                    .setShowTitle(true)
-                    .build();
-            customTabsIntent.intent.setPackage(browserPackage);
-            customTabsIntent.intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
+            String browserPackage = CustomTabsClient.getPackageName(this, null);
+            CustomTabsIntent customTabs = new CustomTabsIntent.Builder()
+                    .setShareState(CustomTabsIntent.SHARE_STATE_OFF).setShowTitle(true).build();
+            if (browserPackage != null) {
+                customTabs.intent.setPackage(browserPackage);
+                if (CustomTabsClient.isEphemeralBrowsingSupported(this, browserPackage)) {
+                    customTabs.intent.putExtra(CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING, true);
+                }
+            }
             externalBrowserOpened = true;
+            customTabs.launchUrl(this, loginUri);
             deviceStatusText.setText(R.string.ms_device_code_browser_opened);
-            customTabsIntent.launchUrl(this, loginUri);
-        } catch (ActivityNotFoundException | IllegalArgumentException e) {
-            externalBrowserOpened = false;
-            Toast.makeText(this, R.string.ms_no_browser, Toast.LENGTH_LONG).show();
+        } catch (ActivityNotFoundException | IllegalArgumentException error) {
+            try {
+                externalBrowserOpened = true;
+                startActivity(new Intent(Intent.ACTION_VIEW, loginUri).addCategory(Intent.CATEGORY_BROWSABLE));
+                deviceStatusText.setText(R.string.ms_device_code_browser_opened);
+            } catch (ActivityNotFoundException | IllegalArgumentException ignored) {
+                externalBrowserOpened = false;
+                Toast.makeText(this, R.string.ms_no_browser, Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -569,6 +564,21 @@ public class MsftLoginActivity extends BaseActivity {
         deviceCode = null;
     }
 
+    private void dismissKeyboard() {
+        View focused = getCurrentFocus();
+        if (focused == null) return;
+        android.view.inputmethod.InputMethodManager keyboard =
+                (android.view.inputmethod.InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (keyboard != null) keyboard.hideSoftInputFromWindow(focused.getWindowToken(), 0);
+        focused.clearFocus();
+    }
+
+    @Override
+    protected void hideSystemUI() {
+        super.hideSystemUI();
+        getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    }
+
     @Override
     protected void onDestroy() {
         cancelCurrentLogin();
@@ -579,6 +589,9 @@ public class MsftLoginActivity extends BaseActivity {
             webView.setWebViewClient(null);
             webView.loadUrl("about:blank");
             webView.clearHistory();
+            if (webView.getParent() instanceof android.view.ViewGroup) {
+                ((android.view.ViewGroup) webView.getParent()).removeView(webView);
+            }
             webView.removeAllViews();
             webView.destroy();
         }

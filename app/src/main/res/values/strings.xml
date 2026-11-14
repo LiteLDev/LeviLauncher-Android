@@ -203,8 +203,8 @@
     <string name="mod_import_refused_by_packages">Cannot import into mods/%1$s: %2$s. Update or remove it with the package manager instead.</string>
     <string name="error_versions">Error Versions</string>
 
-    <string name="dialog_title_delete_mod">Delete Mod</string>
-    <string name="dialog_message_delete_mod">Are you sure you want to delete this mod?</string>
+    <string name="dialog_title_delete_mod">Uninstall Mod</string>
+    <string name="dialog_message_delete_mod">Are you sure you want to uninstall this mod?</string>
 
     <string name="version_isolation">Version Isolation</string>
     <string name="launch_vertically">Launch Vertically</string>
@@ -456,7 +456,7 @@
 
     <!-- Mod Detail -->
     <string name="mod_detail_title">Mod Details</string>
-    <string name="delete_mod">Delete Mod</string>
+    <string name="delete_mod">Uninstall Mod</string>
     <string name="error_loading_mod">Error loading mod details</string>
     <string name="mod_enabled">Mod enabled</string>
     <string name="mod_disabled">Mod disabled</string>

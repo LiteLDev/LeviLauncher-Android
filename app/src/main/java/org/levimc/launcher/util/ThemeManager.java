@@ -45,7 +45,7 @@ public class ThemeManager {
     }
 
     public void setThemeMode(int mode) {
-        int previous = prefs.getInt(THEME_MODE_KEY, MODE_FOLLOW_SYSTEM);
+        int previous = prefs.getInt(THEME_MODE_KEY, MODE_DARK);
         prefs.edit().putInt(THEME_MODE_KEY, mode).apply();
         updateNightMode();
         if (previous != mode) {
@@ -120,9 +120,9 @@ public class ThemeManager {
     }
 
     public int getCurrentMode() {
-        int mode = prefs.getInt(THEME_MODE_KEY, MODE_FOLLOW_SYSTEM);
+        int mode = prefs.getInt(THEME_MODE_KEY, MODE_DARK);
         if (mode < MODE_FOLLOW_SYSTEM || mode > MODE_SUN) {
-            mode = MODE_FOLLOW_SYSTEM;
+            mode = MODE_DARK;
             prefs.edit().putInt(THEME_MODE_KEY, mode).apply();
         }
         return mode;
@@ -140,7 +140,7 @@ public class ThemeManager {
 
     public static int getSavedMode(Context context) {
         return context.getSharedPreferences(THEME_PREFS, Context.MODE_PRIVATE)
-                .getInt(THEME_MODE_KEY, MODE_FOLLOW_SYSTEM);
+                .getInt(THEME_MODE_KEY, MODE_DARK);
     }
 
     /** Today's local sunrise and sunset as "HH:mm", computed like the Windows launcher. */

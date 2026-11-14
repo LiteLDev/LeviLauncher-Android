@@ -65,32 +65,19 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
- import android.widget.Button;
- import android.widget.ProgressBar;
- import android.graphics.Bitmap;
- import android.view.Gravity;
- import android.widget.PopupWindow;
- import android.view.LayoutInflater;
- import android.graphics.drawable.ColorDrawable;
- import android.util.TypedValue;
- import android.view.ViewGroup;
- import android.view.ViewTreeObserver;
- import androidx.core.content.ContextCompat;
+import android.widget.Button;
+import android.view.Gravity;
+import android.widget.PopupWindow;
+import android.view.LayoutInflater;
+import android.graphics.drawable.ColorDrawable;
+import android.util.TypedValue;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
-import okhttp3.OkHttpClient;
- import okhttp3.Request;
- import okhttp3.Response;
+import static org.levimc.launcher.core.minecraft.MinecraftProcessRestarterKt.ACTION_MAIN_ACTIVITY_FIRST_DRAWN;
+import static org.levimc.launcher.core.minecraft.MinecraftProcessRestarterKt.EXTRA_CLOSE_RESTART_ACTIVITY_ON_FIRST_DRAW;
 
- import org.levimc.launcher.core.auth.MsftAccountStore;
- import org.levimc.launcher.core.auth.MsftAuthManager;
- import org.levimc.launcher.ui.dialogs.LoadingDialog;
- import org.levimc.launcher.util.AccountTextUtils;
- import org.levimc.launcher.util.DialogUtils;
-
- import static org.levimc.launcher.core.minecraft.MinecraftProcessRestarterKt.ACTION_MAIN_ACTIVITY_FIRST_DRAWN;
- import static org.levimc.launcher.core.minecraft.MinecraftProcessRestarterKt.EXTRA_CLOSE_RESTART_ACTIVITY_ON_FIRST_DRAW;
-
- public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity {
     private ActivityMainBinding binding;
     private MinecraftLauncher minecraftLauncher;
     private LanguageManager languageManager;
@@ -111,15 +98,6 @@ import okhttp3.OkHttpClient;
     private TextView resourcePacksCountText;
     private TextView skinPacksCountText;
 
-    private com.microsoft.xbox.idp.toolkit.CircleImageView accountAvatar;
-    private View accountAvatarContainer;
-    private ProgressBar avatarProgress;
-    private View signInButton;
-    private String lastAvatarXuid;
-    private final OkHttpClient avatarClient = new OkHttpClient();
-    private ExecutorService accountExecutor = Executors.newSingleThreadExecutor();
-    private LoadingDialog accountLoadingDialog;
-    private ActivityResultLauncher<Intent> accountLoginLauncher;
     private OnBackPressedCallback onBackPressedCallback;
     private boolean launcherInitialized;
     private boolean postEulaFlowRunning;
@@ -138,18 +116,6 @@ import okhttp3.OkHttpClient;
         showEulaIfNeeded();
         setupOnBackPressedCallback();
 
-        accountLoginLauncher = registerForActivityResult(new androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == RESULT_OK && result.getData() != null
-                    && result.getData().getBooleanExtra(MsftLoginActivity.EXTRA_LOGIN_COMPLETED, false)) {
-                String name = result.getData().getStringExtra(MsftLoginActivity.EXTRA_LOGIN_NAME);
-                String statusName = name != null ? name : getString(R.string.not_signed_in);
-                Toast.makeText(this, getString(R.string.ms_login_success, statusName), Toast.LENGTH_SHORT).show();
-            }
-            refreshAccountHeaderUI();
-            refreshNavAccountUI();
-        });
-
-        initAccountHeader();
         binding.getRoot().post(this::showPostEulaFlow);
     }
 
@@ -184,33 +150,6 @@ import okhttp3.OkHttpClient;
         });
     }
 
-    private void initAccountHeader() {
-        signInButton = findViewById(R.id.nav_sign_in_button);
-        accountAvatar = findViewById(R.id.nav_account_avatar);
-        accountAvatarContainer = findViewById(R.id.nav_account_avatar_container);
-        avatarProgress = findViewById(R.id.nav_avatar_progress);
-
-        if (signInButton != null) {
-            signInButton.setOnClickListener(v -> {
-                Intent intent = new Intent(this, MsftLoginActivity.class);
-                accountLoginLauncher.launch(intent);
-            });
-            DynamicAnim.applyPressScale(signInButton);
-        }
-        if (accountAvatarContainer != null) {
-            accountAvatarContainer.setOnClickListener(this::showAccountSwitchPopup);
-            DynamicAnim.applyPressScale(accountAvatarContainer);
-        }
-
-        refreshAccountHeaderUI();
-    }
-
-    private MsftAccountStore.MsftAccount getActiveAccount() {
-        java.util.List<MsftAccountStore.MsftAccount> list = MsftAccountStore.list(this);
-        for (MsftAccountStore.MsftAccount a : list) if (a.active) return a;
-        return null;
-    }
-
      private void setupOnBackPressedCallback() {
          onBackPressedCallback = new OnBackPressedCallback(true) {
              @Override
@@ -230,245 +169,6 @@ import okhttp3.OkHttpClient;
 
          getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
      }
-
-    private void refreshAccountHeaderUI() {
-        MsftAccountStore.MsftAccount active = getActiveAccount();
-        if (active == null) {
-            if (signInButton != null) signInButton.setVisibility(View.VISIBLE);
-            if (accountAvatarContainer != null) accountAvatarContainer.setVisibility(View.GONE);
-            if (accountAvatar != null) accountAvatar.setImageDrawable(null);
-            lastAvatarXuid = null;
-            if (avatarProgress != null) avatarProgress.setVisibility(View.GONE);
-        } else {
-            if (signInButton != null) signInButton.setVisibility(View.GONE);
-            if (accountAvatarContainer != null) accountAvatarContainer.setVisibility(View.VISIBLE);
-            loadXboxAvatar(active);
-        }
-    }
-
-    private void loadXboxAvatar(MsftAccountStore.MsftAccount active) {
-        if (accountAvatar == null) return;
-        String url = AccountTextUtils.sanitizeUrl(active != null ? active.xboxAvatarUrl : null);
-        if (url == null) {
-            if (avatarProgress != null) avatarProgress.setVisibility(View.GONE);
-            accountAvatar.setImageDrawable(null);
-            lastAvatarXuid = null;
-            return;
-        }
-
-        Object currentUrl = accountAvatar.getTag(R.id.nav_account_avatar);
-        if (url.equals(currentUrl) && accountAvatar.getDrawable() != null) {
-            if (avatarProgress != null) avatarProgress.setVisibility(View.GONE);
-            return;
-        }
-
-        Bitmap cached = AccountTextUtils.getCachedAvatar(url);
-        if (cached != null) {
-            accountAvatar.setTag(R.id.nav_account_avatar, url);
-            accountAvatar.setImageBitmap(cached);
-            if (avatarProgress != null) avatarProgress.setVisibility(View.GONE);
-            return;
-        }
-
-        accountAvatar.setTag(R.id.nav_account_avatar, url);
-        accountAvatar.setImageDrawable(null);
-        if (avatarProgress != null) avatarProgress.setVisibility(View.VISIBLE);
-        accountExecutor.execute(() -> {
-            try {
-                try (Response imgResp = avatarClient.newCall(new Request.Builder().url(url).build()).execute()) {
-                    Bitmap bmp = (imgResp.isSuccessful() && imgResp.body() != null) ? android.graphics.BitmapFactory.decodeStream(imgResp.body().byteStream()) : null;
-                    runOnUiThread(() -> {
-                        if (!url.equals(accountAvatar.getTag(R.id.nav_account_avatar))) return;
-                        if (bmp != null) {
-                            AccountTextUtils.cacheAvatar(url, bmp);
-                            accountAvatar.setImageBitmap(bmp);
-                        }
-                        if (avatarProgress != null) avatarProgress.setVisibility(View.GONE);
-                    });
-                }
-            } catch (Exception e) {
-                runOnUiThread(() -> {
-                    if (avatarProgress != null) avatarProgress.setVisibility(View.GONE);
-                });
-            }
-        });
-    }
-
-    private void showAccountSwitchPopup(View anchor) {
-        java.util.List<MsftAccountStore.MsftAccount> list = MsftAccountStore.list(this);
-
-        View content = LayoutInflater.from(this).inflate(R.layout.popup_account_switch, null);
-        androidx.recyclerview.widget.RecyclerView recyclerAccounts = content.findViewById(R.id.recycler_accounts);
-        TextView manageAction = content.findViewById(R.id.manage_action);
-        com.microsoft.xbox.idp.toolkit.CircleImageView headerAvatar = content.findViewById(R.id.header_avatar);
-        View headerContainer = content.findViewById(R.id.header_container);
-        TextView headerName = content.findViewById(R.id.header_name);
-
-        TypedValue outValue = new TypedValue();
-        getTheme().resolveAttribute(android.R.attr.selectableItemBackground, outValue, true);
-        int selectableRes = outValue.resourceId;
-
-        int paddingH = (int) (16 * getResources().getDisplayMetrics().density);
-        int paddingV = (int) (12 * getResources().getDisplayMetrics().density);
-        int paddingR = (int) (12 * getResources().getDisplayMetrics().density);
-
-        MsftAccountStore.MsftAccount active = getActiveAccount();
-        headerName.setText(AccountTextUtils.displayNameOrNotSigned(this, active));
-        if (accountAvatar != null && accountAvatar.getDrawable() != null) {
-            headerAvatar.setImageDrawable(accountAvatar.getDrawable());
-        } else if (active != null) {
-            final String url = AccountTextUtils.sanitizeUrl(active.xboxAvatarUrl);
-            if (url != null) {
-                accountExecutor.execute(() -> {
-                    try {
-                        okhttp3.OkHttpClient client = new okhttp3.OkHttpClient();
-                        okhttp3.Response imgResp = client.newCall(new okhttp3.Request.Builder().url(url).build()).execute();
-                        final android.graphics.Bitmap bmp = (imgResp.isSuccessful() && imgResp.body() != null) ? android.graphics.BitmapFactory.decodeStream(imgResp.body().byteStream()) : null;
-                        runOnUiThread(() -> { if (bmp != null) headerAvatar.setImageBitmap(bmp); });
-                    } catch (Exception ignored) {}
-                });
-            }
-        }
-
-        final PopupWindow popup = new PopupWindow(content, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
-        content.setAlpha(0f);
-        content.setTranslationY(24f);
-        float dens = getResources().getDisplayMetrics().density;
-        if (headerContainer != null) {
-            headerContainer.setAlpha(0f);
-            headerContainer.setTranslationY(8f * dens);
-        }
-        if (headerAvatar != null) {
-            headerAvatar.setAlpha(0f);
-            headerAvatar.setScaleX(0.94f);
-            headerAvatar.setScaleY(0.94f);
-        }
-        if (headerName != null) {
-            headerName.setAlpha(0f);
-            headerName.setTranslationY(6f * dens);
-        }
-        if (manageAction != null) {
-            manageAction.setAlpha(0f);
-            manageAction.setTranslationX(6f * dens);
-        }
-        popup.setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        popup.setOutsideTouchable(true);
-        if (android.os.Build.VERSION.SDK_INT >= 21) popup.setElevation(8f);
-
-        final ViewGroup root = findViewById(android.R.id.content);
-        final View scrim = new View(this);
-        scrim.setBackgroundColor(ContextCompat.getColor(this, R.color.scrim));
-        scrim.setClickable(true);
-        scrim.setOnClickListener(v -> popup.dismiss());
-        root.addView(scrim, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        scrim.setAlpha(0f);
-        scrim.animate().alpha(1f).setDuration(120).start();
-
-         final java.util.List<MsftAccountStore.MsftAccount> displayList = new java.util.ArrayList<>();
-        for (MsftAccountStore.MsftAccount a : list) {
-            if (active == null || !android.text.TextUtils.equals(a.id, active.id)) displayList.add(a);
-        }
-
-         class AccountRowViewHolder extends androidx.recyclerview.widget.RecyclerView.ViewHolder {
-             TextView tv;
-             AccountRowViewHolder(TextView t) { super(t); this.tv = t; }
-         }
-
-         recyclerAccounts.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this));
-         recyclerAccounts.setAdapter(new androidx.recyclerview.widget.RecyclerView.Adapter<AccountRowViewHolder>() {
-             @Override
-             public AccountRowViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-                 TextView row = new TextView(parent.getContext());
-                 row.setLayoutParams(new androidx.recyclerview.widget.RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                 row.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.on_surface));
-                 row.setTextSize(TypedValue.COMPLEX_UNIT_SP, 14);
-                 row.setPadding(paddingH, paddingV, paddingR, paddingV);
-                 row.setBackgroundResource(selectableRes);
-                 return new AccountRowViewHolder(row);
-             }
-
-             @Override
-             public void onBindViewHolder(AccountRowViewHolder holder, int position) {
-                 MsftAccountStore.MsftAccount account = displayList.get(position);
-                 holder.tv.setText(AccountTextUtils.titleOrUnknown(account));
-                 holder.tv.setOnClickListener(v -> {
-                     popup.dismiss();
-
-                     accountLoadingDialog = DialogUtils.ensure(MainActivity.this, accountLoadingDialog);
-                     DialogUtils.showWithMessage(accountLoadingDialog, getString(R.string.ms_login_auth_xbox_device));
-
-                     accountExecutor.execute(() -> {
-                         try {
-                             MsftAccountStore.MsftAccount refreshed = MsftAuthManager.refreshAccountAndActivate(MainActivity.this, account.id);
-                             String minecraftUsername = AccountTextUtils.displayNameOrNotSigned(MainActivity.this, refreshed);
-
-                             runOnUiThread(() -> {
-                                 DialogUtils.dismissQuietly(accountLoadingDialog);
-                                 String statusName = minecraftUsername != null ? minecraftUsername : getString(R.string.not_signed_in);
-                                 Toast.makeText(MainActivity.this, getString(R.string.ms_login_success, statusName), Toast.LENGTH_SHORT).show();
-                                 refreshAccountHeaderUI();
-                             });
-                         } catch (Exception e) {
-                             runOnUiThread(() -> {
-                                 DialogUtils.dismissQuietly(accountLoadingDialog);
-                                 Toast.makeText(MainActivity.this, getString(R.string.ms_login_failed_detail, MsftAuthManager.describeError(e)), Toast.LENGTH_LONG).show();
-                                 refreshAccountHeaderUI();
-                             });
-                         }
-                     });
-                 });
-             }
-
-             @Override
-             public int getItemCount() { return displayList.size(); }
-         });
-
-         float density = getResources().getDisplayMetrics().density;
-         if (displayList.size() > 2) {
-             int limitHeight = (int) ((48 * 2 + 16) * density);
-             recyclerAccounts.getLayoutParams().height = limitHeight;
-         } else {
-             recyclerAccounts.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-         }
-
-        manageAction.setOnClickListener(v -> {
-            popup.dismiss();
-            startActivity(new Intent(this, AccountsActivity.class));
-        });
-        DynamicAnim.applyPressScale(manageAction);
-
-        popup.setOnDismissListener(() -> {
-            if (root != null && scrim != null) {
-                scrim.animate().alpha(0f).setDuration(120).withEndAction(() -> {
-                    try { root.removeView(scrim); } catch (Exception ignored) {}
-                }).start();
-            }
-        });
-
-        int edgeMargin = (int) (4 * getResources().getDisplayMetrics().density);
-        popup.showAsDropDown(anchor, -edgeMargin, edgeMargin / 4, Gravity.END);
-
-        DynamicAnim.springAlphaTo(content, 1f).start();
-        DynamicAnim.springTranslationYTo(content, 0f).start();
-        recyclerAccounts.post(() -> DynamicAnim.staggerRecyclerChildren(recyclerAccounts));
-        if (headerContainer != null) {
-            DynamicAnim.springAlphaTo(headerContainer, 1f).start();
-            DynamicAnim.springTranslationYTo(headerContainer, 0f).start();
-        }
-        if (headerAvatar != null) {
-            DynamicAnim.springAlphaTo(headerAvatar, 1f).start();
-            DynamicAnim.springScaleXTo(headerAvatar, 1f).start();
-            DynamicAnim.springScaleYTo(headerAvatar, 1f).start();
-        }
-        if (headerName != null) {
-            DynamicAnim.springAlphaTo(headerName, 1f).start();
-            DynamicAnim.springTranslationYTo(headerName, 0f).start();
-        }
-        if (manageAction != null) {
-            DynamicAnim.springAlphaTo(manageAction, 1f).start();
-            DynamicAnim.springTranslationXTo(manageAction, 0f).start();
-        }
-    }
 
     private void setupManagersAndHandlers() {
         languageManager = new LanguageManager(this);
@@ -680,7 +380,6 @@ import okhttp3.OkHttpClient;
             tipHandler.removeCallbacks(tipRotator);
             tipHandler.postDelayed(tipRotator, 8000L);
         }
-        refreshAccountHeaderUI();
         if (!launcherInitialized) {
             showPostEulaFlow();
             return;
@@ -896,25 +595,6 @@ import okhttp3.OkHttpClient;
                     .setPositiveButton(getString(R.string.dialog_positive_ok), null)
                     .show();
             return;
-        }
-
-        if (FeatureSettings.getInstance().isLauncherManagedMcLoginEnabled()) {
-            trace.mark("Checking launcher-managed login");
-            MsftAccountStore.MsftAccount active = getActiveAccount();
-            boolean loggedIn = active != null && active.minecraftUsername != null && !active.minecraftUsername.isEmpty();
-            if (!loggedIn) {
-                trace.warning("Launch cancelled", "Minecraft account is missing");
-                setLaunchEnabled(true);
-                new CustomAlertDialog(this)
-                        .setTitleText(getString(R.string.dialog_title_login_required))
-                        .setMessage(getString(R.string.dialog_message_login_required))
-                        .setPositiveButton(getString(R.string.go_to_accounts), v -> {
-                            startActivity(new Intent(this, AccountsActivity.class));
-                        })
-                        .setNegativeButton(getString(R.string.disable_launcher_login_and_continue), null)
-                        .show();
-                return;
-            }
         }
 
         trace.mark("Launch preflight completed", version.directoryName + " " + version.versionCode);

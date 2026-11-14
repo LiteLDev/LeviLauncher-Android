@@ -2,6 +2,7 @@ package org.levimc.launcher.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.text.TextUtils;
 
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.auth.MsftAccountStore;
@@ -15,7 +16,7 @@ public final class AccountTextUtils {
 
     public static String titleOrUnknown(MsftAccountStore.MsftAccount a) {
         if (a == null) return "Unknown";
-        return a.minecraftUsername != null ? a.minecraftUsername : (a.xboxGamertag != null ? a.xboxGamertag : "Unknown");
+        return !TextUtils.isEmpty(a.minecraftUsername) ? a.minecraftUsername : (!TextUtils.isEmpty(a.xboxGamertag) ? a.xboxGamertag : "Unknown");
     }
 
     public static String subtitle(MsftAccountStore.MsftAccount a) {
@@ -27,8 +28,8 @@ public final class AccountTextUtils {
 
     public static String displayNameOrNotSigned(Context ctx, MsftAccountStore.MsftAccount a) {
         if (a == null) return ctx.getString(R.string.not_signed_in);
-        String name = a.minecraftUsername != null ? a.minecraftUsername : (a.xboxGamertag != null ? a.xboxGamertag : null);
-        return name != null ? name : ctx.getString(R.string.not_signed_in);
+        String name = !TextUtils.isEmpty(a.minecraftUsername) ? a.minecraftUsername : a.xboxGamertag;
+        return !TextUtils.isEmpty(name) ? name : ctx.getString(R.string.accounts_page_title);
     }
 
     public static boolean isRecentlyUpdated(MsftAccountStore.MsftAccount a, int days) {

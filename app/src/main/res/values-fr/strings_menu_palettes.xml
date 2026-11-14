@@ -1,0 +1,14 @@
+<resources>
+    <string name="mm_color_mode">Mode d’apparence</string>
+    <string name="mm_color_mode_hint">Choisissez le mode sombre, clair ou celui de votre appareil.</string>
+    <string name="mm_palette_full_hint">Choisissez les couleurs de tout le menu.</string>
+    <string name="mm_palette_graphite">Graphite</string>
+    <string name="mm_palette_midnight">Minuit</string>
+    <string name="mm_palette_ocean">Océan</string>
+    <string name="mm_palette_forest">Forêt</string>
+    <string name="mm_palette_amethyst">Améthyste</string>
+    <string name="mm_palette_rose">Rose</string>
+    <string name="mm_palette_ember">Braise</string>
+    <string name="mm_palette_sandstone">Grès</string>
+    <string name="mm_palette_monokai">Monokai</string>
+</resources>

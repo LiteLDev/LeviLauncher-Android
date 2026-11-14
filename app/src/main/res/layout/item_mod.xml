@@ -21,5 +21,6 @@
             </LinearLayout>
         </LinearLayout>
         <com.google.android.material.switchmaterial.SwitchMaterial android:id="@+id/mod_switch" style="@style/Widget.Levi.Switch" android:layout_width="52dp" android:layout_height="40dp" android:minHeight="0dp" />
+        <com.google.android.material.button.MaterialButton android:id="@+id/mod_more" style="@style/Widget.Levi.Button.Icon" android:layout_width="40dp" android:layout_height="40dp" android:layout_marginStart="6dp" android:contentDescription="@string/mod_actions_title" app:icon="@drawable/ic_more_vert" app:cornerRadius="20dp" app:backgroundTint="@android:color/transparent" />
     </LinearLayout>
 </LinearLayout>

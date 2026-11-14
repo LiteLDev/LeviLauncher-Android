@@ -20,7 +20,26 @@ final class ModMenuPreferences {
     int mode() { return number("theme", 1, 0, 2); }
     int accentSource() { return number("accent_source", 0, 0, 1); }
     int customAccent() { return prefs.getInt("accent", 0xFF737380) | 0xFF000000; }
-    int palette() { return number("palette", 0, 0, ModMenuTheme.PRESETS.length - 1); }
+    int palette() {
+        String id = prefs.getString("palette_id", null);
+        if (id != null) {
+            for (int i = 0; i < ModMenuTheme.PRESET_IDS.length; i++) {
+                if (id.equals(ModMenuTheme.PRESET_IDS[i])) return i;
+            }
+            return 0;
+        }
+        if (!prefs.contains("palette")) return 0;
+        int[] legacy = {0, 0, 5, 3, 6, 1, 2, 4, 7, 3, 1, 5, 8, 5, 7, 0};
+        int previous = prefs.getInt("palette", 0);
+        int migrated = previous >= 0 && previous < legacy.length ? legacy[previous] : 0;
+        setPalette(migrated);
+        return migrated;
+    }
+
+    void setPalette(int index) {
+        int selected = ModMenuGeometry.clamp(index, 0, ModMenuTheme.PRESET_IDS.length - 1);
+        prefs.edit().putString("palette_id", ModMenuTheme.PRESET_IDS[selected]).remove("palette").apply();
+    }
     int elementRadius() { return number("element_radius", 8, 3, 14); }
     int radius() { return number("radius", 14, 6, 22); }
     int textScale() { return number("text_scale", 100, 85, 135); }

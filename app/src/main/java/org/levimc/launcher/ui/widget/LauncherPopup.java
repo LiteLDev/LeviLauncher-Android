@@ -60,6 +60,7 @@ public final class LauncherPopup {
         CharSequence detail;
         boolean checkable;
         boolean checked;
+        boolean destructive;
         int[] ids;
         CharSequence[] options;
         int selected;
@@ -120,6 +121,12 @@ public final class LauncherPopup {
         row.detail = detail;
         row.icon = icon;
         rows.add(row);
+        return this;
+    }
+
+    public LauncherPopup destructiveAction(int id, CharSequence label, int icon) {
+        action(id, label, icon);
+        rows.get(rows.size() - 1).destructive = true;
         return this;
     }
 
@@ -357,7 +364,8 @@ public final class LauncherPopup {
             content.setGravity(Gravity.CENTER_VERTICAL);
             content.setMinimumHeight(dp(row.detail == null ? 40 : 50));
             content.setPadding(dp(10), dp(8), dp(10), dp(8));
-            int labelColor = row.checked ? UiKit.accentText(context) : UiKit.color(context, R.color.text_primary);
+            int labelColor = row.destructive ? UiKit.color(context, R.color.ui_danger)
+                    : row.checked ? UiKit.accentText(context) : UiKit.color(context, R.color.text_primary);
             content.setBackground(feedback(row.checked ? UiKit.accentSoft(context) : Color.TRANSPARENT));
             content.setDuplicateParentStateEnabled(true);
             inset.addView(content, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));

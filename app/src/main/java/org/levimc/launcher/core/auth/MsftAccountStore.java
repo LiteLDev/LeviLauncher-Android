@@ -150,6 +150,19 @@ public class MsftAccountStore {
         save(ctx, list);
         org.levimc.launcher.core.auth.storage.XalExporter.removeAccountData(ctx, removedUserId);
         if (list.isEmpty()) org.levimc.launcher.core.auth.storage.XalExporter.exportActiveAccount(ctx);
+        else org.levimc.launcher.core.auth.storage.XalExporter.prepareCachedAccount(ctx, getActive(ctx));
+    }
+
+    public static synchronized void selectSavedAccount(Context ctx, String id) {
+        List<MsftAccount> accounts = list(ctx);
+        MsftAccount selected = null;
+        for (MsftAccount account : accounts) {
+            account.active = id.equals(account.id);
+            if (account.active) selected = account;
+        }
+        if (selected == null) throw new IllegalStateException("The Microsoft account is no longer available.");
+        org.levimc.launcher.core.auth.storage.XalExporter.prepareCachedAccount(ctx, selected);
+        save(ctx, accounts);
     }
 
     public static synchronized void setActive(Context ctx, String id) {

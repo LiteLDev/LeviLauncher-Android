@@ -23,27 +23,35 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import org.levimc.launcher.R;
 
 final class ModMenuTheme {
-    static final String[] PRESETS = {"Dark", "Light", "Rose", "Plant", "Red", "Indigo", "Sky", "Violet", "Amber", "Emerald", "Midnight", "Crimson", "Monokai Pro", "Cotton Candy", "Mellowsi", "Rainbow"};
-    private static final int[][] COLORS = {
-            {0xFF101010, 0xFF121215, 0xFF18181b, 0xFF222226, 0xFF39393e, 0xFFffffff, 0xFFa1a1aa, 0xFF52525b},
-            {0xFFededee, 0xFFf1f2f5, 0xFFffffff, 0xFFf2f2f4, 0xFFd1d1d5, 0xFF18181b, 0xFF707078, 0xFF487ce8},
-            {0xFF200b15, 0xFF1b0b13, 0xFF311924, 0xFF3b222d, 0xFF59343e, 0xFFffeafa, 0xFFbd9fac, 0xFFf05f88},
-            {0xFF0c1811, 0xFF0a160f, 0xFF12271b, 0xFF1b3022, 0xFF294736, 0xFFdcf8e3, 0xFF8ba998, 0xFF34bf79},
-            {0xFF1c0e10, 0xFF1b0a0d, 0xFF2d171b, 0xFF362025, 0xFF513036, 0xFFfbe9ea, 0xFFc1a5a7, 0xFFed454e},
-            {0xFF111127, 0xFF0d0e25, 0xFF1c1f3e, 0xFF24274c, 0xFF34365b, 0xFFe9eaff, 0xFFa8abd1, 0xFF6768ec},
-            {0xFF081d25, 0xFF09202a, 0xFF13313d, 0xFF1a3a48, 0xFF2c4c58, 0xFFe4f9ff, 0xFFa3c5d2, 0xFF18b1cf},
-            {0xFF180c2c, 0xFF160b2b, 0xFF271c43, 0xFF30204b, 0xFF473060, 0xFFf2eaff, 0xFFafa4c8, 0xFF9254ec},
-            {0xFF1f170e, 0xFF1b140c, 0xFF322719, 0xFF3b2c1b, 0xFF51422a, 0xFFfbeed6, 0xFFb8ad91, 0xFFd3a64c},
-            {0xFF071d17, 0xFF061912, 0xFF112a20, 0xFF18392b, 0xFF2b5140, 0xFFe1fff3, 0xFF9cbcae, 0xFF00a77f},
-            {0xFF0a1022, 0xFF091124, 0xFF121b36, 0xFF1a2541, 0xFF303955, 0xFFeff2ff, 0xFF9da9c5, 0xFF245dd5},
-            {0xFF240d16, 0xFF1e0b12, 0xFF34151f, 0xFF3f1d2a, 0xFF56313a, 0xFFffeaf0, 0xFFc6a0ad, 0xFFd64069},
-            {0xFF18171e, 0xFF15141a, 0xFF23222b, 0xFF2d2a34, 0xFF44404c, 0xFFfaf9f3, 0xFFb7b4c1, 0xFFa2cf70},
-            {0xFF282136, 0xFF231d30, 0xFF3b304d, 0xFF463d57, 0xFF61546c, 0xFFfff4fb, 0xFFd1bed7, 0xFFf395c3},
-            {0xFF201812, 0xFF1e1711, 0xFF30281b, 0xFF3f3020, 0xFF534332, 0xFFffefe2, 0xFFc4b1a1, 0xFFcfaa63},
-            {0xFF141820, 0xFF131921, 0xFF242732, 0xFF2a2d3b, 0xFF454759, 0xFFeff6ff, 0xFFaeb6d3, 0xFF45b6f3}
+    static final String[] PRESETS = {"Graphite", "Midnight", "Ocean", "Forest", "Amethyst", "Rose", "Ember", "Sandstone", "Monokai"};
+    static final String[] PRESET_IDS = {"graphite", "midnight", "ocean", "forest", "amethyst", "rose", "ember", "sandstone", "monokai"};
+    private static final int[] PRESET_NAMES = {R.string.mm_palette_graphite, R.string.mm_palette_midnight,
+            R.string.mm_palette_ocean, R.string.mm_palette_forest, R.string.mm_palette_amethyst,
+            R.string.mm_palette_rose, R.string.mm_palette_ember, R.string.mm_palette_sandstone,
+            R.string.mm_palette_monokai};
+    private static final int[][] DARK_COLORS = {
+            {0xFF101010, 0xFF121215, 0xFF18181B, 0xFF222226, 0xFF39393E, 0xFFFFFFFF, 0xFFA1A1AA, 0xFF52525B},
+            {0xFF0A1020, 0xFF070C18, 0xFF121D35, 0xFF1C2D4C, 0xFF33496E, 0xFFE9F0FF, 0xFFA4B6D6, 0xFF7DA7FF},
+            {0xFF071E23, 0xFF06171C, 0xFF10303A, 0xFF184450, 0xFF2E626D, 0xFFE3FAFF, 0xFF9CBFC7, 0xFF45D4D2},
+            {0xFF112017, 0xFF0C1810, 0xFF1C3222, 0xFF2B4630, 0xFF49654B, 0xFFF0F5E8, 0xFFAFBEA6, 0xFF62C990},
+            {0xFF1A1029, 0xFF120B20, 0xFF2B1D3F, 0xFF3D2B57, 0xFF634B80, 0xFFF6EDFF, 0xFFC0ADCF, 0xFFBE92F1},
+            {0xFF28131D, 0xFF1D0D16, 0xFF3C202E, 0xFF542B3F, 0xFF794559, 0xFFFFEFF5, 0xFFD3ACBC, 0xFFF391B2},
+            {0xFF26150F, 0xFF1D0E09, 0xFF3B2419, 0xFF553524, 0xFF7A5438, 0xFFFFF3E7, 0xFFD2B09B, 0xFFF7AA70},
+            {0xFF252319, 0xFF1C1B13, 0xFF373425, 0xFF4B4632, 0xFF6C654A, 0xFFFAF5DD, 0xFFC7BFA0, 0xFFD9C36B},
+            {0xFF24251F, 0xFF191B16, 0xFF303229, 0xFF414437, 0xFF60644D, 0xFFF8F8EC, 0xFFB8BD9D, 0xFFA8D65A}
+    };
+    private static final int[][] LIGHT_COLORS = {
+            {0xFFEDEDEE, 0xFFF1F2F5, 0xFFFFFFFF, 0xFFF2F2F4, 0xFFD1D1D5, 0xFF18181B, 0xFF62626B, 0xFF52525B},
+            {0xFFECF1FF, 0xFFDEE7FC, 0xFFF9FAFF, 0xFFD6E2FF, 0xFFA8BCDF, 0xFF182B4C, 0xFF4F6485, 0xFF416CD7},
+            {0xFFEAF9F8, 0xFFD5EEED, 0xFFF8FEFD, 0xFFCBEBE8, 0xFF92BEBE, 0xFF123A40, 0xFF49737A, 0xFF117D87},
+            {0xFFEFF6E9, 0xFFDFEBD3, 0xFFFCFEF8, 0xFFDCEACA, 0xFFADC19D, 0xFF253C28, 0xFF5C7459, 0xFF217B4C},
+            {0xFFF4EEFC, 0xFFE9DFF5, 0xFFFEFBFF, 0xFFE5D6F5, 0xFFBBA3D2, 0xFF3D2855, 0xFF79658C, 0xFF8351B8},
+            {0xFFFFF0F4, 0xFFF9E0E9, 0xFFFFFAFC, 0xFFF8D6E2, 0xFFD8A4B8, 0xFF552438, 0xFF8F5D72, 0xFFB94873},
+            {0xFFFFF2E6, 0xFFF6E2CE, 0xFFFFFCF8, 0xFFF5D7B8, 0xFFD9B38C, 0xFF532B17, 0xFF92694B, 0xFFB75A26},
+            {0xFFF8F4E4, 0xFFECE5CC, 0xFFFFFDF5, 0xFFEBE1B9, 0xFFC7B881, 0xFF463D22, 0xFF7B7052, 0xFF94752A},
+            {0xFFF3F5E7, 0xFFE4E8D0, 0xFFFEFFF6, 0xFFDDE5BD, 0xFFB0BA8A, 0xFF333A23, 0xFF707957, 0xFF6A852C}
     };
     final boolean dark;
-    final boolean rainbow;
     final int accent;
     final int primary;
     final int surface;
@@ -65,8 +73,7 @@ final class ModMenuTheme {
                 : context.getResources().getConfiguration()).uiMode & Configuration.UI_MODE_NIGHT_MASK;
         dark = prefs.mode() == 1 || prefs.mode() == 0 && night == Configuration.UI_MODE_NIGHT_YES;
         int index = prefs.palette();
-        int[] palette = COLORS[dark ? index : 1];
-        rainbow = dark && index == COLORS.length - 1;
+        int[] palette = colors(index, dark);
         surface = palette[0];
         sidebar = palette[1];
         raised = palette[2];
@@ -75,7 +82,7 @@ final class ModMenuTheme {
         outline = palette[4];
         text = palette[5];
         secondary = palette[6];
-        int seed = prefs.accentSource() == 1 ? prefs.customAccent() : COLORS[dark ? index : index == 0 ? 1 : index][7];
+        int seed = prefs.accentSource() == 1 ? prefs.customAccent() : palette[7];
         primary = readable(seed, Color.WHITE, 4.5, Color.BLACK);
         accent = readable(seed, raised, 3.0, dark ? Color.WHITE : Color.BLACK);
         radius = prefs.radius();
@@ -155,13 +162,15 @@ final class ModMenuTheme {
 
     GradientDrawable panel(int opacity) {
         int alpha = Math.round(Math.max(0, Math.min(100, opacity)) * 2.55f);
-        if (!rainbow) return shape((surface & 0xFFFFFF) | alpha << 24, radius, true);
-        int[] colors = {0xFFCE1553, 0xFFD68C2C, 0xFFA8BB2B, 0xFF219F72, 0xFF197CAD, 0xFF4D41C8};
-        for (int i = 0; i < colors.length; i++) colors[i] = colors[i] & 0xFFFFFF | alpha << 24;
-        GradientDrawable drawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM, colors);
-        drawable.setCornerRadius(dp(radius));
-        drawable.setStroke(dp(1), outline);
-        return drawable;
+        return shape((surface & 0xFFFFFF) | alpha << 24, radius, true);
+    }
+
+    static int[] colors(int index, boolean dark) {
+        return (dark ? DARK_COLORS : LIGHT_COLORS)[ModMenuGeometry.clamp(index, 0, PRESET_IDS.length - 1)];
+    }
+
+    static String presetName(Context context, int index) {
+        return context.getString(PRESET_NAMES[ModMenuGeometry.clamp(index, 0, PRESET_NAMES.length - 1)]);
     }
 
     RippleDrawable touch(int color, float radiusDp, boolean border) {

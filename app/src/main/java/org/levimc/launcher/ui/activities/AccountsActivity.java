@@ -1,19 +1,16 @@
 package org.levimc.launcher.ui.activities;
 
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ProgressBar;
-import android.graphics.Bitmap;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 
@@ -21,205 +18,159 @@ import org.levimc.launcher.R;
 import org.levimc.launcher.core.auth.MsftAccountStore;
 import org.levimc.launcher.core.auth.MsftAuthManager;
 import org.levimc.launcher.ui.adapter.AccountsAdapter;
-import org.levimc.launcher.ui.animation.DynamicAnim;
-import org.levimc.launcher.ui.dialogs.LoadingDialog;
+import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
+import org.levimc.launcher.ui.widget.LauncherPopup;
 import org.levimc.launcher.ui.widget.UiKit;
 import org.levimc.launcher.util.AccountTextUtils;
-import org.levimc.launcher.util.PersonalizationManager;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
-import android.util.Pair;
-
-public class AccountsActivity extends BaseActivity {
-
-    private TextView gamertagText;
-    private TextView privilegesText;
-    private TextView xuidText;
-    private TextView emptyStateText;
-    private View emptyStateContainer;
-    private Button bottomAddButton;
-    private androidx.recyclerview.widget.RecyclerView accountsRecyclerView;
-    private ImageButton leftAddButton;
-    private com.microsoft.xbox.idp.toolkit.CircleImageView xboxAvatar;
-    private ProgressBar avatarProgress;
-    private View rightCardContainer;
-    private String lastAvatarXuid;
-    private final OkHttpClient avatarClient = new OkHttpClient();
-
+public final class AccountsActivity extends BaseActivity {
     private final AccountsAdapter adapter = new AccountsAdapter();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private ActivityResultLauncher<Intent> loginLauncher;
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
-    private LoadingDialog loadingDialog;
-    private boolean shownEnabled;
+    private RecyclerView recycler;
+    private MaterialButton addButton;
+    private boolean busy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_accounts);
-
-
-        gamertagText = findViewById(R.id.gamertag_text);
-        privilegesText = findViewById(R.id.privileges_text);
-        xuidText = findViewById(R.id.xuid_text);
-        emptyStateText = findViewById(R.id.empty_state_text);
-        emptyStateContainer = findViewById(R.id.empty_state_container);
-        accountsRecyclerView = findViewById(R.id.accounts_recycler_view);
-        bottomAddButton = findViewById(R.id.bottom_add_button);
-        xboxAvatar = findViewById(R.id.xbox_avatar);
-        avatarProgress = findViewById(R.id.avatar_progress);
-        rightCardContainer = findViewById(R.id.right_card_container);
-        applyAccountAccent();
-
+        setActiveNavTab(0);
+        recycler = findViewById(R.id.accounts_recycler_view);
+        addButton = findViewById(R.id.bottom_add_button);
+        recycler.setLayoutManager(new LinearLayoutManager(this));
+        recycler.setItemAnimator(null);
+        recycler.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        recycler.setAdapter(adapter);
+        UiKit.applyPrimary(addButton);
         loginLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == RESULT_OK && result.getData() != null
                     && result.getData().getBooleanExtra(MsftLoginActivity.EXTRA_LOGIN_COMPLETED, false)) {
                 String name = result.getData().getStringExtra(MsftLoginActivity.EXTRA_LOGIN_NAME);
-                String statusName = name != null ? name : getString(R.string.not_signed_in);
-                Toast.makeText(this, getString(R.string.ms_login_success, statusName), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.ms_login_success,
+                        TextUtils.isEmpty(name) ? getString(R.string.accounts_page_title) : name), Toast.LENGTH_SHORT).show();
             }
             refreshUI();
-            refreshNavAccountUI();
         });
-
-        View.OnClickListener addAction = v -> loginLauncher.launch(new Intent(this, MsftLoginActivity.class));
-        if (bottomAddButton != null) bottomAddButton.setOnClickListener(addAction);
-        if (bottomAddButton != null) DynamicAnim.applyPressScale(bottomAddButton);
-
-        View goSettings = findViewById(R.id.accounts_go_settings);
-        if (goSettings != null) {
-            goSettings.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
-            DynamicAnim.applyPressScale(goSettings);
-        }
-
+        addButton.setOnClickListener(v -> openSignIn());
         adapter.setOnAccountActionListener(new AccountsAdapter.OnAccountActionListener() {
             @Override
             public void onSetActive(MsftAccountStore.MsftAccount account) {
-                loadingDialog = org.levimc.launcher.util.DialogUtils.ensure(AccountsActivity.this, loadingDialog);
-                org.levimc.launcher.util.DialogUtils.showWithMessage(loadingDialog, getString(R.string.ms_login_auth_xbox_device));
-
-                executor.execute(() -> {
-                    try {
-                        MsftAccountStore.MsftAccount refreshed = MsftAuthManager.refreshAccountAndActivate(AccountsActivity.this, account.id);
-                        String minecraftUsername = AccountTextUtils.displayNameOrNotSigned(AccountsActivity.this, refreshed);
-
-                        runOnUiThread(() -> {
-                            org.levimc.launcher.util.DialogUtils.dismissQuietly(loadingDialog);
-                            String statusName = minecraftUsername != null ? minecraftUsername : getString(R.string.not_signed_in);
-                            Toast.makeText(AccountsActivity.this, getString(R.string.ms_login_success, statusName), Toast.LENGTH_SHORT).show();
-                            refreshUI();
-                        });
-                    } catch (Exception e) {
-                        runOnUiThread(() -> {
-                            org.levimc.launcher.util.DialogUtils.dismissQuietly(loadingDialog);
-                                Toast.makeText(AccountsActivity.this, getString(R.string.ms_login_failed_detail, MsftAuthManager.describeError(e)), Toast.LENGTH_LONG).show();
-                                refreshUI();
-                        });
-                    }
-                });
+                runAccountAction(R.string.accounts_switching, () ->
+                        MsftAccountStore.selectSavedAccount(getApplicationContext(), account.id));
             }
 
             @Override
-            public void onDelete(MsftAccountStore.MsftAccount account) {
-                new org.levimc.launcher.ui.dialogs.CustomAlertDialog(AccountsActivity.this)
-                        .setTitleText(getString(R.string.delete_account_title))
-                        .setMessage(getString(R.string.delete_account_confirm))
-                        .setPositiveButton(getString(R.string.ms_delete), v -> {
-                            MsftAccountStore.remove(AccountsActivity.this, account.id);
-                            Toast.makeText(AccountsActivity.this, R.string.ms_delete, Toast.LENGTH_SHORT).show();
-                            refreshUI();
-                        })
-                        .setNegativeButton(getString(android.R.string.cancel), null)
-                        .show();
+            public void onMore(MsftAccountStore.MsftAccount account, View anchor) {
+                showAccountActions(account, anchor);
             }
         });
-
-        accountsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        accountsRecyclerView.setAdapter(adapter);
-        accountsRecyclerView.post(() -> DynamicAnim.staggerRecyclerChildren(accountsRecyclerView));
-
         refreshUI();
     }
 
-    private void applyAccountAccent() {
-        PersonalizationManager pm = new PersonalizationManager(this);
-        int accent = pm.getAccentColor();
-        if (accent == 0) {
-            accent = getColor(R.color.primary);
-        }
-        if (avatarProgress != null) {
-            avatarProgress.setIndeterminateTintList(ColorStateList.valueOf(accent));
-        }
-        if (bottomAddButton instanceof MaterialButton) {
-            UiKit.applyPrimary((MaterialButton) bottomAddButton);
-        }
-        if (privilegesText != null) UiKit.tintSoftAccent(privilegesText, 7);
+    private void openSignIn() {
+        if (!busy) loginLauncher.launch(new Intent(this, MsftLoginActivity.class));
     }
 
-    private MsftAccountStore.MsftAccount getActiveAccount() {
-        List<MsftAccountStore.MsftAccount> list = MsftAccountStore.list(this);
-        for (MsftAccountStore.MsftAccount a : list) if (a.active) return a;
-        return null;
+    private void showAccountActions(MsftAccountStore.MsftAccount account, View anchor) {
+        LauncherPopup popup = new LauncherPopup(anchor).width(252)
+                .section(AccountTextUtils.displayNameOrNotSigned(this, account))
+                .action(0, getString(R.string.accounts_details), R.drawable.ic_ui_person);
+        if (account.active) popup.action(1, getString(R.string.accounts_refresh_sign_in), R.drawable.ic_ui_refresh);
+        popup.action(2, getString(R.string.accounts_sign_in_again), R.drawable.ic_internet)
+                .divider()
+                .action(3, getString(R.string.accounts_remove), R.drawable.ic_ui_delete)
+                .onSelect(id -> {
+                    if (id == 0) showAccountDetails(account);
+                    else if (id == 1) runAccountAction(R.string.ms_login_fetch_minecraft_identity, () ->
+                            MsftAuthManager.refreshAccountAndActivate(getApplicationContext(), account.id));
+                    else if (id == 2) openSignIn();
+                    else if (id == 3) confirmRemove(account);
+                }).show();
     }
 
+    private void showAccountDetails(MsftAccountStore.MsftAccount account) {
+        String updated = account.lastUpdated > 0 ? DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
+                .format(new Date(account.lastUpdated)) : getString(R.string.accounts_unavailable);
+        new CustomAlertDialog(this)
+                .setTitleText(AccountTextUtils.displayNameOrNotSigned(this, account))
+                .setIconResource(R.drawable.ic_ui_person)
+                .setMessage(getString(R.string.accounts_details_message,
+                        TextUtils.isEmpty(account.xuid) ? getString(R.string.accounts_unavailable) : account.xuid, updated))
+                .setPositiveButton(getString(android.R.string.ok), null)
+                .show();
+    }
 
+    private void confirmRemove(MsftAccountStore.MsftAccount account) {
+        new CustomAlertDialog(this)
+                .setTitleText(getString(R.string.accounts_remove))
+                .setIconResource(R.drawable.ic_ui_delete)
+                .setMessage(getString(R.string.accounts_remove_message, AccountTextUtils.displayNameOrNotSigned(this, account)))
+                .setPositiveButton(getString(R.string.accounts_remove), v ->
+                        runAccountAction(R.string.accounts_removing, () -> MsftAccountStore.remove(getApplicationContext(), account.id)))
+                .setNegativeButton(getString(android.R.string.cancel), null)
+                .show();
+    }
+
+    private interface AccountAction {
+        void run() throws Exception;
+    }
+
+    private void runAccountAction(int status, AccountAction action) {
+        if (busy) return;
+        setBusy(true, status);
+        executor.execute(() -> {
+            Exception failure = null;
+            try {
+                action.run();
+            } catch (Exception error) {
+                failure = error;
+            }
+            Exception result = failure;
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed()) return;
+                setBusy(false, status);
+                refreshUI();
+                if (result != null) {
+                    new CustomAlertDialog(this)
+                            .setTitleText(getString(R.string.ms_login_failed))
+                            .setMessage(MsftAuthManager.describeError(this, result))
+                            .setPositiveButton(getString(android.R.string.ok), null)
+                            .show();
+                }
+            });
+        });
+    }
+
+    private void setBusy(boolean value, int status) {
+        busy = value;
+        addButton.setEnabled(!value);
+        adapter.setBusy(value);
+        findViewById(R.id.accounts_operation).setVisibility(value ? View.VISIBLE : View.GONE);
+        ((TextView) findViewById(R.id.accounts_operation_text)).setText(status);
+    }
 
     private void refreshUI() {
-        boolean enabled = org.levimc.launcher.settings.FeatureSettings.getInstance().isLauncherManagedMcLoginEnabled();
-        shownEnabled = enabled;
-        View mainContent = findViewById(R.id.main_content_container);
-        View disabledState = findViewById(R.id.disabled_state_container);
-        
-        if (mainContent != null) mainContent.setVisibility(enabled ? View.VISIBLE : View.GONE);
-        if (disabledState != null) disabledState.setVisibility(enabled ? View.GONE : View.VISIBLE);
-        if (bottomAddButton != null) bottomAddButton.setVisibility(enabled ? View.VISIBLE : View.GONE);
-        
-        if (!enabled) return;
-        
-        MsftAccountStore.MsftAccount active = getActiveAccount();
-        if (active == null) {
-            gamertagText.setText(getString(R.string.not_signed_in));
-            privilegesText.setText("");
-            privilegesText.setVisibility(View.GONE);
-            xuidText.setText("");
-            if (xboxAvatar != null) {
-                xboxAvatar.setImageDrawable(null);
-                lastAvatarXuid = null;
-                if (avatarProgress != null) avatarProgress.setVisibility(View.GONE);
-            }
-            if (rightCardContainer != null) rightCardContainer.setVisibility(View.GONE);
-        } else {
-            String displayName = AccountTextUtils.displayNameOrNotSigned(this, active);
-            gamertagText.setText(displayName);
-            privilegesText.setText(getString(R.string.accounts_active_privilege));
-            privilegesText.setVisibility(View.VISIBLE);
-            xuidText.setText(active.xuid != null ? active.xuid : "");
-            loadXboxAvatar(active);
-            if (rightCardContainer != null) rightCardContainer.setVisibility(View.VISIBLE);
-        }
-
-        List<MsftAccountStore.MsftAccount> list = MsftAccountStore.list(this);
-        adapter.updateAccounts(list);
-
-        boolean isEmpty = list == null || list.isEmpty();
-        if (emptyStateContainer != null) emptyStateContainer.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
-        
+        if (recycler == null || isFinishing() || isDestroyed()) return;
+        List<MsftAccountStore.MsftAccount> accounts = MsftAccountStore.list(this);
+        adapter.updateAccounts(accounts);
+        ((TextView) findViewById(R.id.accounts_count)).setText(getString(R.string.accounts_count, accounts.size()));
+        findViewById(R.id.empty_state_container).setVisibility(accounts.isEmpty() ? View.VISIBLE : View.GONE);
+        recycler.setVisibility(accounts.isEmpty() ? View.GONE : View.VISIBLE);
+        if (accounts.isEmpty()) recycler.stopScroll();
         refreshNavAccountUI();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        // The feature switch may have been changed in Settings ("Go to Settings").
-        if (isFinishing() || gamertagText == null) return;
-        boolean enabled = org.levimc.launcher.settings.FeatureSettings.getInstance().isLauncherManagedMcLoginEnabled();
-        if (enabled != shownEnabled) refreshUI();
+        refreshUI();
     }
 
     @Override
@@ -227,33 +178,10 @@ public class AccountsActivity extends BaseActivity {
         refreshUI();
     }
 
-    private void loadXboxAvatar(MsftAccountStore.MsftAccount active) {
-        if (xboxAvatar == null) return;
-        String url = AccountTextUtils.sanitizeUrl(active != null ? active.xboxAvatarUrl : null);
-        if (url == null) {
-            if (avatarProgress != null) avatarProgress.setVisibility(View.GONE);
-            xboxAvatar.setImageDrawable(null);
-            lastAvatarXuid = null;
-            return;
-        }
-        xboxAvatar.setImageDrawable(null);
-        if (avatarProgress != null) avatarProgress.setVisibility(View.VISIBLE);
-        executor.execute(() -> {
-            try {
-                try (Response imgResp = avatarClient.newCall(new Request.Builder().url(url).build()).execute()) {
-                    Bitmap bmp = (imgResp.isSuccessful() && imgResp.body() != null) ? android.graphics.BitmapFactory.decodeStream(imgResp.body().byteStream()) : null;
-                    runOnUiThread(() -> {
-                        if (bmp != null) {
-                            xboxAvatar.setImageBitmap(bmp);
-                        }
-                        if (avatarProgress != null) avatarProgress.setVisibility(View.GONE);
-                    });
-                }
-            } catch (Exception e) {
-                runOnUiThread(() -> {
-                    if (avatarProgress != null) avatarProgress.setVisibility(View.GONE);
-                });
-            }
-        });
+    @Override
+    protected void onDestroy() {
+        executor.shutdownNow();
+        if (recycler != null) recycler.setAdapter(null);
+        super.onDestroy();
     }
 }

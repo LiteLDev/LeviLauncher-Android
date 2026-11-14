@@ -9,4 +9,9 @@
     <item name="text_mod_menu_opacity" type="id" />
     <item name="seekbar_mod_menu_button_opacity" type="id" />
     <item name="text_mod_menu_button_opacity" type="id" />
+    <item name="setting_menu_palette" type="id" />
+    <item name="menu_palette_value" type="id" />
+    <item name="menu_mode_system" type="id" />
+    <item name="menu_mode_dark" type="id" />
+    <item name="menu_mode_light" type="id" />
 </resources>

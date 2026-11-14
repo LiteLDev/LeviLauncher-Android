@@ -7,7 +7,6 @@ import android.content.IntentFilter;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,8 +20,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -30,6 +27,10 @@ import androidx.core.widget.TextViewCompat;
 
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.auth.MsftAccountStore;
+import org.levimc.launcher.core.auth.MsftAuthManager;
+import org.levimc.launcher.ui.widget.LauncherPopup;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import org.levimc.launcher.core.news.NewsFeed;
 import org.levimc.launcher.core.news.NewsRepository;
 import org.levimc.launcher.core.news.NewsState;
@@ -54,9 +55,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.Locale;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class BaseActivity extends AppCompatActivity {
     private int appliedThemeGeneration = -1;
@@ -77,9 +75,9 @@ public class BaseActivity extends AppCompatActivity {
 
     /** Page classes alive in the task, so breadcrumbs only jump to pages that can be restored. */
     private static final Set<Class<?>> sLivePages = new HashSet<>();
-    private final OkHttpClient navAvatarClient = new OkHttpClient();
+    private boolean navAccountSwitching;
+    private RequestManager navAvatarRequests;
     private final ExecutorService navAccountExecutor = Executors.newSingleThreadExecutor();
-    private ActivityResultLauncher<Intent> navAccountLoginLauncher;
     private boolean newsReceiverRegistered;
     private final BroadcastReceiver newsReceiver = new BroadcastReceiver() {
         @Override
@@ -110,9 +108,6 @@ public class BaseActivity extends AppCompatActivity {
         appliedBackgroundEffectGeneration = PersonalizationManager.getBackgroundEffectGeneration();
         super.onCreate(savedInstanceState);
         sLivePages.add(getClass());
-        navAccountLoginLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> handleNavAccountLoginResult(result.getResultCode(), result.getData()));
         hideSystemUI();
         getWindow().getDecorView().setOnSystemUiVisibilityChangeListener(
                 visibility -> getWindow().getDecorView().post(this::hideSystemUI));
@@ -226,14 +221,14 @@ public class BaseActivity extends AppCompatActivity {
 
         View signIn = findViewById(R.id.nav_sign_in_button);
         if (signIn != null) {
-            signIn.setOnClickListener(v -> navAccountLoginLauncher.launch(new Intent(this, MsftLoginActivity.class)));
+            signIn.setOnClickListener(v -> {
+                if (!(this instanceof AccountsActivity)) startActivity(new Intent(this, AccountsActivity.class));
+            });
         }
 
         View avatarContainer = findViewById(R.id.nav_account_avatar_container);
         if (avatarContainer != null) {
-            avatarContainer.setOnClickListener(v -> {
-                if (!(this instanceof AccountsActivity)) startActivity(new Intent(this, AccountsActivity.class));
-            });
+            avatarContainer.setOnClickListener(this::showNavAccountMenu);
             DynamicAnim.applyPressScale(avatarContainer);
         }
 
@@ -327,7 +322,7 @@ public class BaseActivity extends AppCompatActivity {
     }
 
     protected void refreshNavAccountUI() {
-        if (!navBarInjected) return;
+        if (!navBarInjected || isFinishing() || isDestroyed()) return;
         java.util.List<MsftAccountStore.MsftAccount> list = MsftAccountStore.list(this);
         MsftAccountStore.MsftAccount active = null;
         for (MsftAccountStore.MsftAccount a : list) if (a.active) { active = a; break; }
@@ -347,71 +342,68 @@ public class BaseActivity extends AppCompatActivity {
     private void clearNavAvatar() {
         com.microsoft.xbox.idp.toolkit.CircleImageView avatar = findViewById(R.id.nav_account_avatar);
         ProgressBar progress = findViewById(R.id.nav_avatar_progress);
-        if (avatar != null) avatar.setImageResource(R.drawable.ic_minecraft_cube);
+        if (avatar != null) {
+            if (navAvatarRequests != null) navAvatarRequests.clear(avatar);
+            avatar.setTag(R.id.nav_account_avatar, null);
+            avatar.setImageResource(R.drawable.ic_minecraft_cube);
+        }
         if (progress != null) progress.setVisibility(View.GONE);
     }
 
     private void loadNavXboxAvatar(MsftAccountStore.MsftAccount active) {
-        com.microsoft.xbox.idp.toolkit.CircleImageView avatar = findViewById(R.id.nav_account_avatar);
+        ImageView avatar = findViewById(R.id.nav_account_avatar);
         ProgressBar progress = findViewById(R.id.nav_avatar_progress);
         if (avatar == null) return;
-
-        String url = AccountTextUtils.sanitizeUrl(active != null ? active.xboxAvatarUrl : null);
+        if (progress != null) progress.setVisibility(View.GONE);
+        String url = AccountTextUtils.sanitizeUrl(active == null ? null : active.xboxAvatarUrl);
         if (url == null) {
-            avatar.setImageResource(R.drawable.ic_minecraft_cube);
-            if (progress != null) progress.setVisibility(View.GONE);
+            clearNavAvatar();
             return;
         }
-
-        Object currentUrl = avatar.getTag(R.id.nav_account_avatar);
-        if (url.equals(currentUrl) && avatar.getDrawable() != null) {
-            if (progress != null) progress.setVisibility(View.GONE);
-            return;
-        }
-
-        Bitmap cached = AccountTextUtils.getCachedAvatar(url);
-        if (cached != null) {
-            avatar.setTag(R.id.nav_account_avatar, url);
-            avatar.setImageBitmap(cached);
-            if (progress != null) progress.setVisibility(View.GONE);
-            return;
-        }
-
         avatar.setTag(R.id.nav_account_avatar, url);
-        avatar.setImageResource(R.drawable.ic_minecraft_cube);
-        if (progress != null) progress.setVisibility(View.VISIBLE);
-        navAccountExecutor.execute(() -> {
-            Bitmap bmp = null;
-            try (Response imgResp = navAvatarClient.newCall(new Request.Builder().url(url).build()).execute()) {
-                if (imgResp.isSuccessful() && imgResp.body() != null) {
-                    bmp = android.graphics.BitmapFactory.decodeStream(imgResp.body().byteStream());
-                }
-            } catch (Exception ignored) {
-            }
-
-            final Bitmap loaded = bmp;
-            runOnUiThread(() -> {
-                if (!url.equals(avatar.getTag(R.id.nav_account_avatar))) return;
-                if (loaded != null) {
-                    AccountTextUtils.cacheAvatar(url, loaded);
-                    avatar.setImageBitmap(loaded);
-                }
-                if (progress != null) progress.setVisibility(View.GONE);
-            });
-        });
+        if (navAvatarRequests == null) navAvatarRequests = Glide.with(this);
+        navAvatarRequests.load(url)
+                .placeholder(R.drawable.ic_minecraft_cube).error(R.drawable.ic_minecraft_cube)
+                .circleCrop().into(avatar);
     }
 
-    private void handleNavAccountLoginResult(int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && data != null
-                && data.getBooleanExtra(MsftLoginActivity.EXTRA_LOGIN_COMPLETED, false)) {
-            String name = data.getStringExtra(MsftLoginActivity.EXTRA_LOGIN_NAME);
-            String statusName = name != null ? name : getString(R.string.not_signed_in);
-            Toast.makeText(this, getString(R.string.ms_login_success, statusName), Toast.LENGTH_SHORT).show();
-            refreshNavAccountUI();
-            onNavAccountChanged();
-            return;
+    private void showNavAccountMenu(View anchor) {
+        if (navAccountSwitching) return;
+        java.util.List<MsftAccountStore.MsftAccount> accounts = MsftAccountStore.list(this);
+        LauncherPopup menu = new LauncherPopup(anchor).width(260).section(getString(R.string.accounts_page_title));
+        for (int i = 0; i < accounts.size(); i++) {
+            MsftAccountStore.MsftAccount account = accounts.get(i);
+            menu.choice(i, AccountTextUtils.displayNameOrNotSigned(this, account), account.active);
         }
-        refreshNavAccountUI();
+        menu.divider().action(-1, getString(R.string.go_to_accounts), R.drawable.ic_ui_person)
+                .action(-2, getString(R.string.ms_add_account), R.drawable.ic_ui_add)
+                .onSelect(index -> {
+                    if (index == -1) {
+                        if (!(this instanceof AccountsActivity)) startActivity(new Intent(this, AccountsActivity.class));
+                    } else if (index == -2) {
+                        if (!(this instanceof MsftLoginActivity)) startActivity(new Intent(this, MsftLoginActivity.class));
+                    } else if (index >= 0 && index < accounts.size() && !accounts.get(index).active) {
+                        navAccountSwitching = true;
+                        String id = accounts.get(index).id;
+                        navAccountExecutor.execute(() -> {
+                            Exception failure = null;
+                            try {
+                                MsftAccountStore.selectSavedAccount(getApplicationContext(), id);
+                            } catch (Exception error) {
+                                failure = error;
+                            }
+                            Exception result = failure;
+                            runOnUiThread(() -> {
+                                navAccountSwitching = false;
+                                if (isFinishing() || isDestroyed()) return;
+                                refreshNavAccountUI();
+                                onNavAccountChanged();
+                                if (result != null) Toast.makeText(this,
+                                        MsftAuthManager.describeError(this, result), Toast.LENGTH_LONG).show();
+                            });
+                        });
+                    }
+                }).show();
     }
 
     protected void onNavAccountChanged() {

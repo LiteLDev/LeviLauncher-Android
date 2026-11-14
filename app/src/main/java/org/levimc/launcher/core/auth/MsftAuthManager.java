@@ -2,6 +2,8 @@ package org.levimc.launcher.core.auth;
 
 import android.content.Context;
 import android.net.Uri;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
@@ -10,6 +12,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import net.lenni0451.commons.httpclient.HttpClient;
+import net.lenni0451.commons.httpclient.HttpResponse;
+import net.lenni0451.commons.gson.elements.GsonObject;
 import net.lenni0451.commons.httpclient.exceptions.HttpRequestException;
 import net.raphimc.minecraftauth.MinecraftAuth;
 import net.raphimc.minecraftauth.bedrock.BedrockAuthManager;
@@ -32,6 +36,7 @@ import net.raphimc.minecraftauth.xbl.exception.XblRequestException;
 import net.raphimc.minecraftauth.xbl.model.XblUserProfile;
 
 import org.levimc.launcher.BuildConfig;
+import org.levimc.launcher.R;
 import org.levimc.launcher.core.auth.storage.XalExporter;
 
 import java.io.IOException;
@@ -49,6 +54,12 @@ import java.util.function.Consumer;
 import javax.net.ssl.SSLException;
 
 public final class MsftAuthManager {
+    public enum LaunchAccountState {
+        READY,
+        CACHED_OFFLINE,
+        SIGNED_OUT_OFFLINE,
+        NO_ACCOUNT
+    }
     public enum DeviceCodeState {
         WAITING,
         RETRYING,
@@ -57,7 +68,7 @@ public final class MsftAuthManager {
 
     private static final String TAG = "MsftAuthManager";
     private static final String GAME_VERSION = "1.21.110";
-    private static final long MIN_DEVICE_POLL_INTERVAL_MS = 1000L;
+    private static final long MIN_DEVICE_POLL_INTERVAL_MS = 5000L;
     private static final long SLOW_DOWN_INCREMENT_MS = 5000L;
     private static final long MAX_TRANSIENT_RETRY_DELAY_MS = 10000L;
     private static final int ACCOUNT_NETWORK_RETRY_COUNT = 4;
@@ -115,7 +126,7 @@ public final class MsftAuthManager {
         HttpClient httpClient = createHttpClient();
         MsaApplicationConfig config = getAppConfig();
         MsaDeviceCode deviceCode = executeWithNetworkRetry(
-                () -> httpClient.executeAndHandle(new MsaDeviceCodeRequest(config)),
+                () -> httpClient.executeAndHandle(new DeviceAuthorizationRequest(config)),
                 cancelled,
                 null,
                 ACCOUNT_NETWORK_RETRY_COUNT
@@ -127,16 +138,16 @@ public final class MsftAuthManager {
 
         long intervalMs = Math.max(MIN_DEVICE_POLL_INTERVAL_MS, deviceCode.getIntervalMs());
         long nextPollAt = SystemClock.elapsedRealtime() + intervalMs;
-        int emptyBadRequestCount = 0;
         int transientFailureCount = 0;
 
         while (!deviceCode.isExpired()) {
             ensureNotCancelled(cancelled);
             sleepUntil(nextPollAt, cancelled);
             ensureNotCancelled(cancelled);
+            if (deviceCode.isExpired()) break;
 
             try {
-                MsaToken token = httpClient.executeAndHandle(new MsaDeviceCodeTokenRequest(config, deviceCode));
+                MsaToken token = httpClient.executeAndHandle(new DeviceTokenRequest(config, deviceCode));
                 emitState(stateConsumer, DeviceCodeState.AUTHORIZED);
                 return BedrockAuthManager.create(httpClient, GAME_VERSION)
                         .msaApplicationConfig(config)
@@ -145,7 +156,7 @@ public final class MsftAuthManager {
                 transientFailureCount = 0;
                 String error = normalizeError(e.getError());
                 int status = e.getResponse() != null ? e.getResponse().getStatusCode() : 0;
-                if ("authorization_pending".equals(error) || (status == 400 && TextUtils.isEmpty(error))) {
+                if ("authorization_pending".equals(error)) {
                     emitState(stateConsumer, DeviceCodeState.WAITING);
                     nextPollAt = SystemClock.elapsedRealtime() + intervalMs;
                     continue;
@@ -161,7 +172,7 @@ public final class MsftAuthManager {
                     nextPollAt = SystemClock.elapsedRealtime() + intervalMs;
                     continue;
                 }
-                if ("authorization_declined".equals(error)) {
+                if ("authorization_declined".equals(error) || "access_denied".equals(error)) {
                     throw new SecurityException("Microsoft sign-in was declined.", e);
                 }
                 if ("bad_verification_code".equals(error)) {
@@ -173,16 +184,6 @@ public final class MsftAuthManager {
                 throw e;
             } catch (InformativeHttpRequestException e) {
                 int status = e.getResponse() != null ? e.getResponse().getStatusCode() : 0;
-                if (status == 400) {
-                    emptyBadRequestCount++;
-                    transientFailureCount = 0;
-                    if (emptyBadRequestCount % 5 == 0) {
-                        intervalMs += SLOW_DOWN_INCREMENT_MS;
-                    }
-                    emitState(stateConsumer, DeviceCodeState.WAITING);
-                    nextPollAt = SystemClock.elapsedRealtime() + intervalMs;
-                    continue;
-                }
                 if (isRetryableHttpStatus(status)) {
                     transientFailureCount++;
                     emitState(stateConsumer, DeviceCodeState.RETRYING);
@@ -202,6 +203,79 @@ public final class MsftAuthManager {
         }
 
         throw new TimeoutException("The Microsoft device code expired. Start sign-in again.");
+    }
+
+    private static final class DeviceAuthorizationRequest extends MsaDeviceCodeRequest {
+        DeviceAuthorizationRequest(MsaApplicationConfig config) throws java.net.MalformedURLException {
+            super(config);
+        }
+
+        @Override
+        public MsaDeviceCode handle(HttpResponse response, GsonObject json) {
+            String uri = json.getString("verification_uri", json.getString("verification_url", null));
+            if (TextUtils.isEmpty(uri)) throw new IllegalStateException("Microsoft did not return a verification address.");
+            return new MsaDeviceCode(System.currentTimeMillis() + json.reqInt("expires_in") * 1000L,
+                    json.getInt("interval", 5) * 1000L, json.reqString("device_code"),
+                    json.reqString("user_code"), uri);
+        }
+
+        @Override
+        public void handleError(HttpResponse response, GsonObject json) throws IOException {
+            throwDeviceError(response, json);
+        }
+    }
+
+    private static final class DeviceTokenRequest extends MsaDeviceCodeTokenRequest {
+        DeviceTokenRequest(MsaApplicationConfig config, MsaDeviceCode code) throws java.net.MalformedURLException {
+            super(config, code);
+        }
+
+        @Override
+        public void handleError(HttpResponse response, GsonObject json) throws IOException {
+            throwDeviceError(response, json);
+        }
+    }
+
+    private static void throwDeviceError(HttpResponse response, GsonObject json) throws IOException {
+        String error = json.getString("error", null);
+        if (!TextUtils.isEmpty(error)) {
+            throw new MsaRequestException(response, error, json.getString("error_description", error));
+        }
+    }
+
+    public static synchronized LaunchAccountState prepareAccountForLaunch(Context context) throws Exception {
+        return prepareAccountForLaunch(context, hasInternetConnection(context), null);
+    }
+
+    static synchronized LaunchAccountState prepareAccountForLaunch(Context context, boolean online, HttpClient client) throws Exception {
+        MsftAccountStore.MsftAccount active = MsftAccountStore.getActive(context);
+        if (!online) return prepareCachedAccount(context, active);
+        if (active == null) return LaunchAccountState.NO_ACCOUNT;
+        try {
+            HttpClient launchClient = client == null ? createHttpClient().setConnectTimeout(3000).setReadTimeout(7000) : client;
+            refreshSavedAccount(context, active.id, false, launchClient);
+            return LaunchAccountState.READY;
+        } catch (Exception error) {
+            if (!isTransientNetworkFailure(error)) throw error;
+            return prepareCachedAccount(context, MsftAccountStore.find(context, active.id));
+        }
+    }
+
+    private static LaunchAccountState prepareCachedAccount(Context context, MsftAccountStore.MsftAccount account) {
+        return account != null && XalExporter.prepareCachedAccount(context, account)
+                ? LaunchAccountState.CACHED_OFFLINE : LaunchAccountState.SIGNED_OUT_OFFLINE;
+    }
+
+    public static boolean hasInternetConnection(Context context) {
+        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (manager == null) return true;
+        try {
+            NetworkCapabilities capabilities = manager.getNetworkCapabilities(manager.getActiveNetwork());
+            return capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                    && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
+        } catch (SecurityException ignored) {
+            return true;
+        }
     }
 
     public static synchronized MsftAccountStore.MsftAccount prepareActiveAccount(Context context) throws Exception {
@@ -227,11 +301,14 @@ public final class MsftAuthManager {
     }
 
     private static MsftAccountStore.MsftAccount refreshSavedAccount(Context context, String id, boolean activate) throws Exception {
+        return refreshSavedAccount(context, id, activate, createHttpClient());
+    }
+
+    private static MsftAccountStore.MsftAccount refreshSavedAccount(Context context, String id, boolean activate, HttpClient httpClient) throws Exception {
         MsftAccountStore.MsftAccount account = MsftAccountStore.find(context, id);
         if (account == null || TextUtils.isEmpty(account.serializedAuthManager)) {
             throw new IllegalArgumentException("Account data is missing or damaged.");
         }
-        HttpClient httpClient = createHttpClient();
         JsonObject json = JsonParser.parseString(account.serializedAuthManager).getAsJsonObject();
         if (XalExporter.importRefreshToken(context, account, json)) {
             MsftAccountStore.updateAuth(context, id, json.toString());
@@ -285,21 +362,34 @@ public final class MsftAuthManager {
         authManager.getMsaToken().set(refreshed);
     }
 
-    private static void refreshXalCredentials(BedrockAuthManager authManager) throws IOException {
+    private static void refreshXalCredentials(BedrockAuthManager authManager) throws IOException, InterruptedException {
+        refreshXalCredentials(authManager, null);
+    }
+
+    private static void refreshXalCredentials(BedrockAuthManager authManager, BooleanSupplier cancelled) throws IOException, InterruptedException {
+        ensureNotCancelled(cancelled);
         refreshMsaToken(authManager);
+        ensureNotCancelled(cancelled);
         refreshToken(authManager.getXblDeviceToken());
+        ensureNotCancelled(cancelled);
         refreshToken(authManager.getXblUserToken());
+        ensureNotCancelled(cancelled);
         if (authManager.getMsaApplicationConfig().isTitleClientId()) {
             refreshToken(authManager.getXblTitleToken());
         }
+        ensureNotCancelled(cancelled);
         refreshToken(authManager.getBedrockXstsToken());
+        ensureNotCancelled(cancelled);
         refreshToken(authManager.getXboxLiveXstsToken());
+        ensureNotCancelled(cancelled);
         refreshToken(authManager.getMinecraftCertificateChain());
+        ensureNotCancelled(cancelled);
         try {
             refreshToken(authManager.getPlayFabXstsToken());
         } catch (IOException error) {
             Log.w(TAG, "PlayFab token unavailable", error);
         }
+        ensureNotCancelled(cancelled);
         try {
             refreshToken(authManager.getRealmsXstsToken());
         } catch (IOException error) {
@@ -314,26 +404,37 @@ public final class MsftAuthManager {
             Runnable retryCallback
     ) throws Exception {
         return executeWithNetworkRetry(
-                () -> saveAccountAndActivate(context, authManager),
+                () -> saveAccountAndActivate(context, authManager, cancelled),
                 cancelled,
                 retryCallback,
                 ACCOUNT_NETWORK_RETRY_COUNT
         );
     }
 
-    public static synchronized MsftAccountStore.MsftAccount saveAccountAndActivate(Context context, BedrockAuthManager authManager) throws Exception {
-        MsftAccountStore.MsftAccount account = saveAccountOrThrow(context, authManager);
+    public static MsftAccountStore.MsftAccount saveAccountAndActivate(Context context, BedrockAuthManager authManager) throws Exception {
+        return saveAccountAndActivate(context, authManager, null);
+    }
+
+    private static MsftAccountStore.MsftAccount saveAccountAndActivate(
+            Context context, BedrockAuthManager authManager, BooleanSupplier cancelled) throws Exception {
+        MsftAccountStore.MsftAccount account = saveAccountOrThrow(context, authManager, cancelled);
         MsftAccountStore.setActive(context, account.id);
         MsftAccountStore.MsftAccount active = MsftAccountStore.find(context, account.id);
         return active != null ? active : account;
     }
 
-    public static synchronized MsftAccountStore.MsftAccount saveAccountOrThrow(Context context, BedrockAuthManager authManager) throws Exception {
+    public static MsftAccountStore.MsftAccount saveAccountOrThrow(Context context, BedrockAuthManager authManager) throws Exception {
+        return saveAccountOrThrow(context, authManager, null);
+    }
+
+    private static MsftAccountStore.MsftAccount saveAccountOrThrow(
+            Context context, BedrockAuthManager authManager, BooleanSupplier cancelled) throws Exception {
+        ensureNotCancelled(cancelled);
         if (context == null || authManager == null) {
             throw new IllegalArgumentException("Authentication result is missing.");
         }
 
-        refreshXalCredentials(authManager);
+        refreshXalCredentials(authManager, cancelled);
         XblUserProfile profile = authManager.getXboxUserProfile().getUpToDate();
         MinecraftCertificateChain certificateChain = authManager.getMinecraftCertificateChain().getUpToDate();
 
@@ -351,6 +452,7 @@ public final class MsftAuthManager {
         String xuid = certificateChain.getIdentityXuid();
 
         String serialized = BedrockAuthManager.toJson(authManager).toString();
+        ensureNotCancelled(cancelled);
         MsftAccountStore.MsftAccount account = MsftAccountStore.addOrUpdate(
                 context,
                 msaUserId,
@@ -449,6 +551,38 @@ public final class MsftAuthManager {
         return message;
     }
 
+    public static String describeError(Context context, Throwable throwable) {
+        Throwable error = unwrap(throwable);
+        int message = R.string.accounts_error_failed;
+        if (error instanceof InterruptedException || error instanceof CancellationException) {
+            message = R.string.accounts_error_cancelled;
+        } else if (error instanceof TimeoutException || error instanceof SocketTimeoutException) {
+            message = R.string.accounts_error_timeout;
+        } else if (error instanceof SSLException) {
+            message = R.string.accounts_error_secure_connection;
+        } else if (error instanceof XblRequestException) {
+            message = R.string.accounts_error_xbox;
+        } else if (error instanceof MsaRequestException) {
+            String code = normalizeError(((MsaRequestException) error).getError());
+            if ("invalid_grant".equals(code) || "expired_token".equals(code) || "bad_verification_code".equals(code)) {
+                message = R.string.accounts_error_expired;
+            } else if ("access_denied".equals(code) || "authorization_declined".equals(code)) {
+                message = R.string.accounts_error_declined;
+            }
+        } else if (error instanceof HttpRequestException) {
+            HttpRequestException requestError = (HttpRequestException) error;
+            int status = requestError.getResponse() == null ? 0 : requestError.getResponse().getStatusCode();
+            if (status == 429) message = R.string.accounts_error_throttled;
+            else if (status >= 500) message = R.string.accounts_error_unavailable;
+            else if (status == 401) message = R.string.accounts_error_expired;
+            else if (status == 403) message = R.string.accounts_error_declined;
+            else if (status == 0) message = R.string.accounts_error_connection;
+        } else if (isTransientNetworkFailure(error)) {
+            message = R.string.accounts_error_connection;
+        }
+        return context.getString(message);
+    }
+
     private interface ThrowingSupplier<T> {
         T get() throws Exception;
     }
@@ -514,7 +648,7 @@ public final class MsftAuthManager {
 
     private static long transientRetryDelay(long baseIntervalMs, int failureCount) {
         long extra = 1000L << Math.min(3, Math.max(0, failureCount - 1));
-        return Math.min(MAX_TRANSIENT_RETRY_DELAY_MS, Math.max(baseIntervalMs, extra));
+        return Math.max(baseIntervalMs, Math.min(MAX_TRANSIENT_RETRY_DELAY_MS, extra));
     }
 
     private static void emitState(Consumer<DeviceCodeState> consumer, DeviceCodeState state) {
@@ -525,7 +659,7 @@ public final class MsftAuthManager {
 
     private static HttpClient createHttpClient() {
         String version = TextUtils.isEmpty(BuildConfig.VERSION_NAME) ? "unknown" : BuildConfig.VERSION_NAME;
-        return MinecraftAuth.createHttpClient("LeviLauncher/" + version + " Android");
+        return MinecraftAuth.createHttpClient("LeviLauncher/" + version + " Android").setReadTimeout(15000);
     }
 
     private static String normalizeError(String error) {

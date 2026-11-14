@@ -97,6 +97,78 @@ final class ModMenuDialogs {
         popup[0] = show(anchor, title, body, 260);
     }
 
+    static void palettes(View anchor, int selected, Selection listener) {
+        Context context = ModMenuTheme.wrap(anchor.getContext());
+        ModMenuTheme theme = new ModMenuTheme(context);
+        LinearLayout body = column(context);
+        int available = Math.min(theme.dp(432), bounds(anchor, theme).width());
+        int columns = available >= theme.dp(360) ? 3 : available >= theme.dp(240) ? 2 : 1;
+        Popover[] popup = new Popover[1];
+        for (int start = 0; start < ModMenuTheme.PRESET_IDS.length; start += columns) {
+            LinearLayout line = new LinearLayout(context);
+            line.setBaselineAligned(false);
+            LinearLayout.LayoutParams lineParams = new LinearLayout.LayoutParams(-1, -2);
+            if (start > 0) lineParams.topMargin = theme.dp(7);
+            body.addView(line, lineParams);
+            for (int column = 0; column < columns; column++) {
+                int index = start + column;
+                LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(0, -1, 1);
+                if (column > 0) cardParams.setMarginStart(theme.dp(7));
+                if (index >= ModMenuTheme.PRESET_IDS.length) {
+                    line.addView(new View(context), cardParams);
+                    continue;
+                }
+                LinearLayout card = new LinearLayout(context);
+                card.setOrientation(LinearLayout.VERTICAL);
+                card.setPadding(theme.dp(6), theme.dp(6), theme.dp(6), theme.dp(3));
+                card.setTag("palette:" + ModMenuTheme.PRESET_IDS[index]);
+                card.setSelected(index == selected);
+                card.setFocusable(true);
+                card.setContentDescription(ModMenuTheme.presetName(context, index));
+                android.graphics.drawable.GradientDrawable background = theme.shape(theme.raised, 8, true);
+                background.setStroke(theme.dp(index == selected ? 2 : 1), index == selected ? theme.accent : theme.outline);
+                card.setBackground(new android.graphics.drawable.RippleDrawable(
+                        android.content.res.ColorStateList.valueOf(theme.dark ? 0x20FFFFFF : 0x18000000),
+                        background, theme.shape(Color.WHITE, 8, false)));
+                int[] colors = ModMenuTheme.colors(index, theme.dark);
+                LinearLayout preview = new LinearLayout(context);
+                preview.setBackground(theme.shape(colors[0], 5, false));
+                preview.setClipToOutline(true);
+                View rail = new View(context);
+                rail.setBackgroundColor(colors[1]);
+                preview.addView(rail, new LinearLayout.LayoutParams(theme.dp(14), -1));
+                LinearLayout content = new LinearLayout(context);
+                content.setOrientation(LinearLayout.VERTICAL);
+                content.setPadding(theme.dp(6), theme.dp(5), theme.dp(6), theme.dp(5));
+                preview.addView(content, new LinearLayout.LayoutParams(0, -1, 1));
+                View heading = new View(context);
+                heading.setBackground(theme.shape(colors[7], 2, false));
+                content.addView(heading, new LinearLayout.LayoutParams(theme.dp(27), theme.dp(4)));
+                View row = new View(context);
+                row.setBackground(theme.shape(colors[2], 3, false));
+                LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(-1, theme.dp(12));
+                rowParams.topMargin = theme.dp(5);
+                content.addView(row, rowParams);
+                card.addView(preview, new LinearLayout.LayoutParams(-1, theme.dp(36)));
+                TextView name = theme.label(ModMenuTheme.presetName(context, index), 11, index == selected);
+                name.setGravity(Gravity.CENTER_VERTICAL);
+                name.setMinHeight(theme.dp(32));
+                name.setMaxLines(2);
+                if (index == selected) {
+                    name.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.ic_modmenu_check, 0);
+                    name.setCompoundDrawableTintList(android.content.res.ColorStateList.valueOf(theme.accent));
+                }
+                card.addView(name, new LinearLayout.LayoutParams(-1, -2));
+                line.addView(card, cardParams);
+                card.setOnClickListener(v -> {
+                    popup[0].dismiss();
+                    listener.select(index);
+                });
+            }
+        }
+        popup[0] = show(anchor, context.getString(R.string.mw_palette), body, 432);
+    }
+
     static void color(Context context, CharSequence title, int initial, boolean alpha, ColorSelection listener) {
         color(anchor(context), title, initial, alpha, listener);
     }

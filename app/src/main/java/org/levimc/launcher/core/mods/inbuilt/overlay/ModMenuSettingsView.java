@@ -79,19 +79,21 @@ final class ModMenuSettingsView {
 
     private void appearance() {
         page = pages.get(0);
-        choose(R.string.mm_theme, 0, strings(R.string.mm_system, R.string.mm_dark, R.string.mm_light), prefs.mode(), value -> {
-            prefs.put("theme", value);
-            if (prefs.palette() == 1 && value != 2) prefs.put("palette", 0);
+        modeControl();
+        LinearLayout paletteRow = row(R.string.mw_palette, R.string.mm_palette_full_hint);
+        paletteRow.setId(R.id.setting_menu_palette);
+        TextView paletteValue = control(paletteRow, ModMenuTheme.presetName(context, prefs.palette()));
+        paletteValue.setId(R.id.menu_palette_value);
+        paletteValue.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.ic_modmenu_chevron, 0);
+        paletteValue.setCompoundDrawableTintList(android.content.res.ColorStateList.valueOf(theme.secondary));
+        paletteValue.setCompoundDrawablePadding(theme.dp(6));
+        View.OnClickListener openPalette = v -> ModMenuDialogs.palettes(paletteValue, prefs.palette(), value -> {
+            if (value == prefs.palette()) return;
+            prefs.setPalette(value);
             changed.run();
         });
-        String[] names = ModMenuTheme.PRESETS.clone();
-        names[0] = context.getString(R.string.mw_neutral);
-        choose(R.string.mw_palette, R.string.mw_palette_hint, names, prefs.palette(), value -> {
-            prefs.put("palette", value);
-            prefs.put("theme", value == 1 ? 2 : 1);
-            prefs.put("accent_source", 0);
-            changed.run();
-        });
+        paletteRow.setOnClickListener(openPalette);
+        paletteValue.setOnClickListener(openPalette);
         choose(R.string.mm_accent_source, 0, strings(R.string.mw_palette_color, R.string.mm_custom_color), prefs.accentSource(), value -> {
             prefs.put("accent_source", value); changed.run();
         });
@@ -122,6 +124,42 @@ final class ModMenuSettingsView {
         slider(R.string.mm_corners, 0, "radius", prefs.radius(), 6, 22, " dp");
         slider(R.string.mw_element_corners, 0, "element_radius", prefs.elementRadius(), 3, 14, " dp");
         boundSlider(R.string.mod_menu_opacity, R.string.mm_opacity_hint, R.id.seekbar_mod_menu_opacity, R.id.text_mod_menu_opacity, 70, 100);
+    }
+
+    private void modeControl() {
+        LinearLayout box = new LinearLayout(context);
+        box.setOrientation(LinearLayout.VERTICAL);
+        box.setPadding(0, theme.dp(4), 0, theme.dp(5));
+        box.addView(labels(R.string.mm_color_mode, R.string.mm_color_mode_hint), new LinearLayout.LayoutParams(-1, -2));
+        LinearLayout options = new LinearLayout(context);
+        LinearLayout.LayoutParams optionsParams = new LinearLayout.LayoutParams(-1, -2);
+        optionsParams.topMargin = theme.dp(8);
+        box.addView(options, optionsParams);
+        int[] names = {R.string.mm_system, R.string.mm_dark, R.string.mm_light};
+        int[] ids = {R.id.menu_mode_system, R.id.menu_mode_dark, R.id.menu_mode_light};
+        for (int i = 0; i < names.length; i++) {
+            int mode = i;
+            boolean selected = prefs.mode() == mode;
+            TextView option = theme.label(context.getString(names[i]), 12, selected);
+            option.setId(ids[i]);
+            option.setGravity(Gravity.CENTER);
+            option.setMinHeight(theme.dp(40));
+            option.setPadding(theme.dp(6), theme.dp(6), theme.dp(6), theme.dp(6));
+            option.setTextColor(selected ? Color.WHITE : theme.text);
+            option.setBackground(theme.touch(selected ? theme.primary : theme.raised, theme.corner, !selected));
+            option.setSelected(selected);
+            option.setFocusable(true);
+            option.setContentDescription(context.getString(R.string.mm_color_mode) + ": " + context.getString(names[i]));
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(0, -1, 1);
+            if (i > 0) params.setMarginStart(theme.dp(6));
+            options.addView(option, params);
+            option.setOnClickListener(v -> {
+                if (prefs.mode() == mode) return;
+                prefs.put("theme", mode);
+                changed.run();
+            });
+        }
+        page.addView(box, new LinearLayout.LayoutParams(-1, -2));
     }
 
     private void layout() {
@@ -278,7 +316,9 @@ final class ModMenuSettingsView {
         value.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, R.drawable.ic_modmenu_chevron, 0);
         value.setCompoundDrawableTintList(android.content.res.ColorStateList.valueOf(theme.secondary));
         value.setCompoundDrawablePadding(theme.dp(6));
-        value.setOnClickListener(v -> ModMenuDialogs.choices(v, context.getString(title), items, selected, null, listener));
+        View.OnClickListener open = v -> ModMenuDialogs.choices(value, context.getString(title), items, selected, null, listener);
+        value.setOnClickListener(open);
+        row.setOnClickListener(open);
     }
 
     private TextView control(LinearLayout row, CharSequence text) {

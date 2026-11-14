@@ -354,6 +354,10 @@ public class ModsFullscreenActivity extends BaseActivity {
             GameVersion version = currentVersion();
             if (version != null) PackageActions.update(this, version, row, pkgDone(null));
         });
+        modsAdapter.setOnModUninstallListener(mod -> {
+            GameVersion version = currentVersion();
+            if (version != null) PackageActions.deleteModFolder(this, version, mod, pkgDone(mod));
+        });
         modsAdapter.setOnModEnableChangeListener((mod, enabled) -> {
             if (viewModel == null) return;
             viewModel.setModEnabled(mod.getId(), enabled);

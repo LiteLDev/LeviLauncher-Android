@@ -1,0 +1,14 @@
+<resources>
+    <string name="mm_color_mode">表示モード</string>
+    <string name="mm_color_mode_hint">ダーク、ライト、または端末の設定に合わせます。</string>
+    <string name="mm_palette_full_hint">メニュー全体の配色を選びます。</string>
+    <string name="mm_palette_graphite">グラファイト</string>
+    <string name="mm_palette_midnight">ミッドナイト</string>
+    <string name="mm_palette_ocean">オーシャン</string>
+    <string name="mm_palette_forest">フォレスト</string>
+    <string name="mm_palette_amethyst">アメジスト</string>
+    <string name="mm_palette_rose">ローズ</string>
+    <string name="mm_palette_ember">エンバー</string>
+    <string name="mm_palette_sandstone">サンドストーン</string>
+    <string name="mm_palette_monokai">Monokai</string>
+</resources>

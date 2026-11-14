@@ -1,562 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="@color/surface"
-            android:elevation="6dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingHorizontal="14dp">
-
-            <ImageButton
-                android:id="@+id/msft_back_button"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/back"
-                android:padding="10dp"
-                android:src="@drawable/ic_arrow_back"
-                android:tint="@color/on_surface" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/misans"
-                    android:text="@string/ms_login_title"
-                    android:textColor="@color/on_surface"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/misans"
-                    android:text="@string/ms_login_header_subtitle"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp" />
-            </LinearLayout>
+<LinearLayout android:id="@+id/msft_login_root" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:paddingStart="16dp" android:paddingEnd="16dp" android:paddingTop="8dp" android:paddingBottom="8dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="44dp" android:gravity="center_vertical">
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/ms_choose_login_method" android:textAppearance="@style/TextAppearance.Levi.SectionTitle" android:textSize="18sp" android:includeFontPadding="false" android:accessibilityHeading="true" />
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:text="@string/accounts_sign_in_subtitle" android:textAppearance="@style/TextAppearance.Levi.Caption" android:textSize="11sp" />
         </LinearLayout>
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-
-            <ScrollView
-                android:id="@+id/msft_method_panel"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fillViewport="true"
-                android:overScrollMode="never">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:padding="24dp">
-
-                    <ImageView
-                        android:layout_width="58dp"
-                        android:layout_height="58dp"
-                        android:contentDescription="@null"
-                        android:padding="8dp"
-                        android:src="@drawable/ic_qa_account"
-                        android:tint="@color/primary" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:fontFamily="@font/misans"
-                        android:gravity="center"
-                        android:text="@string/ms_choose_login_method"
-                        android:textColor="@color/on_surface"
-                        android:textSize="25sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="6dp"
-                        android:fontFamily="@font/misans"
-                        android:gravity="center"
-                        android:maxWidth="620dp"
-                        android:text="@string/ms_choose_login_method_desc"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/msft_method_error"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
-                        android:background="@drawable/card_background_small"
-                        android:fontFamily="@font/misans"
-                        android:gravity="center"
-                        android:maxWidth="720dp"
-                        android:padding="12dp"
-                        android:textColor="#D32F2F"
-                        android:textSize="14sp"
-                        android:visibility="gone" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="18dp"
-                        android:gravity="center"
-                        android:orientation="horizontal"
-                        android:weightSum="2">
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="8dp"
-                            android:layout_weight="1"
-                            app:cardBackgroundColor="@color/surface"
-                            app:cardCornerRadius="14dp"
-                            app:cardElevation="3dp">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_horizontal"
-                                android:orientation="vertical"
-                                android:padding="18dp">
-
-                                <ImageView
-                                    android:layout_width="42dp"
-                                    android:layout_height="42dp"
-                                    android:contentDescription="@null"
-                                    android:src="@drawable/ic_code"
-                                    android:tint="@color/primary" />
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="8dp"
-                                    android:fontFamily="@font/misans"
-                                    android:gravity="center"
-                                    android:text="@string/ms_device_code_option_title"
-                                    android:textColor="@color/on_surface"
-                                    android:textSize="18sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="6dp"
-                                    android:fontFamily="@font/misans"
-                                    android:gravity="center"
-                                    android:minHeight="44dp"
-                                    android:text="@string/ms_device_code_login_desc"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="13sp" />
-
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/msft_device_login_button"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="54dp"
-                                    android:layout_marginTop="12dp"
-                                    android:fontFamily="@font/misans"
-                                    android:maxLines="1"
-                                    android:text="@string/ms_device_code_login"
-                                    android:textAllCaps="false"
-                                    android:textSize="14sp"
-                                    android:textStyle="bold"
-                                    app:cornerRadius="10dp"
-                                    app:icon="@drawable/ic_internet"
-                                    app:iconGravity="textStart"
-                                    app:iconTint="@android:color/white" />
-                            </LinearLayout>
-                        </com.google.android.material.card.MaterialCardView>
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_weight="1"
-                            app:cardBackgroundColor="@color/surface"
-                            app:cardCornerRadius="14dp"
-                            app:cardElevation="3dp">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_horizontal"
-                                android:orientation="vertical"
-                                android:padding="18dp">
-
-                                <ImageView
-                                    android:layout_width="42dp"
-                                    android:layout_height="42dp"
-                                    android:contentDescription="@null"
-                                    android:src="@drawable/ic_monitor"
-                                    android:tint="@color/text_secondary" />
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="8dp"
-                                    android:fontFamily="@font/misans"
-                                    android:gravity="center"
-                                    android:text="@string/ms_webview_option_title"
-                                    android:textColor="@color/on_surface"
-                                    android:textSize="18sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="6dp"
-                                    android:fontFamily="@font/misans"
-                                    android:gravity="center"
-                                    android:minHeight="44dp"
-                                    android:text="@string/ms_webview_login_desc"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="13sp" />
-
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/msft_web_login_button"
-                                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="54dp"
-                                    android:layout_marginTop="12dp"
-                                    android:fontFamily="@font/misans"
-                                    android:maxLines="1"
-                                    android:text="@string/ms_webview_login"
-                                    android:textAllCaps="false"
-                                    android:textSize="14sp"
-                                    android:textStyle="bold"
-                                    app:cornerRadius="10dp"
-                                    app:icon="@drawable/ic_monitor"
-                                    app:iconGravity="textStart" />
-                            </LinearLayout>
-                        </com.google.android.material.card.MaterialCardView>
-                    </LinearLayout>
-                </LinearLayout>
-            </ScrollView>
-
-            <ScrollView
-                android:id="@+id/msft_device_panel"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fillViewport="true"
-                android:overScrollMode="never"
-                android:visibility="gone">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:padding="24dp"
-                    android:weightSum="2">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="12dp"
-                        android:layout_weight="1.12"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/misans"
-                            android:text="@string/ms_device_code_title"
-                            android:textColor="@color/on_surface"
-                            android:textSize="24sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
-                            android:fontFamily="@font/misans"
-                            android:text="@string/ms_device_code_instructions"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="14sp" />
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            app:cardBackgroundColor="@color/surface"
-                            app:cardCornerRadius="14dp"
-                            app:cardElevation="3dp">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_horizontal"
-                                android:orientation="vertical"
-                                android:padding="18dp">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="@font/misans"
-                                    android:text="@string/ms_device_code_label"
-                                    android:textAllCaps="true"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="11sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:id="@+id/msft_device_code"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="6dp"
-                                    android:autoSizeMaxTextSize="32sp"
-                                    android:autoSizeMinTextSize="20sp"
-                                    android:autoSizeStepGranularity="1sp"
-                                    android:autoSizeTextType="uniform"
-                                    android:fontFamily="monospace"
-                                    android:gravity="center"
-                                    android:letterSpacing="0.14"
-                                    android:maxLines="1"
-                                    android:minHeight="48dp"
-                                    android:text="@string/ms_device_code_waiting_code"
-                                    android:textColor="@color/on_surface"
-                                    android:textIsSelectable="true"
-                                    android:textStyle="bold" />
-
-                                <View
-                                    android:layout_width="match_parent"
-                                    android:layout_height="1dp"
-                                    android:layout_marginTop="12dp"
-                                    android:background="#20888888" />
-
-                                <TextView
-                                    android:id="@+id/msft_device_url"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="12dp"
-                                    android:fontFamily="@font/misans"
-                                    android:gravity="center"
-                                    android:text="@string/ms_device_code_requesting"
-                                    android:textColor="@color/primary"
-                                    android:textIsSelectable="true"
-                                    android:textSize="14sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:id="@+id/msft_device_expiry"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="8dp"
-                                    android:background="@drawable/bg_filter_chip"
-                                    android:fontFamily="@font/misans"
-                                    android:paddingHorizontal="12dp"
-                                    android:paddingVertical="5dp"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="12sp" />
-                            </LinearLayout>
-                        </com.google.android.material.card.MaterialCardView>
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
-                        android:layout_weight="0.88"
-                        android:orientation="vertical">
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            app:cardBackgroundColor="@color/surface"
-                            app:cardCornerRadius="14dp"
-                            app:cardElevation="3dp">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical"
-                                android:padding="18dp">
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:fontFamily="@font/misans"
-                                    android:text="@string/ms_device_code_step_title"
-                                    android:textColor="@color/on_surface"
-                                    android:textSize="17sp"
-                                    android:textStyle="bold" />
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="5dp"
-                                    android:fontFamily="@font/misans"
-                                    android:text="@string/ms_device_code_browser_note"
-                                    android:textColor="@color/text_secondary"
-                                    android:textSize="13sp" />
-
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/msft_open_browser"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="56dp"
-                                    android:layout_marginTop="14dp"
-                                    android:autoSizeMaxTextSize="15sp"
-                                    android:autoSizeMinTextSize="11sp"
-                                    android:autoSizeStepGranularity="1sp"
-                                    android:autoSizeTextType="uniform"
-                                    android:enabled="false"
-                                    android:fontFamily="@font/misans"
-                                    android:maxLines="1"
-                                    android:text="@string/ms_device_code_open_browser"
-                                    android:textAllCaps="false"
-                                    android:textStyle="bold"
-                                    app:cornerRadius="10dp"
-                                    app:icon="@drawable/ic_internet"
-                                    app:iconGravity="textStart"
-                                    app:iconTint="@android:color/white" />
-
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/msft_copy_code"
-                                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="52dp"
-                                    android:layout_marginTop="10dp"
-                                    android:enabled="false"
-                                    android:fontFamily="@font/misans"
-                                    android:maxLines="1"
-                                    android:text="@string/ms_device_code_copy"
-                                    android:textAllCaps="false"
-                                    android:textStyle="bold"
-                                    app:cornerRadius="10dp"
-                                    app:icon="@drawable/ic_code"
-                                    app:iconGravity="textStart" />
-
-                                <LinearLayout
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="16dp"
-                                    android:gravity="center_vertical"
-                                    android:orientation="horizontal">
-
-                                    <ProgressBar
-                                        android:id="@+id/msft_device_progress"
-                                        android:layout_width="28dp"
-                                        android:layout_height="28dp"
-                                        android:indeterminate="true" />
-
-                                    <TextView
-                                        android:id="@+id/msft_device_status"
-                                        android:layout_width="0dp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_marginStart="12dp"
-                                        android:layout_weight="1"
-                                        android:fontFamily="@font/misans"
-                                        android:text="@string/ms_device_code_requesting"
-                                        android:textColor="@color/text_secondary"
-                                        android:textSize="13sp" />
-                                </LinearLayout>
-
-                                <com.google.android.material.button.MaterialButton
-                                    android:id="@+id/msft_device_cancel"
-                                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="48dp"
-                                    android:layout_marginTop="8dp"
-                                    android:fontFamily="@font/misans"
-                                    android:text="@string/ms_choose_other_method"
-                                    android:textAllCaps="false" />
-                            </LinearLayout>
-                        </com.google.android.material.card.MaterialCardView>
-                    </LinearLayout>
-                </LinearLayout>
-            </ScrollView>
-
-            <FrameLayout
-                android:id="@+id/msft_web_panel"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone">
-
-                <WebView
-                    android:id="@+id/msft_login_webview"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/msft_web_cancel"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="48dp"
-                    android:layout_gravity="bottom|end"
-                    android:layout_margin="14dp"
-                    android:fontFamily="@font/misans"
-                    android:text="@string/ms_choose_other_method"
-                    android:textAllCaps="false"
-                    app:cornerRadius="10dp" />
-            </FrameLayout>
-        </FrameLayout>
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/msft_progress_overlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#D9000000"
-        android:clickable="true"
-        android:focusable="true"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="320dp"
-            android:layout_height="wrap_content"
-            app:cardBackgroundColor="@color/surface"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="8dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:padding="24dp">
-
-                <ProgressBar
-                    android:id="@+id/msft_progress_bar"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:indeterminate="true" />
-
-                <TextView
-                    android:id="@+id/msft_progress_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="14dp"
-                    android:fontFamily="@font/misans"
-                    android:gravity="center"
-                    android:text="@string/ms_login_exchanging"
-                    android:textColor="@color/on_surface"
-                    android:textSize="15sp"
-                    android:textStyle="bold" />
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:layout_marginTop="8dp">
+        <ScrollView android:id="@+id/msft_method_panel" android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true" android:overScrollMode="never" android:scrollbars="none">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="top" android:paddingBottom="8dp">
+                <TextView android:id="@+id/msft_method_error" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="10dp" android:padding="12dp" android:background="@drawable/bg_ui_card_inner" android:textAppearance="@style/TextAppearance.Levi.Body" android:textColor="@color/ui_danger" android:textSize="12sp" android:accessibilityLiveRegion="polite" android:visibility="gone" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:baselineAligned="false">
+                    <com.google.android.material.card.MaterialCardView style="@style/Widget.Levi.Card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginEnd="5dp" app:cardCornerRadius="12dp">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+                            <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_monitor" app:tint="@color/accent_text" android:importantForAccessibility="no" />
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:text="@string/accounts_embedded_title" android:textAppearance="@style/TextAppearance.Levi.SectionTitle" android:textSize="15sp" />
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:minHeight="36dp" android:text="@string/accounts_embedded_description" android:textAppearance="@style/TextAppearance.Levi.Caption" android:textSize="12sp" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/msft_web_login_button" style="@style/Widget.Levi.Button.Primary" android:layout_width="match_parent" android:layout_height="40dp" android:layout_marginTop="12dp" android:text="@string/ms_webview_login" android:textSize="12sp" app:icon="@drawable/ic_ui_person" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                    <com.google.android.material.card.MaterialCardView style="@style/Widget.Levi.Card" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="5dp" app:cardCornerRadius="12dp">
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
+                            <ImageView android:layout_width="28dp" android:layout_height="28dp" android:src="@drawable/ic_internet" app:tint="@color/accent_text" android:importantForAccessibility="no" />
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="10dp" android:text="@string/accounts_device_title" android:textAppearance="@style/TextAppearance.Levi.SectionTitle" android:textSize="15sp" />
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:minHeight="36dp" android:text="@string/accounts_device_description" android:textAppearance="@style/TextAppearance.Levi.Caption" android:textSize="12sp" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/msft_device_login_button" style="@style/Widget.Levi.Button.Secondary" android:layout_width="match_parent" android:layout_height="40dp" android:layout_marginTop="12dp" android:text="@string/ms_device_code_login" android:textSize="12sp" app:icon="@drawable/ic_ui_open_in_new" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-    </LinearLayout>
-</FrameLayout>
+        </ScrollView>
+        <ScrollView android:id="@+id/msft_device_panel" android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true" android:overScrollMode="never" android:scrollbars="none" android:visibility="gone">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center_vertical" android:paddingBottom="8dp">
+                <com.google.android.material.card.MaterialCardView style="@style/Widget.Levi.Card" android:layout_width="match_parent" android:layout_height="wrap_content" app:cardCornerRadius="12dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:padding="16dp" android:baselineAligned="false">
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:layout_marginEnd="20dp">
+                            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/ms_device_code_label" android:textAppearance="@style/TextAppearance.Levi.Caption" android:textSize="11sp" />
+                            <TextView android:id="@+id/msft_device_code" android:layout_width="match_parent" android:layout_height="56dp" android:text="@string/ms_device_code_waiting_code" android:fontFamily="monospace" android:textStyle="bold" android:textColor="@color/text_primary" android:textSize="28sp" android:letterSpacing="0.08" android:gravity="center" android:textIsSelectable="true" android:maxLines="1" android:autoSizeTextType="uniform" android:autoSizeMinTextSize="18sp" android:autoSizeMaxTextSize="28sp" android:autoSizeStepGranularity="1sp" />
+                            <TextView android:id="@+id/msft_device_url" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:textAppearance="@style/TextAppearance.Levi.Body" android:textColor="@color/accent_text" android:textSize="12sp" android:textIsSelectable="true" />
+                            <TextView android:id="@+id/msft_device_expiry" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:textAppearance="@style/TextAppearance.Levi.Caption" android:textSize="11sp" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/msft_copy_code" style="@style/Widget.Levi.Button.Secondary" android:layout_width="wrap_content" android:layout_height="40dp" android:layout_marginTop="8dp" android:text="@string/ms_device_code_copy" android:textSize="12sp" android:enabled="false" app:icon="@drawable/ic_ui_code" />
+                        </LinearLayout>
+                        <View android:layout_width="1dp" android:layout_height="132dp" android:background="@color/divider" android:layout_marginEnd="20dp" />
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1.15" android:orientation="vertical">
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/ms_device_code_step_title" android:textAppearance="@style/TextAppearance.Levi.SectionTitle" android:textSize="14sp" />
+                            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="@string/accounts_device_steps" android:textAppearance="@style/TextAppearance.Levi.Caption" android:textSize="12sp" />
+                            <com.google.android.material.button.MaterialButton android:id="@+id/msft_open_browser" style="@style/Widget.Levi.Button.Primary" android:layout_width="match_parent" android:layout_height="40dp" android:layout_marginTop="10dp" android:text="@string/ms_device_code_open_browser" android:textSize="12sp" android:enabled="false" app:icon="@drawable/ic_ui_open_in_new" />
+                            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="36dp" android:gravity="center_vertical" android:layout_marginTop="4dp">
+                                <ProgressBar android:id="@+id/msft_device_progress" android:layout_width="16dp" android:layout_height="16dp" android:indeterminateTint="@color/primary" />
+                                <TextView android:id="@+id/msft_device_status" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="8dp" android:text="@string/ms_device_code_requesting" android:textAppearance="@style/TextAppearance.Levi.Caption" android:textSize="11sp" android:accessibilityLiveRegion="polite" />
+                            </LinearLayout>
+                            <com.google.android.material.button.MaterialButton android:id="@+id/msft_device_cancel" style="@style/Widget.Levi.Button.Ghost" android:layout_width="match_parent" android:layout_height="40dp" android:text="@string/ms_choose_other_method" android:textSize="12sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+        </ScrollView>
+        <LinearLayout android:id="@+id/msft_web_panel" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:visibility="gone">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="40dp" android:gravity="center_vertical">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/accounts_microsoft_page" android:textAppearance="@style/TextAppearance.Levi.Caption" android:textSize="11sp" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/msft_web_cancel" style="@style/Widget.Levi.Button.Ghost" android:layout_width="wrap_content" android:layout_height="40dp" android:text="@string/ms_choose_other_method" android:textSize="12sp" />
+            </LinearLayout>
+            <FrameLayout android:id="@+id/msft_web_container" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" />
+        </LinearLayout>
+        <FrameLayout android:id="@+id/msft_progress_overlay" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@color/background" android:clickable="true" android:focusable="true" android:visibility="gone">
+            <com.google.android.material.card.MaterialCardView style="@style/Widget.Levi.Card" android:layout_width="300dp" android:layout_height="wrap_content" android:layout_gravity="center" app:cardCornerRadius="14dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
+                        <ProgressBar android:id="@+id/msft_progress_bar" android:layout_width="24dp" android:layout_height="24dp" android:indeterminateTint="@color/primary" />
+                        <TextView android:id="@+id/msft_progress_text" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="14dp" android:text="@string/ms_login_fetch_minecraft_identity" android:textAppearance="@style/TextAppearance.Levi.Body" android:textSize="13sp" android:accessibilityLiveRegion="polite" />
+                    </LinearLayout>
+                    <com.google.android.material.button.MaterialButton android:id="@+id/msft_progress_cancel" style="@style/Widget.Levi.Button.Ghost" android:layout_width="match_parent" android:layout_height="40dp" android:layout_marginTop="10dp" android:text="@android:string/cancel" android:textSize="12sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </FrameLayout>
+    </FrameLayout>
+</LinearLayout>

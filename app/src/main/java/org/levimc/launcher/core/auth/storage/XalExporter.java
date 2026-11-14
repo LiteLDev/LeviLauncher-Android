@@ -44,6 +44,42 @@ public class XalExporter {
         export(ctx, authJson, active.msUserId, active.xboxGamertag, active.xuid);
     }
 
+    public static boolean prepareCachedAccount(Context ctx, MsftAccountStore.MsftAccount account) {
+        try {
+            return prepareCachedAccountOrThrow(ctx, account);
+        } catch (RuntimeException error) {
+            Log.w(TAG, "Saved Microsoft sign-in is unavailable for offline play");
+            return false;
+        }
+    }
+
+    private static boolean prepareCachedAccountOrThrow(Context ctx, MsftAccountStore.MsftAccount account) {
+        if (account == null || account.msUserId == null || account.msUserId.isEmpty()
+                || account.serializedAuthManager == null) return false;
+        JsonObject json;
+        try {
+            json = JsonParser.parseString(account.serializedAuthManager).getAsJsonObject();
+        } catch (RuntimeException error) {
+            return false;
+        }
+        String user = encodeUserId(account.msUserId);
+        File directory = new File(ctx.getApplicationContext().getFilesDir(), "xal/" + user);
+        File nativeMsa = new File(directory, "Xal." + TITLE_ID + ".Production.Msa." + user + ".json");
+        File nativeDefault = new File(directory, "Xal." + TITLE_ID + ".Production.Default.json");
+        if (nativeMsa.isFile() && nativeDefault.isFile()) {
+            String expectedId = "{" + stringValue(json, "deviceId") + "}";
+            SharedPreferences prefs = ctx.getSharedPreferences("org.levimc.xal.crypto", Context.MODE_PRIVATE);
+            if (!expectedId.equals(prefs.getString("id", ""))) writeDeviceIdentity(ctx, json);
+            return true;
+        }
+        if (!hasValidToken(json, "xboxLiveXstsToken") || !json.has("msaToken")) return false;
+        JsonObject msa = json.getAsJsonObject("msaToken");
+        if (!msa.has("expireTimeMs") || msa.get("expireTimeMs").getAsLong() <= System.currentTimeMillis()
+                || stringValue(msa, "accessToken").isEmpty()) return false;
+        export(ctx, json, account.msUserId, account.xboxGamertag, account.xuid);
+        return true;
+    }
+
     public static boolean importRefreshToken(Context ctx, MsftAccountStore.MsftAccount account, JsonObject authJson) {
         if (account.msUserId == null || account.msUserId.isEmpty() || !authJson.has("msaToken")) return false;
         String b64User = encodeUserId(account.msUserId);
@@ -202,7 +238,11 @@ public class XalExporter {
         File uFile = new File(userDir, "Xal." + tid + ".Production.RETAIL.User." + b64User + ".json");
         writeJson(uFile, uRoot);
 
-        if (authJson.has("deviceKeyPair")) {
+        writeDeviceIdentity(ctx, authJson);
+    }
+
+    private static void writeDeviceIdentity(Context ctx, JsonObject authJson) {
+        if (authJson.has("deviceKeyPair") && authJson.get("deviceKeyPair").isJsonObject()) {
             JsonObject kp = authJson.getAsJsonObject("deviceKeyPair");
             if (kp.has("publicKey") && kp.has("privateKey")) {
                 SharedPreferences.Editor edit = ctx.getSharedPreferences("org.levimc.xal.crypto", Context.MODE_PRIVATE).edit();

@@ -63,11 +63,22 @@ object MinecraftRuntimePreparer {
             listener.onProgress(8, context.getString(R.string.ms_login_auth_xbox_device))
             listener.onLog("Preparing Microsoft account")
             try {
-                MsftAuthManager.prepareActiveAccount(context.applicationContext)
-                trace.mark("Microsoft credentials prepared")
+                val accountState = MsftAuthManager.prepareAccountForLaunch(context.applicationContext)
+                when (accountState) {
+                    MsftAuthManager.LaunchAccountState.CACHED_OFFLINE -> {
+                        listener.onLog(context.getString(R.string.accounts_launch_cached_offline))
+                        trace.mark("Offline launch using saved Microsoft account")
+                    }
+                    MsftAuthManager.LaunchAccountState.SIGNED_OUT_OFFLINE -> {
+                        listener.onLog(context.getString(R.string.accounts_launch_signed_out_offline))
+                        trace.mark("Offline launch without online Microsoft authentication")
+                    }
+                    MsftAuthManager.LaunchAccountState.NO_ACCOUNT -> trace.mark("No Microsoft account selected")
+                    else -> trace.mark("Microsoft credentials prepared")
+                }
             } catch (error: Exception) {
                 throw IllegalStateException(
-                    context.getString(R.string.ms_login_failed_detail, MsftAuthManager.describeError(error)),
+                    context.getString(R.string.ms_login_failed_detail, MsftAuthManager.describeError(context, error)),
                     error
                 )
             }
