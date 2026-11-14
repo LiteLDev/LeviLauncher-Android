@@ -32,7 +32,7 @@
     <string name="flat_game_adventure">Приключение</string>
     <string name="misc_about_subtitle">LeviLauncher — современный лаунчер Minecraft Bedrock</string>
     <string name="misc_about_authors">Авторы и сопровождающие</string>
-    <string name="misc_about_maintainer_role">Сопровождающий Android-версии</string>
+    <string name="misc_about_maintainer_role">Сопровождающий LeviLauncher</string>
     <string name="misc_about_thanks">Особая благодарность</string>
     <string name="misc_about_thanks_desc">Особая благодарность людям и проектам, поддерживающим LeviLauncher.</string>
     <string name="misc_about_website">Веб-сайт</string>

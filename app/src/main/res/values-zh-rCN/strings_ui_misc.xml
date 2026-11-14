@@ -3,7 +3,7 @@
     <!-- About -->
     <string name="misc_about_subtitle">LeviLauncher - 一个现代化的 Minecraft 基岩版启动器</string>
     <string name="misc_about_authors">作者与维护者</string>
-    <string name="misc_about_maintainer_role">Android 版维护者</string>
+    <string name="misc_about_maintainer_role">LeviLauncher 维护者</string>
     <string name="misc_about_thanks">特别鸣谢</string>
     <string name="misc_about_thanks_desc">特别感谢为 LeviLauncher 提供帮助与支持的个人与项目。</string>
     <string name="misc_about_rhymc">旋律云</string>

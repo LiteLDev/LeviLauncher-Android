@@ -3,7 +3,7 @@
     <!-- About -->
     <string name="misc_about_subtitle">LeviLauncher - A Modern Minecraft Bedrock Launcher</string>
     <string name="misc_about_authors">Authors &amp; Maintainers</string>
-    <string name="misc_about_maintainer_role">Android maintainer</string>
+    <string name="misc_about_maintainer_role">LeviLauncher Maintainer</string>
     <string name="misc_about_thanks">Special Thanks</string>
     <string name="misc_about_thanks_desc">Special thanks to individuals and projects supporting LeviLauncher.</string>
     <string name="misc_about_rhymc">RhyMC</string>

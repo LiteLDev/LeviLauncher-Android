@@ -32,7 +32,7 @@
     <string name="flat_game_adventure">Aventure</string>
     <string name="misc_about_subtitle">LeviLauncher — Un lanceur moderne pour Minecraft Bedrock</string>
     <string name="misc_about_authors">Auteurs et responsables de maintenance</string>
-    <string name="misc_about_maintainer_role">Responsable Android</string>
+    <string name="misc_about_maintainer_role">Responsable de LeviLauncher</string>
     <string name="misc_about_thanks">Remerciements particuliers</string>
     <string name="misc_about_thanks_desc">Un grand merci aux personnes et aux projets qui soutiennent LeviLauncher.</string>
     <string name="misc_about_website">Site web</string>

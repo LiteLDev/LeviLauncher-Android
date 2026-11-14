@@ -2,30 +2,21 @@ package org.levimc.launcher.ui.activities;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.google.android.material.button.MaterialButton;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 
 import org.levimc.launcher.R;
-import org.levimc.launcher.ui.animation.DynamicAnim;
 import org.levimc.launcher.ui.widget.UiKit;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class AboutActivity extends BaseActivity {
 
-    private static final String AVATAR_URL = "https://avatars.githubusercontent.com/u/62042544?v=4";
+    private static final String AVATAR_URL = "https://avatars.githubusercontent.com/u/62042544?v=4&s=160";
     private static final String URL_AFDIAN = "https://afdian.com/a/DreamGuXiang";
     private static final String URL_PATREON = "https://www.patreon.com/c/DreamGuXiang";
     private static final String URL_REPO = "https://github.com/LiteLDev/LeviLauncher-Android";
@@ -36,47 +27,28 @@ public class AboutActivity extends BaseActivity {
     private static final String URL_LICENSE = "https://github.com/LiteLDev/LeviLauncher-Android/blob/HEAD/LICENSE";
     private static final String URL_RHYMC = "https://www.rhymc.com/";
 
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
-    private final OkHttpClient client = new OkHttpClient();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
-        setupNavBar();
-
-        loadAvatars();
+        setActiveNavTab(R.id.nav_tab_about);
         setupLinks();
-        styleBadges();
-
-        DynamicAnim.applyPressScaleRecursively(findViewById(android.R.id.content));
+        styleActions();
+        loadAvatars();
     }
 
-    private void styleBadges() {
-        TextView authorBadge = findViewById(R.id.author_badge);
-        TextView maintainerBadge = findViewById(R.id.maintainer_badge);
-        if (authorBadge != null) UiKit.tintSoftAccent(authorBadge, 7);
-        if (maintainerBadge != null) UiKit.tintSoftAccent(maintainerBadge, 7);
-
+    private void styleActions() {
         tintChip(R.id.about_authors_chip, R.id.about_authors_icon, UiKit.accent(this));
         tintChip(R.id.about_thanks_chip, R.id.about_thanks_icon, UiKit.AMBER);
-        tintChip(R.id.about_rhymc_chip, R.id.about_rhymc_icon, UiKit.BLUE);
-        tintChip(R.id.about_sponsors_chip, R.id.about_sponsors_icon, UiKit.ROSE);
         tintChip(R.id.about_source_chip, R.id.about_source_icon, UiKit.BLUE);
-
-        // Brand icons keep their own colors (the YouTube logo has a white play mark).
         clearIconTint(R.id.btn_afdian);
         clearIconTint(R.id.btn_patreon);
         clearIconTint(R.id.btn_youtube_maintainer);
-
-        MaterialButton starFork = findViewById(R.id.btn_star_fork);
-        if (starFork != null) UiKit.applyPrimary(starFork);
+        UiKit.applyPrimary(findViewById(R.id.btn_star_fork));
     }
 
     private void tintChip(int chipId, int iconId, int color) {
-        View chip = findViewById(chipId);
-        ImageView icon = findViewById(iconId);
-        if (chip != null) UiKit.tintIconChip(chip, icon, color);
+        UiKit.tintIconChip(findViewById(chipId), findViewById(iconId), color);
     }
 
     private void clearIconTint(int buttonId) {
@@ -84,39 +56,17 @@ public class AboutActivity extends BaseActivity {
         if (button != null) button.setIconTint((ColorStateList) null);
     }
 
-    private void setupNavBar() {
-        setActiveNavTab(R.id.nav_tab_about);
+    private void loadAvatars() {
+        RequestManager images = Glide.with(this);
+        loadAvatar(images, R.id.author_avatar, AVATAR_URL);
+        loadAvatar(images, R.id.maintainer_avatar, MAINTAINER_AVATAR_URL);
     }
 
-    private void loadAvatars() {
-        com.microsoft.xbox.idp.toolkit.CircleImageView avatar = findViewById(R.id.author_avatar);
-        com.microsoft.xbox.idp.toolkit.CircleImageView maintainerAvatar = findViewById(R.id.maintainer_avatar);
-
-        executor.execute(() -> {
-            try {
-                if (avatar != null) {
-                    Response resp = client.newCall(new Request.Builder().url(AVATAR_URL).build()).execute();
-                    if (resp.isSuccessful() && resp.body() != null) {
-                        Bitmap bmp = BitmapFactory.decodeStream(resp.body().byteStream());
-                        runOnUiThread(() -> {
-                            if (bmp != null) avatar.setImageBitmap(bmp);
-                        });
-                    }
-                }
-            } catch (Exception ignored) {}
-
-            try {
-                if (maintainerAvatar != null) {
-                    Response resp = client.newCall(new Request.Builder().url(MAINTAINER_AVATAR_URL).build()).execute();
-                    if (resp.isSuccessful() && resp.body() != null) {
-                        Bitmap bmp = BitmapFactory.decodeStream(resp.body().byteStream());
-                        runOnUiThread(() -> {
-                            if (bmp != null) maintainerAvatar.setImageBitmap(bmp);
-                        });
-                    }
-                }
-            } catch (Exception ignored) {}
-        });
+    private void loadAvatar(RequestManager images, int viewId, String url) {
+        ImageView avatar = findViewById(viewId);
+        int size = Math.round(UiKit.dp(this, 36));
+        images.load(url).placeholder(R.drawable.ic_qa_account).error(R.drawable.ic_qa_account)
+                .circleCrop().override(size, size).dontAnimate().into(avatar);
     }
 
     private void setupLinks() {
@@ -132,13 +82,12 @@ public class AboutActivity extends BaseActivity {
     }
 
     private void setupLinkButton(int viewId, String url) {
-        TextView btn = findViewById(viewId);
+        View btn = findViewById(viewId);
         if (btn == null) return;
         btn.setOnClickListener(v -> {
             try {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-            } catch (Exception ignored) {}
+            } catch (android.content.ActivityNotFoundException ignored) {}
         });
-        DynamicAnim.applyPressScale(btn);
     }
 }
