@@ -2,6 +2,7 @@ package org.levimc.launcher.ui.packages;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -9,23 +10,31 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.material.button.MaterialButton;
+
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.packages.Catalog;
+import org.levimc.launcher.core.packages.LocalSources;
 import org.levimc.launcher.core.packages.PackageService;
 import org.levimc.launcher.core.versions.GameVersion;
 import org.levimc.launcher.core.versions.VersionManager;
 import org.levimc.launcher.ui.activities.BaseActivity;
+import org.levimc.launcher.ui.dialogs.CustomAlertDialog;
 import org.levimc.launcher.ui.widget.SegmentedControl;
 import org.levimc.launcher.util.PersonalizationManager;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 
 /**
  * "LeviMC Mods" (Windows LIP page): the Browse and Installed tabs. Packages go into the global current instance
@@ -39,11 +48,16 @@ public class PackagesActivity extends BaseActivity {
     public static final String TAB_INSTALLED = "installed";
 
     private static final String STATE_TAB = "pkg_tab";
+    private static final String STATE_PICK_TARGET = "pkg_pick_target";
 
     private String currentTab = TAB_BROWSE;
     @Nullable
     private GameVersion target;
     private final List<TargetListener> listeners = new ArrayList<>();
+    private ActivityResultLauncher<String[]> pickArchive;
+    private ActivityResultLauncher<Uri> pickFolder;
+    @Nullable
+    private GameVersion pickTarget;
 
     public static Intent intent(Context context, @Nullable GameVersion version, @Nullable String tab) {
         Intent intent = new Intent(context, PackagesActivity.class);
@@ -59,11 +73,16 @@ public class PackagesActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        pickArchive = registerForActivityResult(new ActivityResultContracts.OpenDocument(),
+                uri -> onPicked(uri, false));
+        pickFolder = registerForActivityResult(new ActivityResultContracts.OpenDocumentTree(),
+                uri -> onPicked(uri, true));
         setContentView(R.layout.activity_packages);
 
         target = PackagesActivity.Instances.selected(this);
         if (savedInstanceState != null) {
             currentTab = savedInstanceState.getString(STATE_TAB, TAB_BROWSE);
+            pickTarget = savedInstanceState.getParcelable(STATE_PICK_TARGET);
         } else {
             String tab = getIntent().getStringExtra(EXTRA_TAB);
             currentTab = TAB_INSTALLED.equals(tab) ? TAB_INSTALLED : TAB_BROWSE;
@@ -82,6 +101,7 @@ public class PackagesActivity extends BaseActivity {
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(STATE_TAB, currentTab);
+        outState.putParcelable(STATE_PICK_TARGET, pickTarget);
     }
 
     // #region Tabs
@@ -134,11 +154,30 @@ public class PackagesActivity extends BaseActivity {
         SegmentedControl tabs = root.findViewById(R.id.pkg_header_tabs);
         if (tabs != null) {
             tabs.setEqualWidth(false);
+            tabs.setTextSizeSp(12);
             tabs.setItems(getString(R.string.pkg_tab_browse), getString(R.string.pkg_tab_installed));
+            int inset = Math.round(12 * getResources().getDisplayMetrics().density);
+            for (int i = 0; i < tabs.getSegmentCount(); i++) tabs.getSegment(i).setPadding(inset, 0, inset, 0);
             tabs.setSelectedIndex(index, false);
             tabs.setOnSegmentSelectedListener(i -> selectTab(i == 1 ? TAB_INSTALLED : TAB_BROWSE));
         }
         renderTargetTag(root.findViewById(R.id.pkg_header_target));
+        View guide = root.findViewById(R.id.pkg_btn_guide);
+        guide.setOnClickListener(v -> BrowseFragment.DevGuideDialog.show(this));
+        guide.setTooltipText(getString(R.string.pkg_guide_open));
+        View file = root.findViewById(R.id.pkg_inst_btn_file);
+        View identifier = root.findViewById(R.id.pkg_inst_btn_id);
+        file.setOnClickListener(v -> installFromFile());
+        identifier.setOnClickListener(v -> installById());
+        file.setTooltipText(getString(R.string.pkg_installed_install_file));
+        identifier.setTooltipText(getString(R.string.pkg_installed_install_id));
+        View toolbar = root.findViewById(R.id.pkg_search_toolbar);
+        updateActionLabels(root, getResources().getConfiguration().screenWidthDp < 560);
+        toolbar.addOnLayoutChangeListener((view, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+            if (right - left == oldRight - oldLeft) return;
+            updateActionLabels(root, right - left < 560 * getResources().getDisplayMetrics().density);
+        });
+        renderInstallActions(root);
         // Tab fragments are added after setContentView's personalization pass: re-tint their accent views.
         new PersonalizationManager(this).applyAccentToView(root, this);
         // Fragment views are inflated after the page's glass pass; give their cards the wallpaper material too.
@@ -161,7 +200,10 @@ public class PackagesActivity extends BaseActivity {
             String game = PackagesActivity.Instances.gameVersion(target);
             value = game.isEmpty() || game.equals(name) ? name : getString(R.string.pkg_target_value, name, game);
         }
-        tag.setText(getString(R.string.catalog_instance_tag, value));
+        String label = getString(R.string.catalog_instance_tag, value);
+        tag.setText(label);
+        tag.setContentDescription(label);
+        tag.setTooltipText(label);
     }
 
     private void setTarget(@Nullable GameVersion v) {
@@ -172,11 +214,79 @@ public class PackagesActivity extends BaseActivity {
         for (TargetListener l : new ArrayList<>(listeners)) {
             l.onPkgTargetChanged(target);
         }
+        for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+            if (fragment.getView() != null) renderInstallActions(fragment.getView());
+        }
     }
 
     @Nullable
     public GameVersion getPkgTarget() {
         return target;
+    }
+
+    private void renderInstallActions(View root) {
+        View file = root.findViewById(R.id.pkg_inst_btn_file);
+        View identifier = root.findViewById(R.id.pkg_inst_btn_id);
+        if (file != null) file.setEnabled(target != null);
+        if (identifier != null) identifier.setEnabled(target != null);
+    }
+
+    private void updateActionLabels(View root, boolean compact) {
+        MaterialButton identifier = root.findViewById(R.id.pkg_inst_btn_id);
+        String installLabel = compact ? "" : getString(R.string.pkg_installed_install_id);
+        if (!TextUtils.equals(identifier.getText(), installLabel)) identifier.setText(installLabel);
+        MaterialButton search = root.findViewById(R.id.pkg_btn_search);
+        if (search != null) {
+            String searchLabel = compact ? "" : getString(R.string.pkg_search);
+            if (!TextUtils.equals(search.getText(), searchLabel)) search.setText(searchLabel);
+            search.setTooltipText(getString(R.string.pkg_search));
+        }
+    }
+
+    private void installFromFile() {
+        GameVersion version = target;
+        if (version == null || isFinishing() || isDestroyed()) return;
+        new CustomAlertDialog(this)
+                .setTitleText(getString(R.string.pkg_install_file_title))
+                .setMessage(getString(R.string.pkg_install_file_body))
+                .setPositiveButton(getString(R.string.pkg_install_file_zip), ignored -> {
+                    pickTarget = version;
+                    pickArchive.launch(new String[]{"application/zip", "application/x-zip-compressed",
+                            "application/octet-stream", "*/*"});
+                })
+                .setNeutralButton(getString(R.string.pkg_install_file_folder), ignored -> {
+                    pickTarget = version;
+                    pickFolder.launch(null);
+                })
+                .setNegativeButton(getString(R.string.dialog_negative_cancel), null)
+                .show();
+    }
+
+    private void onPicked(@Nullable Uri uri, boolean folder) {
+        GameVersion version = pickTarget != null ? pickTarget : target;
+        pickTarget = null;
+        if (uri == null || version == null || isFinishing() || isDestroyed()) return;
+        Context app = getApplicationContext();
+        Callable<String> label = folder ? () -> InstalledFragment.folderLabel(uri)
+                : () -> LocalSources.Saf.displayName(app, uri, "package.zip");
+        PackageActions.installSource(this, version, label, PackageActions.copied(() -> folder
+                ? LocalSources.Saf.importTree(app, uri) : LocalSources.Saf.importDocument(app, uri)), installDone());
+    }
+
+    private void installById() {
+        if (target != null && !isFinishing() && !isDestroyed()) {
+            InstallByIdDialog.show(this, target, installDone());
+        }
+    }
+
+    private PackageActions.Done installDone() {
+        WeakReference<PackagesActivity> self = new WeakReference<>(this);
+        return changed -> {
+            PackagesActivity activity = self.get();
+            if (!changed || activity == null || activity.isFinishing() || activity.isDestroyed()) return;
+            Fragment installed = activity.getSupportFragmentManager().findFragmentByTag(TAB_INSTALLED);
+            if (installed instanceof InstalledFragment) ((InstalledFragment) installed).onPackagesInstalled();
+        };
     }
 
     public void addPkgTargetListener(TargetListener listener) {

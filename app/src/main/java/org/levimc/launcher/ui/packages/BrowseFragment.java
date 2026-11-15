@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.SpannableStringBuilder;
@@ -16,6 +17,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
@@ -30,6 +33,9 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -89,6 +95,8 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
     private MaterialButton emptyAction;
     private ProgressBar loading;
     private BrowseFragment.Adapter adapter;
+    @Nullable
+    private FiltersSheet filtersSheet;
 
     private List<CatalogModels.Pkg> packages = Collections.emptyList();
     @Nullable
@@ -125,15 +133,9 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
         searchBox = view.findViewById(R.id.pkg_search_box);
         MaterialButton searchButton = view.findViewById(R.id.pkg_btn_search);
         refreshButton = view.findViewById(R.id.pkg_btn_refresh);
-        MaterialButton guideButton = view.findViewById(R.id.pkg_btn_guide);
-        gameSelect = new CatalogSelect(view.findViewById(R.id.pkg_spinner_game), getString(R.string.pkg_game_version_label));
-        loaderSelect = new CatalogSelect(view.findViewById(R.id.pkg_spinner_ll), getString(R.string.pkg_ll_version_label));
-        sortSelect = new CatalogSelect(view.findViewById(R.id.pkg_spinner_sort), getString(R.string.pkg_sort_by));
-        orderSelect = new CatalogSelect(view.findViewById(R.id.pkg_spinner_order), getString(R.string.catalog_order));
         filtersButton = view.findViewById(R.id.pkg_btn_filters);
         activeFiltersScroll = view.findViewById(R.id.pkg_active_filters_scroll);
         activeFilters = view.findViewById(R.id.pkg_active_filters);
-        mappingHint = view.findViewById(R.id.pkg_mapping_hint);
         staleBanner = view.findViewById(R.id.pkg_stale_banner);
         results = view.findViewById(R.id.pkg_results);
         emptyView = view.findViewById(R.id.pkg_empty);
@@ -142,6 +144,7 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
         loading = view.findViewById(R.id.pkg_loading);
 
         UiKit.applyPrimary(searchButton);
+        UiKit.applyPrimary(view.findViewById(R.id.pkg_inst_btn_id));
 
         adapter = new BrowseFragment.Adapter(new Adapter.Listener() {
             @Override
@@ -186,11 +189,8 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
             loadCatalog(true);
             retryFilterContextIfUnavailable();
         });
-        guideButton.setOnClickListener(v -> BrowseFragment.DevGuideDialog.show(requireActivity()));
         filtersButton.setOnClickListener(v -> FiltersSheet.show(this));
 
-        setupSortSpinner();
-        setupVersionSpinners();
 
         PackagesActivity host = host();
         if (host != null) {
@@ -218,11 +218,28 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
         if (host != null) {
             host.removePkgTargetListener(this);
         }
+        if (filtersSheet != null) filtersSheet.dialog.dismiss();
         catalogRequest++;
         contextRequest++;
         ctx.cancel();
         main.removeCallbacksAndMessages(null);
         super.onDestroyView();
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (hidden && filtersSheet != null) filtersSheet.dialog.dismiss();
+    }
+
+    private void bindFilterControls(View controls) {
+        gameSelect = new CatalogSelect(controls.findViewById(R.id.pkg_spinner_game), getString(R.string.pkg_game_version_label));
+        loaderSelect = new CatalogSelect(controls.findViewById(R.id.pkg_spinner_ll), getString(R.string.pkg_ll_version_label));
+        sortSelect = new CatalogSelect(controls.findViewById(R.id.pkg_spinner_sort), getString(R.string.pkg_sort_by));
+        orderSelect = new CatalogSelect(controls.findViewById(R.id.pkg_spinner_order), getString(R.string.catalog_order));
+        mappingHint = controls.findViewById(R.id.pkg_mapping_hint);
+        setupSortSpinner();
+        setupVersionSpinners();
     }
 
     @Nullable
@@ -456,6 +473,7 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
         int facets = filters.facetCount();
         styleFiltersButton(facets);
         bindActiveFilters();
+        if (filtersSheet != null) filtersSheet.rebuild();
 
         emptyAction.setVisibility(View.GONE);
         if (loadingCatalog || showList) {
@@ -484,15 +502,16 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
         }
     }
 
-    /** The Filters icon button: accent tinted while facet filters are on (the chips below list them). */
     private void styleFiltersButton(int facets) {
         Context c = requireContext();
         filtersButton.setContentDescription(facets > 0
                 ? getString(R.string.pkg_filters_count, facets) : getString(R.string.pkg_filters));
+        filtersButton.setText(facets > 0 ? getString(R.string.pkg_filters_count, facets) : getString(R.string.pkg_filters));
         int fill = facets > 0 ? UiKit.accentSoft(c) : c.getColor(R.color.ui_default);
         int ink = facets > 0 ? UiKit.accentText(c) : c.getColor(R.color.text_primary);
         filtersButton.setBackgroundTintList(ColorStateList.valueOf(fill));
         filtersButton.setIconTint(ColorStateList.valueOf(ink));
+        filtersButton.setTextColor(ink);
     }
 
     /** The facet filters in effect as chips; tapping one removes it. */
@@ -1135,7 +1154,25 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
             this.filters = host.filters;
             this.accent = PkgUi.accent(ctx);
             this.density = ctx.getResources().getDisplayMetrics().density;
-            dialog = new BottomSheetDialog(ctx);
+            dialog = new BottomSheetDialog(ctx) {
+                @Override
+                public void show() {
+                    Window window = getWindow();
+                    if (window != null) window.addFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+                    try {
+                        super.show();
+                        keepImmersive(getWindow());
+                    } finally {
+                        if (window != null) window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+                    }
+                }
+
+                @Override
+                public void onWindowFocusChanged(boolean hasFocus) {
+                    super.onWindowFocusChanged(hasFocus);
+                    if (hasFocus) keepImmersive(getWindow());
+                }
+            };
             LinearLayout root = new LinearLayout(ctx);
             root.setOrientation(LinearLayout.VERTICAL);
             root.setBackgroundColor(ctx.getColor(R.color.surface));
@@ -1161,9 +1198,16 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
             root.addView(header);
 
             ScrollView scroll = new ScrollView(ctx);
+            scroll.setOverScrollMode(View.OVER_SCROLL_NEVER);
+            LinearLayout content = new LinearLayout(ctx);
+            content.setOrientation(LinearLayout.VERTICAL);
+            View controls = LayoutInflater.from(ctx).inflate(R.layout.view_pkg_browse_filters, content, false);
+            content.addView(controls);
+            host.bindFilterControls(controls);
             body = new LinearLayout(ctx);
             body.setOrientation(LinearLayout.VERTICAL);
-            scroll.addView(body);
+            content.addView(body);
+            scroll.addView(content);
             root.addView(scroll, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f));
 
             showResults = new MaterialButton(ctx);
@@ -1180,16 +1224,42 @@ public class BrowseFragment extends Fragment implements PackagesActivity.TargetL
         }
 
         static void show(BrowseFragment host) {
+            if (host.filtersSheet != null || !host.isAdded() || host.getView() == null) return;
+            UIHelper.hideKeyboard(host.requireActivity());
+            host.searchBox.clearFocus();
             FiltersSheet s = new FiltersSheet(host);
+            host.filtersSheet = s;
+            s.dialog.setOnDismissListener(ignored -> {
+                if (host.filtersSheet != s) return;
+                host.filtersSheet = null;
+                host.gameSelect = null;
+                host.loaderSelect = null;
+                host.sortSelect = null;
+                host.orderSelect = null;
+                host.mappingHint = null;
+            });
             s.rebuild();
             s.dialog.getBehavior().setSkipCollapsed(true);
             s.dialog.getBehavior().setState(BottomSheetBehavior.STATE_EXPANDED);
             s.dialog.show();
         }
 
+        private static void keepImmersive(@Nullable Window window) {
+            if (window == null) return;
+            window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                window.setStatusBarContrastEnforced(false);
+                window.setNavigationBarContrastEnforced(false);
+            }
+            View decor = window.getDecorView();
+            WindowCompat.setDecorFitsSystemWindows(window, false);
+            WindowInsetsControllerCompat controller = WindowCompat.getInsetsController(window, decor);
+            controller.setSystemBarsBehavior(WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
+            controller.hide(WindowInsetsCompat.Type.statusBars() | WindowInsetsCompat.Type.navigationBars());
+        }
+
         private void changed() {
             host.onFiltersChanged();
-            rebuild();
         }
 
         private void rebuild() {

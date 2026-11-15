@@ -19,8 +19,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SwitchCompat;
@@ -31,10 +29,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.divider.MaterialDividerItemDecoration;
-import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import org.levimc.launcher.R;
-import org.levimc.launcher.ui.widget.SegmentedControl;
+import org.levimc.launcher.ui.widget.LauncherPopup;
 import org.levimc.launcher.ui.widget.UiKit;
 import org.levimc.launcher.ui.dialogs.SimpleTextWatcher;
 import org.levimc.launcher.core.mods.Mod;
@@ -44,7 +41,6 @@ import org.levimc.launcher.core.packages.CatalogModels;
 import org.levimc.launcher.core.packages.InstallPlanner;
 import org.levimc.launcher.core.packages.InstalledPackages;
 import org.levimc.launcher.core.packages.LeviLamina;
-import org.levimc.launcher.core.packages.LocalSources;
 import org.levimc.launcher.core.packages.PackageService;
 import org.levimc.launcher.core.packages.engine.Cancel;
 import org.levimc.launcher.core.packages.engine.PackageEngine;
@@ -64,7 +60,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -81,8 +76,7 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
     private MaterialButton refreshButton;
     private MaterialButton fileButton;
     private MaterialButton idButton;
-    private SegmentedControl filterTabs;
-    private SwitchMaterial onlyEnabledSwitch;
+    private MaterialButton filterButton;
     private TextView summary;
     private View selectionBar;
     private TextView selectedCount;
@@ -114,23 +108,9 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
     private final Set<String> selected = new LinkedHashSet<>();
     private String targetName = "";
 
-    private ActivityResultLauncher<String[]> pickArchive;
-    private ActivityResultLauncher<Uri> pickFolder;
-    @Nullable
-    private GameVersion pickTarget;
-
     private final Runnable reload = () -> load(false, true);
 
     public InstalledFragment() {
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        pickArchive = registerForActivityResult(new ActivityResultContracts.OpenDocument(),
-                uri -> onPicked(uri, false));
-        pickFolder = registerForActivityResult(new ActivityResultContracts.OpenDocumentTree(),
-                uri -> onPicked(uri, true));
     }
 
     @Nullable
@@ -144,12 +124,13 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ctx = new Cancel();
-        searchBox = view.findViewById(R.id.pkg_inst_search);
-        refreshButton = view.findViewById(R.id.pkg_inst_btn_refresh);
+        searchBox = view.findViewById(R.id.pkg_search_box);
+        searchBox.setHint(R.string.pkg_installed_search_hint);
+        MaterialButton searchButton = view.findViewById(R.id.pkg_btn_search);
+        refreshButton = view.findViewById(R.id.pkg_btn_refresh);
         fileButton = view.findViewById(R.id.pkg_inst_btn_file);
         idButton = view.findViewById(R.id.pkg_inst_btn_id);
-        filterTabs = view.findViewById(R.id.pkg_inst_filter);
-        onlyEnabledSwitch = view.findViewById(R.id.pkg_inst_only_enabled);
+        filterButton = view.findViewById(R.id.pkg_btn_filters);
         summary = view.findViewById(R.id.pkg_inst_summary);
         selectionBar = view.findViewById(R.id.pkg_inst_selection_bar);
         selectedCount = view.findViewById(R.id.pkg_inst_selected_count);
@@ -166,6 +147,7 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
         loading = view.findViewById(R.id.pkg_inst_loading);
 
         accent = PkgUi.accent(requireContext());
+        UiKit.applyPrimary(searchButton);
         UiKit.applyPrimary(idButton);
         UiKit.applyPrimary(selectionDone);
         progress.setShowCancel(true);
@@ -207,12 +189,10 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
         list.setAdapter(adapter);
 
         refreshButton.setOnClickListener(v -> load(true, false));
-        fileButton.setOnClickListener(v -> installFromFile());
-        idButton.setOnClickListener(v -> installById());
+        searchButton.setOnClickListener(v -> runSearch());
         searchBox.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH || actionId == EditorInfo.IME_ACTION_DONE) {
-                UIHelper.hideKeyboard(requireActivity());
-                searchBox.clearFocus();
+                runSearch();
                 return true;
             }
             return false;
@@ -221,16 +201,7 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
             query = s.toString();
             render();
         }));
-        filterTabs.setEqualWidth(false);
-        filterTabs.setItems(getString(R.string.pkg_installed_filter_all),
-                getString(R.string.pkg_installed_filter_explicit),
-                getString(R.string.pkg_installed_filter_dependency));
-        filterTabs.setOnSegmentSelectedListener(i -> setFilter(i == 1 ? InstalledFragment.Model.Filter.EXPLICIT
-                : i == 2 ? InstalledFragment.Model.Filter.DEPENDENCY : InstalledFragment.Model.Filter.ALL));
-        onlyEnabledSwitch.setOnCheckedChangeListener((b, checked) -> {
-            onlyEnabled = checked;
-            render();
-        });
+        filterButton.setOnClickListener(this::showFilters);
         selectAll.setOnClickListener(v -> {
             for (InstalledFragment.Model.Row r : visibleRows()) {
                 selected.add(r.key());
@@ -290,6 +261,11 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
     @Nullable
     private PackagesActivity host() {
         return getActivity() instanceof PackagesActivity ? (PackagesActivity) getActivity() : null;
+    }
+
+    private void runSearch() {
+        UIHelper.hideKeyboard(requireActivity());
+        searchBox.clearFocus();
     }
 
     @Nullable
@@ -464,6 +440,22 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
         return InstalledFragment.Model.filter(rows, filter, onlyEnabled, query);
     }
 
+    private void showFilters(View anchor) {
+        new LauncherPopup(anchor).width(280).section(getString(R.string.pkg_filters))
+                .choice(0, getString(R.string.pkg_installed_filter_all), filter == Model.Filter.ALL)
+                .choice(1, getString(R.string.pkg_installed_filter_explicit), filter == Model.Filter.EXPLICIT)
+                .choice(2, getString(R.string.pkg_installed_filter_dependency), filter == Model.Filter.DEPENDENCY)
+                .divider().choice(3, getString(R.string.pkg_installed_only_enabled), onlyEnabled)
+                .onSelect(index -> {
+                    if (index == 3) {
+                        onlyEnabled = !onlyEnabled;
+                        render();
+                    } else {
+                        setFilter(index == 1 ? Model.Filter.EXPLICIT : index == 2 ? Model.Filter.DEPENDENCY : Model.Filter.ALL);
+                    }
+                }).show();
+    }
+
     private void setFilter(InstalledFragment.Model.Filter f) {
         filter = f;
         render();
@@ -475,8 +467,13 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
         }
         Context c = requireContext();
         GameVersion v = target();
-        filterTabs.setSelectedIndex(filter == InstalledFragment.Model.Filter.EXPLICIT ? 1
-                : filter == InstalledFragment.Model.Filter.DEPENDENCY ? 2 : 0, false);
+        int count = (filter == Model.Filter.ALL ? 0 : 1) + (onlyEnabled ? 1 : 0);
+        filterButton.setText(count == 0 ? getString(R.string.pkg_filters) : getString(R.string.pkg_filters_count, count));
+        filterButton.setContentDescription(filterButton.getText());
+        filterButton.setBackgroundTintList(ColorStateList.valueOf(count == 0 ? c.getColor(R.color.ui_default) : UiKit.accentSoft(c)));
+        int ink = count == 0 ? c.getColor(R.color.text_primary) : UiKit.accentText(c);
+        filterButton.setTextColor(ink);
+        filterButton.setIconTint(ColorStateList.valueOf(ink));
         fileButton.setEnabled(v != null);
         idButton.setEnabled(v != null);
 
@@ -684,41 +681,8 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
 
     // #region Installing
 
-    private void installFromFile() {
-        Activity a = getActivity();
-        GameVersion v = target();
-        if (a == null || v == null) {
-            return;
-        }
-        new CustomAlertDialog(a)
-                .setTitleText(getString(R.string.pkg_install_file_title))
-                .setMessage(getString(R.string.pkg_install_file_body))
-                .setPositiveButton(getString(R.string.pkg_install_file_zip), x -> {
-                    pickTarget = v;
-                    pickArchive.launch(new String[]{"application/zip", "application/x-zip-compressed",
-                            "application/octet-stream", "*/*"});
-                })
-                .setNeutralButton(getString(R.string.pkg_install_file_folder), x -> {
-                    pickTarget = v;
-                    pickFolder.launch(null);
-                })
-                .setNegativeButton(getString(R.string.dialog_negative_cancel), null)
-                .show();
-    }
-
-    private void onPicked(@Nullable Uri uri, boolean folder) {
-        Activity a = getActivity();
-        GameVersion v = pickTarget != null ? pickTarget : target();
-        pickTarget = null;
-        if (uri == null || a == null || v == null) {
-            return;
-        }
-        Context app = a.getApplicationContext();
-        // The document's display name is a query to its provider: asked on the task's thread.
-        Callable<String> label = folder ? () -> folderLabel(uri)
-                : () -> LocalSources.Saf.displayName(app, uri, "package.zip");
-        PackageActions.installSource(a, v, label, PackageActions.copied(() -> folder
-                ? LocalSources.Saf.importTree(app, uri) : LocalSources.Saf.importDocument(app, uri)), done());
+    void onPackagesInstalled() {
+        if (getView() != null) load(false, true);
     }
 
     static String folderLabel(Uri treeUri) {
@@ -731,14 +695,6 @@ public class InstalledFragment extends Fragment implements PackagesActivity.Targ
         int cut = Math.max(id.lastIndexOf('/'), id.lastIndexOf(':'));
         String name = id.substring(cut + 1).trim();
         return name.isEmpty() ? id : name;
-    }
-
-    private void installById() {
-        Activity a = getActivity();
-        GameVersion v = target();
-        if (a != null && v != null) {
-            InstallByIdDialog.show(a, v, done());
-        }
     }
 
     // #endregion

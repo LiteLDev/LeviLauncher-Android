@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Widget.Levi.PackageAction" parent="Widget.Levi.Button.Secondary">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">36dp</item>
+        <item name="android:minHeight">36dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="iconSize">16dp</item>
+        <item name="iconPadding">6dp</item>
+    </style>
+    <style name="Widget.Levi.PackageIcon" parent="Widget.Levi.PackageAction">
+        <item name="android:layout_width">36dp</item>
+        <item name="android:minWidth">36dp</item>
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="iconSize">18dp</item>
+        <item name="iconPadding">0dp</item>
+    </style>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/pkg_filter_controls" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingTop="6dp" android:paddingBottom="4dp">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:baselineAligned="false" android:layout_marginTop="0dp">
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="0dp">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/pkg_game_version_label" android:textAppearance="@style/TextAppearance.Levi.Caption" android:textSize="11sp" android:layout_marginBottom="3dp" />
+            <TextView android:id="@+id/pkg_spinner_game" style="@style/CatalogSelect" android:layout_width="match_parent" android:layout_height="36dp" android:minHeight="36dp" android:textSize="12sp" android:contentDescription="@string/pkg_game_version_label" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="8dp">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/pkg_ll_version_label" android:textAppearance="@style/TextAppearance.Levi.Caption" android:textSize="11sp" android:layout_marginBottom="3dp" />
+            <TextView android:id="@+id/pkg_spinner_ll" style="@style/CatalogSelect" android:layout_width="match_parent" android:layout_height="36dp" android:minHeight="36dp" android:textSize="12sp" android:contentDescription="@string/pkg_ll_version_label" />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:baselineAligned="false" android:layout_marginTop="6dp">
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="0dp">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/pkg_sort_by" android:textAppearance="@style/TextAppearance.Levi.Caption" android:textSize="11sp" android:layout_marginBottom="3dp" />
+            <TextView android:id="@+id/pkg_spinner_sort" style="@style/CatalogSelect" android:layout_width="match_parent" android:layout_height="36dp" android:minHeight="36dp" android:textSize="12sp" android:contentDescription="@string/pkg_sort_by" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:layout_marginStart="8dp">
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/catalog_order" android:textAppearance="@style/TextAppearance.Levi.Caption" android:textSize="11sp" android:layout_marginBottom="3dp" />
+            <TextView android:id="@+id/pkg_spinner_order" style="@style/CatalogSelect" android:layout_width="match_parent" android:layout_height="36dp" android:minHeight="36dp" android:textSize="12sp" android:contentDescription="@string/catalog_order" />
+        </LinearLayout>
+    </LinearLayout>
+    <TextView android:id="@+id/pkg_mapping_hint" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:fontFamily="@font/misans" android:text="@string/pkg_mapping_unavailable_hint" android:textColor="@color/ui_warning" android:textSize="11sp" android:visibility="gone" />
+</LinearLayout>

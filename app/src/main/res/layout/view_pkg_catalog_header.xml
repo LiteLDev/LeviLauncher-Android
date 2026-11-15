@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <org.levimc.launcher.ui.widget.CatalogToolbarLayout
+        android:id="@+id/pkg_page_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <include layout="@layout/catalog_pkg_header_lead" />
+        <org.levimc.launcher.ui.widget.SegmentedControl
+            android:id="@+id/pkg_header_tabs"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/pkg_btn_refresh"
+            style="@style/Widget.Levi.PackageIcon"
+            android:text=""
+            android:contentDescription="@string/pkg_refresh"
+            app:icon="@drawable/ic_ui_refresh" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/pkg_btn_guide"
+            style="@style/Widget.Levi.PackageIcon"
+            android:text=""
+            android:contentDescription="@string/pkg_guide_open"
+            app:icon="@drawable/ic_ui_code_slash" />
+    </org.levimc.launcher.ui.widget.CatalogToolbarLayout>
+    <org.levimc.launcher.ui.widget.CatalogToolbarLayout
+        android:id="@+id/pkg_search_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp">
+        <EditText
+            android:id="@+id/pkg_search_box"
+            style="@style/Widget.Levi.Input"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:minHeight="36dp"
+            android:textSize="12sp"
+            android:drawableStart="@drawable/ic_ui_search"
+            android:hint="@string/pkg_search_hint"
+            android:inputType="text"
+            android:imeOptions="actionSearch|flagNoExtractUi"
+            android:importantForAutofill="no" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/pkg_btn_search"
+            style="@style/Widget.Levi.PackageAction"
+            android:text="@string/pkg_search"
+            android:contentDescription="@string/pkg_search"
+            app:icon="@drawable/ic_ui_search" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/pkg_btn_filters"
+            style="@style/Widget.Levi.PackageAction"
+            android:text="@string/pkg_filters"
+            android:contentDescription="@string/pkg_filters"
+            app:icon="@drawable/ic_ui_filter" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/pkg_inst_btn_file"
+            style="@style/Widget.Levi.PackageIcon"
+            android:text=""
+            android:contentDescription="@string/pkg_installed_install_file"
+            app:icon="@drawable/ic_ui_upload" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/pkg_inst_btn_id"
+            style="@style/Widget.Levi.PackageAction"
+            android:text="@string/pkg_installed_install_id"
+            android:contentDescription="@string/pkg_installed_install_id"
+            app:icon="@drawable/ic_ui_add" />
+    </org.levimc.launcher.ui.widget.CatalogToolbarLayout>
+</merge>
