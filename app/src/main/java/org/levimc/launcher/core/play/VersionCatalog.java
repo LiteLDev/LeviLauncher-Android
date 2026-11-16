@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -63,6 +64,7 @@ public final class VersionCatalog {
 
     public List<GameRelease> refresh() throws IOException {
         if (closed) throw new IOException("Version catalog closed");
+        if (Thread.currentThread().isInterrupted()) throw new InterruptedIOException("Version catalog interrupted");
         Request request = new Request.Builder()
                 .url(DATA_URL)
                 .header("Accept", "application/json")
@@ -98,6 +100,15 @@ public final class VersionCatalog {
                 if (out != null) cache.failWrite(out);
             }
             return releases;
+        } catch (Exception error) {
+            if (error instanceof InterruptedException) {
+                call.cancel();
+                Thread.currentThread().interrupt();
+                InterruptedIOException interrupted = new InterruptedIOException("Version catalog interrupted");
+                interrupted.initCause(error);
+                throw interrupted;
+            }
+            throw error;
         } finally {
             activeCall = null;
         }

@@ -13,8 +13,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
@@ -29,7 +32,7 @@ import okhttp3.ResponseBody;
  * the launcher as a device, reads Minecraft's listing and resolves the download URLs of a
  * version the account owns. Every method blocks; call them off the main thread.
  */
-public final class PlayClient {
+public final class PlayClient implements AutoCloseable {
     private static final String TAG = "PlayClient";
     private static final String BASE = "https://android.clients.google.com";
     private static final String FDFE = BASE + "/fdfe";
@@ -41,6 +44,7 @@ public final class PlayClient {
     private static final OkHttpClient HTTP = new OkHttpClient.Builder()
             .connectTimeout(20, TimeUnit.SECONDS)
             .readTimeout(40, TimeUnit.SECONDS)
+            .callTimeout(60, TimeUnit.SECONDS)
             .build();
 
     /** Minecraft's listing as Play shows it to this account and device. */
@@ -74,6 +78,8 @@ public final class PlayClient {
     private final Context context;
     private final PlayDevice device;
     private PlayAccountStore.Account account;
+    private final Set<Call> activeCalls = ConcurrentHashMap.newKeySet();
+    private volatile boolean closed;
 
     public PlayClient(Context context) throws PlayException {
         this.context = context.getApplicationContext();
@@ -132,7 +138,7 @@ public final class PlayClient {
                 .header("User-Agent", device.authUserAgent())
                 .post(form.build())
                 .build();
-        Map<String, String> values = keyValues(execute(request, true));
+        Map<String, String> values = keyValues(execute(HTTP.newCall(request), true));
         String aasToken = values.get("Token");
         if (TextUtils.isEmpty(aasToken)) {
             throw new PlayException(PlayException.Kind.UNAUTHORIZED, "Google did not return an account token");
@@ -334,6 +340,9 @@ public final class PlayClient {
     }
 
     private void requireCurrentAccount() throws PlayException {
+        if (closed || Thread.currentThread().isInterrupted()) {
+            throw new PlayException(PlayException.Kind.NETWORK, "Google Play request cancelled");
+        }
         if (!PlayAccountStore.isCurrent(account)) {
             throw new PlayException(PlayException.Kind.UNAUTHORIZED, "Google Play session changed");
         }
@@ -448,8 +457,29 @@ public final class PlayClient {
         account.authTokenExpiry = expiry;
     }
 
-    private static byte[] execute(Request request, boolean isAuth) throws PlayException {
-        try (Response response = HTTP.newCall(request).execute()) {
+    @Override
+    public void close() {
+        closed = true;
+        for (Call call : activeCalls) call.cancel();
+    }
+
+    private byte[] execute(Request request, boolean isAuth) throws PlayException {
+        Call call = HTTP.newCall(request);
+        activeCalls.add(call);
+        try {
+            if (closed) call.cancel();
+            return execute(call, isAuth);
+        } finally {
+            activeCalls.remove(call);
+        }
+    }
+
+    private static byte[] execute(Call call, boolean isAuth) throws PlayException {
+        if (Thread.currentThread().isInterrupted()) {
+            call.cancel();
+            throw new PlayException(PlayException.Kind.NETWORK, "Google Play request interrupted");
+        }
+        try (Response response = call.execute()) {
             ResponseBody body = response.body();
             byte[] bytes = body == null ? new byte[0] : body.bytes();
             int code = response.code();
@@ -474,6 +504,14 @@ public final class PlayClient {
             throw new PlayException(kind, reason, null, code);
         } catch (IOException e) {
             throw new PlayException(PlayException.Kind.NETWORK, e.getMessage() == null ? "Network error" : e.getMessage(), e);
+        } catch (Exception e) {
+            // OkHttp's Kotlin connection code can throw an undeclared InterruptedException.
+            if (e instanceof InterruptedException) {
+                call.cancel();
+                Thread.currentThread().interrupt();
+                throw new PlayException(PlayException.Kind.NETWORK, "Google Play request interrupted", e);
+            }
+            throw e;
         }
     }
 

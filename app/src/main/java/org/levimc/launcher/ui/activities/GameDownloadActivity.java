@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -76,6 +77,7 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
 
     private final ExecutorService networkExecutor = Executors.newFixedThreadPool(2);
     private final ExecutorService dataExecutor = Executors.newSingleThreadExecutor();
+    private final Set<PlayClient> playClients = ConcurrentHashMap.newKeySet();
     private final List<GameRelease> catalog = new ArrayList<>();
     private final List<GameRelease> history = new ArrayList<>();
     private final List<GameRelease> local = new ArrayList<>();
@@ -282,6 +284,7 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
         catalogRequest++;
         dataRequest++;
         historyRequest++;
+        for (PlayClient client : playClients) client.close();
         versionCatalog.close();
         networkExecutor.shutdownNow();
         dataExecutor.shutdownNow();
@@ -480,7 +483,7 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
             PlayClient.AppDetails result = null;
             PlayException problem = null;
             try {
-                result = new PlayClient(getApplicationContext()).details(GameDownloads.MINECRAFT_PACKAGE);
+                result = requestFromPlay(client -> client.details(GameDownloads.MINECRAFT_PACKAGE));
                 GameRelease release = result.versionCode > 0
                         ? new GameRelease(result.versionCode, result.versionName, result.downloadSize, System.currentTimeMillis())
                         : null;
@@ -515,6 +518,21 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
         });
     }
 
+    private interface PlayRequest<T> {
+        T run(PlayClient client) throws PlayException;
+    }
+
+    private <T> T requestFromPlay(PlayRequest<T> request) throws PlayException {
+        PlayClient client = new PlayClient(getApplicationContext());
+        playClients.add(client);
+        try (client) {
+            if (disposed) client.close();
+            return request.run(client);
+        } finally {
+            playClients.remove(client);
+        }
+    }
+
     private void updateBetaSwitch(PlayClient.AppDetails details) {
         betaAvailable = details.testingProgramAvailable || details.testingProgramSubscribed;
         betaRow.setVisibility(sourceMode == SOURCE_PLAY && betaAvailable ? View.VISIBLE : View.GONE);
@@ -535,7 +553,7 @@ public class GameDownloadActivity extends BaseActivity implements GameDownloads.
             boolean changed = false;
             String message;
             try {
-                changed = new PlayClient(getApplicationContext()).setTestingProgram(GameDownloads.MINECRAFT_PACKAGE, join);
+                changed = requestFromPlay(client -> client.setTestingProgram(GameDownloads.MINECRAFT_PACKAGE, join));
                 message = getString(changed
                         ? (join ? R.string.game_download_beta_joined : R.string.game_download_beta_left)
                         : R.string.game_download_beta_failed);
