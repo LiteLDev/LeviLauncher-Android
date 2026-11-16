@@ -15,7 +15,7 @@
 [![Downloads](https://img.shields.io/github/downloads/LiteLDev/LeviLauncher-Android/total.svg)](https://github.com/LiteLDev/LeviLauncher-Android/releases)
 [![Android](https://img.shields.io/badge/Android-9.0%2B-green?style=flat-square&logo=android)](https://www.android.com/)
 
-**[Documentation](https://docs.levimc.org/LeviLauncher/guide/quick-start?platform=android)** · **[Native mod development](https://docs.levimc.org/LeviLamina/developer_guides/android/)**
+**[Documentation](https://levimc.org/LeviLauncher/?platform=android)** · **[Native mod development](https://levimc.org/LeviLamina/developer_guides/android/)**
 
 </div>
 
@@ -23,7 +23,7 @@
 
 ## Introduction
 
-This repository is the **Android version** of LeviLauncher; the **Windows version** is developed in [LiteLDev/LeviLauncher](https://github.com/LiteLDev/LeviLauncher). Both share one guide at [docs.levimc.org/LeviLauncher](https://docs.levimc.org/LeviLauncher/) (Windows / Android tabs); native mod development is documented in the [LeviLamina docs](https://docs.levimc.org/LeviLamina/developer_guides/android/). There is no iOS version, and none is planned.
+This repository is the **Android version** of LeviLauncher; the **Windows version** is developed in [LiteLDev/LeviLauncher](https://github.com/LiteLDev/LeviLauncher). Both share one guide at [levimc.org/LeviLauncher](https://levimc.org/LeviLauncher/) (Windows / Android tabs); native mod development is documented in the [LeviLamina docs](https://levimc.org/LeviLamina/developer_guides/android/). There is no iOS version, and none is planned.
 
 LeviLauncher is a lightweight, open-source Android launcher specifically designed for legitimate players of Minecraft Bedrock Edition (MCBE). It works alongside your Google Play installation of Minecraft, allowing you to manage multiple game versions and extend functionality with native mods.
 
@@ -193,7 +193,7 @@ LeviLauncher would not be possible without the contributions and support of many
 
 **Project Repository:** [https://github.com/LiteLDev/LeviLauncher-Android](https://github.com/LiteLDev/LeviLauncher-Android)
 
-**Documentation:** [docs.levimc.org/LeviLauncher](https://docs.levimc.org/LeviLauncher/guide/quick-start?platform=android) · native mods: [docs.levimc.org/LeviLamina](https://docs.levimc.org/LeviLamina/developer_guides/android/)
+**Documentation:** [levimc.org/LeviLauncher](https://levimc.org/LeviLauncher/?platform=android) · native mods: [levimc.org/LeviLamina](https://levimc.org/LeviLamina/developer_guides/android/)
 
 **Report Issues:** [GitHub Issues Page](https://github.com/LiteLDev/LeviLauncher-Android/issues)
 
