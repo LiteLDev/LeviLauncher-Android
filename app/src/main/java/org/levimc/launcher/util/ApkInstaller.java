@@ -331,7 +331,7 @@ public class ApkInstaller {
                 java.util.Enumeration<? extends ZipEntry> entries = zipFile.entries();
                 while (entries.hasMoreElements()) {
                     ZipEntry entry = entries.nextElement();
-                    if (entry.isDirectory() || !entry.getName().startsWith("lib/")) {
+                    if (!ApkUtils.isNativeLibrary(entry)) {
                         continue;
                     }
                     long size = entry.getSize();

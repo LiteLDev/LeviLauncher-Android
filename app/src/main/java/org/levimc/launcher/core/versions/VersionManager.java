@@ -303,8 +303,7 @@ public class VersionManager {
             java.util.Enumeration<? extends java.util.zip.ZipEntry> entries = zipFile.entries();
             while (entries.hasMoreElements()) {
                 java.util.zip.ZipEntry entry = entries.nextElement();
-                String name = entry.getName();
-                if (name != null && name.startsWith("lib/") && !entry.isDirectory()) {
+                if (ApkUtils.isNativeLibrary(entry)) {
                     long size = entry.getSize();
                     if (size < 0) {
                         size = entry.getCompressedSize();

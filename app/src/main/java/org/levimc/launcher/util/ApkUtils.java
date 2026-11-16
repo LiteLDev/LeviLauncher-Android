@@ -18,6 +18,7 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
+import org.levimc.launcher.core.minecraft.GamePackageManager;
 import org.levimc.launcher.core.minecraft.MinecraftLauncher;
 
 public class ApkUtils {
@@ -147,12 +148,13 @@ public class ApkUtils {
         }
     }
 
-    private static boolean isNativeLibrary(ZipEntry entry) {
+    public static boolean isNativeLibrary(ZipEntry entry) {
         if (entry.isDirectory()) return false;
         String[] parts = entry.getName().split("/", -1);
         return parts.length == 3 && "lib".equals(parts[0])
                 && !parts[1].isEmpty() && !"..".equals(parts[1]) && !".".equals(parts[1])
-                && parts[2].endsWith(".so");
+                && parts[2].endsWith(".so")
+                && !GamePackageManager.isLauncherBundledLibrary(parts[2]);
     }
 
     private static void extractNativeLibrary(File root, ZipEntry entry, InputStream input,

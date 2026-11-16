@@ -51,12 +51,6 @@ class GamePackageManager private constructor(
 
     private val extractableLibs = requiredLibs + optionalLibs
 
-    private val systemLoadedLibs = arrayOf(
-        "libPlayFabMultiplayer.so",
-        "libmaesdk.so",
-        "libgxcore.so",
-    )
-
     data class LibraryLoadResult(
         val name: String,
         val fileName: String,
@@ -125,6 +119,7 @@ class GamePackageManager private constructor(
         if (!outputDir.exists()) {
             outputDir.mkdirs()
         }
+        removeBundledLibraries(outputDir)
 
         val apkFiles = collectApkFiles()
         val manifestString = buildExtractionManifest(apkFiles)
@@ -412,7 +407,7 @@ class GamePackageManager private constructor(
         val normalizedName = normalizeLibraryName(name)
         val startedAt = SystemClock.elapsedRealtime()
 
-        if (systemLoadedLibs.contains(fileName)) {
+        if (isLauncherBundledLibrary(fileName)) {
             val source = if (normalizedName == "gxcore") {
                 "launcher bundled bootstrap"
             } else {
@@ -478,7 +473,7 @@ class GamePackageManager private constructor(
         progressEnd: Int = 74,
         excludeReasons: Map<String, String> = emptyMap()
     ): List<LibraryLoadResult> {
-        val allLibs = requiredLibs + systemLoadedLibs
+        val allLibs = requiredLibs + BUNDLED_LIBRARIES
         val loadableLibs = allLibs.filterNot { lib ->
             val libName = normalizeLibraryName(lib)
             excludeLibs.contains(libName) || excludeLibs.contains(lib)
@@ -574,6 +569,23 @@ class GamePackageManager private constructor(
     companion object {
         private const val TAG = "GamePackageManager"
         private const val EXTRACTOR_VERSION = 3
+        private val BUNDLED_LIBRARIES = arrayOf(
+            "libPlayFabMultiplayer.so",
+            "libmaesdk.so",
+            "libgxcore.so",
+        )
+
+        @JvmStatic
+        fun isLauncherBundledLibrary(fileName: String): Boolean {
+            return fileName in BUNDLED_LIBRARIES
+        }
+
+        private fun removeBundledLibraries(directory: File) {
+            for (name in BUNDLED_LIBRARIES) {
+                Files.deleteIfExists(File(directory, name).toPath())
+                Files.deleteIfExists(File(directory, ".$name.${NativeImageGuard.TOKEN}.ok").toPath())
+            }
+        }
 
         private fun requiredLibraries(versionName: String?): Array<String> = buildList {
             add("libc++_shared.so")
@@ -613,6 +625,7 @@ class GamePackageManager private constructor(
         fun recordImportedLibraries(context: Context, profileId: String, versionName: String, apks: List<File>) {
             val abi = MinecraftLauncher.getRuntimeAbi()
             val directory = MinecraftLauncher.getRuntimeLibAbiDir(context, profileId, abi)
+            removeBundledLibraries(directory)
             val names = requiredLibraries(versionName) + arrayOf("libHttpClient.Android.so")
             val required = if (requiresHttpClient(versionName)) names else requiredLibraries(versionName)
             if (required.any { !NativeImageGuard.isPrepared(File(directory, it)) }) return
