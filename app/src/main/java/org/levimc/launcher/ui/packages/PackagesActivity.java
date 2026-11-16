@@ -381,7 +381,7 @@ public class PackagesActivity extends BaseActivity {
 
     public final static class Links {
         /** The guide on creating packages (lip.toml's side and platform, the recommended tags). */
-        public static final String DEVELOPER_GUIDE_URL = "https://docs.levimc.org/lip/guides/creating_packages.html";
+        public static final String DEVELOPER_GUIDE_URL = "https://levimc.org/lip/guides/creating_packages.html";
 
         public static final String EXTRA_TAB = "tab";
         public static final String TAB_MANAGEMENT = "management";
