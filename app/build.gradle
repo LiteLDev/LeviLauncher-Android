@@ -28,6 +28,10 @@ def discordLargeImage = providers.gradleProperty('discord.large_image')
 
 def curseForgeApiKey = localProperties.getProperty('curseforge.api_key', '').trim()
 
+def launcherAppName = providers.gradleProperty('launcher.app_name').getOrElse('EoN Client V2').trim()
+def launcherApplicationId = providers.gradleProperty('launcher.application_id').getOrElse('com.eon.client.v2').trim()
+def launcherNamespace = providers.gradleProperty('launcher.namespace').getOrElse('org.levimc.launcher').trim()
+
 // Fallback for local debug builds only: the same obfuscated key LeviLauncher
 // for Windows embeds (base64, then XOR 0xAF). Release and beta builds, and
 // every CI build, keep using the key from local.properties (CI fills it from
@@ -66,10 +70,10 @@ static def getVersionCodeByTimestamp() {
 }
 
 android {
-    namespace 'org.levimc.launcher'
+    namespace launcherNamespace
     compileSdkVersion 36
     defaultConfig {
-        applicationId "org.levimc.launcher"
+        applicationId launcherApplicationId
         minSdkVersion 28
         targetSdkVersion 35
         versionCode getVersionCodeByTimestamp()
@@ -78,7 +82,6 @@ android {
         buildConfigField "String", "CURSEFORGE_API_KEY", groovy.json.JsonOutput.toJson(curseForgeApiKey)
         buildConfigField 'long', 'DISCORD_APPLICATION_ID', "${discordApplicationId}L"
         buildConfigField 'String', 'DISCORD_LARGE_IMAGE', groovy.json.JsonOutput.toJson(discordLargeImage)
-        buildConfigField 'boolean', 'SKIP_PLAY_STORE_CHECK', 'false'
         ndk {
             //noinspection ChromeOsAbiSupport
             abiFilters 'arm64-v8a'
@@ -132,10 +135,6 @@ android {
             }
             buildConfigField "boolean", "IS_BETA", "false"
             buildConfigField "String", "CURSEFORGE_API_KEY", groovy.json.JsonOutput.toJson(curseForgeDebugApiKey)
-            // Local development only (e.g. emulators without Play): set dev.skip_play_store_check=true
-            // in local.properties. CI never sets it, so published debug APKs keep the check.
-            buildConfigField 'boolean', 'SKIP_PLAY_STORE_CHECK',
-                    localProperties.getProperty('dev.skip_play_store_check', 'false').trim() == 'true' ? 'true' : 'false'
         }
         beta {
             initWith release
@@ -146,7 +145,7 @@ android {
                 mappingFileUploadEnabled true
                 nativeSymbolUploadEnabled true
             }
-            resValue "string", "app_name", "LeviLauncher Beta"
+            resValue "string", "app_name", "${launcherAppName} Beta"
             buildConfigField "boolean", "IS_BETA", "true"
             matchingFallbacks = ["release"]
             ndk {

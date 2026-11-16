@@ -43,8 +43,7 @@ All placeholder output is logged under the `LeviPlaceholder` tag.
 
 - **Device**: one that can run arm64-v8a code. An x86_64 emulator image with ARM translation
   (Android 11+) works; the launcher itself only ships arm64-v8a.
-- **Play Store check**: add `dev.skip_play_store_check=true` to `local.properties`. Only debug
-  builds read it; CI never sets it, so published APKs keep the check.
+- **Minecraft version**: use an installed or imported licensed Minecraft version 1.21.80 or newer.
 - **Discord SDK library**: the launcher's prebuilt `libgxcore.so` links against
   `libdiscord_partner_sdk.so`, so `app/libs/discord_partner_sdk.aar` must contain
   `jni/arm64-v8a/libdiscord_partner_sdk.so`. CI downloads the real AAR with a token; without access,

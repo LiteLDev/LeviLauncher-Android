@@ -25,13 +25,13 @@
 
 This repository is the **Android version** of LeviLauncher; the **Windows version** is developed in [LiteLDev/LeviLauncher](https://github.com/LiteLDev/LeviLauncher). Both share one guide at [docs.levimc.org/LeviLauncher](https://docs.levimc.org/LeviLauncher/) (Windows / Android tabs); native mod development is documented in the [LeviLamina docs](https://docs.levimc.org/LeviLamina/developer_guides/android/). There is no iOS version, and none is planned.
 
-LeviLauncher is a lightweight, open-source Android launcher specifically designed for legitimate players of Minecraft Bedrock Edition (MCBE). It works alongside your Google Play installation of Minecraft, allowing you to manage multiple game versions and extend functionality with native mods.
+LeviLauncher is a lightweight, open-source Android launcher specifically designed for legitimate players of Minecraft Bedrock Edition (MCBE). It lets you manage multiple game versions and extend functionality with native mods.
 
-LeviLauncher enables you to import official Minecraft APKs and run them inside the launcher, without installing each version on the system. The official Minecraft app from Google Play must still be installed on the device. The launcher supports loading native mods to enhance gameplay, provides robust multi-version management with complete isolation between installations, and includes built-in tools for managing resource packs and worlds. Whether you're looking to organize different game versions, test modifications, or optimize your gaming experience, LeviLauncher offers the flexibility you need.
+LeviLauncher enables you to import Minecraft APKs and run supported versions inside the launcher without installing each version on the system. The launcher supports loading native mods to enhance gameplay, provides robust multi-version management with complete isolation between installations, and includes built-in tools for managing resource packs and worlds. Whether you're looking to organize different game versions, test modifications, or optimize your gaming experience, LeviLauncher offers the flexibility you need.
 
 ### Key Features
 
-- **APK Import & In-Launcher Versions** – Import official Minecraft APKs and run them inside the launcher without installing each version on the system (requires the Google Play version of Minecraft on the device)
+- **APK Import & In-Launcher Versions** – Import Minecraft APKs and run supported versions inside the launcher without installing each version on the system
 - **Native Mod Loading** – Load native mods (`.so` libraries) to extend or enhance Minecraft features and performance
 - **Multi-Version Management & Version Isolation** – Manage multiple Minecraft versions independently, with separated configurations and data
 - **Multiple Xbox Account Management** – Manage multiple Xbox accounts inside the launcher and switch between them seamlessly
@@ -47,8 +47,8 @@ Before installing LeviLauncher, ensure your device meets the following minimum s
 - **Device Architecture:** ARM64 (v8a)
 - **RAM:** Minimum 1 GB available RAM (3 GB or more recommended)
 - **Storage:** At least 2 GB of available storage for Minecraft and game data (5 GB or more recommended)
-- **Minecraft:** Minecraft Bedrock Edition 1.21.80 or later, installed from Google Play (older versions are rejected by the launcher)
-- **License Requirement:** You must own a licensed copy of Minecraft Bedrock Edition purchased from Google Play
+- **Minecraft:** Minecraft Bedrock Edition 1.21.80 or later (older versions are rejected by the launcher)
+- **License Requirement:** You must own a licensed copy of Minecraft Bedrock Edition
 
 > **Note:** For optimal performance and stability, especially when managing multiple versions or large worlds, use a device with at least 3 GB of available RAM and 5 GB of free storage.
 
@@ -58,7 +58,7 @@ Before installing LeviLauncher, ensure your device meets the following minimum s
 
 ### Prerequisites
 
-Before proceeding with LeviLauncher installation, ensure that you have the official Minecraft Bedrock Edition app (1.21.80 or later) installed on your device from Google Play. This is required for LeviLauncher to function properly.
+Before proceeding with LeviLauncher installation, ensure that you have an authorized, licensed copy of Minecraft Bedrock Edition 1.21.80 or later. You can launch a supported version installed from Google Play or import a local game package.
 
 ### Installation Steps
 
@@ -112,7 +112,19 @@ The project root is named `levilauncher` in the Gradle settings, while the repos
 ./gradlew assembleDebug
 ```
 
-On Windows, run `.\gradlew.bat assembleDebug`. Install the official Minecraft app on the test device before testing launcher flows.
+On Windows, run `.\gradlew.bat assembleDebug`. Use an installed or imported licensed Minecraft version 1.21.80 or newer when testing launch flows.
+
+### Branding and package customization
+
+This fork is set up with build properties for a custom app identity. Edit the values in `gradle.properties` to change the app name and Android package ID before building. Keep the namespace as `org.levimc.launcher` unless you also migrate the source packages:
+
+```properties
+launcher.app_name=EoN Client V2
+launcher.application_id=com.eon.client.v2
+launcher.namespace=org.levimc.launcher
+```
+
+The app label and beta label pick up your chosen name automatically. Imported local Minecraft versions that meet the launcher's supported version requirement (1.21.80+) can be launched regardless of installer source. Only use game files you are authorized to use; Minecraft must be properly licensed.
 
 ---
 

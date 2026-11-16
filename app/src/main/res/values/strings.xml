@@ -8,7 +8,7 @@
 
 <resources>
     <!-- Common -->
-    <string name="app_name">LeviLauncher</string>
+    <string name="app_name">EoN Client V2</string>
     <string name="minecraft">Minecraft</string>
     <string name="launch">Launch</string>
     <string name="beta_badge">Beta</string>
@@ -30,7 +30,7 @@
 
     <!-- About -->
     <string name="about_title">☕ About</string>
-    <string name="copyright">©2024–2026 LeviMC. All rights reserved.</string>
+    <string name="copyright">©2024–2026 EoN Client V2. All rights reserved.</string>
     <string name="font_license">This app uses the Misans font.</string>
     <string name="about_footer_github">GitHub: https://github.com/LiteLDev/LeviLauncher-Android</string>
     <string name="quick_actions_title">Quick Actions</string>
@@ -180,8 +180,8 @@
 
     <string name="error_no_browser">No browser available</string>
     <!-- License & Security -->
-    <string name="eula_title">LeviLauncher License Agreement</string>
-    <string name="eula_message"><b>Welcome to LeviLauncher</b>\n\nBy using this software you agree to:\n\n• This is an <b>unofficial</b> Minecraft launcher\n• You must own a <b>licensed</b> copy of Minecraft\n• Any form of piracy or cheating is prohibited\n• Mods/resource packs are used at your own risk\n• Not affiliated with Mojang/Microsoft\n\nContinued use constitutes agreement</string>
+    <string name="eula_title">EoN Client V2 License Agreement</string>
+    <string name="eula_message"><b>Welcome to EoN Client V2</b>\n\nBy using this software you agree to:\n\n• This is an <b>unofficial</b> Minecraft launcher\n• You must own a <b>licensed</b> copy of Minecraft\n• Any form of piracy or cheating is prohibited\n• Mods/resource packs are used at your own risk\n• Not affiliated with Mojang/Microsoft\n\nContinued use constitutes agreement</string>
     <string name="eula_agree">Accept</string>
     <string name="eula_exit">Decline</string>
 
@@ -238,7 +238,7 @@
     <string name="instance_delete_confirm_title">Delete Instance</string>
     <string name="instance_delete_confirm_msg">Are you sure you want to delete this instance? All data including worlds will be permanently removed.</string>
     <string name="instance_backup_title">Backup Instance</string>
-    <string name="instance_backup_desc">Create a full backup of this instance in Download/LeviLauncher/Backups.</string>
+    <string name="instance_backup_desc">Create a full backup of this instance in Download/EoN Client V2/Backups.</string>
     <string name="instance_backup_button">Backup Instance</string>
     <string name="instance_backup_confirm_message">Create a full backup of this instance now? Exit Minecraft first if it is running to avoid changing files during backup.</string>
     <string name="instance_backup_in_progress">Backing up instance…</string>
@@ -445,8 +445,8 @@
     <string name="external_mods_open_link">Open Link</string>
     <string name="external_mods_external_dialog_title">External Download</string>
     <string name="external_mods_ad_dialog_title">Ad-Supported Download</string>
-    <string name="external_mods_external_dialog_message">%1$s uses a download page outside LeviLauncher.\n\n1. Tap Open Link and download the .levipack or .so file.\n2. Return to LeviLauncher and open Mods.\n3. Tap Scan.\n4. Tap Add next to the mod you want to import.\n\nScan checks only the main Downloads folder. Move the file there if your browser saved it somewhere else.</string>
-    <string name="external_mods_ad_dialog_message">%1$s uses an ad-supported download page chosen by its developer. LeviLauncher does not control that page or its ads.\n\n1. Tap Open Link and download the .levipack or .so file.\n2. Return to LeviLauncher and open Mods.\n3. Tap Scan.\n4. Tap Add next to the mod you want to import.\n\nScan checks only the main Downloads folder. Only download the mod file; do not install unrelated apps or allow notifications.</string>
+    <string name="external_mods_external_dialog_message">%1$s uses a download page outside EoN Client V2.\n\n1. Tap Open Link and download the .levipack or .so file.\n2. Return to EoN Client V2 and open Mods.\n3. Tap Scan.\n4. Tap Add next to the mod you want to import.\n\nScan checks only the main Downloads folder. Move the file there if your browser saved it somewhere else.</string>
+    <string name="external_mods_ad_dialog_message">%1$s uses an ad-supported download page chosen by its developer. EoN Client V2 does not control that page or its ads.\n\n1. Tap Open Link and download the .levipack or .so file.\n2. Return to EoN Client V2 and open Mods.\n3. Tap Scan.\n4. Tap Add next to the mod you want to import.\n\nScan checks only the main Downloads folder. Only download the mod file; do not install unrelated apps or allow notifications.</string>
     <string name="external_mods_by_author">by %1$s</string>
     <string name="external_mods_version">Mod %1$s</string>
     <string name="external_mods_minecraft_versions">Minecraft %1$s</string>
@@ -559,9 +559,9 @@
     <string name="ms_device_code_login_desc">Open a private browser session with the device code already filled in.</string>
     <string name="ms_webview_login">Open embedded sign-in</string>
     <string name="ms_webview_option_title">Embedded WebView</string>
-    <string name="ms_webview_login_desc">Sign in without leaving LeviLauncher. Use this when the browser flow is unavailable.</string>
+    <string name="ms_webview_login_desc">Sign in without leaving EoN Client V2. Use this when the browser flow is unavailable.</string>
     <string name="ms_device_code_title">Sign in with Device Code</string>
-    <string name="ms_device_code_instructions">Open Microsoft’s device sign-in page, enter this code, then approve access. LeviLauncher will finish automatically.</string>
+    <string name="ms_device_code_instructions">Open Microsoft’s device sign-in page, enter this code, then approve access. EoN Client V2 will finish automatically.</string>
     <string name="ms_device_code_label">Microsoft device code</string>
     <string name="ms_device_code_requesting">Requesting a secure code…</string>
     <string name="ms_device_code_waiting_code">--------</string>
@@ -575,7 +575,7 @@
     <string name="ms_device_code_copied">Code copied</string>
     <string name="ms_device_code_open_browser">Open Microsoft sign-in</string>
     <string name="ms_device_code_step_title">Complete sign-in in your browser</string>
-    <string name="ms_device_code_browser_note">LeviLauncher opens your default browser in a private session, fills the code automatically, and requests a fresh Microsoft sign-in.</string>
+    <string name="ms_device_code_browser_note">EoN Client V2 opens your default browser in a private session, fills the code automatically, and requests a fresh Microsoft sign-in.</string>
     <string name="ms_choose_other_method">Other method</string>
     <string name="ms_no_browser">No browser is available on this device.</string>
     <string name="ms_default_browser_no_private_mode">Your default browser does not support private sign-in. Update it or use WebView login.</string>
@@ -588,14 +588,14 @@
     <string name="ms_active_badge">Active</string>
     <string name="ms_account_subtitle_format">User ID: %1$s • Updated: %2$s</string>
     <string name="xbox_avatar">Xbox avatar</string>
-    <string name="launcher_managed_mc_login">Sign in to Minecraft with LeviLauncher</string>
+    <string name="launcher_managed_mc_login">Sign in to Minecraft with EoN Client V2</string>
     <string name="dialog_title_login_required">Sign-in required</string>
     <string name="dialog_message_login_required">Launcher-managed login is enabled, but no account is signed in. Go to Accounts to sign in.</string>
     <string name="go_to_accounts">Accounts</string>
     <string name="disable_launcher_login_and_continue">Close</string>
 
     <string name="ms_feature_disabled_title">Feature Disabled</string>
-    <string name="ms_feature_disabled_desc">Please enable \'Sign in to Minecraft with LeviLauncher\' in Settings to manage Microsoft accounts.</string>
+    <string name="ms_feature_disabled_desc">Please enable \'Sign in to Minecraft with EoN Client V2\' in Settings to manage Microsoft accounts.</string>
     <string name="ms_activated">Activated</string>
 
     <!-- Popup labels -->
@@ -882,25 +882,25 @@
     <string name="vanilla_prefix">Vanilla %s</string>
 
     <string name="about_page_title">About</string>
-    <string name="about_subtitle">LeviLauncher — A Modern Minecraft Bedrock Launcher</string>
+    <string name="about_subtitle">EoN Client V2 — A Modern Minecraft Bedrock Launcher</string>
     <string name="about_authors_title">👥 Authors &amp; Maintainers</string>
     <string name="about_author_name">DreamGuXiang</string>
     <string name="about_author_badge">Author</string>
-    <string name="about_author_role">LeviLauncher Authors</string>
+    <string name="about_author_role">EoN Client V2 Authors</string>
     <string name="about_afdian">Afdian</string>
     <string name="about_patreon">Patreon</string>
     <string name="about_source_title">Source Code &amp; Open Source</string>
-    <string name="about_github_repo">GitHub · LeviLauncher</string>
+    <string name="about_github_repo">GitHub · EoN Client V2</string>
     <string name="about_github_org">LiteLDev</string>
     <string name="about_license_note">See LICENSE in the repository for license details.</string>
     <string name="about_contribute_title">Contribute</string>
-    <string name="about_contribute_desc">Contributions via Issues or Pull Requests are welcome to improve LeviLauncher.</string>
+    <string name="about_contribute_desc">Contributions via Issues or Pull Requests are welcome to improve EoN Client V2.</string>
     <string name="about_issues">Issue</string>
     <string name="about_star_fork">Star / Fork</string>
 
     <string-array name="launcher_tips">
         <item>Settings lets you adjust theme, color, background, and other appearance options to match your setup.</item>
-        <item>LeviLauncher is open source. Use GitHub issues to report launcher problems or suggest improvements.</item>
+        <item>EoN Client V2 is open source. Use GitHub issues to report launcher problems or suggest improvements.</item>
         <item>Use the version dropdown to switch the current instance quickly.</item>
         <item>Do people actually read these?</item>
         <item>You can drag mods to reorder their load priority.</item>
@@ -934,7 +934,7 @@
     <string name="clear">Clear</string>
 
     <string name="unsupported_version_title">Unsupported Version</string>
-    <string name="unsupported_version_msg">This launcher does not support Minecraft versions older than 1.21.80.</string>
+    <string name="unsupported_version_msg">This launcher supports Minecraft 1.21.80 and newer. The selected version must have a readable version number.</string>
 
     <!-- Generic UI strings added during localization cleanup -->
     <string name="close">Close</string>
@@ -1057,10 +1057,10 @@
     <string name="mod_config_hotbar_slot_opacity">Hotbar slot %1$d opacity</string>
     <!-- Changelog & News -->
     <string name="changelog_title">What’s new</string>
-    <string name="changelog_version">LeviLauncher %1$s</string>
+    <string name="changelog_version">EoN Client V2 %1$s</string>
     <string name="changelog_continue">Continue</string>
     <string name="news_title">Launcher news</string>
-    <string name="news_subtitle">Updates, announcements, and important notices from the LeviLauncher team.</string>
+    <string name="news_subtitle">Updates, announcements, and important notices from the EoN Client V2 team.</string>
     <string name="news_enable_notifications">Enable notifications</string>
     <string name="news_refresh">Refresh news</string>
     <string name="news_empty">No news has been published yet.</string>
@@ -1070,7 +1070,7 @@
     <string name="news_refresh_failed">Could not refresh. Showing saved news.</string>
     <string name="news_unread_description">Launcher news, %1$d unread</string>
     <string name="news_notification_channel">Launcher news</string>
-    <string name="news_notification_channel_description">New LeviLauncher announcements and important notices</string>
+    <string name="news_notification_channel_description">New EoN Client V2 announcements and important notices</string>
     <string name="mod_config_category_slots">Slots</string>
     <string name="mod_config_category_appearance">Appearance</string>
     <string name="mod_config_category_behavior">Behavior</string>
@@ -1117,5 +1117,5 @@
     <string name="bg_media_import_failed">Could not load this background. Choose a supported photo or GIF.</string>
     <string name="bg_media_blur_unavailable">Android 12+</string>
     <string name="screenshot_saved">Screenshot saved</string>
-    <string name="backup_select_downloads">Select the Downloads folder to save backups in Downloads/LeviLauncher/Backups.</string>
+    <string name="backup_select_downloads">Select the Downloads folder to save backups in Downloads/EoN Client V2/Backups.</string>
 </resources>

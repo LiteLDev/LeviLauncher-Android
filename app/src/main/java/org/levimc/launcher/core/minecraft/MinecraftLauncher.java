@@ -7,12 +7,9 @@ import android.content.pm.ApplicationInfo;
 import android.os.Build;
 import android.widget.Toast;
 
-import org.levimc.launcher.BuildConfig;
 import org.levimc.launcher.R;
 import org.levimc.launcher.core.versions.GameVersion;
 import org.levimc.launcher.util.LauncherStorage;
-import org.levimc.launcher.util.PlayStoreValidator;
-import org.levimc.launcher.ui.dialogs.PlayStoreValidationDialog;
 import org.levimc.launcher.util.LauncherBackgroundController;
 import android.util.Log;
 
@@ -108,34 +105,16 @@ public class MinecraftLauncher {
                 return;
             }
 
-            if (version.versionCode != null) {
-                try {
-                    String[] parts = version.versionCode.split("\\.");
-                    if (parts.length >= 2) {
-                        int major = Integer.parseInt(parts[0].replaceAll("\\D", ""));
-                        int minor = Integer.parseInt(parts[1].replaceAll("\\D", ""));
-                        int patch = 0;
-                        if (parts.length > 2) {
-                            String patchStr = parts[2].replaceAll("\\D.*", "");
-                            if (!patchStr.isEmpty()) {
-                                patch = Integer.parseInt(patchStr);
-                            }
-                        }
-                        if (major < 1 || (major == 1 && minor < 21) || (major == 1 && minor == 21 && patch < 80)) {
-                            activity.runOnUiThread(() -> {
-                                new org.levimc.launcher.ui.dialogs.CustomAlertDialog(activity)
-                                        .setTitleText(activity.getString(org.levimc.launcher.R.string.unsupported_version_title))
-                                        .setMessage(activity.getString(org.levimc.launcher.R.string.unsupported_version_msg))
-                                        .setPositiveButton(activity.getString(org.levimc.launcher.R.string.back), null)
-                                        .show();
-                            });
-                            notifyLaunchFailed(callback, new IllegalStateException("Unsupported version"));
-                            return;
-                        }
-                    }
-                } catch (Exception e) {
-                    // Ignore parsing errors and let it launch
-                }
+            if (!MinecraftVersion.isAtLeast(version.versionCode, "1.21.80")) {
+                activity.runOnUiThread(() -> {
+                    new org.levimc.launcher.ui.dialogs.CustomAlertDialog(activity)
+                            .setTitleText(activity.getString(R.string.unsupported_version_title))
+                            .setMessage(activity.getString(R.string.unsupported_version_msg))
+                            .setPositiveButton(activity.getString(R.string.back), null)
+                            .show();
+                });
+                notifyLaunchFailed(callback, new IllegalStateException("Unsupported or unknown Minecraft version"));
+                return;
             }
 
             if (version.needsRepair) {
@@ -148,12 +127,6 @@ public class MinecraftLauncher {
 
             activity.runOnUiThread(() -> {
                 try {
-                    if (!BuildConfig.SKIP_PLAY_STORE_CHECK && !PlayStoreValidator.isMinecraftFromPlayStore(activity)) {
-                        Log.w(TAG, "Launch denied: Minecraft is not verified as Play Store install");
-                        PlayStoreValidationDialog.showNotFromPlayStoreDialog(activity);
-                        notifyLaunchFailed(callback, new SecurityException("Minecraft is not verified as Play Store install"));
-                        return;
-                    }
                     launchMinecraftActivity(sourceIntent, version, false);
                     notifyLaunchStarted(callback);
                 } catch (Exception e) {

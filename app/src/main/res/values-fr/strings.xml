@@ -8,7 +8,7 @@
 
 <resources>
     <!-- Common -->
-    <string name="app_name">LeviLauncher</string>
+    <string name="app_name">EoN Client V2</string>
     <string name="minecraft">Minecraft</string>
     <string name="launch">Lancer</string>
     <string name="beta_badge">Bêta</string>
