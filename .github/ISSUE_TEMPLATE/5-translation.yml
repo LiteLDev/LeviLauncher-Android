@@ -1,0 +1,42 @@
+name: 🌐 Translation
+description: Report incorrect or missing translations in the UI.
+title: "[Translation]: "
+labels: ["type: enhancement"]
+body:
+  - type: checkboxes
+    attributes:
+      label: Checklist
+      options:
+        - label: I have checked existing translation issues to avoid duplicates.
+          required: true
+  - type: input
+    id: language
+    attributes:
+      label: Target Language
+      placeholder: e.g., Spanish (es-ES), Chinese (zh-CN)
+    validations:
+      required: true
+  - type: textarea
+    id: current-text
+    attributes:
+      label: Current Text
+      description: What is the current text shown in the app?
+      placeholder: e.g., "Lanzamiento"
+    validations:
+      required: true
+  - type: textarea
+    id: correct-text
+    attributes:
+      label: Corrected Text
+      description: What should the text be changed to?
+      placeholder: e.g., "Lanzar"
+    validations:
+      required: true
+  - type: textarea
+    id: location
+    attributes:
+      label: Location in App
+      description: Where is this text located in the app?
+      placeholder: e.g., The big green button on the main menu, or inside the Settings tab.
+    validations:
+      required: false

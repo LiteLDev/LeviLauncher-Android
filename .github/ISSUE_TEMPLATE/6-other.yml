@@ -1,0 +1,18 @@
+name: ❓ General / Other
+description: For general topics, questions, or issues not covered by other templates.
+labels: ["type: question"]
+body:
+  - type: checkboxes
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched existing issues and confirmed no other template fits my topic.
+          required: true
+  - type: textarea
+    id: topic-details
+    attributes:
+      label: Description
+      description: Provide a full explanation of your topic, question, or request.
+      placeholder: I need help figuring out how to configure...
+    validations:
+      required: true

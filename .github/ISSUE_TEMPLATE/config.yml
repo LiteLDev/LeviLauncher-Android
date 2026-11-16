@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+- name: 📚 Documentation
+about: Browse our documentation for guides and setup instructions.
+url: docs.levimc.org/LeviLaunchroid/
+- name: 💬 Chat on leviMC Discord
+about: Join our Discord server to chat about team projects.
+url: https://discord.gg/v5R5P4vRZk
+- name: 💬 Chat on QYCottage Discord
+about: Join our Discord server to discuss mods and skins.
+url: https://discord.gg/JYGqrRYszy

@@ -1,0 +1,35 @@
+name: 📚 Documentation
+description: Report missing, incorrect, or unclear information in docs or guides.
+title: "[Docs]: "
+labels: ["type: documentation"]
+body:
+  - type: checkboxes
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched existing issues to ensure this has not already been reported.
+          required: true
+  - type: input
+    id: doc-url
+    attributes:
+      label: Documentation Link
+      description: Which documentation page or README section needs updating?
+      placeholder: e.g., README.md (Installation section) or https://...
+    validations:
+      required: true
+  - type: textarea
+    id: issue-details
+    attributes:
+      label: Issue Description
+      description: What needs improvement? Describe what is wrong, missing, or needs clarification.
+      placeholder: The section on setup is outdated because it mentions a button that no longer exists...
+    validations:
+      required: true
+  - type: textarea
+    id: suggested-fix
+    attributes:
+      label: Suggested Fix
+      description: Provide the text or updates you think should be added.
+      placeholder: It should say "Click the launch icon" instead of...
+    validations:
+      required: false

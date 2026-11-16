@@ -1,0 +1,44 @@
+name: ✨ Feature Request
+description: Suggest a new feature or improvement for LeviLaunchroid.
+title: "[Feature]: "
+labels: ["type: enhancement", "status: proposal"]
+type: feature
+body:
+  - type: checkboxes
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched existing issues to ensure this feature has not been requested already.
+          required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Description
+      description: Is your feature request related to a problem? A clear description of what the problem or limitation is.
+      placeholder: e.g., I'm always frustrated when I have to manually click through five menus to...
+    validations:
+      required: false
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Explain how you would like this feature to work.
+      placeholder: I would love to see a button on the main screen that automatically...
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Solutions
+      description: Describe alternatives you've considered. Have you tried any workarounds?
+      placeholder: I've tried using a different mod or manual workaround, but it doesn't completely fix...
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Add any mockups, screenshots, or additional details here.
+      placeholder: Drag and drop design mockups or reference images here.
+    validations:
+      required: false

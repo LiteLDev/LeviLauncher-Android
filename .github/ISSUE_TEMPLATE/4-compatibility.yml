@@ -1,0 +1,80 @@
+name: 🧩 Compatibility / Crash
+description: Report an app crash triggered by device settings, OS versions, or Minecraft updates.
+title: "[Crash]: "
+labels: ["type: bug"]
+type: bug
+body:
+  - type: checkboxes
+    attributes:
+      label: Checklist
+      options:
+        - label: I have searched existing issues to ensure this crash has not been reported yet.
+          required: true
+        - label: I am using the latest version of LeviLaunchroid.
+          required: true
+  - type: input
+    id: device-model
+    attributes:
+      label: Device Model
+      description: What device are you using?
+      placeholder: e.g., Xiaomi Redmi Note 10, Samsung Galaxy S22
+    validations:
+      required: true
+  - type: input
+    id: android-version
+    attributes:
+      label: Android OS Version
+      description: Which version of Android / custom OS skin is your device running?
+      placeholder: e.g., Android 12 / MIUI 14, Android 14 / One UI 6.0
+    validations:
+      required: true
+  - type: input
+    id: mc-version
+    attributes:
+      label: Minecraft Bedrock Version
+      description: Which version of Minecraft Bedrock are you trying to launch?
+      placeholder: e.g., 1.21.0
+    validations:
+      required: true
+  - type: dropdown
+    id: crash-timing
+    attributes:
+      label: When does the crash occur?
+      description: Select the action that triggers the crash.
+      options:
+        - When opening the launcher
+        - When clicking Launch
+        - During Minecraft gameplay
+        - Immediately after a Minecraft update
+        - When changing a launcher/device setting
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: crash-log
+    attributes:
+      label: App Crash Log / Error Message
+      description: Paste the Android crash log (logcat) or exact error message if you have one.
+      placeholder: Paste the log output here, or use ``` around the code to format it...
+    validations:
+      required: false
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Describe what actions lead to the crash.
+      placeholder: |
+        1. Update Minecraft to 1.21.0
+        2. Open LeviLaunchroid
+        3. Click Launch
+        4. The launcher closes immediately
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Device & Game Settings Context
+      description: Mention any specific device settings, custom ROMs, or game configurations that might be causing this.
+      placeholder: I recently updated my phone's OS, or I changed a specific graphics setting in the game before this happened...
+    validations:
+      required: false
