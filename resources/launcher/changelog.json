@@ -1,41 +1,85 @@
 {
   "schemaVersion": 1,
-  "headline": "LeviLauncher v1.6.1",
-  "summary": "Added Discord Rich Presence and optional microphone permission, with faster startup and content management and improved Indonesian language support.",
+  "headline": "LeviLauncher v1.7.1",
+  "summary": "Includes the v1.7.0 launcher and in-game mod menu redesign, Google Play downloads, lip-compatible package management, and faster startup, plus fixes for the latest Minecraft Beta and network navigation crashes in v1.7.1.",
   "sections": [
     {
-      "title": "New Features",
+      "title": "v1.7.1 - Fixes",
       "items": [
         {
-          "text": "Added Discord Rich Presence to show launcher activity, Minecraft version, and elapsed time. No login required in LeviLauncher."
+          "text": "Fixed a crash when switching from Downloads to Launch while Google Play was slow or unreachable.",
+          "url": "https://github.com/LiteLDev/LeviLauncher-Android/commit/0a0289698bdf285c514d016b52f1ca82d6fc9d46"
         },
         {
-          "text": "Added microphone permission for mod developers creating proximity voice chat mods. Disabled by default; enable it in Android's app permissions."
+          "text": "Fixed a launch crash affecting the latest Minecraft Beta.",
+          "url": "https://github.com/LiteLDev/LeviLauncher-Android/commit/d488f2ccd6c34dfd1ff1bf962290d41b29125d6b"
         }
       ]
     },
     {
-      "title": "Improvements",
+      "title": "v1.7.0 - New Features",
       "items": [
         {
-          "text": "Removed the foreground service. Update to BedrockTools v1.5.11 and enable No Disconnect to keep Minecraft running in the background and skip the loading screen when returning to the app."
+          "text": "Download Minecraft directly from Google Play by signing in with a Google account that owns the game. (#451)",
+          "url": "https://github.com/LiteLDev/LeviLauncher-Android/pull/451"
         },
         {
-          "text": "Optimised native library extraction and caching to reduce repeated work and speed up Minecraft startup."
+          "text": "Added a lip-compatible package manager and a Package Management tab that follows the Windows launcher layout. (#443)",
+          "url": "https://github.com/LiteLDev/LeviLauncher-Android/pull/443"
         },
         {
-          "text": "Optimised content management for faster pack imports and deletions, world list loading, and content counts."
-        },
-        {
-          "text": "The home screen now shows Skin Packs instead of Behavior Packs."
+          "text": "Added a creator notice and refreshed its dialog."
         }
       ]
     },
     {
-      "title": "Fixes",
+      "title": "v1.7.0 - Improvements",
       "items": [
         {
-          "text": "Fixed Indonesian locale handling and migrated existing language selections (#396)."
+          "text": "Refreshed the launcher interface to match LeviLauncher for Windows, with a centered top navigation bar that adapts to screen width and stacked pages by default. (#454, #456)",
+          "url": "https://github.com/LiteLDev/LeviLauncher-Android/pull/454"
+        },
+        {
+          "text": "Improved the home layout and instance icons. The home screen now shows External Mods after LeviMC Mods. (#448)",
+          "url": "https://github.com/LiteLDev/LeviLauncher-Android/pull/448"
+        },
+        {
+          "text": "Redesigned Settings, Downloads, Mods, Instances, Content Management, and About."
+        },
+        {
+          "text": "Redesigned the News and account screens, refined mod actions, and improved the world tools."
+        },
+        {
+          "text": "Redesigned the in-game mod menu and updated its themes."
+        },
+        {
+          "text": "Sped up the splash screen and reduced runtime overhead in the launcher and mod menu."
+        },
+        {
+          "text": "Completed translations for the refreshed launcher interface."
+        },
+        {
+          "text": "Applied the GitHub proxy to external mods and aligned the proxy presets with the Windows launcher. The default is now gh-proxy.org. (#447, #449)",
+          "url": "https://github.com/LiteLDev/LeviLauncher-Android/pull/447"
+        },
+        {
+          "text": "Added an end-to-end launch test with a placeholder game and made the package test handle early process exits."
+        }
+      ]
+    },
+    {
+      "title": "v1.7.0 - Fixes",
+      "items": [
+        {
+          "text": "Fixed page titles going out of view and adjusted the appearance options to fit. Downloads now explains why the list is empty."
+        },
+        {
+          "text": "Fixed CurseForge access in local debug builds by using the embedded API key. (#455)",
+          "url": "https://github.com/LiteLDev/LeviLauncher-Android/pull/455"
+        },
+        {
+          "text": "Updated project links after the repository was renamed to LeviLauncher-Android. (#445)",
+          "url": "https://github.com/LiteLDev/LeviLauncher-Android/pull/445"
         }
       ]
     }
