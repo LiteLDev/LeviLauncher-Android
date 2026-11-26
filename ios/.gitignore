@@ -1,0 +1,6 @@
+*.xcodeproj
+LeviLauncher/Info.plist
+xcuserdata/
+DerivedData/
+.build/
+.DS_Store
